@@ -49,6 +49,11 @@ namespace Cx\Core\Model\Controller;
 class EntityManager extends \Doctrine\ORM\EntityManager {
 
     /**
+     * @var array Lookup table. Key is database table name, value is entity name
+     */
+    protected $reverseLookupTable = array();
+
+    /**
      * {@inheritdoc}
      */
     public function createQuery($dql = "")
@@ -86,5 +91,24 @@ class EntityManager extends \Doctrine\ORM\EntityManager {
         }
 
         return new EntityManager($conn, $config, $conn->getEventManager());
+    }
+
+    /**
+     * Returns the entity name for a table name
+     * @author Michael Ritter <michael.ritter@cloudrexx.com>
+     * @param string $tableName Name of the database table
+     * @return string Fully qualified name of the entity
+     */
+    public function getEntityNameByTableName($tableName) {
+        if (!count($this->reverseLookupTable)) {
+            $metadatas = $this->getMetadataFactory()->getAllMetadata();
+            foreach ($metadatas as $metadata) {
+                $this->reverseLookupTable[$metadata->getTableName()] = $metadata->getName();
+            }
+        }
+        if (!isset($this->reverseLookupTable[$tableName])) {
+            return null;
+        }
+        return $this->reverseLookupTable[$tableName];
     }
 }

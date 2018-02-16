@@ -124,9 +124,7 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
             if ($fieldMapping['type'] != 'enum') {
                 continue;
             }
-            $customEnumClassNS = static::ENUM_CLASS_PREFIX .
-                $classParts[2] . '\\' . $classParts[5];
-            $customEnumClassName = $customEnumClassNS . '\\' .  ucfirst($fieldName);
+            $customEnumClassName = static::getEnumClassName($classParts[2], $classParts[5], $fieldName);
 
             // If class is already registered in this request, we abort here
             if (in_array($customEnumClassName, static::$enumClasses)) {
@@ -134,58 +132,157 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
             }
 
             // Register custom ENUM type class
-            $customTypeName = strtolower(
-                'enum_' . $classParts[2] . '_' . $classParts[5] . '_' . $fieldName
-            );
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $customTypeName = static::getEnumTypeName($classParts[2], $classParts[5], $fieldName); 
+            static::registerCustomEnumType($customTypeName, $customEnumClassName);
             $fieldMapping['type'] = $customTypeName;
-            \Doctrine\DBAL\Types\Type::addType(
-                $customTypeName,
-                substr($customEnumClassName, 1)
-            );
-            $connection = $cx->getDb()->getEntityManager()->getConnection();
-            $connection->getDatabasePlatform()->registerDoctrineTypeMapping(
-                $customTypeName,
-                $customTypeName
-            );
-            static::$enumClasses[] = $customEnumClassName;
 
             // If class is already present, we abort here
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $classLoader = $cx->getClassLoader();
             if ($classLoader->classExists($customEnumClassName, false, true)) {
                 continue;
             }
 
-            // Create custom ENUM type class
-            $customEnumClass = new \Cx\Core\Html\Sigma(
-                $cx->getCodeBaseCorePath() . '/Model/View/Template/Generic'
+            $this->createCustomEnumTypeClass(
+                $classParts[2],
+                $classParts[5],
+                $fieldName,
+                $fieldMapping['values']
             );
-            $customEnumClass->loadTemplateFile('EnumClass.tpl');
-            $customEnumClass->setVariable(array(
-                'NAMESPACE' => substr($customEnumClassNS, 1),
-                'CLASS_NAME' => ucfirst($fieldName),
-            ));
-            $first = true;
-            foreach ($fieldMapping['values'] as $value) {
-                if ($first) {
-                    $first = false;
-                    $customEnumClass->hideBlock('nonfirst');
-                } else {
-                    $customEnumClass->touchBlock('nonfirst');
-                }
-                $customEnumClass->setVariable('VALUE', $value);
-                $customEnumClass->parse('value');
-            }
-
-            $customClassFileName = $cx->getCodeBaseCorePath() .
-                '/Model/Data/Enum/' . $classParts[2] . '/' . $classParts[5] .
-                '/' . ucfirst($fieldName) . '.class.php';
-            \Cx\Lib\FileSystem\FileSystem::make_folder(
-                dirname($customClassFileName), true
-            );
-            $file = new \Cx\Lib\FileSystem\File($customClassFileName);
-            $file->write($customEnumClass->get());
         }
         return $result[$className];
+    }
+
+    /**
+     * Creates a new class for a custom ENUM type
+     * @param string $componentName Name of the component
+     * @param string $entityName Name of the entity
+     * @param string $fieldName Name of the field
+     * @param array $values Valid values for the ENUM
+     */
+    protected function createCustomEnumTypeClass($componentName, $entityName, $fieldName, $values) {
+        // Create custom ENUM type class
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $customEnumClass = new \Cx\Core\Html\Sigma(
+            $cx->getCodeBaseCorePath() . '/Model/View/Template/Generic'
+        );
+        $customEnumClass->loadTemplateFile('EnumClass.tpl');
+        $customEnumClass->setVariable(array(
+            'NAMESPACE' => substr(static::getEnumClassNamespace($componentName, $entityName), 1),
+            'CLASS_NAME' => ucfirst($fieldName),
+        ));
+        $first = true;
+        foreach ($fieldMapping['values'] as $value) {
+            if ($first) {
+                $first = false;
+                $customEnumClass->hideBlock('nonfirst');
+            } else {
+                $customEnumClass->touchBlock('nonfirst');
+            }
+            $customEnumClass->setVariable('VALUE', $value);
+            $customEnumClass->parse('value');
+        }
+
+        $customClassFileName = $cx->getCodeBaseCorePath() .
+            '/Model/Data/Enum/' . $componentName . '/' . $entityName .
+            '/' . ucfirst($fieldName) . '.class.php';
+        \Cx\Lib\FileSystem\FileSystem::make_folder(
+            dirname($customClassFileName), true
+        );
+        $file = new \Cx\Lib\FileSystem\File($customClassFileName);
+        $file->write($customEnumClass->get());
+    }
+
+    /**
+     * Resolves a database field type to the correct (internal) ENUM type
+     * This is used to make schema-tool:update work as expected
+     * @param $tableName string Name of the table
+     * @param $fieldName string Name of the field
+     * @param $field string Database field type
+     * @return string Updated database field type
+     */
+    public static function reverseLookupEnumType($tableName, $fieldName, $type) {
+        if ($type != 'enum') {
+            return $type;
+        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $className = $em->getEntityNameByTableName($tableName);
+        if (!$className) {
+            return $type;
+        }
+        $classParts = explode('\\', $className);
+        if (current($classParts) != 'Cx') {
+            return $type;
+        }
+        $customEnumClassName = static::getEnumClassName($classParts[2], $classParts[5], $fieldName);
+        $customTypeName = static::getEnumTypeName($classParts[2], $classParts[5], $fieldName); 
+        // If class is already registered in this request, we abort here
+        if (in_array($customEnumClassName, static::$enumClasses)) {
+            return $customTypeName;
+        }
+        $cl = $cx->getClassLoader();
+        // If class does not exist, we do not have such a type yet
+        if (!$cl->classExists($customEnumClassName, false, true)) {
+            return $type;
+        }
+        static::registerCustomEnumType($customTypeName, $customEnumClassName);
+        return $customTypeName;
+    }
+
+    /**
+     * Returns the custom ENUM type namespace
+     * @param string $componentName The component name
+     * @param string $entityName The entity name
+     * @return string The custom ENUM type classe's namespace
+     */
+    protected static function getEnumClassNamespace($componentName, $entityName) {
+        return static::ENUM_CLASS_PREFIX . $componentName . '\\' . $entityName;
+    }
+
+    /**
+     * Returns the custom ENUM type class name
+     * @param string $componentName The component name
+     * @param string $entityName The entity name
+     * @param string $fieldName The field name
+     * @return string The custom ENUM type class name
+     */
+    protected static function getEnumClassName($componentName, $entityName, $fieldName) {
+        return static::getEnumClassNamespace(
+            $componentName,
+            $entityName
+        ) . '\\' .  ucfirst($fieldName);
+    }
+
+    /**
+     * Returns the custom ENUM type name (Doctrine type name)
+     * @param string $componentName The component name
+     * @param string $entityName The entity name
+     * @param string $fieldName The field name
+     * @return string The custom ENUM type name
+     */
+    protected static function getEnumTypeName($componentName, $entityName, $fieldName) {
+        return strtolower(
+            'enum_' . $componentName . '_' . $entityName . '_' . $fieldName
+        );
+    }
+
+    /**
+     * Registers a custom ENUM type for Doctrine
+     * @param string $customTypeName Doctrine name for the type
+     * @param string $customClassName Custom ENUM type class name
+     */
+    protected static function registerCustomEnumType($customTypeName, $customClassName) {
+        \Doctrine\DBAL\Types\Type::addType(
+            $customTypeName,
+            substr($customClassName, 1)
+        );
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $connection = $cx->getDb()->getEntityManager()->getConnection();
+        $connection->getDatabasePlatform()->registerDoctrineTypeMapping(
+            $customTypeName,
+            $customTypeName
+        );
+        static::$enumClasses[] = $customClassName;
     }
 }
