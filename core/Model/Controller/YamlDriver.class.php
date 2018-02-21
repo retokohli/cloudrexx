@@ -215,6 +215,8 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
         if (current($classParts) != 'Cx') {
             return $type;
         }
+        $metaData = $em->getClassMetadata($className);
+        $fieldName = $metaData->getFieldName($fieldName);
         $customEnumClassName = static::getEnumClassName($classParts[2], $classParts[5], $fieldName);
         $customTypeName = static::getEnumTypeName($classParts[2], $classParts[5], $fieldName); 
         // If class is already registered in this request, we abort here
