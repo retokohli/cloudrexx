@@ -172,7 +172,7 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
             'CLASS_NAME' => ucfirst($fieldName),
         ));
         $first = true;
-        foreach ($fieldMapping['values'] as $value) {
+        foreach ($values as $value) {
             if ($first) {
                 $first = false;
                 $customEnumClass->hideBlock('nonfirst');
