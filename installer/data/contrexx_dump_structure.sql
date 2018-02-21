@@ -846,11 +846,12 @@ CREATE TABLE `contrexx_module_calendar_events_categories` (
 CREATE TABLE `contrexx_module_calendar_invite` (
   `id` int NOT NULL AUTO_INCREMENT,
   `event_id` int(11) NOT NULL,
-  `date` bigint unsigned NOT NULL,
+  `date` int unsigned NOT NULL,
   `invitee_type` enum('-', 'AccessUser','CrmContact') NOT NULL,
   `invitee_id` int(11) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `token` varchar(32) NOT NULL,
+  INDEX IDX_842085E171F7E88B (event_id),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_host` (
@@ -3829,3 +3830,4 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+ALTER TABLE contrexx_module_calendar_invite ADD CONSTRAINT FK_842085E171F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
