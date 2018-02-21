@@ -1005,17 +1005,17 @@ CREATE TABLE `contrexx_module_checkout_transactions` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_contact_form` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `mails` text NOT NULL,
-  `showForm` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `use_captcha` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `use_custom_style` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `showForm` tinyint(1) NOT NULL DEFAULT '0',
+  `use_captcha` tinyint(1) NOT NULL DEFAULT '1',
+  `use_custom_style` tinyint(1) NOT NULL DEFAULT '0',
   `save_data_in_crm` tinyint(1) NOT NULL DEFAULT '0',
   `send_copy` tinyint(1) NOT NULL DEFAULT '0',
   `use_email_of_sender` tinyint(1) NOT NULL DEFAULT '0',
-  `html_mail` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `send_attachment` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `crm_customer_groups` text,
+  `html_mail` tinyint(1) NOT NULL DEFAULT '1',
+  `send_attachment` tinyint(1) NOT NULL DEFAULT '0',
+  `crm_customer_groups` LONGTEXT DEFAULT NULL COMMENT '(DC2Type:array)',
   `send_multiple_reply` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
