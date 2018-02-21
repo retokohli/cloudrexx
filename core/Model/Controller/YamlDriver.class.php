@@ -120,37 +120,62 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
         if (current($classParts) != 'Cx') {
             return $result[$className];
         }
-        foreach ($result[$className]['fields'] as $fieldName=>&$fieldMapping) {
-            if ($fieldMapping['type'] != 'enum') {
-                continue;
-            }
-            $customEnumClassName = static::getEnumClassName($classParts[2], $classParts[5], $fieldName);
-
-            // If class is already registered in this request, we abort here
-            if (in_array($customEnumClassName, static::$enumClasses)) {
-                continue;
-            }
-
-            // Register custom ENUM type class
-            $customTypeName = static::getEnumTypeName($classParts[2], $classParts[5], $fieldName); 
-            static::registerCustomEnumType($customTypeName, $customEnumClassName);
-            $fieldMapping['type'] = $customTypeName;
-
-            // If class is already present, we abort here
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            $classLoader = $cx->getClassLoader();
-            if ($classLoader->classExists($customEnumClassName, false, true)) {
-                continue;
-            }
-
-            $this->createCustomEnumTypeClass(
+        foreach ($result[$className]['id'] as $fieldName=>&$fieldMapping) {
+            $this->handleCustomEnumTypeClass(
                 $classParts[2],
                 $classParts[5],
                 $fieldName,
-                $fieldMapping['values']
+                $fieldMapping
+            );
+        }
+        foreach ($result[$className]['fields'] as $fieldName=>&$fieldMapping) {
+            $this->handleCustomEnumTypeClass(
+                $classParts[2],
+                $classParts[5],
+                $fieldName,
+                $fieldMapping
             );
         }
         return $result[$className];
+    }
+
+    protected function handleCustomEnumTypeClass($componentName, $entityName, $fieldName, &$fieldMapping) {
+        if ($fieldMapping['type'] != 'enum') {
+            return;
+        }
+        $customEnumClassName = static::getEnumClassName(
+            $componentName,
+            $entityName,
+            $fieldName
+        );
+
+        // If class is already registered in this request, we abort here
+        if (in_array($customEnumClassName, static::$enumClasses)) {
+            return;
+        }
+
+        // Register custom ENUM type class
+        $customTypeName = static::getEnumTypeName(
+            $componentName,
+            $entityName,
+            $fieldName
+        );
+        static::registerCustomEnumType($customTypeName, $customEnumClassName);
+        $fieldMapping['type'] = $customTypeName;
+
+        // If class is already present, we abort here
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $classLoader = $cx->getClassLoader();
+        if ($classLoader->classExists($customEnumClassName, false, true)) {
+            return;
+        }
+
+        $this->createCustomEnumTypeClass(
+            $componentName,
+            $entityName,
+            $fieldName,
+            $fieldMapping['values']
+        );
     }
 
     /**
