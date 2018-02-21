@@ -19,4 +19,5 @@ Cx\Core_Modules\LinkManager\Model\Entity\Crawler:
     totalBrokenLinks:
       type: integer
     runStatus:
-      type: string
+      type: enum
+      values: ['running','incomplete','completed']

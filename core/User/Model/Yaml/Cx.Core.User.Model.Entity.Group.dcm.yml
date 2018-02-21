@@ -26,8 +26,8 @@ Cx\Core\User\Model\Entity\Group:
       nullable: false
       column: is_active
     type:
-      type: string
-      nullable: false
+      type: enum
+      values: ['frontend','backend']
     homepage:
       type: string
       length: 255

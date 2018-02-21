@@ -12,7 +12,8 @@ Cx\Core_Modules\SysLog\Model\Entity\Log:
       type: datetime
 
     severity:
-      type: string
+      type: enum
+      values: ['INFO','WARNING','FATAL']
 
     message:
       type: string

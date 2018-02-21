@@ -11,7 +11,8 @@ Cx\Modules\Calendar\Model\Entity\RegistrationFormField:
         strategy: AUTO
   fields:
     type:
-      type: string
+      type: enum
+      values: ['inputtext','textarea','select','radio','checkbox','mail','seating','agb','salutation','firstname','lastname','selectBillingAddress','fieldset']
     required:
       type: integer
     order:

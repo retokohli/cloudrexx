@@ -10,8 +10,8 @@ Cx\Core\User\Model\Entity\UserProfile:
       unsigned: true
       column: user_id
     gender:
-      type: string
-      nullable: false
+      type: enum
+      values: ['gender_undefined','gender_female','gender_male']
     firstname:
       type: string
       length: 255

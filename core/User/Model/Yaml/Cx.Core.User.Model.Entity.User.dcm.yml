@@ -71,8 +71,8 @@ Cx\Core\User\Model\Entity\User:
       length: 255
       nullable: true
     emailAccess:
-      type: string
-      nullable: false
+      type: enum
+      values: ['everyone','members_only','nobody']
       column: email_access
     frontendLangId:
       type: integer
@@ -102,8 +102,8 @@ Cx\Core\User\Model\Entity\User:
       unsigned: true
       column: primary_group
     profileAccess:
-      type: string
-      nullable: false
+      type: enum
+      values: ['everyone','members_only','nobody']
       column: profile_access
     restoreKey:
       type: string
@@ -117,8 +117,8 @@ Cx\Core\User\Model\Entity\User:
       unsigned: true
       column: restore_key_time
     u2uActive:
-      type: string
-      nullable: false
+      type: enum
+      values: ['0','1']
       column: u2u_active
   indexes:
     username:

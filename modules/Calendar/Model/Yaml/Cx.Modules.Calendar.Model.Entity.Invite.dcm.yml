@@ -14,8 +14,8 @@ Cx\Modules\Calendar\Model\Entity\Invite:
       type: integer
       column: date
     inviteeType:
-      type: string
-      length: 255
+      type: enum
+      values: ['-','AccessUser','CrmContact']
       column: invitee_type
     inviteeId:
       type: integer

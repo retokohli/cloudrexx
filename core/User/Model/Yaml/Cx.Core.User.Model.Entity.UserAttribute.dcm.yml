@@ -10,14 +10,14 @@ Cx\Core\User\Model\Entity\UserAttribute:
       generator:
         strategy: AUTO
     type:
-      type: string
-      nullable: false
+      type: enum
+      values: ['text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history']
     mandatory:
-      type: string
-      nullable: false
+      type: enum
+      values: ['0','1']
     sortType:
-      type: string
-      nullable: false
+      type: enum
+      values: ['asc','desc','custom']
       column: sort_type
     orderId:
       type: integer
@@ -26,8 +26,8 @@ Cx\Core\User\Model\Entity\UserAttribute:
       unsigned: true
       column: order_id
     accessSpecial:
-      type: string
-      nullable: false
+      type: enum
+      values: ['','menu_select_higher','menu_select_lower']
       column: access_special
   oneToMany:
     parent:
