@@ -1147,8 +1147,8 @@ CREATE TABLE `contrexx_module_crm_contacts` (
 CREATE TABLE `contrexx_module_crm_currency` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(400) NOT NULL,
-  `active` int(1) NOT NULL DEFAULT '1',
-  `pos` int(5) NOT NULL DEFAULT '0',
+  `active` tinyint NOT NULL DEFAULT '1',
+  `pos` int NOT NULL DEFAULT '0',
   `hourly_rate` text NOT NULL,
   `default_currency` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
