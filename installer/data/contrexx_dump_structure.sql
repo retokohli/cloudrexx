@@ -357,7 +357,7 @@ CREATE TABLE `contrexx_core_module_cron_job` (
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_core_module_linkmanager_crawler` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `lang` tinyint(2) NOT NULL,
+  `lang` smallint(2) NOT NULL,
   `startTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `endTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `totalLinks` int(11) NOT NULL,
@@ -367,9 +367,9 @@ CREATE TABLE `contrexx_core_module_linkmanager_crawler` (
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_linkmanager_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `lang` tinyint(2) NOT NULL,
+  `lang` smallint NOT NULL,
   `requestedPath` text NOT NULL,
-  `linkStatusCode` int(1) DEFAULT NULL,
+  `linkStatusCode` smallint DEFAULT NULL,
   `entryTitle` varchar(255) NOT NULL,
   `moduleName` varchar(100) DEFAULT NULL,
   `moduleAction` varchar(100) DEFAULT NULL,
@@ -387,9 +387,9 @@ CREATE TABLE `contrexx_core_module_linkmanager_history` (
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_linkmanager_link` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `lang` tinyint(2) NOT NULL,
+  `lang` smallint NOT NULL,
   `requestedPath` text NOT NULL,
-  `linkStatusCode` int(1) DEFAULT NULL,
+  `linkStatusCode` smallint DEFAULT NULL,
   `entryTitle` varchar(255) NOT NULL,
   `moduleName` varchar(100) DEFAULT NULL,
   `moduleAction` varchar(100) DEFAULT NULL,
