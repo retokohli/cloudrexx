@@ -520,11 +520,9 @@ CREATE TABLE `contrexx_core_text` (
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_core_view_frontend` (
   `language` int NOT NULL,
-  `theme` int(2) unsigned NOT NULL,
+  `theme` int NOT NULL,
   `channel` enum('default','mobile','print','pdf','app') NOT NULL,
-  PRIMARY KEY (`language`,`theme`,`channel`),
-  CONSTRAINT `contrexx_core_view_frontend_ibfk_locale` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`language`,`theme`,`channel`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_wysiwyg_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -3639,7 +3637,7 @@ CREATE TABLE `contrexx_settings_thumbnail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_skins` (
-  `id` int(2) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `themesname` varchar(50) NOT NULL DEFAULT '',
   `foldername` varchar(50) NOT NULL DEFAULT '',
   `expert` int(1) NOT NULL DEFAULT '1',
@@ -3889,3 +3887,5 @@ ALTER TABLE contrexx_core_module_sync_change ADD CONSTRAINT FK_E98B92F1FA50C422 
 ALTER TABLE contrexx_core_module_sync_change ADD CONSTRAINT FK_E98B92F14F27D14F FOREIGN KEY (origin_sync_id) REFERENCES contrexx_core_module_sync (id);
 ALTER TABLE contrexx_core_module_sync_change_host ADD CONSTRAINT FK_92C38FE0213C8BF4 FOREIGN KEY (change_id) REFERENCES contrexx_core_module_sync_change (id);
 ALTER TABLE contrexx_core_module_sync_change_host ADD CONSTRAINT FK_92C38FE01FB8D185 FOREIGN KEY (host_id) REFERENCES contrexx_core_module_sync_host (id);
+ALTER TABLE contrexx_core_view_frontend ADD CONSTRAINT `contrexx_core_view_frontend_ibfk_locale` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE contrexx_core_view_frontend ADD CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
