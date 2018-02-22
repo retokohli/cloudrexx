@@ -1,19 +1,23 @@
 SET FOREIGN_KEY_CHECKS = 0;
 SET SESSION `sql_mode`=(SELECT REPLACE(REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''),'STRICT_TRANS_TABLES',''));
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
-  `access_id` int(11) unsigned NOT NULL DEFAULT '0',
-  `group_id` int(11) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`access_id`,`group_id`)
-) ENGINE=MyISAM;
+  `access_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  PRIMARY KEY (`access_id`,`group_id`),
+  INDEX IDX_A07C12734FEA67CF (`access_id`),
+  INDEX IDX_A07C1273FE54D947 (`group_id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_group_static_ids` (
-  `access_id` int(11) unsigned NOT NULL DEFAULT '0',
-  `group_id` int(11) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`access_id`,`group_id`)
-) ENGINE=MyISAM;
+  `access_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  PRIMARY KEY (`access_id`,`group_id`),
+  INDEX IDX_DC26D8B04FEA67CF (`access_id`),
+  INDEX IDX_DC26D8B0FE54D947 (`group_id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_id` (
   `id` int(11) NOT NULL,
-  `entity_class_name` char(100) NOT NULL,
-  `entity_class_id` char(100) NOT NULL,
+  `entity_class_name` varchar(255) NOT NULL,
+  `entity_class_id` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_rel_user_group` (
@@ -301,11 +305,11 @@ CREATE TABLE `contrexx_core_locale_locale` (
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_modules_access_permission` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
-  `allowed_protocols` longtext NOT NULL,
-  `allowed_methods` longtext NOT NULL,
+  `allowed_protocols` longtext NOT NULL COMMENT '(DC2Type:array)',
+  `allowed_methods` longtext NOT NULL COMMENT '(DC2Type:array)',
   `requires_login` tinyint(1) DEFAULT NULL,
-  `valid_user_groups` longtext DEFAULT NULL,
-  `valid_access_ids` longtext DEFAULT NULL,
+  `valid_user_groups` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
+  `valid_access_ids` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_data_access` (
@@ -3851,3 +3855,7 @@ ALTER TABLE contrexx_module_calendar_events_categories ADD CONSTRAINT FK_3974DFD
 ALTER TABLE contrexx_module_calendar_registration_form_field_name ADD CONSTRAINT FK_1C1E8341443707B0 FOREIGN KEY (field_id) REFERENCES contrexx_module_calendar_registration_form_field (id);
 ALTER TABLE contrexx_module_calendar_registration_form_field ADD CONSTRAINT FK_AAEED23C5288FD4F FOREIGN KEY (form) REFERENCES contrexx_module_calendar_registration_form (id);
 ALTER TABLE contrexx_module_calendar_event_field ADD CONSTRAINT FK_F76EF62C71F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
+ALTER TABLE contrexx_access_group_dynamic_ids ADD CONSTRAINT FK_A07C12734FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
+ALTER TABLE contrexx_access_group_dynamic_ids ADD CONSTRAINT FK_A07C1273FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
+ALTER TABLE contrexx_access_group_static_ids ADD CONSTRAINT FK_DC26D8B04FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
+ALTER TABLE contrexx_access_group_static_ids ADD CONSTRAINT FK_DC26D8B0FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);

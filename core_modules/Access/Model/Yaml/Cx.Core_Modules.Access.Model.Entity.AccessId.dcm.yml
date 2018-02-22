@@ -5,14 +5,12 @@ Cx\Core_Modules\Access\Model\Entity\AccessId:
     id:
       id: true
       type: integer
-      generator:
-        strategy: AUTO
     entity_class_name:
       type: string
-      nullable: true
+      nullable: false
     entity_class_id:
       type: string
-      nullable: true
+      nullable: false
   oneToMany:
     contrexxAccessUserAttribute:
       targetEntity: Cx\Core\User\Model\Entity\UserAttribute
