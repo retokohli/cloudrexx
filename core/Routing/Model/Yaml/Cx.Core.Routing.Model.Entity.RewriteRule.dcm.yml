@@ -25,5 +25,3 @@ Cx\Core\Routing\Model\Entity\RewriteRule:
     continueOnMatch:
       column: continue_on_match
       type: boolean
-      options:
-        default: true
