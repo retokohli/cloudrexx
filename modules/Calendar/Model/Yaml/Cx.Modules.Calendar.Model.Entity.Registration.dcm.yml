@@ -16,6 +16,9 @@ Cx\Modules\Calendar\Model\Entity\Registration:
       type: datetime
       nullable: true
       column: submission_date
+      options:
+        version: true
+        default: "0000-00-00 00:00:00"
     hostName:
       type: string
       length: 255
@@ -57,4 +60,5 @@ Cx\Modules\Calendar\Model\Entity\Registration:
       inversedBy: registrations
       joinColumn:
         name: event_id
+        nullable: false
         referencedColumnName: id

@@ -739,10 +739,10 @@ CREATE TABLE `contrexx_module_calendar_category` (
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_category_name` (
   `cat_id` int(11) NOT NULL,
-  `lang_id` int(11) DEFAULT NULL,
-  `name` varchar(225) DEFAULT NULL,
-  KEY `fk_contrexx_module_calendar_category_names_contrexx_module_ca1` (`cat_id`)
-) ENGINE=MyISAM;
+  `lang_id` int(11) NOT NULL,
+  `name` varchar(225) NOT NULL,
+  PRIMARY KEY (`cat_id`,`lang_id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_event` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` int(11) NOT NULL DEFAULT '0',
@@ -782,8 +782,8 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `registration_external_fully_booked` tinyint(1) NOT NULL DEFAULT '0',
   `ticket_sales` tinyint(1) NOT NULL DEFAULT '0',
   `num_seating` text NOT NULL,
-  `series_status` tinyint(4) NOT NULL DEFAULT '0',
-  `independent_series` tinyint(2) NOT NULL DEFAULT '1',
+  `series_status` int(4) NOT NULL DEFAULT '0',
+  `independent_series` smallint NOT NULL DEFAULT '1',
   `series_type` int(11) NOT NULL DEFAULT '0',
   `series_pattern_count` int(11) NOT NULL DEFAULT '0',
   `series_pattern_weekday` varchar(7) NOT NULL,
@@ -818,8 +818,9 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `org_phone` varchar(20) NOT NULL DEFAULT '',
   `org_email` varchar(255) NOT NULL,
   `host_mediadir_id` int(11) NOT NULL,
+  INDEX IDX_90D256CF9DB6EA93 (`registration_form`),
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_event_field` (
   `event_id` int(11) NOT NULL DEFAULT '0',
   `lang_id` varchar(225) DEFAULT NULL,
@@ -881,7 +882,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `event_id` int(11) NOT NULL,
   `date` int(15) NOT NULL,
-  `submission_date` timestamp NULL DEFAULT '0000-00-00 00:00:00',
+  `submission_date` timestamp DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
@@ -891,8 +892,10 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `export` int(11) NOT NULL,
   `payment_method` int(11) NOT NULL,
   `paid` int(11) NOT NULL,
+  UNIQUE INDEX UNIQ_7F5FE63EA417747 (`invite_id`),
+  INDEX IDX_7F5FE6371F7E88B (`event_id`),
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_registration_form` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `status` int(11) NOT NULL,
@@ -919,8 +922,11 @@ CREATE TABLE `contrexx_module_calendar_registration_form_field_name` (
 CREATE TABLE `contrexx_module_calendar_registration_form_field_value` (
   `reg_id` int(7) NOT NULL,
   `field_id` int(7) NOT NULL,
-  `value` mediumtext NOT NULL
-) ENGINE=MyISAM;
+  `value` mediumtext NOT NULL,
+  INDEX IDX_F58DB1FA990B26CC(`reg_id`),
+  INDEX IDX_F58DB1FA443707B0(`field_id`),
+  PRIMARY KEY (`reg_id`,`field_id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_rel_event_host` (
   `host_id` int(11) NOT NULL,
   `event_id` int(11) NOT NULL
@@ -3831,3 +3837,9 @@ CREATE TABLE `contrexx_voting_system` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 ALTER TABLE contrexx_module_calendar_invite ADD CONSTRAINT FK_842085E171F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
+ALTER TABLE contrexx_module_calendar_registration_form_field_value ADD CONSTRAINT FK_F58DB1FA990B26CC FOREIGN KEY (reg_id) REFERENCES contrexx_module_calendar_registration (id);
+ALTER TABLE contrexx_module_calendar_registration_form_field_value ADD CONSTRAINT FK_F58DB1FA443707B0 FOREIGN KEY (field_id) REFERENCES contrexx_module_calendar_registration_form_field (id);
+ALTER TABLE contrexx_module_calendar_registration ADD CONSTRAINT FK_7F5FE63EA417747 FOREIGN KEY (invite_id) REFERENCES contrexx_module_calendar_invite (id);
+ALTER TABLE contrexx_module_calendar_registration ADD CONSTRAINT FK_7F5FE6371F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
+ALTER TABLE contrexx_module_calendar_category_name ADD CONSTRAINT FK_49D45FB1E6ADA943 FOREIGN KEY (cat_id) REFERENCES contrexx_module_calendar_category (id);
+ALTER TABLE contrexx_module_calendar_event ADD CONSTRAINT FK_90D256CF9DB6EA93 FOREIGN KEY (registration_form) REFERENCES contrexx_module_calendar_registration_form (id);
