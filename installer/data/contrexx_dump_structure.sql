@@ -287,23 +287,23 @@ CREATE TABLE `contrexx_core_data_source` (
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_locale_backend` (
   `id` int AUTO_INCREMENT NOT NULL,
-  `iso_1` char(2) NOT NULL,
+  `iso_1` varchar(2) NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `contrexx_core_locale_backend_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  UNIQUE INDEX UNIQ_B8F1327C4FC20EF (iso_1)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_locale_language` (
-  `iso_1` char(2) NOT NULL,
-  `iso_3` char(3) DEFAULT NULL,
+  `iso_1` varchar(2) NOT NULL,
+  `iso_3` varchar(3) DEFAULT NULL,
   `source` tinyint(1) NOT NULL,
   PRIMARY KEY (`iso_1`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_locale_locale` (
   `id` int AUTO_INCREMENT NOT NULL,
-  `iso_1` char(2) NOT NULL,
+  `iso_1` varchar(2) NOT NULL,
   `label` varchar(255) DEFAULT NULL,
-  `country` char(2) DEFAULT NULL,
+  `country` varchar(2) DEFAULT NULL,
   `fallback` int DEFAULT NULL,
-  `source_language` char(2) NOT NULL,
+  `source_language` varchar(2) NOT NULL,
   `order_no` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `iso_1` (`iso_1`, `country`),
@@ -3889,3 +3889,4 @@ ALTER TABLE contrexx_core_module_sync_change_host ADD CONSTRAINT FK_92C38FE0213C
 ALTER TABLE contrexx_core_module_sync_change_host ADD CONSTRAINT FK_92C38FE01FB8D185 FOREIGN KEY (host_id) REFERENCES contrexx_core_module_sync_host (id);
 ALTER TABLE contrexx_core_view_frontend ADD CONSTRAINT `contrexx_core_view_frontend_ibfk_locale` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE contrexx_core_view_frontend ADD CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE contrexx_core_locale_backend ADD CONSTRAINT FK_B8F1327C4FC20EF FOREIGN KEY (iso_1) REFERENCES contrexx_core_locale_language (iso_1) ON DELETE NO ACTION ON UPDATE NO ACTION;
