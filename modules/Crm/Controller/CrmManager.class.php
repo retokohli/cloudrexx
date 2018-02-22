@@ -601,7 +601,7 @@ class CrmManager extends CrmLibrary
 
         $membershipLink = '';
         foreach ($searchFields['filter_membership'] as $membershipFilter) {
-            $membershipLink = '&filter_membership[]=' . $membershipFilter;
+            $membershipLink .= '&filter_membership[]=' . $membershipFilter;
         }
 
         $searchLink .= "&customer_type={$searchFields['customer_type']}&term={$searchFields['term']}" . $membershipLink;
