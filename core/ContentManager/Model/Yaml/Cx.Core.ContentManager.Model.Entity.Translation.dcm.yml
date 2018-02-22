@@ -36,6 +36,8 @@ Cx\Core\ContentManager\Model\Entity\Translation:
         - locale
         - object_class
         - foreign_key
+    content_lookup_idx:
+      columns: [ content, object_class, field ]
   uniqueConstraints:
     lookup_unique_idx:
       columns:

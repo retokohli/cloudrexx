@@ -209,7 +209,7 @@ CREATE TABLE `contrexx_content_page` (
   `type` varchar(16) NOT NULL,
   `caching` tinyint(1) NOT NULL,
   `updatedAt` timestamp NULL DEFAULT NULL,
-  `updatedBy` char(40) NOT NULL,
+  `updatedBy` varchar(40) NOT NULL,
   `title` varchar(255) NOT NULL,
   `linkTarget` varchar(16) DEFAULT NULL,
   `contentTitle` varchar(255) NOT NULL,
@@ -217,13 +217,13 @@ CREATE TABLE `contrexx_content_page` (
   `content` longtext NOT NULL,
   `sourceMode` tinyint(1) NOT NULL DEFAULT '0',
   `customContent` varchar(64) DEFAULT NULL,
-  `useCustomContentForAllChannels` int(2) DEFAULT NULL,
+  `useCustomContentForAllChannels` smallint DEFAULT NULL,
   `applicationTemplate` varchar(100) DEFAULT NULL,
-  `useCustomApplicationTemplateForAllChannels` tinyint(2) DEFAULT NULL,
+  `useCustomApplicationTemplateForAllChannels` smallint DEFAULT NULL,
   `cssName` varchar(255) DEFAULT NULL,
   `cssNavName` varchar(255) DEFAULT NULL,
   `skin` int(11) DEFAULT NULL,
-  `useSkinForAllChannels` int(2) DEFAULT NULL,
+  `useSkinForAllChannels` smallint DEFAULT NULL,
   `metatitle` varchar(255) DEFAULT NULL,
   `metadesc` text NOT NULL,
   `metakeys` text NOT NULL,
@@ -595,14 +595,14 @@ CREATE TABLE `contrexx_log` (
 CREATE TABLE `contrexx_log_entry` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `action` varchar(8) NOT NULL,
-  `logged_at` timestamp NULL DEFAULT NULL,
+  `logged_at` timestamp NOT NULL,
   `version` int(11) NOT NULL,
   `object_id` varchar(32) DEFAULT NULL,
   `object_class` varchar(255) NOT NULL,
-  `data` longtext,
+  `data` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
   `username` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `log_class_unique_version_idx` (`version`,`object_id`,`object_class`),
+  UNIQUE KEY `log_version_lookup_idx` (`version`,`object_id`,`object_class`),
   KEY `log_class_lookup_idx` (`object_class`),
   KEY `log_date_lookup_idx` (`logged_at`),
   KEY `log_user_lookup_idx` (`username`)
@@ -3777,15 +3777,16 @@ CREATE TABLE `contrexx_syslog` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_translations` (
-  `id` int(10) UNSIGNED AUTO_INCREMENT,
+  `id` int AUTO_INCREMENT,
   `locale` varchar(8) NOT NULL,
   `object_class` varchar(255) NOT NULL,
   `field` varchar(32) NOT NULL,
-  `foreign_key` varchar(64) DEFAULT NULL,
+  `foreign_key` varchar(64) NOT NULL,
   `content` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `lookup_unique_idx` (`locale`,`object_class`,`foreign_key`,`field`),
-  KEY `content_lookup_idx` (`content`(255), `object_class`, `field`)
+  INDEX `content_lookup_idx` (`content`(255), `object_class`, `field`),
+  INDEX translations_lookup_idx (`locale`,`object_class`,`foreign_key`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
