@@ -425,20 +425,24 @@ CREATE TABLE `contrexx_core_module_sync` (
   CONSTRAINT `contrexx_core_module_sync_ibfk_data_access_id` FOREIGN KEY (`data_access_id`) REFERENCES `contrexx_core_module_data_access` (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_change` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync_id` int(11) NOT NULL,
-  `origin_sync_id` int(11) NOT NULL,
-  `event_type` char(6) NOT NULL,
-  `condition` char(7) NOT NULL,
-  `entity_index_data` text NOT NULL,
-  `origin_entity_index_data` text NOT NULL,
-  `contents` longtext NOT NULL,
-  PRIMARY KEY (`id`)
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sync_id` int NOT NULL,
+  `origin_sync_id` int NOT NULL,
+  `event_type` varchar(6) NOT NULL,
+  `condition` varchar(7) NOT NULL,
+  `entity_index_data` longtext NOT NULL COMMENT '(DC2Type:array)',
+  `origin_entity_index_data` longtext NOT NULL COMMENT '(DC2Type:array)',
+  `contents` longtext NOT NULL COMMENT '(DC2Type:array)',
+  PRIMARY KEY (`id`),
+  INDEX IDX_E98B92F1FA50C422 (`sync_id`),
+  INDEX IDX_E98B92F14F27D14F (`origin_sync_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_change_host` (
   `change_id` int(11) NOT NULL,
   `host_id` int(11) NOT NULL,
-  PRIMARY KEY (`change_id`,`host_id`)
+  PRIMARY KEY (`change_id`,`host_id`),
+  INDEX IDX_92C38FE0213C8BF4 (`change_id`),
+  INDEX IDX_92C38FE01FB8D185 (`host_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_host` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -464,8 +468,8 @@ CREATE TABLE `contrexx_core_module_sync_id_mapping` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `foreign_host` varchar(255) NOT NULL,
   `entity_type` varchar(255) NOT NULL,
-  `foreign_id` varchar(255) NOT NULL,
-  `local_id` varchar(255) NOT NULL,
+  `foreign_id` LONGTEXT NOT NULL COMMENT '(DC2Type:array)',
+  `local_id` LONGTEXT NOT NULL COMMENT '(DC2Type:array)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_relation` (
@@ -3881,3 +3885,7 @@ ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323B6E62
 ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_user_profile (user_id);
 ALTER TABLE contrexx_access_user_profile ADD CONSTRAINT FK_959DBF6CA76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);
 ALTER TABLE contrexx_access_user_profile ADD CONSTRAINT FK_959DBF6C2B36786B FOREIGN KEY (title) REFERENCES contrexx_access_user_title (id);
+ALTER TABLE contrexx_core_module_sync_change ADD CONSTRAINT FK_E98B92F1FA50C422 FOREIGN KEY (sync_id) REFERENCES contrexx_core_module_sync (id);
+ALTER TABLE contrexx_core_module_sync_change ADD CONSTRAINT FK_E98B92F14F27D14F FOREIGN KEY (origin_sync_id) REFERENCES contrexx_core_module_sync (id);
+ALTER TABLE contrexx_core_module_sync_change_host ADD CONSTRAINT FK_92C38FE0213C8BF4 FOREIGN KEY (change_id) REFERENCES contrexx_core_module_sync_change (id);
+ALTER TABLE contrexx_core_module_sync_change_host ADD CONSTRAINT FK_92C38FE01FB8D185 FOREIGN KEY (host_id) REFERENCES contrexx_core_module_sync_host (id);
