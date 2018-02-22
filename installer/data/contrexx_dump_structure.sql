@@ -263,9 +263,9 @@ CREATE TABLE `contrexx_core_country` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_core_country_country` (
-  `alpha2` char(2) NOT NULL,
-  `alpha3` char(3) NOT NULL DEFAULT '',
-  `ord` int(5) unsigned NOT NULL DEFAULT '0',
+  `alpha2` varchar(2) NOT NULL,
+  `alpha3` varchar(3) NOT NULL DEFAULT '',
+  `ord` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`alpha2`),
   UNIQUE KEY `alpha3` (`alpha3`)
 ) ENGINE=InnoDB ;
