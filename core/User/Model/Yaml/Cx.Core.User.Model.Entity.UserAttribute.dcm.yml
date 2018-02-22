@@ -5,36 +5,47 @@ Cx\Core\User\Model\Entity\UserAttribute:
     id:
       id: true
       type: integer
-      length: 10
       unsigned: true
       generator:
         strategy: AUTO
     type:
       type: enum
       values: ['text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history']
+      options:
+        default: "text"
     mandatory:
       type: enum
       values: ['0','1']
+      options:
+        default: "0"
     sortType:
       type: enum
       values: ['asc','desc','custom']
       column: sort_type
+      options:
+        default: "asc"
     orderId:
       type: integer
-      length: 10
       nullable: false
       unsigned: true
       column: order_id
+      options:
+        default: 0
     accessSpecial:
       type: enum
       values: ['','menu_select_higher','menu_select_lower']
       column: access_special
+      options:
+        default: ""
   oneToMany:
     parent:
       targetEntity: Cx\Core\User\Model\Entity\UserAttribute
       mappedBy: children
     userAttributeName:
       targetEntity: Cx\Core\User\Model\Entity\UserAttributeName
+      mappedBy: userAttribute
+    userAttributeValue:
+      targetEntity: Cx\Core\User\Model\Entity\UserAttributeValue
       mappedBy: userAttribute
   manyToOne:
     children:
@@ -49,23 +60,11 @@ Cx\Core\User\Model\Entity\UserAttribute:
       joinColumns:
         access_id:
           referencedColumnName: id
+          nullable: false
     readAccessId:
       targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
       inversedBy: contrexxAccessUserAttributeRead
       joinColumns:
         read_access_id:
           referencedColumnName: id
-  manyToMany:
-    userProfile:
-      targetEntity: Cx\Core\User\Model\Entity\UserProfile
-      inversedBy: userAttribute
-      joinTable:
-        name: access_user_attribute_value
-        joinColumns:
-          attribute_id:
-            referencedColumnName: id
-            nullable: false
-        inverseJoinColumns:
-          user_id:
-            referencedColumnName: user_id
-            nullable: false
+          nullable: false

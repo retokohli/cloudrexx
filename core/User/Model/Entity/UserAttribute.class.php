@@ -73,6 +73,11 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     private $userAttributeName;
 
     /**
+     * @var Cx\Core\User\Model\Entity\UserAttributeValue
+     */
+    protected $userAttributeValue;
+
+    /**
      * @var Cx\Core\User\Model\Entity\UserAttribute
      */
     private $children;
@@ -95,8 +100,8 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     public function __construct()
     {
         $this->parent = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->userAttributeName = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->userProfile = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->userAttributeName = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->userProfile = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -247,6 +252,26 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     public function getUserAttributeName()
     {
         return $this->userAttributeName;
+    }
+
+    /**
+     * Add userAttributeValue
+     *
+     * @param Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValue
+     */
+    public function addUserAttributeValue(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValue)
+    {
+        $this->userAttributeValue[] = $userAttributeValue;
+    }
+
+    /**
+     * Get userAttributeValue
+     *
+     * @return Doctrine\Common\Collections\Collection $userAttributeValue
+     */
+    public function getUserAttributeValue()
+    {
+        return $this->userAttributeValue;
     }
 
     /**

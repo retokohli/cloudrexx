@@ -21,9 +21,11 @@ CREATE TABLE `contrexx_access_id` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_rel_user_group` (
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `group_id` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`,`group_id`)
+  `user_id` int NOT NULL,
+  `group_id` int NOT NULL,
+  PRIMARY KEY (`user_id`,`group_id`),
+  INDEX IDX_401DFD43A76ED395 (`user_id`),
+  INDEX IDX_401DFD43FE54D947 (`group_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_settings` (
   `key` varchar(32) NOT NULL DEFAULT '',
@@ -32,49 +34,55 @@ CREATE TABLE `contrexx_access_settings` (
   UNIQUE KEY `key` (`key`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_attribute` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` int(10) unsigned DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `parent_id` int DEFAULT NULL,
   `type` enum('text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history') NOT NULL DEFAULT 'text',
   `mandatory` enum('0','1') NOT NULL DEFAULT '0',
   `sort_type` enum('asc','desc','custom') NOT NULL DEFAULT 'asc',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `order_id` int NOT NULL DEFAULT '0',
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL DEFAULT '',
-  `access_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `read_access_id` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `access_id` int NOT NULL,
+  `read_access_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX IDX_D97727BE727ACA70 (`parent_id`),
+  INDEX IDX_D97727BE4FEA67CF (`access_id`),
+  INDEX IDX_D97727BE7B600C1B (`read_access_id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_access_user_attribute_name` (
-  `attribute_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `attribute_id` int NOT NULL DEFAULT '0',
+  `lang_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`attribute_id`,`lang_id`)
+  PRIMARY KEY (`attribute_id`,`lang_id`),
+  INDEX IDX_90502F6CB6E62EFA (`attribute_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_attribute_value` (
-  `attribute_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `history_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `attribute_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `history_id` int NOT NULL DEFAULT '0',
   `value` text NOT NULL,
   PRIMARY KEY (`attribute_id`,`user_id`,`history_id`),
   FULLTEXT KEY `value` (`value`)
-) ENGINE=MyISAM;
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_core_attribute` (
   `id` varchar(25) NOT NULL,
   `mandatory` enum('0','1') NOT NULL DEFAULT '0',
   `sort_type` enum('asc','desc','custom') NOT NULL DEFAULT 'asc',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `order_id` int NOT NULL DEFAULT '0',
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL DEFAULT '',
-  `access_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `read_access_id` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `access_id` int NOT NULL,
+  `read_access_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX IDX_20812A3D4FEA67CF (`access_id`),
+  INDEX IDX_20812A3D7B600C1B (`read_access_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_groups` (
-  `group_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `group_id` int NOT NULL AUTO_INCREMENT,
   `group_name` varchar(100) NOT NULL DEFAULT '',
   `group_description` varchar(255) NOT NULL DEFAULT '',
-  `is_active` tinyint(4) NOT NULL DEFAULT '1',
+  `is_active` smallint NOT NULL DEFAULT '1',
   `type` enum('frontend','backend') NOT NULL DEFAULT 'frontend',
   `homepage` varchar(255) NOT NULL DEFAULT '',
-  `toolbar` int(6) unsigned NOT NULL DEFAULT '0',
+  `toolbar` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`group_id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
@@ -96,9 +104,9 @@ CREATE TABLE `contrexx_access_user_network` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_profile` (
-  `user_id` int(5) unsigned NOT NULL DEFAULT '0',
+  `user_id` int NOT NULL,
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL DEFAULT 'gender_undefined',
-  `title` int(10) unsigned NOT NULL DEFAULT '0',
+  `title` int NOT NULL,
   `designation` varchar(255) NOT NULL DEFAULT '',
   `firstname` varchar(255) NOT NULL DEFAULT '',
   `lastname` varchar(255) NOT NULL DEFAULT '',
@@ -106,7 +114,7 @@ CREATE TABLE `contrexx_access_user_profile` (
   `address` varchar(255) NOT NULL DEFAULT '',
   `city` varchar(50) NOT NULL DEFAULT '',
   `zip` varchar(10) NOT NULL DEFAULT '',
-  `country` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `country` int NOT NULL DEFAULT '0',
   `phone_office` varchar(20) NOT NULL DEFAULT '',
   `phone_private` varchar(20) NOT NULL DEFAULT '',
   `phone_mobile` varchar(20) NOT NULL DEFAULT '',
@@ -118,12 +126,13 @@ CREATE TABLE `contrexx_access_user_profile` (
   `signature` text,
   `picture` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`user_id`),
-  KEY `profile` (`firstname`(100),`lastname`(100),`company`(50))
+  KEY `profile` (`firstname`(100),`lastname`(100),`company`(50)),
+  INDEX IDX_959DBF6C2B36786B (`title`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_title` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL DEFAULT '',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `order_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `title` (`title`)
 ) ENGINE=InnoDB ;
@@ -132,28 +141,28 @@ CREATE TABLE `contrexx_access_user_validity` (
   PRIMARY KEY (`validity`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_users` (
-  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
-  `is_admin` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `id` int NOT NULL AUTO_INCREMENT,
+  `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `username` varchar(255) DEFAULT NULL,
   `password` varchar(32) DEFAULT NULL,
   `auth_token` varchar(32) NOT NULL,
-  `auth_token_timeout` int(14) unsigned NOT NULL DEFAULT '0',
-  `regdate` int(14) unsigned NOT NULL DEFAULT '0',
-  `expiration` int(14) unsigned NOT NULL DEFAULT '0',
-  `validity` int(10) unsigned NOT NULL DEFAULT '0',
-  `last_auth` int(14) unsigned NOT NULL DEFAULT '0',
-  `last_auth_status` int(1) NOT NULL DEFAULT '1',
-  `last_activity` int(14) unsigned NOT NULL DEFAULT '0',
+  `auth_token_timeout` int NOT NULL DEFAULT '0',
+  `regdate` int NOT NULL DEFAULT '0',
+  `expiration` int NOT NULL DEFAULT '0',
+  `validity` int NOT NULL DEFAULT '0',
+  `last_auth` int NOT NULL DEFAULT '0',
+  `last_auth_status` smallint NOT NULL DEFAULT '1',
+  `last_activity` int NOT NULL DEFAULT '0',
   `email` varchar(255) DEFAULT NULL,
   `email_access` enum('everyone','members_only','nobody') NOT NULL DEFAULT 'nobody',
-  `frontend_lang_id` int(2) unsigned NOT NULL DEFAULT '0',
-  `backend_lang_id` int(2) unsigned NOT NULL DEFAULT '0',
+  `frontend_lang_id` int NOT NULL DEFAULT '0',
+  `backend_lang_id` int NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '0',
-  `verified` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `primary_group` int(6) unsigned NOT NULL DEFAULT '0',
+  `verified` tinyint(1) NOT NULL DEFAULT '1',
+  `primary_group` int NOT NULL DEFAULT '0',
   `profile_access` enum('everyone','members_only','nobody') NOT NULL DEFAULT 'members_only',
   `restore_key` varchar(32) NOT NULL DEFAULT '',
-  `restore_key_time` int(14) unsigned NOT NULL DEFAULT '0',
+  `restore_key_time` int NOT NULL DEFAULT '0',
   `u2u_active` enum('0','1') NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `username` (`username`)
@@ -3860,3 +3869,15 @@ ALTER TABLE contrexx_access_group_dynamic_ids ADD CONSTRAINT FK_A07C12734FEA67CF
 ALTER TABLE contrexx_access_group_dynamic_ids ADD CONSTRAINT FK_A07C1273FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
 ALTER TABLE contrexx_access_group_static_ids ADD CONSTRAINT FK_DC26D8B04FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
 ALTER TABLE contrexx_access_group_static_ids ADD CONSTRAINT FK_DC26D8B0FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
+ALTER TABLE contrexx_access_user_attribute_name ADD CONSTRAINT FK_90502F6CB6E62EFA FOREIGN KEY (attribute_id) REFERENCES contrexx_access_user_attribute (id);
+ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);
+ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
+ALTER TABLE contrexx_access_user_attribute ADD CONSTRAINT FK_D97727BE727ACA70 FOREIGN KEY (parent_id) REFERENCES contrexx_access_user_attribute (id);
+ALTER TABLE contrexx_access_user_attribute ADD CONSTRAINT FK_D97727BE4FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
+ALTER TABLE contrexx_access_user_attribute ADD CONSTRAINT FK_D97727BE7B600C1B FOREIGN KEY (read_access_id) REFERENCES contrexx_access_id (id);
+ALTER TABLE contrexx_access_user_core_attribute ADD CONSTRAINT FK_20812A3D4FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
+ALTER TABLE contrexx_access_user_core_attribute ADD CONSTRAINT FK_20812A3D7B600C1B FOREIGN KEY (read_access_id) REFERENCES contrexx_access_id (id);
+ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323B6E62EFA FOREIGN KEY (attribute_id) REFERENCES contrexx_access_user_attribute (id);
+ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_user_profile (user_id);
+ALTER TABLE contrexx_access_user_profile ADD CONSTRAINT FK_959DBF6CA76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);
+ALTER TABLE contrexx_access_user_profile ADD CONSTRAINT FK_959DBF6C2B36786B FOREIGN KEY (title) REFERENCES contrexx_access_user_title (id);

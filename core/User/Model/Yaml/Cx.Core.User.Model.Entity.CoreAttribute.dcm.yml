@@ -9,20 +9,28 @@ Cx\Core\User\Model\Entity\CoreAttribute:
     mandatory:
       type: enum
       values: ['0','1']
+      options:
+        default: "0"
     sortType:
       type: enum
       values: ['asc','desc','custom']
       column: sort_type
+      options:
+        default: "asc"
     orderId:
       type: integer
       length: 10
       nullable: false
       unsigned: true
       column: order_id
+      options:
+        default: 0
     accessSpecial:
       type: enum
       values: ['','menu_select_higher','menu_select_lower']
       column: access_special
+      options:
+        default: ""
   manyToOne:
     accessId:
       targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
@@ -30,9 +38,11 @@ Cx\Core\User\Model\Entity\CoreAttribute:
       joinColumns:
         access_id:
           referencedColumnName: id
+          nullable: false
     readAccessId:
       targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
       inversedBy: coreAttributeRead
       joinColumns:
         read_access_id:
           referencedColumnName: id
+          nullable: false
