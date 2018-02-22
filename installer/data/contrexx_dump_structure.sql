@@ -822,8 +822,8 @@ CREATE TABLE `contrexx_module_calendar_event` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_event_field` (
-  `event_id` int(11) NOT NULL DEFAULT '0',
-  `lang_id` varchar(225) DEFAULT NULL,
+  `event_id` int(11) NOT NULL,
+  `lang_id` int(11) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `teaser` text DEFAULT NULL,
   `description` mediumtext,
@@ -834,15 +834,16 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `org_name` varchar(255) NOT NULL,
   `org_city` varchar(255) NOT NULL,
   `org_country` varchar(255) NOT NULL,
+  PRIMARY KEY (`event_id`,`lang_id`),
   KEY `lang_field` (`title`),
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
   FULLTEXT KEY `eventIndex` (`title`,`teaser`,`description`)
-) ENGINE=MyISAM;
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_events_categories` (
-  `event_id` int(11) UNSIGNED NOT NULL,
-  `category_id` int(11) UNSIGNED NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
   PRIMARY KEY (`event_id`, `category_id`),
-  KEY `category_id` (`category_id`)
+  INDEX IDX_3974DFDB71F7E88B (`event_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_invite` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -911,14 +912,16 @@ CREATE TABLE `contrexx_module_calendar_registration_form_field` (
   `order` int(3) NOT NULL,
   `affiliation` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_registration_form_field_name` (
   `field_id` int(7) NOT NULL,
   `form_id` int(11) NOT NULL,
   `lang_id` int(1) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `default` mediumtext NOT NULL
-) ENGINE=MyISAM;
+  `default` mediumtext NOT NULL,
+  PRIMARY KEY (`field_id`,`form_id`,`lang_id`),
+  INDEX IDX_1C1E8341443707B0 (`field_id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_registration_form_field_value` (
   `reg_id` int(7) NOT NULL,
   `field_id` int(7) NOT NULL,
@@ -3843,3 +3846,8 @@ ALTER TABLE contrexx_module_calendar_registration ADD CONSTRAINT FK_7F5FE63EA417
 ALTER TABLE contrexx_module_calendar_registration ADD CONSTRAINT FK_7F5FE6371F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
 ALTER TABLE contrexx_module_calendar_category_name ADD CONSTRAINT FK_49D45FB1E6ADA943 FOREIGN KEY (cat_id) REFERENCES contrexx_module_calendar_category (id);
 ALTER TABLE contrexx_module_calendar_event ADD CONSTRAINT FK_90D256CF9DB6EA93 FOREIGN KEY (registration_form) REFERENCES contrexx_module_calendar_registration_form (id);
+ALTER TABLE contrexx_module_calendar_events_categories ADD CONSTRAINT FK_3974DFDB71F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
+ALTER TABLE contrexx_module_calendar_events_categories ADD CONSTRAINT FK_3974DFDB12469DE2 FOREIGN KEY (category_id) REFERENCES contrexx_module_calendar_category (id);
+ALTER TABLE contrexx_module_calendar_registration_form_field_name ADD CONSTRAINT FK_1C1E8341443707B0 FOREIGN KEY (field_id) REFERENCES contrexx_module_calendar_registration_form_field (id);
+ALTER TABLE contrexx_module_calendar_registration_form_field ADD CONSTRAINT FK_AAEED23C5288FD4F FOREIGN KEY (form) REFERENCES contrexx_module_calendar_registration_form (id);
+ALTER TABLE contrexx_module_calendar_event_field ADD CONSTRAINT FK_F76EF62C71F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
