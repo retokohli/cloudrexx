@@ -157,7 +157,7 @@ class ReflectionComponent extends \Cx\Core\Core\Model\Entity\ReflectionComponent
         $filesystem->copy_file($cacheComponentFolderPath . '/meta.yml', ASCMS_APP_CACHE_FOLDER . '/meta.yml');
         $filesystem->copy_file($websitePath . '/core/Core/Data/README.txt', ASCMS_APP_CACHE_FOLDER . '/README.txt');
 
-        echo "Exporting component ... ";
+        echo 'Exporting component to "' . $path . '" ... ';
         // Compress
         $file = new \PclZip($path);
         $file->create(ASCMS_APP_CACHE_FOLDER, PCLZIP_OPT_REMOVE_PATH, ASCMS_APP_CACHE_FOLDER);
@@ -261,14 +261,9 @@ class ReflectionComponent extends \Cx\Core\Core\Model\Entity\ReflectionComponent
             $query = 'SELECT * FROM `'. DBPREFIX .'core_text` WHERE `section` = "'. $this->componentName .'"';
             $this->writeTableDataToFileFromQuery($table, $query, $objFile);
 
-            $objFile->append("-- Core Settings".PHP_EOL);
+            $objFile->append("-- Core Setting".PHP_EOL);
             $table = DBPREFIX .'core_setting';
             $query = 'SELECT * FROM `'. DBPREFIX .'core_setting` WHERE `section` = "'. $this->componentName .'"';
-            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
-
-            $objFile->append("-- Settings".PHP_EOL);
-            $table = DBPREFIX .'settings';
-            $query = 'SELECT * FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
             $this->writeTableDataToFileFromQuery($table, $query, $objFile);
 
             foreach ($arrayTables as $table) {
@@ -331,10 +326,10 @@ class ReflectionComponent extends \Cx\Core\Core\Model\Entity\ReflectionComponent
     {
         $fields = array();
 
-        $objCoulmns = $this->db->query('SHOW COLUMNS FROM `' . $tableName . '`');
-        while (!$objCoulmns->EOF) {
-            $fields[] = $objCoulmns->fields['Field'];
-            $objCoulmns->MoveNext();
+        $objColumns = $this->db->query('SHOW COLUMNS FROM `' . $tableName . '`');
+        while (!$objColumns->EOF) {
+            $fields[] = $objColumns->fields['Field'];
+            $objColumns->MoveNext();
         }
 
         return $fields;
@@ -1040,11 +1035,6 @@ class ReflectionComponent extends \Cx\Core\Core\Model\Entity\ReflectionComponent
 
         $table = DBPREFIX .'core_setting';
         $query = 'SELECT * FROM `'. DBPREFIX .'core_setting` WHERE `section` = "'. $this->componentName .'"';
-        $replacements = array('section' => $newComponent->getName());
-        $this->copyDataFromQuery($table, $replacements, $query);
-
-        $table = DBPREFIX .'settings';
-        $query = 'SELECT * FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
         $replacements = array('section' => $newComponent->getName());
         $this->copyDataFromQuery($table, $replacements, $query);
 

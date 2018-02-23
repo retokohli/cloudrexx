@@ -78,7 +78,7 @@ class ExportCommand extends Command {
         $zipPath = $arguments[4];
 
         if (file_exists($zipPath)) {
-            if (!$this->interface->yesNo('File is already exists. Do you want to overwrite it?')) {
+            if (!$this->interface->yesNo('File already exists. Do you want to overwrite it?')) {
                 return;
             }
         }
