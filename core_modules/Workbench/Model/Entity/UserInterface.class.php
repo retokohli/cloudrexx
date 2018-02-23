@@ -215,4 +215,12 @@ abstract class UserInterface {
      * @param mixed $displayindex Index to display of an entry
      */
     public abstract function tree(array $tree, $displayindex = 0);
+
+    /**
+     * Opens a diff view for the user to diff $content1 and $content2
+     * @param string $content1 Content to diff with $content2
+     * @param string $content2 Content to diff with $content1
+     * @param string $tool (optional) Hint which tool to use
+     */
+    public abstract function diff($content1, $content2, $tool = '');
 }
