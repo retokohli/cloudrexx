@@ -120,21 +120,25 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
         if (current($classParts) != 'Cx') {
             return $result[$className];
         }
-        foreach ($result[$className]['id'] as $fieldName=>&$fieldMapping) {
-            $this->handleCustomEnumTypeClass(
-                $classParts[2],
-                $classParts[5],
-                $fieldName,
-                $fieldMapping
-            );
+        if (isset($result[$className]['id'])) {
+            foreach ($result[$className]['id'] as $fieldName=>&$fieldMapping) {
+                $this->handleCustomEnumTypeClass(
+                    $classParts[2],
+                    $classParts[5],
+                    $fieldName,
+                    $fieldMapping
+                );
+            }
         }
-        foreach ($result[$className]['fields'] as $fieldName=>&$fieldMapping) {
-            $this->handleCustomEnumTypeClass(
-                $classParts[2],
-                $classParts[5],
-                $fieldName,
-                $fieldMapping
-            );
+        if (isset($result[$className]['fields'])) {
+            foreach ($result[$className]['fields'] as $fieldName=>&$fieldMapping) {
+                $this->handleCustomEnumTypeClass(
+                    $classParts[2],
+                    $classParts[5],
+                    $fieldName,
+                    $fieldMapping
+                );
+            }
         }
         return $result[$className];
     }

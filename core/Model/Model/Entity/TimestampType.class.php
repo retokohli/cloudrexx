@@ -75,8 +75,9 @@ class TimestampType extends \Doctrine\DBAL\Types\Type {
      */
     public function convertToDatabaseValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        // If the value of the field is NULL the method convertToDatabaseValue() is not called.
-        // http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html
+        if ($value === null) {
+            return null;
+        }
         return $value->format('Y-m-d H:i:s');
     }
 
