@@ -72,7 +72,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function getCommandsForCommandMode() {
-        return array('help', 'status', 'diff', 'version', 'info', 'install', 'uninstall');
+        return array(
+            'help',
+            'status',
+            'diff',
+            'version',
+            'install',
+            'uninstall',
+            'activate',
+            'deactivate',
+        );
     }
 
     public function getCommandDescription($command, $short = false) {
@@ -95,7 +104,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 return '(todo)';
                 break;
-                break;
             case 'version':
                 if ($short) {
                     return 'Displays info about the version of Cloudrexx';
@@ -108,7 +116,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 return 'Installs a component from a zip file. Usage:
 
-cx(.bat) install {path to zip package}';
+./cx install <path_to_zip_package>';
                 break;
             case 'uninstall':
                 if ($short) {
@@ -116,7 +124,23 @@ cx(.bat) install {path to zip package}';
                 }
                 return 'Uninstalls the specified component. Usage:
 
-cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
+./cx uninstall <component_type> <component_name>';
+                break;
+            case 'activate':
+                if ($short) {
+                    return 'Activates a component';
+                }
+                return 'Activates a component which is present in file system. Usage:
+
+./cx activate <component_type> <component_name>';
+                break;
+            case 'deactivate':
+                if ($short) {
+                    return 'Deactivates a component';
+                }
+                return 'Deactivates a component. Usage:
+
+./cx deactivate <component_type> <component_name>';
                 break;
         }
         return '';
@@ -229,6 +253,16 @@ Available commands:
                 break;
             case 'uninstall':
                 echo "TODO!!\r\n";
+                break;
+            case 'activate':
+                $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1], $arguments[0]);
+                $component->activate();
+                echo 'Done';
+                break;
+            case 'deactivate':
+                $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1], $arguments[0]);
+                $component->deactivate();
+                echo 'Done';
                 break;
         }
         echo '
