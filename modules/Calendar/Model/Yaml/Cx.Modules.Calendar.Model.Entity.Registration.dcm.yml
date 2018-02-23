@@ -13,11 +13,10 @@ Cx\Modules\Calendar\Model\Entity\Registration:
     date:
       type: integer
     submissionDate:
-      type: datetime
-      nullable: true
+      type: timestamp
+      nullable: false
       column: submission_date
       options:
-        version: true
         default: "0000-00-00 00:00:00"
     hostName:
       type: string

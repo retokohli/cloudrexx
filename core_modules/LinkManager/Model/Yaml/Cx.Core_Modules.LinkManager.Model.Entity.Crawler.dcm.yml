@@ -11,14 +11,12 @@ Cx\Core_Modules\LinkManager\Model\Entity\Crawler:
     lang:
       type: smallint
     startTime:
-      type: datetime
+      type: timestamp
       options:
-        version: true
         default: "0000-00-00 00:00:00"
     endTime:
-      type: datetime
+      type: timestamp
       options:
-        version: true
         default: "0000-00-00 00:00:00"
     totalLinks:
       type: integer

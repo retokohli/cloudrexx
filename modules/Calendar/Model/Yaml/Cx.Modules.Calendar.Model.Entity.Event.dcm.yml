@@ -15,18 +15,16 @@ Cx\Modules\Calendar\Model\Entity\Event:
       options:
         default: 0
     startDate:
-      type: datetime
+      type: timestamp
       nullable: true
       column: startdate
       options:
-        version: true
         default: '0000-00-00 00:00:00'
     endDate:
-      type: datetime
+      type: timestamp
       nullable: true
       column: enddate
       options:
-        version: true
         default: '0000-00-00 00:00:00'
     useCustomDateDisplay:
       type: boolean
@@ -189,10 +187,9 @@ Cx\Modules\Calendar\Model\Entity\Event:
       options:
         default: 0
     seriesPatternEndDate:
-      type: datetime
+      type: timestamp
       column: series_pattern_end_date
       options:
-        version: true
         default: '0000-00-00 00:00:00'
     seriesPatternBegin:
       type: integer

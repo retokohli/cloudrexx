@@ -39,9 +39,10 @@ Cx\Core_Modules\LinkManager\Model\Entity\History:
       type: string
       length: 255
     detectedTime:
-      type: datetime
+      type: timestamp
+      nullable: false
       options:
-        version: true
+        default: "CURRENT_TIMESTAMP"
     flagStatus:
       type: boolean
     linkStatus:

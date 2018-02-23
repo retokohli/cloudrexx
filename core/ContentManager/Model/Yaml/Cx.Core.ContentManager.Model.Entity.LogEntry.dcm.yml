@@ -60,10 +60,11 @@ Cx\Core\ContentManager\Model\Entity\LogEntry:
       nullable: true
       unique: false
     loggedAt:
-      type: datetime
+      type: timestamp
+      nullable: false
       column: logged_at
       options:
-        version: true
+        default: "CURRENT_TIMESTAMP"
     version:
       type: integer
     action:
