@@ -26,41 +26,34 @@
  */
 
 /**
- * Specific FrontendController for this Component. Use this to easily create a frontent view
+ * An example for Cloudrexx UnitTests
  *
- * @copyright   Cloudrexx AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @version     1.0.0
  * @package     cloudrexx
  * @subpackage  modules_skeleton
  */
 
-namespace Cx\Modules\Skeleton\Controller;
+namespace Cx\Core\ContentManager\Testing\UnitTest;
 
 /**
- * Specific FrontendController for this Component. Use this to easily create a frontent view
+ * An example for Cloudrexx UnitTests
  *
- * @copyright   Cloudrexx AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @version     1.0.0
  * @package     cloudrexx
  * @subpackage  modules_skeleton
  */
-class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController {
+class SampleTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
+{
 
     /**
-     * Use this to parse your frontend page
-     *
-     * You will get a template based on the content of the resolved page
-     * You can access Cx class using $this->cx
-     * To show messages, use \Message class
-     * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
+     * Tests if "foo" equals "bar". Only successful if "foo" equals "bar".
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
-        // this class inherits from Controller, therefore you can get access to
-        // Cx like this:
-        $this->cx;
-
-        // Controller routes all calls to undeclared methods to your
-        // ComponentController. So you can do things like
-        $this->getName();
+    public function testFooBar() {
+        // This will never be successful. Make it do something useful!
+        $this->assertEquals('foo', 'bar');
     }
 }
