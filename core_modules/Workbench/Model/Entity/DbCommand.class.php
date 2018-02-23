@@ -389,7 +389,7 @@ class DbCommand extends Command {
     }
     
     protected function tryYamlGeneration($componentType, $componentName) {
-        $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($componentName, $componentType);
+        $component = new ReflectionComponent($componentName, $componentType);
         if (!$component->exists()) {
             return;
         }
