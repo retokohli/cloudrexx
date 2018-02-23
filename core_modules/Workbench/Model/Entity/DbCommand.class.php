@@ -58,11 +58,13 @@ class DbCommand extends Command {
     update({component type} ({component name}))|
     cleanup|
     doctrine {doctrine syntax}
+    diff {table} {column}
 ]
 
 `update`    Updates the model of a component, a component type or all components (set component type and name to generate YAML files)
 `cleanup`   Removes cached files
-`doctrine`  Gives access to doctrine command line tools';
+`doctrine`  Gives access to doctrine command line tools
+`diff`      Shows the difference between doctrine\'s schema and the database for a specific column';
     
     /**
      * Command help text
@@ -209,6 +211,29 @@ class DbCommand extends Command {
             case 'doctrine':
                 $this->executeDoctrine($arguments);
                 break;
+            case 'diff':
+                $table = $this->cx->getDb()->getDb()->getName() . '.' .  DBPREFIX . $arguments[2];
+                $column = $arguments[3];
+                $em = $this->cx->getDb()->getEntityManager();
+                $sm = $em->getConnection()->getSchemaManager();
+                $fromColumn = $this->getColumnFromSchema(
+                    $sm->createSchema(),
+                    $table,
+                    $column
+                );
+                $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
+                $metadatas = $em->getMetadataFactory()->getAllMetadata();
+                $toColumn = $this->getColumnFromSchema(
+                    $schemaTool->getSchemaFromMetadata($metadatas),
+                    $table,
+                    $column
+                );
+                if (trim($fromColumn) == 'NULL' || trim($toColumn) == 'NULL') {
+                    $this->interface->show('Column not found! (Specify table without DBPREFIX and fields as "foobar" instead of "fooBar" or "foo_bar")');
+                    break;
+                }
+                $this->interface->diff($fromColumn, $toColumn);
+                break;
             case 'help':
             default:
                 echo 'Command `' . $this->getName() . "`\r\n" .
@@ -218,6 +243,27 @@ class DbCommand extends Command {
                 break;
         }
         echo "Done\r\n";
+    }
+
+    /**
+     * Returns the definition of a specific column from a schema
+     * @param \Doctrine\DBAL\Schema\Schema $schema Schema to read from
+     * @param string $table Name of the table to fetch (with prefixed database name and DBPREFIX)
+     * @param string $column Name of the column to fetch (lowercase without any chars like '_')
+     * @return string Doctrine column definition (array dump)
+     */
+    protected function getColumnFromSchema($schema, $table, $column) {
+        $tables = $schema->getTables();
+        if (!isset($tables[$table])) {
+            return 'NULL';
+        }
+        $columns = $tables[$table]->getColumns();
+        if (!isset($columns[$column])) {
+            return 'NULL';
+        }
+        ob_start();
+        var_dump($columns[$column]);
+        return ob_get_clean();
     }
     
     public function executeDoctrine(array $arguments) {
