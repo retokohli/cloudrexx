@@ -57,7 +57,7 @@ class ReflectionComponentException extends \Cx\Core\Core\Model\Entity\Reflection
  * @subpackage  core_core
  * @version     3.1.0
  */
-class ReflectionComponent {
+class ReflectionComponent extends \Cx\Core\Core\Model\Entity\ReflectionComponent {
 
     /**
      * Create zip install package for this component
@@ -80,10 +80,10 @@ class ReflectionComponent {
         // clean up tmp dir
         $filesystem->delete_folder(ASCMS_APP_CACHE_FOLDER, true);
         echo "Copying files ... ";
-        $filesystem->make_folder(ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType), true);
+        $filesystem->make_folder(ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($this->componentType), true);
 
-        $cacheComponentFolderPath = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
-        $cacheComponentFolderWebPath = ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
+        $cacheComponentFolderPath = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
+        $cacheComponentFolderWebPath = ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES'. \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
         $filesystem->copyDir(
             $this->getDirectory(false),
             preg_replace('#' . $websitePath . '#', '', $this->getDirectory(false)),
@@ -173,7 +173,7 @@ class ReflectionComponent {
     {
         $componentTables = $this->getComponentTables();
 
-        $dataFolder = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data';
+        $dataFolder = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data';
         \Cx\Lib\FileSystem\FileSystem::make_folder($dataFolder);
 
         // check whether its a doctrine component
@@ -562,7 +562,7 @@ class ReflectionComponent {
      */
     public function create() {
         if ($this->exists()) {
-            throw new SystemComponentException('Component is already Exists');
+            throw new \Cx\Core\Core\Model\Entity\SystemComponentException('Component is already Exists');
         }
 
         // copy skeleton component
@@ -598,7 +598,7 @@ class ReflectionComponent {
         $files = new \RegexIterator($iterator, '/^.+\.php$/i', \RegexIterator::GET_MATCH);
 
         // recursive foreach .php file
-        $componentNs = SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
+        $componentNs = \Cx\Core\Core\Model\Entity\SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
         $matches = array();
         foreach($files as $file) {
             $file = current($file);
@@ -666,7 +666,7 @@ class ReflectionComponent {
      */
     public function fixNamespaces($oldBaseNs, $baseDir) {
         // calculate new proper base NS
-        $baseNs = SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
+        $baseNs = \Cx\Core\Core\Model\Entity\SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
         //$baseDir = $this->getDirectory();
 
         $directoryIterator = new \RecursiveDirectoryIterator($baseDir);
@@ -856,7 +856,7 @@ class ReflectionComponent {
         $newComponent = new self($newName, $newType);
 
         if ($newComponent->exists()) {
-            throw new SystemComponentException('The target component is already Exists. Please provide different component name or use uninstall command to remove old component..');
+            throw new \Cx\Core\Core\Model\Entity\SystemComponentException('The target component is already Exists. Please provide different component name or use uninstall command to remove old component..');
         }
 
         // move or copy pages before removing DB entries
@@ -982,7 +982,7 @@ class ReflectionComponent {
         $replacements = array(
             'id'      => $newModuleId,
             'name'    => $newComponent->getName(),
-            'is_core' => $newComponent->getType() == SystemComponent::TYPE_CORE_MODULE ? 1 : 0
+            'is_core' => $newComponent->getType() == \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE ? 1 : 0
         );
         $this->copyDataFromQuery($table, $replacements, $query);
 
