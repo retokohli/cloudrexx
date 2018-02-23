@@ -409,6 +409,7 @@ namespace Cx\Core\Model {
                 'set',
                 'string'
             );
+            \Cx\Core\Model\Controller\YamlDriver::registerKnownEnumTypes($conn);
 
             $this->em = $em;
             return $this->em;

@@ -208,9 +208,7 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
             $customEnumClass->parse('value');
         }
 
-        $customClassFileName = $cx->getCodeBaseCorePath() .
-            '/Model/Data/Enum/' . $componentName . '/' . $entityName .
-            '/' . ucfirst($fieldName) . '.class.php';
+        $customClassFileName = getEnumFileName($componentName, $entityName, $fieldName);
         \Cx\Lib\FileSystem\FileSystem::make_folder(
             dirname($customClassFileName), true
         );
@@ -295,21 +293,127 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
     }
 
     /**
+     * Returns the custom ENUM file name
+     * @param string $componentName The component name
+     * @param string $entityName The entity name
+     * @param string $fieldName The field name
+     * @return string The custom ENUM file name
+     */
+    protected static function getEnumFileName($componentName, $entityName, $fieldName) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        return $cx->getCodeBaseCorePath() .
+            '/Model/Data/Enum/' . $componentName . '/' . $entityName .
+            '/' . ucfirst($fieldName) . '.class.php';
+    }
+
+    /**
+     * Returns an array with component, entity and field name
+     * @param string $filename Filename to analyze
+     * @return array Info array or empty array if filename is not of an ENUM type
+     */
+    protected static function getInfoFromFileName($filename) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (
+            strpos(
+                $filename,
+                $cx->getCodeBaseCorePath() . '/Model/Data/Enum/'
+            ) !== 0
+        ) {
+            echo 1;
+            return array();
+        }
+        $filename = substr(
+            $filename,
+            strlen($cx->getCodeBaseCorePath() . '/Model/Data/Enum/') - 1
+        );
+        $parts = explode('/', $filename);
+        if (count($parts) != 4) {
+            echo 2;
+            return array();
+        }
+        if (substr($parts[3], -10) != '.class.php') {
+            echo 3;
+            return array();
+        }
+        return array(
+            'ComponentName' => $parts[1],
+            'EntityName' => $parts[2],
+            'FieldName' => lcfirst(substr($parts[3], 0, -10)),
+        );
+    }
+
+    /**
      * Registers a custom ENUM type for Doctrine
      * @param string $customTypeName Doctrine name for the type
      * @param string $customClassName Custom ENUM type class name
      */
-    protected static function registerCustomEnumType($customTypeName, $customClassName) {
+    protected static function registerCustomEnumType($customTypeName, $customClassName, $connection = null) {
+        if (in_array($customClassName, static::$enumClasses)) {
+            return;
+        }
         \Doctrine\DBAL\Types\Type::addType(
             $customTypeName,
             substr($customClassName, 1)
         );
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $connection = $cx->getDb()->getEntityManager()->getConnection();
+        if (!$connection) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $connection = $cx->getDb()->getEntityManager()->getConnection();
+        }
         $connection->getDatabasePlatform()->registerDoctrineTypeMapping(
             $customTypeName,
             $customTypeName
         );
         static::$enumClasses[] = $customClassName;
+    }
+
+    /**
+     * Registers all known ENUM types to Doctrine
+     * If this method is called before $cx->getDb() has been called
+     * you must specify $connection
+     * @param \Doctrine\DBAL\Connection $connection (optional) Doctrine connection
+     */
+    public static function registerKnownEnumTypes($connection = null) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        // TODO: We should cache $enums, but this method is called before
+        // getComponent() can be used (endless recursion)!
+        $enums = null;//$cx->getComponent('Cache')->fetch('ClxEnumTypes');
+        if (!is_array($enums) || !count($enums)) {
+            $directory = new \RecursiveDirectoryIterator(
+                $cx->getCodeBaseCorePath() . '/Model/Data/Enum/'
+            );
+            $iterator = new \RecursiveIteratorIterator($directory);
+            $regex = new \RegexIterator(
+                $iterator,
+                '/^.+\.class\.php$/i',
+                \RecursiveRegexIterator::GET_MATCH
+            );
+            $enums = array();
+            foreach ($regex as $file) {
+                $enumInfo = static::getInfoFromFileName(current($file));
+                if (!count($enumInfo)) {
+                    continue;
+                }
+                $enums[] = array(
+                    'TypeName' => static::getEnumTypeName(
+                        $enumInfo['ComponentName'],
+                        $enumInfo['EntityName'],
+                        $enumInfo['FieldName']
+                    ),
+                    'ClassName' => static::getEnumClassName(
+                        $enumInfo['ComponentName'],
+                        $enumInfo['EntityName'],
+                        $enumInfo['FieldName']
+                    ),
+                );
+            }
+            //$cx->getComponent('Cache')->save('ClxEnumTypes', $enums);
+        }
+        foreach ($enums as $enumInfo) {
+            static::registerCustomEnumType(
+                $enumInfo['TypeName'],
+                $enumInfo['ClassName'],
+                $connection
+            );
+        }
     }
 }
