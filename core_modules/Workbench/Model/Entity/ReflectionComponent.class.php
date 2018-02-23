@@ -566,7 +566,10 @@ class ReflectionComponent {
         }
 
         // copy skeleton component
-        \Cx\Lib\FileSystem\FileSystem::copy_folder(ASCMS_CORE_PATH.'/Core/Data/Skeleton', $this->getDirectory(false));
+        \Cx\Lib\FileSystem\FileSystem::copy_folder(
+            ASCMS_CORE_MODULE_PATH.'/Workbench/Data/Skeleton',
+            $this->getDirectory(false)
+        );
 
         $this->fixNamespaces('Cx\Modules\Skeleton', $this->getDirectory());
         $this->fixLanguagePlaceholders('MODULE_SKELETON', $this->getDirectory());

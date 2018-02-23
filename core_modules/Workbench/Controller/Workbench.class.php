@@ -54,7 +54,6 @@ class Workbench {
      */
     public function getFileList() {
         return array(
-            '/core/Core/Data/Skeleton',
             '/core_modules/Workbench',
             '/lib/behat',
             '/workbench.config',
