@@ -124,7 +124,13 @@ class DbCommand extends Command {
                 if (!empty($componentType) && !empty($componentName)) {
                     $this->tryYamlGeneration($componentType, $componentName);
                 }
-                
+
+                // Clear and disable metadata cache
+                $em = $this->cx->getDb()->getEntityManager();
+                $config = $em->getConfiguration();
+                $config->getMetadataCacheImpl()->deleteAll();
+                $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
+
                 // doctrine orm:generate-entities --filter="{component filter}" entities
                 $doctrineArgs = array('', 'doctrine', 'orm:generate-entities');
                 if (!empty($componentFilter)) {
