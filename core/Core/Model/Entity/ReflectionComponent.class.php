@@ -954,6 +954,15 @@ class ReflectionComponent {
         foreach ($pages as $page) {
             $em->remove($page);
         }
+        // remove component
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component = $componentRepo->findOneBy(
+            array(
+                'name' => $this->getName(),
+                'type' => $this->getType(),
+            )
+        );
+        $em->remove($component->getSystemComponent());
         $em->flush();
     }
 
