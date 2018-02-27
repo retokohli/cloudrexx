@@ -87,7 +87,6 @@ class ViewGenerator {
         $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
-        $this->object = $object;
         try {
             \JS::registerCSS($this->cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
@@ -739,23 +738,12 @@ class ViewGenerator {
         // get the class name including the whole namspace of the class
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClassWithNS = $this->object->getDataType();
-        } else if ($this->object) {
+        } else {
             $entityClassWithNS = get_class($this->object);
         }
         $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($entityClassWithNS != 'array') {
-            try {
-                $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
-            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-                // If $this->object is a string here, we could not resolve
-                // the string to an object -> mapping error
-                if (is_string($this->object)) {
-                    $entityClassWithNS = $this->object;
-                }
-                throw new ViewGeneratorException(
-                    'Cannot generate view for entity "' . $entityClassWithNS . '" due to mapping error. Does the database table exist?'
-                );
-            }
+            $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
             $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
             if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
                 $this->setProperCancelUrl('add');
