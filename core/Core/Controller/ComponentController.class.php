@@ -78,7 +78,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'diff',
             'version',
             'install',
-            'uninstall',
             'activate',
             'deactivate',
         );
@@ -117,14 +116,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return 'Installs a component from a zip file. Usage:
 
 ./cx install <path_to_zip_package>';
-                break;
-            case 'uninstall':
-                if ($short) {
-                    return 'Uninstalls a component';
-                }
-                return 'Uninstalls the specified component. Usage:
-
-./cx uninstall <component_type> <component_name>';
                 break;
             case 'activate':
                 if ($short) {
@@ -250,9 +241,6 @@ Available commands:
                 } catch (\BadMethodCallException $e) {
                     echo 'Error: ' . $e->getMessage();
                 }
-                break;
-            case 'uninstall':
-                echo "TODO!!\r\n";
                 break;
             case 'activate':
                 $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1], $arguments[0]);
