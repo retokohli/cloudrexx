@@ -148,8 +148,8 @@ class DbCommand extends Command {
                 // if not: ask if moving should be forced (CAUTION!)
                 if (!$modelMovedCompletely) {
                     echo "\r\n".'Not all entity files could be moved to their correct location. This is probably because there\'s an existing file there. ';
-                    echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
-                    if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
+                    echo 'The files can be overwritten, but it is recommended, that you diff the changes manually. ';
+                    if ($this->interface->yesNo('Would you like to overwrite the files?')) {
                         $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
                     }
                 }
@@ -171,12 +171,12 @@ class DbCommand extends Command {
                 // if not: ask if moving should be forced (CAUTION!)
                 if (!$modelMovedCompletely) {
                     echo "\r\n".'Not all model files could be moved to their correct location. This is probably because there\'s an existing file there. ';
-                    echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
-                    if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
+                    echo 'The files can be overwritten, but it is recommended, that you diff the changes manually. ';
+                    if ($this->interface->yesNo('Would you like to overwrite the files?')) {
                         $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
                     }
                     if (!$modelMovedCompletely) {
-                        if ($this->interface->yesNo('There are remaining files in tmp/workbench. Should I remove them?')) {
+                        if ($this->interface->yesNo('There are remaining files in tmp/workbench. Should they be removed?')) {
                             $this->cleanup();
                         }
                     }
@@ -192,7 +192,7 @@ class DbCommand extends Command {
                 foreach ($queries as $query) {
                     echo $query . "\r\n";
                 }
-                echo 'The above queries were generated for updating the database. Should I execute them on the database? ';
+                echo 'The above queries were generated for updating the database. Should these be executed on the database? ';
                 if ($this->interface->yesNo('WARNING: Please check the SQL statements carefully and create a database backup before saying yes!')) {
                     $connection = $this->cx->getDb()->getEntityManager()->getConnection();
                     $i = 0;
@@ -210,7 +210,7 @@ class DbCommand extends Command {
                 // doctrine orm:validate-schema
                 $this->validateSchema();
                 if ($this->validateSchema() != 0) {
-                    echo 'Your schema is not valid. Please correct this in before you proceed';
+                    echo 'Your schema is not valid. Please correct this before you proceed';
                     return;
                 }
                 break;
