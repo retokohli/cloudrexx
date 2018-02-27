@@ -153,19 +153,19 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
             $fieldName
         );
 
-        // If class is already registered in this request, we abort here
-        if (in_array($customEnumClassName, static::$enumClasses)) {
-            return;
-        }
-
         // Register custom ENUM type class
         $customTypeName = static::getEnumTypeName(
             $componentName,
             $entityName,
             $fieldName
         );
-        static::registerCustomEnumType($customTypeName, $customEnumClassName);
         $fieldMapping['type'] = $customTypeName;
+
+        // If class is already registered in this request, we abort here
+        if (in_array($customEnumClassName, static::$enumClasses)) {
+            return;
+        }
+        static::registerCustomEnumType($customTypeName, $customEnumClassName);
 
         // If class is already present, we abort here
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
