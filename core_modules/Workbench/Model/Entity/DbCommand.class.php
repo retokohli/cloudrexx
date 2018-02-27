@@ -426,6 +426,11 @@ class DbCommand extends Command {
             $mwbFile = $mwbFiles[$retVal - 1];
             $this->generateYamlFromMySqlWorkbenchFile($mwbFile);
             unset($mwbFiles[$retVal - 1]);
+            // Refresh metadata
+            $yamlDir = $this->cx->getClassLoader()->getFilePath($component->getDirectory(false).'/Model/Yaml');
+            if (file_exists($yamlDir)) {
+                $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
+            }
         }
     }
 
