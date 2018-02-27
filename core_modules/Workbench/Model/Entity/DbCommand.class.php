@@ -188,7 +188,7 @@ class DbCommand extends Command {
                 // print queries and ask if those should be executed (CAUTION!)
                 $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->cx->getDb()->getEntityManager());
                 $metadatas = $this->cx->getDb()->getEntityManager()->getMetadataFactory()->getAllMetadata();
-                $queries = $schemaTool->getUpdateSchemaSql($metadatas);
+                $queries = $schemaTool->getUpdateSchemaSql($metadatas, true);
                 foreach ($queries as $query) {
                     echo $query . "\r\n";
                 }
