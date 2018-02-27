@@ -180,7 +180,7 @@ class ViewGenerator {
                 $this->removeEntry($entityWithNS);
             }
         } catch (\Exception $e) {
-            \Message::add($e->getMessage());
+            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
             return;
         }
     }
@@ -743,7 +743,11 @@ class ViewGenerator {
         }
         $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($entityClassWithNS != 'array') {
-            $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
+            try {
+                $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
+            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+                return;
+            }
             $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
             if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
                 $this->setProperCancelUrl('add');
