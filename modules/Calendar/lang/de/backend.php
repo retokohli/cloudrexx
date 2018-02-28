@@ -498,6 +498,7 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT'] = "ungefähre Anzahl der
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_AGAIN_INVITATION'] = "Einladung nochmals versenden";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO'] = "Versenden an";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL'] = "Alle";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_REGISTERED'] = "alle angemeldeten Gäste";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN'] = "alle bereits angemeldeten Gäste aus der obigen Auswahl";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_INACTIVE'] = "alle noch inaktiven Gäste aus der obigen Auswahl";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_TOOLTIP'] = "Inaktive Gäste: Gäste die sich weder bereits angemeldet, abgemeldet noch auf die Warteliste gesetzt haben.";

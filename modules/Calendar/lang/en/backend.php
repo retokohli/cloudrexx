@@ -498,6 +498,7 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT'] = "approximate number of
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_AGAIN_INVITATION'] = "Send invitation again";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO'] = "Send to";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL'] = "all";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_REGISTERED'] = "all regitered users";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN'] = "all signedin users";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_INACTIVE'] = "all inactive users";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_TOOLTIP'] = "Signedin guests: Guests which have accepted the invitation.<br />Inactive guests: Guests which have not accepted or declined the invitation and are not listed on the waiting list.";

@@ -2541,6 +2541,91 @@ class CalendarEvent extends CalendarLibrary
     }
 
     /**
+     * Return the registered mail addresses as MailRecipients
+     *
+     * @return array        the mail recipients
+     */
+    public function getRegistrationMailRecipients()
+    {
+        global $objDatabase;
+
+        $queryRegistration = '
+            SELECT DISTINCT `reg_form_val`.`reg_id`, `reg_form_field`.`type`, 
+              `reg_form_val`.`value`, `invite`.`invitee_type`, `invite`.`invitee_id`
+              FROM `' . DBPREFIX . 'module_calendar_event` AS `event`
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration` AS `reg`
+                ON `event`.`id` = `reg`.`event_id`
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_invite` AS `invite`
+                ON `reg`.`invite_id` = `invite`.`id`
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form` AS `reg_form`
+                ON `event`.`registration_form` = `reg_form`.`id`
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form_field` as `reg_form_field` 
+                ON `reg_form_field`.`form` = `reg_form`.`id`
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form_field_value` as `reg_form_val`
+                ON `reg_form_field`.`id` = `reg_form_val`.`field_id` AND `reg_form_val`.`reg_id` = `reg`.`id`
+                  
+                WHERE `event`.`id` = ' . $this->id . ' 
+                AND `reg`.`type` = 1';
+        $objRegistration = $objDatabase->Execute($queryRegistration);
+
+        $recipientsData = array();
+        if ($objRegistration) {
+            while (!$objRegistration->EOF) {
+
+                $regId = $objRegistration->fields['reg_id'];
+                $type = $objRegistration->fields['type'];
+
+                if (!isset($recipientsData[$regId])) {
+                    $recipientsData[$regId] = array();
+                }
+
+                $recipientsData[$regId][$type] =
+                    $objRegistration->fields['value'];
+                $recipientsData[$regId]['type'] =
+                    $objRegistration->fields['invitee_type'];
+                $recipientsData[$regId]['invitee_id'] =
+                    $objRegistration->fields['invitee_id'];
+
+                $objRegistration->MoveNext();
+            }
+        }
+
+        $mailRecipients = array();
+        foreach ($recipientsData as $recipientData) {
+            $lang = null;
+
+            // if the recipient is a crm or access user, get its language
+            if ($recipientData['type'] == MailRecipient::RECIPIENT_TYPE_CRM_CONTACT) {
+                $contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                $contact->load($recipientData['invitee_id']);
+                $lang = $contact->contact_language;
+            } elseif ($recipientData['type'] == MailRecipient::RECIPIENT_TYPE_ACCESS_USER) {
+                $lang =
+                    \FWUser::getFWUserObject()->objUser->getUser(
+                        $recipientData['invitee_id']
+                    )->getFrontendLanguage();
+            }
+
+            $recipient = new MailRecipient();
+            $recipient->setId(isset($recipientData['invitee_id']) ? $recipientData['invitee_id'] : 0);
+            $recipient->setLang($lang);
+            $recipient->setAddress(isset($recipientData['mail']) ? $recipientData['mail'] : '');
+            $recipient->setType(isset($recipientData['type']) ? $recipientData['type'] : '');
+            $recipient->setFirstname(isset($recipientData['firstname']) ? $recipientData['firstname'] : '');
+            $recipient->setLastname(isset($recipientData['lastname']) ? $recipientData['lastname'] : '');
+            $recipient->setUsername(isset($recipientData['mail']) ? $recipientData['mail'] : '');
+            $mailRecipients[] = $recipient;
+        }
+
+        return $mailRecipients;
+    }
+
+    /**
      * Reset the registration count values.
      */
     public function resetRegistrationCount()

@@ -87,9 +87,14 @@ class CalendarMailManager extends CalendarLibrary {
     const MAIL_INVITATION_TO_ALL = 'all';
 
     /**
+     * Send the invitation mail only to registered in contacts
+     */
+    const MAIL_INVITATION_TO_REGISTERED = 'registered';
+
+    /**
      * Send the invitation mail only to signed in contacts
      */
-    const MAIL_INVITATION_TO_SIGNEDIN = 'signedIn';
+    const MAIL_INVITATION_TO_SIGNEDIN_FILTERED = 'signedIn';
 
     /**
      * Send the invitation mail only to inactive contacts
@@ -634,6 +639,12 @@ class CalendarMailManager extends CalendarLibrary {
 
         switch ($actionId) {
             case static::MAIL_INVITATION:
+
+                if ($send_invitation_to == self::MAIL_INVITATION_TO_REGISTERED) {
+                    $recipients = $objEvent->getRegistrationMailRecipients();
+                    break;
+                }
+
                 // fetch manually invited users
                 $invitedMails = explode(",", $objEvent->invitedMails);
                 foreach ($invitedMails as $mail) {
@@ -829,7 +840,7 @@ class CalendarMailManager extends CalendarLibrary {
                         }
                     }
                     break;
-                case self::MAIL_INVITATION_TO_SIGNEDIN:
+                case self::MAIL_INVITATION_TO_SIGNEDIN_FILTERED:
                     // only get signed in
                     $query .= ' AND `r`.`type` = 1';
                     $signedinRecipients = array();
@@ -844,6 +855,8 @@ class CalendarMailManager extends CalendarLibrary {
                         $recipients,
                         $signedinRecipients
                     );
+                    break;
+                case self::MAIL_INVITATION_TO_REGISTERED:
                     break;
                 default:
                     die($send_invitation_to . ' is not a valid invitation type');
