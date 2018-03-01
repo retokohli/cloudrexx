@@ -77,16 +77,9 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
     /**
      * {@inheritdoc}
      */
-    public function getElement($className, $raw = false)
+    public function getElement($className)
     {
-        $result = $this->loadMappingFile($this->locator->findMappingFile($className));
-        if (!$raw && $result[$className]['type'] == 'YamlEntity') {
-            $result[$className]['type'] = 'entity';
-        }
-        if ($raw) {
-            return $result[$className];
-        }
-
+        $result = parent::getElement($className);
         return $this->handleCustomEnumTypeClasses($className, $result);
     }
 
@@ -118,10 +111,10 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
     protected function handleCustomEnumTypeClasses($className, $result) {
         $classParts = explode('\\', $className);
         if (current($classParts) != 'Cx') {
-            return $result[$className];
+            return $result;
         }
-        if (isset($result[$className]['id'])) {
-            foreach ($result[$className]['id'] as $fieldName=>&$fieldMapping) {
+        if (isset($result['id'])) {
+            foreach ($result['id'] as $fieldName=>&$fieldMapping) {
                 $this->handleCustomEnumTypeClass(
                     $classParts[2],
                     $classParts[5],
@@ -130,8 +123,8 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
                 );
             }
         }
-        if (isset($result[$className]['fields'])) {
-            foreach ($result[$className]['fields'] as $fieldName=>&$fieldMapping) {
+        if (isset($result['fields'])) {
+            foreach ($result['fields'] as $fieldName=>&$fieldMapping) {
                 $this->handleCustomEnumTypeClass(
                     $classParts[2],
                     $classParts[5],
@@ -140,7 +133,7 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
                 );
             }
         }
-        return $result[$className];
+        return $result;
     }
 
     protected function handleCustomEnumTypeClass($componentName, $entityName, $fieldName, &$fieldMapping) {

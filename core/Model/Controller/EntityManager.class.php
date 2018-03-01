@@ -56,7 +56,7 @@ class EntityManager extends \Doctrine\ORM\EntityManager {
     /**
      * {@inheritdoc}
      */
-    public function createQuery($dql = "")
+    public function createQuery($dql = '')
     {
         $query = new \Doctrine\ORM\Query($this);
 
@@ -69,28 +69,6 @@ class EntityManager extends \Doctrine\ORM\EntityManager {
             $query->setDql($dql);
         }
         return $query;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function create($conn, \Doctrine\ORM\Configuration $config, \Doctrine\Common\EventManager $eventManager = null)
-    {
-        if (!$config->getMetadataDriverImpl()) {
-            throw \Doctrine\ORM\ORMException::missingMappingDriverImpl();
-        }
-
-        if (is_array($conn)) {
-            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));
-        } else if ($conn instanceof Connection) {
-            if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                 throw \Doctrine\ORM\ORMException::mismatchedEventManager();
-            }
-        } else {
-            throw new \InvalidArgumentException("Invalid argument: " . $conn);
-        }
-
-        return new EntityManager($conn, $config, $conn->getEventManager());
     }
 
     /**
