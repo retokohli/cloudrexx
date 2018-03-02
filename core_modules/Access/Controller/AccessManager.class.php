@@ -3348,7 +3348,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_MAIL_SENDER_ADDRESS'   => htmlentities($objUserMail->getSenderMail(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_SENDER_NAME'      => htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_BODY_TEXT'        => htmlentities($objUserMail->getBodyText(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', $objUserMail->getBodyHtml(), 'fullpage') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', contrexx_raw2xhtml($objUserMail->getBodyHtml()), 'fullpage') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
             'ACCESS_MAIL_HTML_BODY_STAUTS' => $objUserMail->getFormat() != 'text' ? 'block' : 'none',
             'ACCESS_MAIL_TEXT_BODY_STAUTS' => $objUserMail->getFormat() == 'text' ? 'block' : 'none',
             'ACCESS_MAIL_HTML_BODY_CLASS'  => $objUserMail->getFormat() != 'text' ? 'active' : '',
