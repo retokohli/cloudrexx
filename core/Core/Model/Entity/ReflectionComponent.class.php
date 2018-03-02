@@ -821,7 +821,7 @@ class ReflectionComponent {
                     $this->componentName,
                     '',
                     false,
-                    ''
+                    '{APPLICATION_DATA}'
                 );
                 $em->persist($page);
             }
