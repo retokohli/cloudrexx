@@ -45,6 +45,11 @@
 class BackendTable extends HTML_Table {
 
     /**
+     * @var string Fully qualified template file name
+     */
+    protected $templateFile = '';
+
+    /**
      * Whether or not the table has a master table header.
      * A master table header is used as a title and is being
      * parsed as TH tags.
@@ -59,6 +64,9 @@ class BackendTable extends HTML_Table {
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
 
+        $this->templateFile = empty($options['template']) || !file_exists($options['template'])
+                  ? ASCMS_CORE_PATH.'/Html/View/Template/Generic/Table.html'
+                  : $options['template'];
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $this->hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -551,8 +559,8 @@ class BackendTable extends HTML_Table {
         if ($this->_comment) {
             $strHtml .= $tabs . "<!-- $this->_comment -->" . $lnEnd;
         }
-        $template = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic/');
-        $template->loadTemplateFile('Table.html');
+        $template = new \Cx\Core\Html\Sigma(dirname($this->templateFile));
+        $template->loadTemplateFile(basename($this->templateFile));
         if ($this->getRowCount() > 0 && $tBodyMaxColCount > 0) {
             $template->setVariable('TABLE_ATTRIBUTES', $this->_getAttrString($this->_attributes));
             if (!empty($this->_caption)) {
