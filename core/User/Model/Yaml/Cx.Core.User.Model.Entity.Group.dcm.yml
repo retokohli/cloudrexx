@@ -50,9 +50,9 @@ Cx\Core\User\Model\Entity\Group:
     user:
       targetEntity: Cx\Core\User\Model\Entity\User
       mappedBy: group
-    accessId2:
-      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
-      mappedBy: group2
-    accessId:
-      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
-      mappedBy: group
+#    accessId2:
+#      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
+#      mappedBy: group2
+#    accessId:
+#      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
+#      mappedBy: group

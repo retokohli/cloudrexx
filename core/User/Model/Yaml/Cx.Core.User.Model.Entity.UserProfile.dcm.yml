@@ -134,7 +134,7 @@ Cx\Core\User\Model\Entity\UserProfile:
   oneToMany:
     userAttributeValue:
       targetEntity: Cx\Core\User\Model\Entity\UserAttributeValue
-      mappedBy: userProfile
+      mappedBy: user
   manyToOne:
     userTitle:
       targetEntity: Cx\Core\User\Model\Entity\ProfileTitle
