@@ -570,20 +570,17 @@ class DbCommand extends Command {
                 );
             }
 
-            if (!$isFileAlreadyExists || !$backupFile) {
-                goto moveFileToComponent;
+            if ($isFileAlreadyExists && $backupFile) {
+                $destDir = $tempWorkbenchPath . '/yamlBackup/' .
+                    $components[$fileParts[2]]->getName() . '/Model/Yaml';
+                if (!$this->backupYamlFile($filePath, $destDir, $fileName)) {
+                    $this->interface->show(
+                        'Unable to backup the YAML files.'
+                    );
+                    return;
+                }
             }
 
-            $destDir = $tempWorkbenchPath . '/yamlBackup/' .
-                $components[$fileParts[2]]->getName() . '/Model/Yaml';
-            if (!$this->backupYamlFile($filePath, $destDir, $fileName)) {
-                $this->interface->show(
-                    'Unable to backup the YAML files.'
-                );
-                return;
-            }
-
-            moveFileToComponent:
             try {
                 $objFile = new \Cx\Lib\FileSystem\File($ymlFilePath . '/' . $fileName);
                 $objFile->move($filePath . '/' . $fileName, true);
