@@ -542,6 +542,7 @@ class DbCommand extends Command {
                     array('name' => $fileParts[2])
                 );
                 if (!$components[$fileParts[2]]) {
+                    $this->interface->show('Component "' . $fileParts[2] . '" not found! Did you name your tables correctly?');
                     $errorFiles[] = $fileName;
                     continue;
                 }
