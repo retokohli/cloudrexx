@@ -103,12 +103,21 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         parent::getFrontendLanguages();
     }
 
+    /**
+     * Reset fetch entry list
+     *
+     * Use this method to reset the fetch entry list before calling
+     * {@see MediaDirectoryEntry::getEntries} again, unless any
+     * previously loaded entries shall kept loaded.
+     */
+    public function resetEntries() {
+        $this->arrEntries = array();
+        $this->recordCount = 0;
+    }
+
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
-
-        $this->arrEntries = array();
-        $this->recordCount = 0;
 
         $this->intEntryId = intval($intEntryId);
         $this->intLevelId = intval($intLevelId);
