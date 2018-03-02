@@ -1755,7 +1755,20 @@ JSCODE;
 
 
     protected function getCategories($intEntryId = null) {
-        global $objDatabase;
+        switch ($this->arrSettings['settingsCategoryOrder']) {
+            case 0:
+                // custom order
+                $sortOrder = 'cat_image.`order` ASC';
+                break;
+
+            case 1:
+            case 2:
+            default:
+                // alphabetical order
+                $sortOrder = 'cat_name.`category_name` ASC';
+                break;
+        }
+
         $query = "SELECT
             cat_rel.`category_id` AS `elm_id`,
             cat_image.`picture` AS `elm_picture`,
@@ -1775,15 +1788,27 @@ JSCODE;
           AND
             cat_name.`lang_id` = ?
           ORDER BY
-            cat_name.`category_name` ASC
-          ";
+            ". $sortOrder;
 
-        return $objDatabase->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
     }
 
 
     protected function getLevels($intEntryId = null) {
-        global $objDatabase;
+        switch ($this->arrSettings['settingsLevelOrder']) {
+            case 0:
+                // custom order
+                $sortOrder = 'level_image.`order` ASC';
+                break;
+
+            case 1:
+            case 2:
+            default:
+                // alphabetical order
+                $sortOrder = 'level_name.`level_name` ASC';
+                break;
+        }
+
         $query = "SELECT
             level_rel.`level_id` AS `elm_id`,
             level_image.`picture` AS `elm_picture`,
@@ -1803,10 +1828,9 @@ JSCODE;
           AND
             level_name.`lang_id` = ?
           ORDER BY
-            level_name.`level_name` ASC
-          ";
+            ". $sortOrder;
 
-        return $objDatabase->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
     }
 
 
