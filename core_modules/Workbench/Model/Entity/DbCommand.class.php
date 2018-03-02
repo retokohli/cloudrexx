@@ -189,22 +189,26 @@ class DbCommand extends Command {
                 $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->cx->getDb()->getEntityManager());
                 $metadatas = $this->cx->getDb()->getEntityManager()->getMetadataFactory()->getAllMetadata();
                 $queries = $schemaTool->getUpdateSchemaSql($metadatas, true);
-                foreach ($queries as $query) {
-                    echo $query . "\r\n";
-                }
-                echo 'The above queries were generated for updating the database. Should these be executed on the database? ';
-                if ($this->interface->yesNo('WARNING: Please check the SQL statements carefully and create a database backup before saying yes!')) {
-                    $connection = $this->cx->getDb()->getEntityManager()->getConnection();
-                    $i = 0;
+                if (count($queries)) {
                     foreach ($queries as $query) {
-                        $query = trim($query);
-                        if (empty($query)) {
-                            continue;
-                        }
-                        $connection->executeQuery($query);
-                        $i++;
+                        echo $query . "\r\n";
                     }
-                    echo 'Wrote ' . $i . ' queries to DB'."\r\n";
+                    echo 'The above queries were generated for updating the database. Should these be executed on the database? ';
+                    if ($this->interface->yesNo('WARNING: Please check the SQL statements carefully and create a database backup before saying yes!')) {
+                        $connection = $this->cx->getDb()->getEntityManager()->getConnection();
+                        $i = 0;
+                        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
+                        foreach ($queries as $query) {
+                            $query = trim($query);
+                            if (empty($query)) {
+                                continue;
+                            }
+                            $connection->executeQuery($query);
+                            $i++;
+                        }
+                        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
+                        echo 'Wrote ' . $i . ' queries to DB'."\r\n";
+                    }
                 }
                 
                 // doctrine orm:validate-schema
