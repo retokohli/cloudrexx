@@ -860,7 +860,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 '[[ACTIVATION_LINK]]',
                 '[[HOST_LINK]]',
                 '[[SENDER]]',
-                '[[LINK]]'
+                '[[LINK]]',
+                '[[YEAR]]',
             );
             $replaceTextTerms = array(
                 $_CONFIG['domainUrl'],
@@ -868,7 +869,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 $objUserMail->getSenderName(),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             $replaceHtmlTerms = array(
                 $_CONFIG['domainUrl'],
@@ -876,7 +878,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 contrexx_raw2xhtml($objUserMail->getSenderName()),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             if ($mail2load == 'reg_confirm') {
                 $imagePath = 'http://'.$_CONFIG['domainUrl']
