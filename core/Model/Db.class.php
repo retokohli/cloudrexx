@@ -354,24 +354,21 @@ namespace Cx\Core\Model {
 
             // Note that LANG_ID and other language constants/variables
             // have not been set yet!
-            // $langCode = \FWLanguage::getLanguageCodeById(LANG_ID);
-            // \DBG::log("LANG_ID ".LANG_ID.", language code: $langCode");
-            // -> LOG: LANG_ID LANG_ID, language code:
             $translatableDriverImpl = $config->newDefaultAnnotationDriver(
                 $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Translatable/Entity'
             );
-            // RK: Note:
-            // In this Doctrine version, it is present as:
             $this->translationListener = new \Gedmo\Translatable\TranslatableListener();
-            // current translation locale should be set from session
-            // or hook later into the listener,
-            // but *before the entity manager is flushed*
-// TODO: Set default locale from the default language?
-            //$this->translationListener->setDefaultLocale('de_ch');
-            // Set the current locale (e.g. from the active language)
-            // wherever that's required.
-            //$translationListener->setTranslatableLocale('de_ch');
             $this->translationListener->setAnnotationReader($translatableDriverImpl);
+
+            // Current language for backend mode is set in
+            // \Cx\Core\LanguageManager\Controller\ComponentController::postResolve()
+            // Current language for frontend mode is set in
+            // \Cx\Core\Routing\Resolver::resolve()
+            // Current language for command mode is set in
+            // \Cx\Core\Core\Controller\Cx::loadContrexx()
+
+            // We don't want automatic fallbacks as we want to control them.
+            $this->translationListener->setTranslationFallback(false);
             $evm->addEventSubscriber($this->translationListener);
 
             // RK: Note:
