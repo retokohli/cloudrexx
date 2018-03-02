@@ -911,12 +911,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'en',
             false
         );
-        $oldPlaceholders = $init->getComponentSpecificLanguageDataByCode(
-            $this->languageFile->getComponentName(),
-            $this->languageFile->getMode() == 'frontend',
-            $this->languageFile->getDestLang()->getIso1(),
-            false
-        );
+        $oldPlaceholders = array();
+        try {
+            $oldPlaceholders = $init->getComponentSpecificLanguageDataByCode(
+                $this->languageFile->getComponentName(),
+                $this->languageFile->getMode() == 'frontend',
+                $this->languageFile->getDestLang()->getIso1(),
+                false
+            );
+        } catch (\InitCMSException $e) {}
         foreach ($basePlaceholders as $name=>$value) {
             if (!isset($oldPlaceholders[$name])) {
                 $oldPlaceholders[$name] = $value;
