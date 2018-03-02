@@ -659,6 +659,102 @@ class MediaDirectory extends MediaDirectoryLibrary
             ));
         }
 
+        // get level & category ids
+        if (isset($_GET['cmd'])) {
+            $arrIds = explode("-", $_GET['cmd']);
+        }
+
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+
+        if ($this->arrSettings['settingsShowLevels'] == 1) {
+            if (isset($requestParams['lid'])) {
+                $intLevelId = intval($requestParams['lid']);
+            } elseif (intval($arrIds[0]) != 0) {
+                $intLevelId = intval($arrIds[0]);
+                $this->cx->getRequest()->getUrl()->setParam('lid', $intLevelId);
+            } else {
+                $intLevelId = 0;
+            }
+
+            if (!empty($arrIds[1])) {
+                $intCategoryCmd = $arrIds[1];
+            } else {
+                $intCategoryCmd = 0;
+            }
+        } else {
+            $intLevelId = 0;
+
+            if(intval($arrIds[0]) != 0) {
+                $intCategoryCmd = $arrIds[0];
+            } else {
+                $intCategoryCmd = 0;
+            }
+        }
+
+        if (isset($requestParams['cid'])) {
+            $intCategoryId = intval($requestParams['cid']);
+        } elseif ($intCategoryCmd != 0) {
+            $intCategoryId = intval($intCategoryCmd);
+            $this->cx->getRequest()->getUrl()->setParam('cid', $intCategoryId);
+        } else {
+            $intCategoryId = 0;
+        }
+
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
+            if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels']) {
+                $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
+                $showLevelDetails = true;
+            }
+
+            if($intCategoryId != 0) {
+                $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
+                $showCategoryDetails = true;
+            }
+        }
+
+        // parse the level details
+        if ($showLevelDetails && $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
+            $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
+        }
+
+        $metaTitle = array();
+        if ($objLevel) {
+            // only set page's title to level's name
+            // if not in legacy mode
+            if (!$this->arrSettings['legacyBehavior']) {
+                $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
+                $metaTitle[] = $objLevel->arrLevels[$intLevelId]['levelName'][0];
+            }
+            if (empty($objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0])) {
+            	$this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            } else {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0];
+            }
+            $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
+        }
+
+        // parse the category details
+        if ($showCategoryDetails && $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
+            $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
+        }
+
+        if ($objCategory) {
+            // only set page's title to category's name
+            // if not in legacy mode
+            if (!$this->arrSettings['legacyBehavior']) {
+                $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
+                $metaTitle[] = $objCategory->arrCategories[$intCategoryId]['catName'][0];
+            }
+            if (empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0])) {
+            	$this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            } else {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0];
+            }
+            $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
+        }
+        if (empty($this->arrNavtree) && !empty($metaTitle)) {
+            $this->metaTitle .= ' - ' . implode(' - ', $metaTitle);
+        }
     }
 
 
