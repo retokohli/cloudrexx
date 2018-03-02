@@ -1270,11 +1270,7 @@ JS_CODE;
         global $_ARRAYLANG, $_LANGID;
 
         $description = $objDownload->getDescription($_LANGID);
-        if (strlen($description) > 100) {
-            $shortDescription = substr($description, 0, 97).'...';
-        } else {
-            $shortDescription = $description;
-        }
+        $shortDescription = $objDownload->getTrimmedDescription($_LANGID);
 
         $imageSrc = $objDownload->getImage();
         if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$imageSrc)) {
@@ -1437,11 +1433,7 @@ JS_CODE;
             $row = 1;
             while (!$objRelatedDownload->EOF) {
                 $description = $objRelatedDownload->getDescription($_LANGID);
-                if (strlen($description) > 100) {
-                    $shortDescription = substr($description, 0, 97).'...';
-                } else {
-                    $shortDescription = $description;
-                }
+                $shortDescription = $objRelatedDownload->getTrimmedDescription($_LANGID);
 
                 $imageSrc = $objRelatedDownload->getImage();
                 if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {

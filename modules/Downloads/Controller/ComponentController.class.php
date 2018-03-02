@@ -155,12 +155,57 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
         $eventListener = new \Cx\Modules\Downloads\Model\Event\DownloadsEventListener($this->cx);
+        $evm->addEventListener('SearchFindContent',$eventListener);
         $evm->addEventListener('mediasource.load', $eventListener);
 
         // locale event listener
         $localeLocaleEventListener = new \Cx\Modules\Downloads\Model\Event\LocaleLocaleEventListener($this->cx);
         $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
         $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+    }
+
+    /**
+     * Find Downloads by keyword $searchTerm an returns them in a
+     * two-dimensional array compatible to be used by Search component.
+     *
+     * @param   string  $searchTerm The keyword to search by
+     * @return  array   Two-dimensional array of Downloads found by keyword
+     *                  $searchTerm.
+     */
+    public function getDownloadsForSearchComponent($searchTerm) {
+        $result = array();
+        $download = new Download();
+        $downloadLibrary = new DownloadsLibrary();
+        $config = $downloadLibrary->getSettings();
+        $downloadAsset = $download->getDownloads(
+            null,
+            $searchTerm,
+            null,
+            null,
+            null,
+            null,
+            $config['list_downloads_current_lang']
+        );
+
+        if (!$downloadAsset) {
+            return array();
+        }
+
+        while (!$downloadAsset->EOF) {
+            $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), '', '', array(
+                'category' => current($downloadAsset->getAssociatedCategoryIds()),
+                'id' => $downloadAsset->getId(),
+            ));
+            $result[] = array(
+                'Score'   => 100,
+                'Title'   => $downloadAsset->getName(FRONTEND_LANG_ID),
+                'Content' => $downloadAsset->getTrimmedDescription(FRONTEND_LANG_ID),
+                'Link'    => $url->toString()
+            );
+            $downloadAsset->next();
+        }
+
+        return $result;
     }
 
 }
