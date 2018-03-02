@@ -372,8 +372,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
                 $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
                 $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
-                $arrEntry['slug_field_id'] = $objEntries->fields['slug_field_id'];
-                $arrEntry['slug'] = $objEntries->fields['slug'];
+                $arrEntry['slug_field_id'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug_field_id'] : 0;
+                $arrEntry['slug'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug'] : '';
                 $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
 
                 $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
@@ -1197,8 +1197,8 @@ JSCODE;
         //get data
         $intId = intval($intEntryId);
         $intFormId = intval($arrData['formId']);
-        $strCreateDate = mktime();
-        $strUpdateDate = mktime();
+        $strCreateDate = time();
+        $strUpdateDate = time();
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
         $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
@@ -1249,11 +1249,11 @@ JSCODE;
                 $intActive = 1;
                 $intShowIn = 2;
                 $intDurationType = $this->arrSettings['settingsEntryDisplaydurationType'];
-                $intDurationStart = mktime();
+                $intDurationStart = time();
                 $intDurationEnd = mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear);
             }
 
-            $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
+            $strValidateDate = $intConfirmed == 1 ? time() : 0;
 
             //insert new entry
             $objResult = $objDatabase->Execute("
@@ -1312,7 +1312,7 @@ JSCODE;
             }
 
             $strAdditionalQuery = join(",", $arrAdditionalQuery);
-            $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
+            $strValidateDate = $intConfirmed == 1 ? time() : 0;
 
             $objUpdateEntry = $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
@@ -1690,6 +1690,9 @@ JSCODE;
         return $strDropdownUsers;
     }
 
+    /**
+     * Parse template blocks mediadir_category or mediadir_level
+     */
     public function parseCategoryLevels($intType, $intEntryId=null, $objTpl) {
         $categoryId = null;
         $levelId = null;
@@ -1730,7 +1733,7 @@ JSCODE;
                     $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId, true).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
                     $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId, true),
                     $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE'   => '<img src="'.$picture.'" border="0" alt="'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'" />',
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE_SOURCE' => $pictrue,
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE_SOURCE' => $picture,
                 ));
 
                 // parse thumbnails

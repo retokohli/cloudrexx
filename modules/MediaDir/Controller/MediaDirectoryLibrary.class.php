@@ -137,7 +137,7 @@ class MediaDirectoryLibrary
             $objEntries->getEntries(null, null, null, null, null, null, true);
 
             $intDaysbefore = intval($this->arrSettings['settingsEntryDisplaydurationNotification']);
-            $intToday = mktime();
+            $intToday = time();
 
             foreach ($objEntries->arrEntries as $intEntryId => $arrEntry) {
                 $intWindowEnd =  $arrEntry['entryDurationEnd'];
