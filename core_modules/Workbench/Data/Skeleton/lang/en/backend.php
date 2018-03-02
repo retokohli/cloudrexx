@@ -51,4 +51,4 @@ $_ARRAYLANG['TXT_MODULE_SKELETON_ACT_SETTINGS_HELP'] = 'Help';
 // Now our content specific values:
 $_ARRAYLANG['TXT_MODULE_SKELETON_CONGRATULATIONS'] = 'Overview';
 $_ARRAYLANG['TXT_MODULE_SKELETON_SUCCESSFUL_CREATION'] = 'This is the Overview/Dashboard of your new Component. More tabs will be generated if you add entities to this component.';
-$_ARRAYLANG['TXT_MODULE_SKELETON_EXAMPLE_TEMPLATE'] = 'This is the default template for this component, located in View/Template/Backend/Default.html. In order to add entities, place your YAML files in Model/Yaml folder and execute ./workbench.bat db update. Then add a language file entry for your entity.';
+$_ARRAYLANG['TXT_MODULE_SKELETON_EXAMPLE_TEMPLATE'] = 'This is the default template for this component, located in View/Template/Backend/Default.html. In order to add entities, place your YAML files in Model/Yaml folder and execute ./cx workbench database update. Then add a language file entry for your entity.';
