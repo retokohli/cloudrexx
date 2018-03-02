@@ -934,7 +934,7 @@ class Category
 
         if ($objCategoryId !== false) {
             while (!$objCategoryId->EOF) {
-                $arrCategoryIds[$objCategoryId->fields['id']] = '';
+                $arrCategoryIds[$objCategoryId->fields['id']] = array();
                 $objCategoryId->MoveNext();
             }
         }
