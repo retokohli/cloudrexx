@@ -1864,7 +1864,8 @@ class User extends User_Profile
                             '[[EMAIL]]',
                             '[[PASSWORD]]',
                             '[[LINK]]',
-                            '[[SENDER]]'
+                            '[[SENDER]]',
+                            '[[YEAR]]',
                         );
             $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
             $mainDomain = $domainRepository->getMainDomain()->getName();
@@ -1875,7 +1876,8 @@ class User extends User_Profile
                             $this->getEmail(),
                             $generatedPassword,
                             ASCMS_PROTOCOL . '://'.$mainDomain.\Cx\Core\Core\Controller\Cx::getBackendFolderName(),
-                            contrexx_raw2xhtml($objUserMail->getSenderName())
+                            contrexx_raw2xhtml($objUserMail->getSenderName()),
+                            date('Y'),
                         );
 
             if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
