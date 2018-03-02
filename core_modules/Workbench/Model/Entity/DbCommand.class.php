@@ -212,7 +212,6 @@ class DbCommand extends Command {
                 }
                 
                 // doctrine orm:validate-schema
-                $this->validateSchema();
                 if ($this->validateSchema() != 0) {
                     echo 'Your schema is not valid. Please correct this before you proceed';
                     return;
