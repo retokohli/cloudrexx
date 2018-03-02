@@ -1326,6 +1326,7 @@ JSCODE;
         //////////////////////
 
         $error = false;
+        $titleData = array();
 
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
@@ -1377,12 +1378,17 @@ JSCODE;
                 continue;
             }
 
+            if (($arrInputfield['context_type'] == 'title' || empty($titleData)) && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
+                $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+            }
+
             // slugify slug value
-            if ($arrInputfield['context_type'] == 'slug') {
+            if ($arrInputfield['context_type'] == 'slug' && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
                 $slugValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
                 array_walk(
                     $slugValues,
-                    array($this, 'slugify')
+                    array($this, 'slugify'),
+                    $titleData
                 );
                 $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] = $slugValues;
             }
