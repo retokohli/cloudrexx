@@ -309,7 +309,7 @@ class BackendTable extends HTML_Table {
         //if the row sorting functionality is enabled
         $className = 'adminlist';
         if (!empty($sortField)) {
-            $className = '\'adminlist sortable\'';
+            $className = 'adminlist sortable';
             if (!empty($component)) {
                 $attrs['data-component'] = $component;
             }
@@ -478,7 +478,7 @@ class BackendTable extends HTML_Table {
                 $template->parse('attribute');
             }
         }
-        return $template->get();
+        return ' ' . trim($template->get());
     } // end func _getAttrString
 
     /**
