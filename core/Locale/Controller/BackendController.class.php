@@ -250,8 +250,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         $destLang,
                         $componentName,
                         $frontend,
-                        false,
-                        true
+                        false
                     );
                 }
 
