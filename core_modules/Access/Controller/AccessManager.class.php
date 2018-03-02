@@ -2004,12 +2004,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     array(
                         '[[HOST]]',
                         '[[USERNAME]]',
-                        '[[SENDER]]'
+                        '[[SENDER]]',
+                        '[[YEAR]]',
                     ),
                     array(
                         $_CONFIG['domainUrl'],
                         $objUser->getUsername(),
-                        $objUserMail->getSenderName()
+                        $objUserMail->getSenderName(),
+                        date('Y'),
                     ),
                     $objUserMail->getBodyText()
                 );
@@ -2020,12 +2022,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     array(
                         '[[HOST]]',
                         '[[USERNAME]]',
-                        '[[SENDER]]'
+                        '[[SENDER]]',
+                        '[[YEAR]]',
                     ),
                     array(
                         $_CONFIG['domainUrl'],
                         htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                        date('Y'),
                     ),
                     $objUserMail->getBodyHtml()
                 );
