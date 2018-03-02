@@ -418,20 +418,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // in case we have not yet identified a category and a level
         // lets check if the requested URL does contain any
         // virtual level or category
+        $matchedLevelId = 0;
+        $matchedCategoryId = 0;
         while (
             $slug &&
             !($levelId && $categoryId)
         ) {
             // let's check if a level exists by the supplied slug
-            if (!$levelId && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
+            if (!$matchedLevelId && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
                 $objMediaDirectoryLevel = new MediaDirectoryLevel(null, null, 0, $this->getName());
-                $levelId = $objMediaDirectoryLevel->findOneBySlug($slug);
+                $matchedLevelId = $objMediaDirectoryLevel->findOneBySlug($slug);
+                if ($matchedLevelId) {
+                    $levelId = $matchedLevelId;
+                }
             }
 
             // let's check if a category exists by the supplied slug
-            if (!$categoryId) {
+            if (!$matchedCategoryId) {
                 $objMediaDirectoryCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
-                $categoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
+                $matchedCategoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
+                if ($matchedCategoryId) {
+                    $categoryId = $matchedCategoryId;
+                }
             }
 
             // fetch parent slug (if any is left)
