@@ -86,7 +86,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * An Array containing the overwritten placeholders
      * @var \Cx\Core\Locale\Model\Entity\Placeholder[], placeholder name as key
      */
-    protected $placeholders;
+    protected $placeholders = array();
 
     /**
      * The path to the yaml file containing the customized placeholder data
