@@ -856,6 +856,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch related entries
+        $objEntry->resetEntries();
         $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
 
         // remove currently parsed entry
@@ -912,6 +913,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch related entries
+        $objEntry->resetEntries();
         $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // If the list contains less than two entries, there is no point
@@ -946,6 +948,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch previous entry
+        $objEntry->resetEntries();
         $objEntry->getEntries($previousEntryId, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // set mediadirPreviousEntry tempalte block to be parsed
@@ -992,6 +995,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch related entries
+        $objEntry->resetEntries();
         $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // if the list contains less than two entries, there is no point
@@ -1026,6 +1030,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch next entry
+        $objEntry->resetEntries();
         $objEntry->getEntries($nextEntryId, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // set mediadirNextEntry tempalte block to be parsed
