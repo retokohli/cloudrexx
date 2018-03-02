@@ -57,6 +57,12 @@ class ResolverException extends \Exception {};
 class Resolver {
     protected $em = null;
     protected $url = null;
+
+    /**
+     * @var Cx\Core\Routing\Url
+     */
+    protected $originalUrl = null;
+
     /**
      * language id.
      * @var integer
@@ -161,6 +167,7 @@ class Resolver {
      */
     public function init($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
         $this->url = $url;
+        $this->originalUrl = clone $url;
         $this->em = $entityManager;
         $this->lang = $lang;
         $this->pathOffset = $pathOffset;
@@ -402,7 +409,7 @@ class Resolver {
             $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
         ) {
             // does this work for fallback(/aliases)?
-            $additionalPath = substr('/' . $this->url->getSuggestedTargetPath(), strlen($this->page->getPath()));
+            $additionalPath = substr('/' . $this->originalUrl->getSuggestedTargetPath(), strlen($this->page->getPath()));
             $componentController = $this->em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')->findOneBy(array('name'=>$this->page->getModule()));
             if ($componentController) {
                 $parts = array();
