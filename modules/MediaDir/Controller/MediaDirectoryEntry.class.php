@@ -1335,6 +1335,7 @@ JSCODE;
         //////////////////////
 
         $error = false;
+        $titleData = array();
 
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
@@ -1386,12 +1387,17 @@ JSCODE;
                 continue;
             }
 
+            if (($arrInputfield['context_type'] == 'title' || empty($titleData)) && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
+                $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+            }
+
             // slugify slug value
-            if ($arrInputfield['context_type'] == 'slug') {
+            if ($arrInputfield['context_type'] == 'slug' && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
                 $slugValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
                 array_walk(
                     $slugValues,
-                    array($this, 'slugify')
+                    array($this, 'slugify'),
+                    $titleData
                 );
                 $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] = $slugValues;
             }
@@ -1721,8 +1727,8 @@ JSCODE;
                 $objTpl->setVariable(array(
                     $this->moduleLangVar . '_ENTRY_' . $list . '_ID'        => $objCategoriesLevels->fields['elm_id'],
                     $this->moduleLangVar . '_ENTRY_' . $list . '_NAME'      => contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']),
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId),
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId, true).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId, true),
                     $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE'   => '<img src="'.$picture.'" border="0" alt="'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'" />',
                     $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE_SOURCE' => $pictrue,
                 ));

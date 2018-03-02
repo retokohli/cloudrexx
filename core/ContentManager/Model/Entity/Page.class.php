@@ -458,13 +458,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
     }
 
     protected function slugify($string) {
-        // replace international characters
-        $string = $this->getComponent('LanguageManager')->replaceInternationalCharacters($string);
-        // replace spaces
-        $string = preg_replace('/\s+/', '-', $string);
-        // replace all non-url characters
-        $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
-        return $string;
+        return $this->cx->getComponent('Model')->slugify($string);
     }
 
     public function nextSlug() {
