@@ -510,6 +510,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 
                 $thumbImage = $this->getThumbImage($arrCategories[$intCategoryId]['catPicture']);
                 $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_TYPE' => 'category',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="'.$this->getAutoSlugPath(null, $intCategoryId, $levelId).'">'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'</a>',
