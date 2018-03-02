@@ -153,7 +153,18 @@ class User_Setting_Mail
                 '[[LINK]]'        => 'TXT_ACCESS_LINK_DESC',
                 '[[EMAIL]]'        => 'TXT_ACCESS_EMAIL_DESC',
                 '[[PASSWORD]]'        => 'TXT_ACCESS_PASSWORD',
-                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC'
+                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC',
+            ),
+            'required'    => array()
+        ),
+        'user_profile_modification'    => array(
+            'title'    => 'TXT_ACCESS_USER_PROFILE_MODIFICATION',
+            'placeholders'    => array(
+                '[[HOST]]'          => 'TXT_ACCESS_HOST_DESC',
+                '[[USER_ID]]'       => 'TXT_ACCESS_USER_ID',
+                '[[PROFILE_NAME]]'  => 'TXT_ACCESS_PROFILE_NAME_DESC',
+                '[[PROFILE_DATA]]'  => 'TXT_ACCESS_PROFILE_DATA_DESC',
+                '[[YEAR]]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
             'required'    => array()
         ),

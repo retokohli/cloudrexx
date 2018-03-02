@@ -74,7 +74,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   PRIMARY KEY (`group_id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
-  `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user','user_account_invitation') NOT NULL DEFAULT 'reg_confirm',
+  `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user','user_account_invitation','user_profile_modification') NOT NULL DEFAULT 'reg_confirm',
   `lang_id` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `sender_mail` varchar(255) NOT NULL DEFAULT '',
   `sender_name` varchar(255) NOT NULL DEFAULT '',

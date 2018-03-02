@@ -400,6 +400,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objFWUser->objUser->setProfileAccess(isset($_POST['access_user_profile_access']) && $objFWUser->objUser->isAllowedToChangeProfileAccess() ? contrexx_stripslashes($_POST['access_user_profile_access']) : $objFWUser->objUser->getProfileAccess());
 
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
+                // fetch current profile data
+                $arrOriginalProfileData = $this->fetchProfileDataOfUser($objFWUser->objUser);    
+
+                // profile modifications to be stored
                 $arrProfile = $_POST['access_profile_attribute'];
 
                 if (   !empty($_POST['access_image_uploader_id'])
@@ -427,6 +431,25 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     )
                     && $objFWUser->objUser->store()
                 ) {
+                    // fetch new profile data
+                    $arrNewProfileData = $this->fetchProfileDataOfUser($objFWUser->objUser);    
+
+                    // identify changed attributes
+                    $profileDiff = call_user_func(function($arrOriginalProfileData, $arrNewProfileData) {
+                        $difference=array();
+                        foreach ($arrOriginalProfileData as $key => $value) {
+                            if (!isset($arrNewProfileData[$key]) ||
+                                $arrNewProfileData[$key] != $value
+                            ) {
+                                $difference[] = $key;
+                            }
+                        }
+                        return $difference;
+                    }, $arrOriginalProfileData, $arrNewProfileData);
+
+                    // send notification mail regarding modified user profile
+                    $this->sendProfileChangeNotificationMail($objFWUser->objUser, $profileDiff, $arrOriginalProfileData, $arrNewProfileData);
+
                     $msg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
                     $settingsDone = true;
                     $this->setLanguageCookie($currentLangId, $objFWUser->objUser->getFrontendLanguage());
@@ -493,6 +516,230 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         if ($this->_objTpl->blockExists('access_settings_done')) {
             $this->_objTpl->{$settingsDone ? 'touchBlock' : 'hideBlock'}('access_settings_done');
         }
+    }
+
+    /**
+     * Send mail notification (user_profile_modification) regarding a modified
+     * user profile
+     *
+     * @todo    Migrate this code to an event listener as soon as User
+     *          is a proper doctrine event
+     * @param   \User   $objUser    The user on which the profile modifications
+     *                              had been made on.
+     * @param   array   $changedAttributes  A one-dimensional list of user
+     *                                      profile attributes that had
+     *                                      been modified.
+     * @param   array   $oldProfileData     Two-dimensional array of the user's
+     *                                      profile data before the
+     *                                      modification.
+     * @param   array   $newProfileData     Two-dimensional array of the user's
+     *                                      profile data after the
+     *                                      modification.
+     */
+    protected function sendProfileChangeNotificationMail($objUser, $changedAttributes, $oldProfileData, $newProfileData) {
+        global $_ARRAYLANG;
+
+        if (empty($changedAttributes)) {
+            return;
+        }
+
+        $arrSettings = \User_Setting::getSettings();
+        if (!$arrSettings['user_change_notification_address']['status']) {
+            return;
+        }
+
+        $objFWUser = \FWUser::getFWUserObject();
+        $objUserMail = $objFWUser->getMail();
+        if (!$objUserMail->load('user_profile_modification', FRONTEND_LANG_ID) &&
+            !$objUserMail->load('user_profile_modification')
+        ) {
+            return;
+        }
+        
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+        if (!$objMail) {
+            return;
+        }
+
+        $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
+        $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
+        $recipientAddrs = array_map('trim', explode(',', $arrSettings['user_change_notification_address']['value']));
+
+        $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
+        $objMail->Subject = $objUserMail->getSubject();
+
+        $profileDataText = '';
+
+        $htmlTable = new \Cx\Core\Html\Model\Entity\HtmlElement('table');
+        $htmlTable->setAttribute('width', '100%');
+
+        $htmlTableHead = new \Cx\Core\Html\Model\Entity\HtmlElement('thead');
+        $htmlTable->addChild($htmlTableHead);
+
+        $htmlTableHeadRow = new \Cx\Core\Html\Model\Entity\HtmlElement('tr');
+        $htmlTableHead->addChild($htmlTableHeadRow);
+
+        $htmlTableHeadCellAttribute = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+        $htmlTableHeadRow->addChild($htmlTableHeadCellAttribute);
+
+        $htmlValueAttributeStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+        $htmlTableHeadCellAttribute->addChild($htmlValueAttributeStrong);
+        $htmlValueAttributeStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_ATTRIBUTE']));
+
+        $htmlTableHeadCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+        $htmlTableHeadRow->addChild($htmlTableHeadCellOldValue);
+
+        $htmlValueOldStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+        $htmlTableHeadCellOldValue->addChild($htmlValueOldStrong);
+        $htmlValueOldStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_OLD_VALUE']));
+
+        $htmlTableHeadCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+        $htmlTableHeadRow->addChild($htmlTableHeadCellNewValue);
+
+        $htmlValueNewStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+        $htmlTableHeadCellNewValue->addChild($htmlValueNewStrong);
+        $htmlValueNewStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_NEW_VALUE']));
+
+        $htmlTableBody = new \Cx\Core\Html\Model\Entity\HtmlElement('tbody');
+        $htmlTable->addChild($htmlTableBody);
+
+        foreach ($changedAttributes as $attribute) {
+            $objAttribute = $objUser->objAttribute->getById($attribute);
+            $oldValue = $oldProfileData[$attribute][0];
+            $newValue = $newProfileData[$attribute][0];
+
+            switch ($objAttribute->getType()) {
+                case 'date':
+                    $oldValue = date(ASCMS_DATE_FORMAT_DATE, $oldValue);
+                    $newValue = date(ASCMS_DATE_FORMAT_DATE, $newValue);
+                    break;
+
+                //case 'checkbox':
+                case 'menu':
+                    switch ($attribute) {
+                        case 'gender':
+                            break;
+                        case 'title':
+                            $oldValue = 'title_' . $oldValue;
+                            $newValue = 'title_' . $newValue;
+                            break;
+                        case 'country':
+                            $oldValue = 'country_' . $oldValue;
+                            $newValue = 'country_' . $newValue;
+                            break;
+                    }
+                    $objAttributeValue = $objAttribute->getById($oldValue);
+                    if ($objAttributeValue->getId()) {
+                        $oldValue = $objAttributeValue->getName();
+                    } else {
+                        $oldValue = '';
+                    }
+                    
+                    $objAttributeValue = $objAttribute->getById($newValue);
+                    if ($objAttributeValue->getId()) {
+                        $newValue = $objAttributeValue->getName();
+                    } else {
+                        $newValue = '';
+                    }
+                    
+                default:
+                    break;
+            }
+
+            $label = $objAttribute->getName();
+            $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
+
+            $htmlTableBodyRow = new \Cx\Core\Html\Model\Entity\HtmlElement('tr');
+            $htmlTableBody->addChild($htmlTableBodyRow);
+
+            $htmlTableBodyCellAttribute = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+            $htmlTableBodyRow->addChild($htmlTableBodyCellAttribute);
+            $htmlTableBodyCellAttribute->setAttribute('class', 'attribute');
+            $htmlTableBodyCellAttribute->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($label)));
+
+            $htmlTableBodyCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+            $htmlTableBodyRow->addChild($htmlTableBodyCellOldValue);
+            $htmlTableBodyCellOldValue->setAttribute('class', 'value old');
+            $htmlTableBodyCellOldValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($oldValue)));
+
+            $htmlTableBodyCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+            $htmlTableBodyRow->addChild($htmlTableBodyCellNewValue);
+            $htmlTableBodyCellNewValue->setAttribute('class', 'value new');
+            $htmlTableBodyCellNewValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($newValue)));
+        }
+
+        $searchTerms = array(
+            '[[HOST]]',
+            '[[USER_ID]]',
+            '[[PROFILE_NAME]]',
+            '[[PROFILE_DATA]]',
+            '[[YEAR]]',
+        );
+        $replaceTextTerms = array(
+            \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
+            $objUser->getId(),
+            \FWUser::getParsedUserTitle($objUser),
+            $profileDataText,
+            date('Y'),
+        );
+        $replaceHtmlTerms = array(
+            \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
+            $objUser->getId(),
+            \FWUser::getParsedUserTitle($objUser),
+            $htmlTable,
+            date('Y'),
+        );
+
+        if ($isTextMail) {
+            $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
+            $body = str_replace(
+                $searchTerms,
+                $replaceTextTerms,
+                $objUserMail->getBodyText()
+            );
+            $body = preg_replace('/\[\[([A-Za-z0-9_]*?)\]\]/', '{\\1}', $body);
+            \LinkGenerator::parseTemplate($body, true);
+            $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = $body;
+        }
+
+        if ($isHtmlMail) {
+            $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
+            $body = str_replace(
+                $searchTerms,
+                $replaceHtmlTerms,
+                $objUserMail->getBodyHtml()
+            );
+            $body = preg_replace('/\[\[([A-Za-z0-9_]*?)\]\]/', '{\\1}', $body);
+            \LinkGenerator::parseTemplate($body, true);
+            $objMail->Body = $body;
+        }
+
+        foreach ($recipientAddrs as $recipientMail) {
+            $objMail->AddAddress($recipientMail);
+            $objMail->Send();
+            $objMail->ClearAddresses();
+        }
+    }
+
+    /**
+     * Get profile data of a user as an array
+     *
+     * @param   \User   $objUser  User of which its profile data
+     *                                      shall be returned.
+     * @return  array   Two-dimensional array of the user's profile data.
+     *                  The array key represents the profile's attribute-ID
+     *                  and the array's value the assocated attribute's value.
+     */
+    protected function fetchProfileDataOfUser($objUser) {
+        //get user's profile details
+        $objUser->objAttribute->first();
+        $arrUserDetails = array();
+        while (!$objUser->objAttribute->EOF) {
+            $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+            $objUser->objAttribute->next();
+        }
+        
+        return $arrUserDetails;
     }
 
     /**
@@ -965,3 +1212,4 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         return false;
     }
 }
+

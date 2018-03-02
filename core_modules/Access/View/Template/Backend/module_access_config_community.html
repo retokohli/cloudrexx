@@ -67,6 +67,12 @@ function accessChangeActivationMethod()
   document.getElementById('accessUserActivationBox_1').style.display = method1 ? 'block' : 'none';
   document.getElementById('accessUserActivationBox_0').style.display = method1 ? 'none' : 'block';
 }
+
+function accessChangeUserProfileNotification()
+{
+  method1 = document.getElementById('accessUserProfileNotification').checked;
+  document.getElementById('accessUserProfileNotificationBox').style.display = method1 ? 'block' : 'none';
+}
 // ]]>
 </script>
 <form action="index.php?cmd=Access&amp;act=config&amp;tpl=community" method="post" onsubmit="accessSelectAllGroups(document.getElementById('access_user_associated_groups'))">
@@ -155,6 +161,23 @@ function accessChangeActivationMethod()
           </div>
         </td>
       </tr>
+        <tr class="row2">
+            <td colspan="3">&nbsp;</td>
+        </tr>
+        <tr class="row3">
+            <td colspan="3">
+            <strong>{TXT_ACCESS_USER_PROFILE_MODIFICATION}</strong>
+            </td>
+        </tr>
+        <tr class="row1">
+            <td colspan="3">
+                <input type="checkbox" name="accessUserProfileNotification" id="accessUserProfileNotification" value="1" style="border:0px; background-color:#F4F7FF;" {ACCESS_USER_PROFILE_NOTIFICATION_CHECKED} onclick="accessChangeUserProfileNotification()" /><label for="accessUserProfileNotification">{TXT_ACCESS_USER_PROFILE_MODIFICATION_NOTIFICATION_TEXT}</label>
+                <div id="accessUserProfileNotificationBox" style="display:{ACCESS_USER_PROFILE_NOTIFICATION_BOX}; padding-left:20px;">
+                    {TXT_ACCESS_ADDRESS_OF_USER_TO_NOTIFY_ON_MODIFICATION}<br />
+                    <input style="width:300px;" type="text" value="{ACCESS_USER_PROFILE_NOTIFICATION_ADDRESS}" name="accessUserProfileNotificationAddress" />
+                </div>
+            </td>
+        </tr>
     </tbody>
   </table>
   <br />
