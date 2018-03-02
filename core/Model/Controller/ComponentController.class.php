@@ -59,4 +59,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             new \Cx\Core\Model\Model\Event\EntityBaseEventListener()
         );
     }
+
+    /**
+     * Slugifies the given string
+     * @param $string The string to slugify
+     * @return $string The slugified string
+     */
+    public function slugify($string) {
+        // replace international characters
+        $string = $this->getComponent('LanguageManager')
+            ->replaceInternationalCharacters($string);
+
+        // replace spaces
+        $string = preg_replace('/\s+/', '-', $string);
+
+        // replace all non-url characters
+        $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
+
+        // replace duplicate occurrences (in a row) of char "-" and "_"
+        $string = preg_replace('/([-_]){2,}/', '-', $string);
+
+        return $string;
+    }
 }

@@ -1450,13 +1450,6 @@ EOF;
      * @param $string The string to slugify
      */
     protected function slugify(&$string) {
-        // replace international characters
-        $string = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponent('LanguageManager')
-            ->replaceInternationalCharacters($string);
-        // replace spaces
-        $string = preg_replace('/\s+/', '-', $string);
-        // replace all non-url characters
-        $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
+        $string = $this->cx->getComponent('Model')->slugify($string);
     }
 }
