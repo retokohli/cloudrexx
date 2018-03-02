@@ -77,9 +77,15 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
     /**
      * {@inheritdoc}
      */
-    public function getElement($className)
+    public function getElement($className, $raw = false)
     {
         $result = parent::getElement($className);
+        if ($raw) {
+            return $result;
+        }
+        if ($result['type'] == 'YamlEntity') {
+            $result['type'] = 'entity';
+        }
         return $this->handleCustomEnumTypeClasses($className, $result);
     }
 
