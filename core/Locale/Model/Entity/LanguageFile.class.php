@@ -139,17 +139,12 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
         // load component specific language data from init
         $init = \Env::get('init');
         if (!$onlyCustomized) {
-            try {
-                $this->data = $init->getComponentSpecificLanguageDataByCode(
-                    $this->componentName,
-                    $frontend,
-                    $sourceLanguage->getIso1(),
-                    false
-                );
-            } catch(\InitCMSException $e) {
-                \Message::add($e->getMessage(), \Message::CLASS_ERROR);
-                return;
-            }
+            $this->data = $init->getComponentSpecificLanguageDataByCode(
+                $this->componentName,
+                $frontend,
+                $sourceLanguage->getIso1(),
+                false
+            );
         }
 
         // generate path to yaml file
