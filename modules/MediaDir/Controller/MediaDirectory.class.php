@@ -443,6 +443,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
                 $objLevels->listLevels($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
+                $this->_objTpl->setVariable($this->moduleLangVar.'_CATEGORY_LEVEL_TYPE', 'level');
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
             }
 
@@ -455,6 +456,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
                 $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
+                $this->_objTpl->setVariable($this->moduleLangVar.'_CATEGORY_LEVEL_TYPE', 'category');
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
             }
 

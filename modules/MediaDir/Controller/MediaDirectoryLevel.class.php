@@ -512,6 +512,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 $thumbImage = $this->getThumbImage($arrLevels[$intLevelId]['levelPicture']);
                 $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_TYPE' => 'level',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $intLevelId).'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
