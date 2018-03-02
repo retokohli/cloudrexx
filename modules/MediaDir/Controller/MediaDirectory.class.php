@@ -82,8 +82,6 @@ class MediaDirectory extends MediaDirectoryLibrary
      */
     function getPage()
     {
-        global $_CONFIG;
-
         \JS::activate('shadowbox');
         \JS::activate('jquery');
 
@@ -558,8 +556,6 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
-
-
     function showAlphabetical()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -567,6 +563,8 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get navtree
+        $intCategoryId = 0;
+        $intLevelId = 0;
         $this->getNavtree($intCategoryId, $intLevelId);
 
         //get searchform
@@ -582,12 +580,14 @@ class MediaDirectory extends MediaDirectoryLibrary
         $objEntries->listEntries($this->_objTpl,3);
     }
 
-
-
     function showSearch()
     {
         global $_ARRAYLANG, $_CORELANG;
 
+        $showLevelDetails = false;
+        $showCategoryDetails = false;
+        $objLevel = null;
+        $objCategory = null;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get searchform
@@ -1502,8 +1502,6 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     }
 
-
-
     function deleteEntry()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -1564,8 +1562,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->_objTpl->parse($this->moduleNameLC.'EntryModifyForm');
         }
     }
-
-
 
     /**
      * Parse the component's own breadcrumb
@@ -1679,8 +1675,6 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
-
-
     function getNavtreeCategories($intCategoryId)
     {
         $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
@@ -1704,8 +1698,6 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
-
-
     function getNavtreeLevels($intLevelId)
     {
         $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
@@ -1722,7 +1714,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);
         }
     }
-
 
     public function getPageTitle() {
         return $this->pageTitle;

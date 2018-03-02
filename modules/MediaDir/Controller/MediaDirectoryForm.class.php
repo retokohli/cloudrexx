@@ -163,7 +163,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 $arrForm['formUseLevel']          = intval($objFormsRS->fields['use_level']);
                 $arrForm['formUseReadyToConfirm'] = intval($objFormsRS->fields['use_ready_to_confirm']);
                 $arrForm['formEntriesPerPage']    = $objFormsRS->fields['entries_per_page'];
-                $arrForm['slug_field_id']         = intval($objFormsRS->fields['slug_field_id']) ? intval($objFormsRS->fields['slug_field_id']) : 0;
+                $arrForm['slug_field_id']         = $this->arrSettings['usePrettyUrls'] ? $objFormsRS->fields['slug_field_id'] : 0;
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();

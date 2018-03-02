@@ -604,7 +604,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 if($intEntryId != 0) {
                     if(intval($objEntry->arrEntries[$intEntryId]['entryDurationType']) == 1) {
                         $intEntryDourationAlways = 'selected="selected"';
-                        $intEntryDourationStart = date("d.m.Y", mktime());
+                        $intEntryDourationStart = date("d.m.Y", time());
                         $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                     } else {
                         $intEntryDourationPeriod = 'selected="selected"';
@@ -626,7 +626,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                         $intEntryDourationShowPeriod = 'inline';
                     }
 
-                    $intEntryDourationStart = date("d.m.Y", mktime());
+                    $intEntryDourationStart = date("d.m.Y", time());
                     $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                 }
 
@@ -1097,7 +1097,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $this->moduleLangVar.'_LEVEL_LANG_ID' => $arrLang['id'],
                 $this->moduleLangVar.'_LEVEL_NAME' => $strLevelName,
                 $this->moduleLangVar.'_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
-                $this->moduleLangVar.'_LEVEL_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("levelDescription[{$arrLang['id']}]", $strLevelDescription),
+                $this->moduleLangVar.'_LEVEL_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("levelDescription[{$arrLang['id']}]", contrexx_raw2xhtml($strLevelDescription)),
                 $this->moduleLangVar.'_LEVEL_META_DESCRIPTION' => $levelMetaDescription,
                 $this->moduleLangVar.'_LEVEL_BLOCK_DISPLAY' => $first ? 'display:block;' : 'display:none;'
             ));

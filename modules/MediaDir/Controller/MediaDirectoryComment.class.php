@@ -314,7 +314,7 @@ EOF;
             SET
                 `entry_id`='".intval($intEntryId)."',
                 `added_by`='".intval($intAddedBy)."',
-                `date`='".mktime()."',
+                `date`='".time()."',
                 `ip`='".$strRemoteAddress."',
                 `name`='".contrexx_addslashes($arrCommentData['commentName'])."',
                 `mail`='".contrexx_addslashes($arrCommentData['commentMail'])."',
