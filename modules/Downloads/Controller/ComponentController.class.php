@@ -165,7 +165,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Find Downloads by keyword $searchTerm an returns them in a
+     * Find Downloads by keyword $searchTerm and return them in a
      * two-dimensional array compatible to be used by Search component.
      *
      * @param   string  $searchTerm The keyword to search by

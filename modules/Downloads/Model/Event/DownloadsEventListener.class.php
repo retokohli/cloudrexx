@@ -50,9 +50,9 @@ class DownloadsEventListener extends DefaultEventListener
 {
     /**
      * Global search event listener
-     * Appends the MediaDir search results to the search object
+     * Appends the Downloads search results to the search object
      *
-     * @param array $search
+     * @param array $search \Cx\Core_Modules\Search\Controller\Search
      */
     public function SearchFindContent($search) {
         $result   = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->cx->getComponent('Downloads')->getDownloadsForSearchComponent($search->getTerm()));
