@@ -1129,7 +1129,10 @@ class Download {
      */
     private function parseFilterConditions($arrFilter)
     {
-        $arrConditions = array();
+        $arrConditions = array(
+            'conditions' => array(),
+            'tables'     => array(),
+        );
 
         $arrComparisonOperators = array(
             'int'       => array('=','<','>', '<=', '>='),

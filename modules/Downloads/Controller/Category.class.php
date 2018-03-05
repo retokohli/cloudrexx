@@ -801,7 +801,10 @@ class Category
      */
     private function parseFilterConditions($arrFilter)
     {
-        $arrConditions = array();
+        $arrConditions = array(
+            'conditions' => array(),
+            'tables'     => array(),
+        );
         foreach ($arrFilter as $attribute => $condition) {
             /**
              * $attribute is the attribute like 'is_active' or 'name'
