@@ -258,7 +258,9 @@ class CalendarCategory extends CalendarLibrary
         global $objDatabase, $_LANGID;
 
         $arrHosts = array();
-        $arrHosts = $data['selectedHosts'];
+        if (isset($data['selectedHosts'])) {
+            $arrHosts = $data['selectedHosts'];
+        }
         $arrNames = array();
         $arrNames = $data['name'];
 
@@ -523,6 +525,8 @@ class CalendarCategory extends CalendarLibrary
      */
     public function getCategoryEntity($id, $formData = array())
     {
+        global $_LANGID;
+
         if (empty($id)) {
             $category = new \Cx\Modules\Calendar\Model\Entity\Category();
         } else {
