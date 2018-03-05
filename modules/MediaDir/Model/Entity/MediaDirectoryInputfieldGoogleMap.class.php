@@ -45,7 +45,14 @@ namespace Cx\Modules\MediaDir\Model\Entity;
  */
 class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary implements Inputfield
 {
-    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE','MEDIADIR_INPUTFIELD_LINK', 'MEDIADIR_INPUTFIELD_LINK_HREF');
+    public $arrPlaceholders = array(
+        'TXT_MEDIADIR_INPUTFIELD_NAME',
+        'MEDIADIR_INPUTFIELD_VALUE',
+        'MEDIADIR_INPUTFIELD_LINK',
+        'MEDIADIR_INPUTFIELD_LINK_HREF',
+        'MEDIADIR_INPUTFIELD_MAP_LAT',
+        'MEDIADIR_INPUTFIELD_MAP_LONG',
+    );
 
     private $imagePath;
     private $imageWebPath;
@@ -62,7 +69,7 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase,$_CORELANG, $_ARRAYLANG, $_LANGID, $objInit, $_CONFIG;
+        global $objDatabase,$_CORELANG, $_ARRAYLANG, $objInit, $_CONFIG;
 
         switch ($intView) {
             default:
@@ -284,6 +291,8 @@ EOF;
         $strValueLink = '<a href="http://maps.google.com/maps?q='.$strValueLat.','.$strValueLon.'" target="_blank">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'].'</a>';
         $strValueLinkHref = 'http://maps.google.com/maps?q='.$strValueLat.','.$strValueLon;
 
+        $intId = intval($arrInputfield['id']);
+
         if(!empty($strValue)) {
             $objGoogleMap = new \googleMap();
             $objGoogleMap->setMapId($this->moduleNameLC.'Inputfield_'.$intId.'_'.$intEntryId.'_map');
@@ -299,6 +308,8 @@ EOF;
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $objGoogleMap->getMap();
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK'] = $strValueLink;
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK_HREF'] = $strValueLinkHref;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_MAP_LAT'] = $strValueLat;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_MAP_LONG'] = $strValueLon;
         } else {
             $arrContent = null;
         }

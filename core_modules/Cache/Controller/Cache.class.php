@@ -142,7 +142,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
         $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
-            $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
+
         $country = '';
         $geoIp = $cx->getComponent('GeoIp');
         if ($geoIp) {
@@ -218,7 +219,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if (!$this->boolIsEnabled) {
             return null;
         }
-        $files = glob($this->strCachePath . $this->strCacheFilename . "*");
+        $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $this->strCacheFilename . "*");
 
         // sort out false-positives (header and ESI cache files)
         $cacheFileUserRegex = '';
@@ -245,12 +246,22 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
         $file = current($files);
 
+        // load headers
+        $matches = array();
+        preg_match($cacheFileRegex, $file, $matches);
+        // @todo: Make header cache user based
+
+        // $matches[2] is not set if the following conditions are all true:
+        // 1. We have no session
+        // 2. Request is not user-based
+        // 3. We have no page (request to without URI-Slug, for example: /de/)
+        if (!isset($matches[2])) {
+            $matches[2] = '';
+        }
+
+        $headerFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $matches[1] . '_h' . $matches[2];
+
         if (filemtime($file) > (time() - $this->intCachingTime)) {
-            // load headers
-            $matches = array();
-            preg_match($cacheFileRegex, $file, $matches);
-            // @todo: Make header cache user based
-            $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
             if (file_exists($headerFile)) {
                 $headers = unserialize(file_get_contents($headerFile));
                 if (is_array($headers)) {
@@ -285,11 +296,25 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             echo $this->internalEsiParsing($endcode, true);
             $parsingTime = $cx->stopTimer();
-            \DBG::log("(Cx: {$cx->getId()}) Request parsing completed after $parsingTime (from cache)");
+
+            $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+            $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+            $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
+            $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+            
+            register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
+                $parsingTime = $cx->stopTimer();
+                \DBG::log(
+                    "(Cx: {$cx->getId()}) Request parsing completed after $parsingTime \"cached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\" \"" .
+                    memory_get_peak_usage(true) . "\""
+                );
+            });
             exit;
         } else {
-            $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
-            $headerFile->delete();
+            if (file_exists($headerFile)) {
+                $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
+                $headerFile->delete();
+            }
             $file = new \Cx\Lib\FileSystem\File($file);
             $file->delete();
         }
@@ -448,14 +473,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             foreach ($headers as &$header) {
                 $header = (string) $header;
             }
-            $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId . $user;
+            $handleFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $this->strCacheFilename . '_h' . $pageId . $user;
             $File = new \Cx\Lib\FileSystem\File($handleFile);
             $File->write(serialize($headers));
         }
         \DBG::log('Writing cache file "' . $this->strCacheFilename . '_' . $pageId . $user . ' for request info:');
         \DBG::dump($this->arrPageContent);
         // write page cache file
-        $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $pageId . $user;
+        $handleFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $this->strCacheFilename . '_' . $pageId . $user;
         $File = new \Cx\Lib\FileSystem\File($handleFile);
         $File->write($endcode);
     }
@@ -482,8 +507,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
         $cacheFileNames = array();
         foreach ($cacheFileSuffixes as $cacheFileSuffix) {
-            $cacheFileNames[] = $this->strCachePath . $filename . '_' . $pageId . $cacheFileSuffix;
-            $cacheFileNames[] = $this->strCachePath . $filename . '_h' . $pageId . $cacheFileSuffix;
+            $cacheFileNames[] = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $filename . '_' . $pageId . $cacheFileSuffix;
+            $cacheFileNames[] = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $filename . '_h' . $pageId . $cacheFileSuffix;
         }
         foreach ($cacheFileNames as $cacheFileName) {
             if (!file_exists($cacheFileName)) {
@@ -513,11 +538,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $matches[1],
                 $this->currentUrl
             );
-            if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
+            if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile)) {
                 $expireTimestamp = -1;
-                if (file_exists($this->strCachePath . $cacheFile . '_h')) {
+                if (file_exists($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile . '_h')) {
                     $expireTimestamp = file_get_contents(
-                        $this->strCachePath . $cacheFile . '_h'
+                        $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile . '_h'
                     );
                 }
 
@@ -527,7 +552,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     ) ||
                     (
                         $expireTimestamp < 0 && filemtime(
-                            $this->strCachePath . $cacheFile
+                            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile
                         ) > (
                             time() - $this->intCachingTime
                         )
@@ -535,10 +560,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 ) {
                     \DBG::dump($matches[1]);
                     \DBG::dump($cacheFile);
-                    return file_get_contents($this->strCachePath . $cacheFile);
+                    return file_get_contents($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
                 } else {
-                    \DBG::msg('Drop expired cached file ' . $this->strCachePath . $cacheFile);
-                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    \DBG::msg('Drop expired cached file ' . $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
                     $file->delete();
                 }
             }
@@ -555,7 +580,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // TODO: Somehow FRONTEND_LANG_ID is sometimes undefined here...
             $esiUrl = new \Cx\Lib\Net\Model\Entity\Url($matches[1]);
-            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('lang'));
+            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('locale'));
             if (!defined('FRONTEND_LANG_ID')) {
                 define('FRONTEND_LANG_ID', $langId);
             }
@@ -583,7 +608,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                         }
                     }
 
-                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
                     $file->write($content);
                 }
             } catch (\Exception $e) {
@@ -617,14 +642,29 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // Random include tags
             $htmlCode = preg_replace_callback(
-                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#U',
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>([\s\S]*)<!-- ESI_RANDOM_END -->#U',
                 function($matches) {
+                    $includeCount = substr_count(
+                        $matches[2],
+                        '<esi:include src="'
+                    );
+                    $randomIncludes = '';
                     $uris = explode('\',\'', substr($matches[1], 1, -1));
-                    $randomNumber = rand(0, count($uris) - 1);
-                    $uri = $uris[$randomNumber];
-                    
-                    // this needs to match the format below!
-                    return '<esi:include src="' . $uri . '" onerror="continue"/>';
+                    for ($i = 0; $i < $includeCount; $i++) {
+                        if (!count($uris)) {
+                            continue;
+                        }
+                        $randomNumber = rand(0, count($uris) - 1);
+                        $uri = $uris[$randomNumber];
+                        unset($uris[$randomNumber]);
+                        // re-index array
+                        $uris = array_values($uris);
+
+                        // this needs to match the format below!
+                        $randomIncludes .= '<esi:include src="' . $uri . '" onerror="continue"/>';
+                    }
+
+                    return $randomIncludes;
                 },
                 $htmlCode
             );

@@ -71,12 +71,28 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
         // LANG_ID is set to backend or frontend interface language.
         // If LANG_ID is not yet set, then we've been requested from
         // the frontend and the resolver did already set FRONTEND_LANG_ID
-        $langId = defined('LANG_ID') && LANG_ID ? LANG_ID : FRONTEND_LANG_ID;
+        $langId = FRONTEND_LANG_ID;
 
         if(!empty($intFormId)) {
             $whereFormId = "form.id='".$intFormId."' AND";
         } else {
-            $whereFormId = null;
+            $whereFormId = '';
+        }
+
+        $strSlugField = '';
+        $strJoinSlugField = '';
+
+        if ($this->arrSettings['usePrettyUrls']) {
+            $strSlugField = ",
+                slug_field.`id` as `slug_field_id`
+            ";
+            $strJoinSlugField = "
+                LEFT JOIN
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_field
+                ON
+                    slug_field.`form` = form.`id`
+                    AND slug_field.`context_type` = 'slug'
+            ";
         }
 
         $objFormsRS = $objDatabase->Execute("
@@ -92,13 +108,15 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
+                ".$strSlugField."
             FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_forms AS form,
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names AS form_names
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_forms AS form
+            INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names AS form_names
+                ON form_names.form_id=form.id
+                ".$strJoinSlugField."
             WHERE
-                ($whereFormId form_names.form_id=form.id)
-            AND
-                (form_names.lang_id='".$langId."')
+                $whereFormId 
+                form_names.lang_id='".$langId."'
             ORDER BY
                 `order` ASC
             ");
@@ -145,6 +163,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 $arrForm['formUseLevel']          = intval($objFormsRS->fields['use_level']);
                 $arrForm['formUseReadyToConfirm'] = intval($objFormsRS->fields['use_ready_to_confirm']);
                 $arrForm['formEntriesPerPage']    = $objFormsRS->fields['entries_per_page'];
+                $arrForm['slug_field_id']         = $this->arrSettings['usePrettyUrls'] ? $objFormsRS->fields['slug_field_id'] : 0;
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();
@@ -158,7 +177,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
     function listForms($objTpl, $intView, $intFormId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $i = 0;
 
@@ -283,7 +302,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
      */
     public function updateFormLocale($arrName, $arrDescription, $intFormId)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         if (empty($intFormId)) {
             return false;
@@ -296,7 +315,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             FROM
                 '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_form_names
             WHERE
-                lang_id='.$_LANGID.'
+                lang_id='.FRONTEND_LANG_ID.'
                 AND `form_id` = "'.$intFormId.'"
             LIMIT
                 1
@@ -320,7 +339,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             $strName        = $arrName[$arrLang['id']];
             $strDescription = $arrDescription[$arrLang['id']];
 
-            if ($arrLang['id'] == $_LANGID) {
+            if ($arrLang['id'] == FRONTEND_LANG_ID) {
                 if ($arrName[0] != $strOldDefaultName) {
                     $strName = $arrName[0];
                 }
@@ -357,7 +376,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
     function saveForm($arrData, $intFormId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $intId = intval($intFormId);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['formImage']));

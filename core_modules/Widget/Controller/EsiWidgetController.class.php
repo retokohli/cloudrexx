@@ -100,7 +100,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         $requiredParamsForWidgetsWithContent = array(
             'theme',
             'page',
-            'lang',
+            'locale',
             'targetComponent',
             'targetEntity',
             'targetId',
@@ -108,7 +108,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         );
         // TODO: We should check at least all ESI params of this widget
         $requiredParams = array();
-        if ($widget->hasContent()) {
+        if ($widget->getType() == \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK) {
             $requiredParams = $requiredParamsForWidgetsWithContent;
         }
         foreach ($requiredParams as $requiredParam) {
@@ -116,6 +116,19 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 throw new \InvalidArgumentException('Param "' . $requiredParam . '" not set');
             }
         }
+
+        // resolve widget template
+        return $this->internalParseWidget($widget, $params);
+    }
+
+    /**
+     * Parses a widget
+     * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget The Widget
+     * @param array $params Params passed by ESI (/API) request
+     * @return array Content in an associative array
+     */
+    protected function internalParseWidget($widget, $params) {
+        $widgetContent = '';
 
         // ensure that the params can be fetched during internal parsing
         $backupGetParams = $_GET;
@@ -126,9 +139,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $_REQUEST += $params['post'];
         }
 
-        // resolve widget template
-        $widgetContent = '';
-        if (!$widget->hasContent()) {
+        if ($widget->getType() != \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK) {
             $widgetContent = '{' . $params['get']['name'] . '}';
         } else {
             $widgetTemplate = $this->getComponent('Widget')->getWidgetContent(
@@ -214,9 +225,11 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 }
                 return $page;
             },
-            'lang' => function($langCode) {
-                // this should return a locale object
-                $langId = \FWLanguage::getLanguageIdByCode($langCode);
+            'locale' => function($langCode) {
+                $em = $this->cx->getDb()->getEntityManager();
+                $locale = $em
+                    ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
+                    ->findOneByCode($langCode);
 
                 // load component language data
                 global $_ARRAYLANG;
@@ -225,10 +238,10 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                     \Env::get('init')->getComponentSpecificLanguageData(
                         parent::getName(),
                         true,
-                        $langId
+                        $locale->getId()
                     )
                 );
-                return $langId;
+                return $locale;
             },
             'user' => function($userId) {
                 return \FWUser::getFWUserObject()->objUser->getUser($userId);

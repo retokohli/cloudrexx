@@ -458,13 +458,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
     }
 
     protected function slugify($string) {
-        // replace international characters
-        $string = $this->getComponent('LanguageManager')->replaceInternationalCharacters($string);
-        // replace spaces
-        $string = preg_replace('/\s+/', '-', $string);
-        // replace all non-url characters
-        $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
-        return $string;
+        return $this->cx->getComponent('Model')->slugify($string);
     }
 
     public function nextSlug() {
@@ -1266,10 +1260,11 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
                 'webcam',
                 'favicon.ico',
             );
-            foreach (\FWLanguage::getActiveFrontendLanguages() as $id=>$lang) {
-                $invalidAliasNames[] = $lang['lang'];
-            }
-            if (in_array($this->getSlug(), $invalidAliasNames)) {
+            if (
+                in_array($this->getSlug(), $invalidAliasNames) ||
+                // check if alias matches language tag regex (de, en-US, i-hak, etc.)
+                preg_match('/^[a-z]{1,2}(?:-[A-Za-z]{2,4})?$/', $this->getSlug())
+            ) {
                 $lang = \Env::get('lang');
                 $error = array(
                     'slug' => array($lang['TXT_CORE_CANNOT_USE_AS_ALIAS'])
