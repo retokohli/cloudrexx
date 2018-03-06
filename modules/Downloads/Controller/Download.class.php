@@ -1343,7 +1343,7 @@ class Download {
 
         if ($objDownloadId !== false) {
             while (!$objDownloadId->EOF) {
-                $arrIds[$objDownloadId->fields['id']] = '';
+                $arrIds[$objDownloadId->fields['id']] = array();
                 $objDownloadId->MoveNext();
             }
         }
