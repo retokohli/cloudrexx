@@ -184,6 +184,15 @@ class DbCommand extends Command {
                     $this->cleanup();
                 }
                 
+                // doctrine orm:generate-proxies --filter="{component filter}" repositories
+                $doctrineArgs = array('', 'doctrine', 'orm:generate-proxies');
+                if (!empty($componentFilter)) {
+                    $doctrineArgs[] = $componentFilter;
+                }
+                if ($this->executeDoctrine($doctrineArgs) != 0) {
+                    return;
+                }
+                
                 // doctrine orm:schema-tool:create --dump-sql
                 // print queries and ask if those should be executed (CAUTION!)
                 $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->cx->getDb()->getEntityManager());

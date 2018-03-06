@@ -56,11 +56,6 @@ class Workbench {
         return array(
             '/core_modules/Workbench',
             '/lib/behat',
-            '/workbench.config',
-            '/workbench',
-            '/workbench.sh',
-            '/workbench.bat',
-            '/testing',
         );
     }
 
