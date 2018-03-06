@@ -906,6 +906,10 @@ class CalendarEventManager extends CalendarLibrary
         if (($this->arrSettings['placeData'] == 1) && $objEvent->place == '' && $objEvent->place_street == '' && $objEvent->place_zip == '' && $objEvent->place_city == '' && $objEvent->place_country == '' && $objEvent->place_website == '' && $objEvent->place_phone == '') {
             $objTpl->hideBlock('calendarEventAddress');
         } else {
+            if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
+                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
+                list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
+            }
             if($objEvent->google) {
 // TODO: implement with new Google Maps Embed API. see https://developers.google.com/maps/documentation/embed/guide
                 /*$googleCoordinates = self::_getCoorinates($objEvent->place_street, $objEvent->place_zip, $objEvent->place_city);
@@ -947,10 +951,6 @@ class CalendarEventManager extends CalendarLibrary
 
             $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
             $placeLinkSource   = $objEvent->place_link;
-            if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
-                list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
-            }
 
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
