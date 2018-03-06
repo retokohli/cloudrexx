@@ -37,6 +37,7 @@ Cx\Core\User\Model\Entity\UserAttribute:
       column: access_special
       options:
         default: ""
+# Temporarily adds these fields so they don't get dropped
     accessId:
       type: integer
       column: access_id

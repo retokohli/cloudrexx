@@ -143,13 +143,13 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     private $userTitle;
 
     /**
-     * @var Cx\Core\User\Model\Entity\UserAttributeValue
+     * @var \Doctrine\Common\Collections\ArrayCollection
      */
-    protected $userAttributeValue;
+    protected $userAttributeValues;
 
     public function __construct()
     {
-        $this->userAttributeValue = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->userAttributeValues = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -593,22 +593,22 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Add userAttributeValue
+     * Add userAttributeValues
      *
      * @param Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValue
      */
-    public function addUserAttributeValue(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValue)
+    public function addUserAttributeValues(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValue)
     {
-        $this->userAttributeValue[] = $userAttributeValue;
+        $this->userAttributeValues[] = $userAttributeValue;
     }
 
     /**
      * Get userAttributeValue
      *
-     * @return Doctrine\Common\Collections\Collection $userAttributeValue
+     * @return Doctrine\Common\Collections\Collection $userAttributeValues
      */
-    public function getUserAttributeValue()
+    public function getUserAttributeValues()
     {
-        return $this->userAttributeValue;
+        return $this->userAttributeValues;
     }
 }

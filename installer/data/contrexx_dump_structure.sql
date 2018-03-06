@@ -44,9 +44,7 @@ CREATE TABLE `contrexx_access_user_attribute` (
   `access_id` int NOT NULL,
   `read_access_id` int NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX IDX_D97727BE727ACA70 (`parent_id`),
-  INDEX IDX_D97727BE4FEA67CF (`access_id`),
-  INDEX IDX_D97727BE7B600C1B (`read_access_id`)
+  INDEX IDX_D97727BE727ACA70 (`parent_id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_access_user_attribute_name` (
   `attribute_id` int NOT NULL DEFAULT '0',
@@ -71,9 +69,7 @@ CREATE TABLE `contrexx_access_user_core_attribute` (
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL DEFAULT '',
   `access_id` int NOT NULL,
   `read_access_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX IDX_20812A3D4FEA67CF (`access_id`),
-  INDEX IDX_20812A3D7B600C1B (`read_access_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_groups` (
   `group_id` int NOT NULL AUTO_INCREMENT,
@@ -3875,10 +3871,6 @@ ALTER TABLE contrexx_access_user_attribute_name ADD CONSTRAINT FK_90502F6CB6E62E
 ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);
 ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
 ALTER TABLE contrexx_access_user_attribute ADD CONSTRAINT FK_D97727BE727ACA70 FOREIGN KEY (parent_id) REFERENCES contrexx_access_user_attribute (id);
-ALTER TABLE contrexx_access_user_attribute ADD CONSTRAINT FK_D97727BE4FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
-ALTER TABLE contrexx_access_user_attribute ADD CONSTRAINT FK_D97727BE7B600C1B FOREIGN KEY (read_access_id) REFERENCES contrexx_access_id (id);
-ALTER TABLE contrexx_access_user_core_attribute ADD CONSTRAINT FK_20812A3D4FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
-ALTER TABLE contrexx_access_user_core_attribute ADD CONSTRAINT FK_20812A3D7B600C1B FOREIGN KEY (read_access_id) REFERENCES contrexx_access_id (id);
 ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323B6E62EFA FOREIGN KEY (attribute_id) REFERENCES contrexx_access_user_attribute (id);
 ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_user_profile (user_id);
 ALTER TABLE contrexx_access_user_profile ADD CONSTRAINT FK_959DBF6CA76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);

@@ -132,7 +132,7 @@ Cx\Core\User\Model\Entity\UserProfile:
           referencedColumnName: id
           unique: true
   oneToMany:
-    userAttributeValue:
+    userAttributeValues:
       targetEntity: Cx\Core\User\Model\Entity\UserAttributeValue
       mappedBy: user
   manyToOne:

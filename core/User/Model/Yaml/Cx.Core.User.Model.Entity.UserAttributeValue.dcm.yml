@@ -36,7 +36,7 @@ Cx\Core\User\Model\Entity\UserAttributeValue:
           referencedColumnName: id
     user:
       targetEntity: Cx\Core\User\Model\Entity\UserProfile
-      inversedBy: userAttributeValue
+      inversedBy: userAttributeValues
       joinColumns:
         user_id:
           referencedColumnName: user_id
