@@ -86,7 +86,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
     protected $changes;
 
     /**
-     * @var Cx\Core_Modules\Sync\Model\Entity\Change
+     * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $originChanges;
     

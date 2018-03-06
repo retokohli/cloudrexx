@@ -211,7 +211,11 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
             $customEnumClass->parse('value');
         }
 
-        $customClassFileName = getEnumFileName($componentName, $entityName, $fieldName);
+        $customClassFileName = static::getEnumFileName(
+            $componentName,
+            $entityName,
+            $fieldName
+        );
         \Cx\Lib\FileSystem\FileSystem::make_folder(
             dirname($customClassFileName), true
         );
@@ -223,11 +227,11 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
      * Resolves a database field type to the correct (internal) ENUM type
      * This is used to make schema-tool:update work as expected
      * @param $tableName string Name of the table
-     * @param $fieldName string Name of the field
+     * @param $columnName string Name of the database column
      * @param $field string Database field type
      * @return string Updated database field type
      */
-    public static function reverseLookupEnumType($tableName, $fieldName, $type) {
+    public static function reverseLookupEnumType($tableName, $columnName, $type) {
         if ($type != 'enum') {
             return $type;
         }
@@ -242,7 +246,7 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
             return $type;
         }
         $metaData = $em->getClassMetadata($className);
-        $fieldName = $metaData->getFieldName($fieldName);
+        $fieldName = $metaData->getFieldName($columnName);
         $customEnumClassName = static::getEnumClassName($classParts[2], $classParts[5], $fieldName);
         $customTypeName = static::getEnumTypeName($classParts[2], $classParts[5], $fieldName); 
         // If class is already registered in this request, we abort here
@@ -322,7 +326,6 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
                 $cx->getCodeBaseCorePath() . '/Model/Data/Enum/'
             ) !== 0
         ) {
-            echo 1;
             return array();
         }
         $filename = substr(
@@ -331,11 +334,9 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
         );
         $parts = explode('/', $filename);
         if (count($parts) != 4) {
-            echo 2;
             return array();
         }
         if (substr($parts[3], -10) != '.class.php') {
-            echo 3;
             return array();
         }
         return array(

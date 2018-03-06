@@ -66,7 +66,7 @@ class EnumType extends \Doctrine\DBAL\Types\Type {
     /**
      * {@inheritdoc}
      */
-    public function getDefaultLength(AbstractPlatform $platform)
+    public function getDefaultLength(\Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
         return $platform->getVarcharDefaultLength();
     }
