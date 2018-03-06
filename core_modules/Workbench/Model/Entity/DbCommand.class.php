@@ -219,7 +219,10 @@ class DbCommand extends Command {
                         echo 'Wrote ' . $i . ' queries to DB'."\r\n";
                     }
                 }
-                
+                // intentionally no break!
+                // break
+
+            case 'validate':
                 // doctrine orm:validate-schema
                 if ($this->validateSchema() != 0) {
                     echo 'Your schema is not valid. Please correct this before you proceed';
