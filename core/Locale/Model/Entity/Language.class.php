@@ -201,6 +201,16 @@ class Language extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set localeRelatedBySourceLanguages
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $localeRelatedBySourceLanguages
+     */
+    public function setLocaleRelatedBySourceLanguages(\Doctrine\Common\Collections\ArrayCollection $localeRelatedBySourceLanguages)
+    {
+        $this->localeRelatedBySourceLanguages = $localeRelatedBySourceLanguages;
+    }
+
+    /**
      * Get localeRelatedBySourceLanguages
      *
      * @return \Doctrine\Common\Collections\Collection $localeRelatedBySourceLanguages
@@ -218,6 +228,16 @@ class Language extends \Cx\Model\Base\EntityBase {
     public function addLocaleRelatedByIso1s(\Cx\Core\Locale\Model\Entity\Locale $localeRelatedByIso1s)
     {
         $this->localeRelatedByIso1s[] = $localeRelatedByIso1s;
+    }
+
+    /**
+     * Set localeRelatedByIso1s
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $localeRelatedByIso1s
+     */
+    public function setLocaleRelatedByIso1s(\Doctrine\Common\Collections\ArrayCollection $localeRelatedByIso1s)
+    {
+        $this->localeRelatedByIso1s = $localeRelatedByIso1s;
     }
 
     /**

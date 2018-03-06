@@ -696,6 +696,16 @@ class User extends \Cx\Model\Base\EntityBase {
     }
     
     /**
+     * Set group
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $group
+     */
+    public function setGroup(\Doctrine\Common\Collections\ArrayCollection $group)
+    {
+        $this->group = $group;
+    }
+    
+    /**
      * Check if the user is backend group 
      * 
      * @return boolean

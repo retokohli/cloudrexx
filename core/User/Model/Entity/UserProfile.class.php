@@ -611,4 +611,14 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     {
         return $this->userAttributeValues;
     }
+
+    /**
+     * Set userAttributeValues
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $userAttributeValue
+     */
+    public function setUserAttributeValues(\Doctrine\Common\Collections\ArrayCollection $userAttributeValue)
+    {
+        $this->userAttributeValues = $userAttributeValue;
+    }
 }

@@ -173,6 +173,16 @@ class RegistrationForm extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Ensures compatiblity with ViewGenerator
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\Event $event
+     */
+    public function addEvents(\Cx\Modules\Calendar\Model\Entity\Event $event)
+    {
+        $this->events[] = $event;
+    }
+
+    /**
      * set events
      *
      * @param Doctrine\Common\Collections\Collection $events
@@ -198,6 +208,16 @@ class RegistrationForm extends \Cx\Model\Base\EntityBase {
      * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormField
      */
     public function addRegistrationFormField(\Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormField)
+    {
+        $this->registrationFormFields[] = $registrationFormField;
+    }
+
+    /**
+     * Ensures compatiblity with ViewGenerator
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormField
+     */
+    public function addRegistrationFormFields(\Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormField)
     {
         $this->registrationFormFields[] = $registrationFormField;
     }

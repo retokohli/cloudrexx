@@ -370,6 +370,16 @@ class Registration extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Ensures compatibility with ViewGenerator
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue
+     */
+    public function addRegistrationFormFieldValues(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
+    {
+        $this->registrationFormFieldValues[] = $registrationFormFieldValue;
+    }
+
+    /**
      * set $registrationFormFieldValues
      *
      * @param type $registrationFormFieldValues

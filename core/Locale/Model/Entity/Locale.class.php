@@ -174,6 +174,16 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set locales
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $locales
+     */
+    public function setLocales(\Doctrine\Common\Collections\ArrayCollection $locales)
+    {
+        $this->locales = $locales;
+    }
+
+    /**
      * Get locales
      *
      * @return \Doctrine\Common\Collections\Collection $locales
@@ -271,6 +281,16 @@ class Locale extends \Cx\Model\Base\EntityBase {
     public function addFrontends(\Cx\Core\View\Model\Entity\Frontend $frontends)
     {
         $this->frontends[] = $frontends;
+    }
+
+    /**
+     * Set frontends
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $frontends
+     */
+    public function setFrontends(\Doctrine\Common\Collections\ArrayCollection $frontends)
+    {
+        $this->frontends = $frontends;
     }
 
     /**

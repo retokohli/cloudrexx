@@ -239,6 +239,16 @@ class Host extends \Cx\Model\Base\EntityBase
     }
 
     /**
+     * Ensure compatibility with ViewGenerator
+     *
+     * @param Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity
+     */
+    public function addHostEntities(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity)
+    {
+        $this->hostEntities[] = $hostEntity;
+    }
+
+    /**
      * Get hostEntities
      *
      * @return Doctrine\Common\Collections\Collection $hostEntities
@@ -264,6 +274,16 @@ class Host extends \Cx\Model\Base\EntityBase
      * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
      */
     public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
+    {
+        $this->changes[] = $change;
+    }
+
+    /**
+     * Ensure compatibility with ViewGenerator
+     *
+     * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
+     */
+    public function addChanges(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
     {
         $this->changes[] = $change;
     }

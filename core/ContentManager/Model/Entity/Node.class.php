@@ -208,11 +208,19 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->children[] = $children;
     }
 
+    /**
+     * Sets children
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $children
+     */
+    public function setChildren(\Doctrine\Common\Collections\ArrayCollection $children) {
+        $this->children = $children;
+    }
+
     public function addParsedChild(\Cx\Core\ContentManager\Model\Entity\Node $child)
     {
         $this->children[] = $child;
     }
-
 
     /**
      * Get children
@@ -227,7 +235,6 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             $this->children[$i] = $repo->find($child);
         }
         return $this->children;
-
     }
 
     /**
@@ -238,6 +245,14 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function addPage(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
         $this->pages[] = $page;
+    }
+
+    /**
+     * Ensures compatibility to ViewGenerator
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page
+     */
+    public function addPages(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $this->addPage($page);
     }
 
     /**
@@ -265,6 +280,14 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
         return $pages;
     }
 
+    /**
+     * Set pages
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $pages
+     */
+    public function setPages(\Doctrine\Common\Collections\ArrayCollection $pages) {
+        $this->pages = $pages;
+    }
 
     public function getPagesByLang($inactive_langs = false)
     {
@@ -453,6 +476,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             )
         );
     }
+
     public function unserialize($data) {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
         $this->pages = new \Doctrine\Common\Collections\ArrayCollection();

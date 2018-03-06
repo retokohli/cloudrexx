@@ -245,6 +245,16 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set parent
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $parent
+     */
+    public function setParent(\Doctrine\Common\Collections\ArrayCollection $parent)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
      * Add userAttributeName
      *
      * @param Cx\Core\User\Model\Entity\UserAttributeName $userAttributeName
@@ -265,6 +275,16 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set userattributename
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $userAttributeName
+     */
+    public function setUserAttributeName(\Doctrine\Common\Collections\ArrayCollection $userAttributeName)
+    {
+        $this->userAttributeName = $userAttributeName;
+    }
+
+    /**
      * Add userAttributeValue
      *
      * @param Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValue
@@ -282,6 +302,16 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     public function getUserAttributeValue()
     {
         return $this->userAttributeValue;
+    }
+
+    /**
+     * Set userattributevalue
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $userAttributeValue
+     */
+    public function setUserAttributeValue(\Doctrine\Common\Collections\ArrayCollection $userAttributeValue)
+    {
+        $this->userAttributeValue = $userAttributeValue;
     }
 
     /**

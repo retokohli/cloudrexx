@@ -100,6 +100,16 @@ class Group extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set groupId
+     *
+     * @param integer $groupId
+     */
+    public function setGroupId($groupId)
+    {
+        $this->groupId = $groupId;
+    }
+
+    /**
      * Set groupName
      *
      * @param string $groupName
@@ -226,6 +236,16 @@ class Group extends \Cx\Model\Base\EntityBase {
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $user
+     */
+    public function setUser(\Doctrine\Common\Collections\ArrayCollection $user)
+    {
+        $this->user = $user;
     }
 
     /**

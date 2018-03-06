@@ -176,6 +176,14 @@ class Change extends \Cx\Model\Base\EntityBase {
     }
     
     /**
+     * Ensures compatibility with ViewGenerator
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Host $host New Host
+     */
+    public function addHosts($host) {
+        $this->hosts[] = $host;
+    }
+    
+    /**
      * Removes a related Host object
      * @param \Cx\Core_Modules\Sync\Model\Entity\Host $host Host to remove
      */

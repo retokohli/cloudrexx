@@ -148,6 +148,16 @@ class Country extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set locales
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $locales
+     */
+    public function setLocales(\Doctrine\Common\Collections\ArrayCollection $locales)
+    {
+        $this->locales = $locales;
+    }
+
+    /**
      * Get locales
      *
      * @return Doctrine\Common\Collections\Collection $locales
