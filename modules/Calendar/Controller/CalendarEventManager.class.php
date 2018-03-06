@@ -909,6 +909,9 @@ class CalendarEventManager extends CalendarLibrary
             if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
                 $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
                 list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
+            } else {
+                $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
+                $placeLinkSource   = $objEvent->place_link;
             }
             if($objEvent->google) {
 // TODO: implement with new Google Maps Embed API. see https://developers.google.com/maps/documentation/embed/guide
@@ -948,9 +951,6 @@ class CalendarEventManager extends CalendarLibrary
 
             $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
             $placeWebsiteSource= $objEvent->place_website;
-
-            $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
-            $placeLinkSource   = $objEvent->place_link;
 
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
