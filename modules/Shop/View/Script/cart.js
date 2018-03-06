@@ -89,6 +89,7 @@ function shopUpdateCart(data, textStatus, jqXHR) {
         // New
         cart = cart.replace('{SHOP_JS_PRODUCT_COUNT}', objCart.item_count);
         cart = cart.replace('{SHOP_JS_TOTAL_PRICE}', objCart.total_price);
+        cart = cart.replace('{SHOP_JS_TOTAL_PRICE_CART}', objCart.total_price_cart);
         cart = cart.replace('{SHOP_JS_TOTAL_PRICE_UNIT}', objCart.unit);
         showCart(cart);
     } catch (e) {
