@@ -722,7 +722,7 @@ class Download {
         $this->arrLoadedDownloads = array();
         $arrSelectCoreExpressions = array();
         $this->filtered_search_count = 0;
-        $sqlCondition = '';
+        $sqlCondition = array();
 
         // set filter
         if ((isset($filter) && is_array($filter) && count($filter)) || !empty($search)) {
@@ -920,7 +920,12 @@ class Download {
 
         // parse filter
         if (isset($arrFilter) && is_array($arrFilter)) {
-            if (count($arrFilterConditions = $this->parseFilterConditions($arrFilter))) {
+            $arrFilterConditions = $this->parseFilterConditions($arrFilter);
+            if (
+                count($arrFilterConditions) &&
+                !empty($arrFilterConditions['conditions']) &&
+                !empty($arrFilterConditions['tables'])
+            ) {
                 $arrConditions[] = implode(' AND ', $arrFilterConditions['conditions']);
                 $tblLocales = isset($arrFilterConditions['tables']['locale']);
             }
