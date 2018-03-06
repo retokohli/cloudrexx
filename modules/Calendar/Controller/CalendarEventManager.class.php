@@ -1792,7 +1792,7 @@ class CalendarEventManager extends CalendarLibrary
      */
     function _setNextSeriesElement(
         $objEvent,
-        &$additionalRecurrences,
+        &$additionalRecurrences = array(),
         $addAdditionalRecurrence = false
     ) {
         $objCloneEvent = clone $objEvent;
@@ -1918,6 +1918,7 @@ class CalendarEventManager extends CalendarLibrary
         }
 
         $isAllowedEvent = true;
+        $getNextEvent = false;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
             case 1:
                 $getNextEvent = false;

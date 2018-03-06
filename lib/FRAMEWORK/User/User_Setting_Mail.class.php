@@ -98,7 +98,8 @@ class User_Setting_Mail
                 '[[HOST]]'                => 'TXT_ACCESS_HOST_DESC',
                 '[[ACTIVATION_LINK]]'    => 'TXT_ACCESS_ACTIVATION_LINK_DESC',
                 '[[HOST_LINK]]'            => 'TXT_ACCESS_HOST_LINK_DESC',
-                '[[SENDER]]'            => 'TXT_ACCESS_SENDER_DESC'
+                '[[SENDER]]'            => 'TXT_ACCESS_SENDER_DESC',
+                '[[YEAR]]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
             'required'    => array(
                 '[[ACTIVATION_LINK]]'
@@ -109,7 +110,8 @@ class User_Setting_Mail
             'placeholders'    => array(
                 '[[USERNAME]]'    => 'TXT_ACCESS_USERNAME_DESC',
                 '[[URL]]'        => 'TXT_ACCESS_RESET_PW_URL_DESC',
-                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC'
+                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC',
+                '[[YEAR]]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
             'required'    => array(
                 '[[URL]]'
@@ -120,7 +122,8 @@ class User_Setting_Mail
             'placeholders'    => array(
                 '[[USERNAME]]'    => 'TXT_ACCESS_USERNAME_DESC',
                 '[[HOST]]'        => 'TXT_ACCESS_HOST_DESC',
-                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC'
+                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC',
+                '[[YEAR]]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
             'required'    => array()
         ),
@@ -129,7 +132,8 @@ class User_Setting_Mail
             'placeholders'    => array(
                 '[[USERNAME]]'    => 'TXT_ACCESS_USERNAME_DESC',
                 '[[HOST]]'        => 'TXT_ACCESS_HOST_DESC',
-                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC'
+                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC',
+                '[[YEAR]]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
             'required'    => array()
         ),
@@ -138,7 +142,8 @@ class User_Setting_Mail
             'placeholders'    => array(
                 '[[USERNAME]]'    => 'TXT_ACCESS_USERNAME_DESC',
                 '[[LINK]]'        => 'TXT_ACCESS_MANAGE_USER_LINK_DESC',
-                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC'
+                '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC',
+                '[[YEAR]]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
             'required'    => array(
                 '[[USERNAME]]'
@@ -154,6 +159,7 @@ class User_Setting_Mail
                 '[[EMAIL]]'        => 'TXT_ACCESS_EMAIL_DESC',
                 '[[PASSWORD]]'        => 'TXT_ACCESS_PASSWORD',
                 '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC',
+                '[[YEAR]]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
             'required'    => array()
         ),

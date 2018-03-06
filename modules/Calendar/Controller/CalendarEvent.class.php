@@ -1797,6 +1797,7 @@ class CalendarEvent extends CalendarLibrary
         $seriesPatternType              = 0;
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
+        $seriesPatternEndDate           = '';
         $seriesExeptions = '';
 
         if($seriesStatus == 1) {

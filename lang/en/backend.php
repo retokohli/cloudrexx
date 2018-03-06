@@ -704,6 +704,7 @@ $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = "Account activated";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED'] = "Account inactive";
 $_ARRAYLANG['TXT_ACCESS_USERNAME_DESC'] = "Username";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_INVITATION'] = "Set up user account";
+$_ARRAYLANG['TXT_ACCESS_YEAR_DESC'] = "Current year";
 $_ARRAYLANG['TXT_ACCESS_USER_PROFILE_MODIFICATION'] = "User profile change";
 $_ARRAYLANG['TXT_ACCESS_USER_ID'] = "ID of modified user profile";
 $_ARRAYLANG['TXT_ACCESS_PROFILE_NAME_DESC'] = "Name of modified user profile";

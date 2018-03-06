@@ -703,6 +703,7 @@ $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = "Benutzerkonto aktiviert";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED'] = "Benutzerkonto deaktiviert";
 $_ARRAYLANG['TXT_ACCESS_USERNAME_DESC'] = "Benutzername";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_INVITATION'] = "Benutzerkonto eingerichtet";
+$_ARRAYLANG['TXT_ACCESS_YEAR_DESC'] = "Aktuelle Jahrzahl";
 $_ARRAYLANG['TXT_ACCESS_USER_PROFILE_MODIFICATION'] = "Benutzerprofil-Mutation";
 $_ARRAYLANG['TXT_ACCESS_USER_ID'] = "ID des angepassten Benutzerprofils";
 $_ARRAYLANG['TXT_ACCESS_PROFILE_NAME_DESC'] = "Name des angepassten Benutzerprofils";
