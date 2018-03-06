@@ -2302,6 +2302,7 @@ class CalendarEvent extends CalendarLibrary
             $this->place_website = $place_website;
             $this->place_phone   = $place_phone;
             $this->place_map     = '';
+            $this->google        = true;
         } else {
             $this->org_name   = $place;
             $this->org_street = $place_street;
