@@ -202,7 +202,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $file = false;
             foreach($files as $fileInfo){
                 if ($fileInfo->isFile()) {
-                    $file = $fileInfo->getRealPath();
+                    $file = str_replace(DIRECTORY_SEPARATOR, '/', $fileInfo->getRealPath());
                     break;
                 }
             }
