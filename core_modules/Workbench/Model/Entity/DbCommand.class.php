@@ -401,6 +401,66 @@ class DbCommand extends Command {
             echo '[Mapping]  OK - The mapping files are correct.' . "\n";
         }
 
+        // Check if all needed methods are present
+        $fail = false;
+        $metaData = $em->getMetadataFactory()->getAllMetadata();
+        foreach ($metaData as $classMetaData) {
+            // foreach each field there needs to be a set and a get method
+            // foreach *:n relation there needs to be an add method on the * side
+            $className = $classMetaData->getName();
+            $reflectionClass = new \ReflectionClass($className);
+            $neededMethods = array();
+            foreach ($classMetaData->getFieldNames() as $columnName) {
+                $columnNameCC = preg_replace_callback(
+                    '/_([a-z0-9])/',
+                    function($match) {
+                        return strtoupper($match[1]);
+                    },
+                    ucfirst($columnName)
+                ); 
+                $neededMethods[] = 'get' . $columnNameCC;
+                $neededMethods[] = 'set' . $columnNameCC;
+            }
+            foreach ($classMetaData->getAssociationMappings() as $associationMapping) {
+                $columnNameCC = preg_replace_callback(
+                    '/_([a-z0-9])/',
+                    function($match) {
+                        return strtoupper($match[1]);
+                    },
+                    ucfirst($associationMapping['fieldName'])
+                ); 
+                switch ($associationMapping['type']) {
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_ONE:
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_ONE:
+                        // check set and get
+                        $neededMethods[] = 'get' . $columnNameCC;
+                        $neededMethods[] = 'set' . $columnNameCC;
+                        break;
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY:
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY:
+                        // check set, get and add
+                        $neededMethods[] = 'get' . $columnNameCC;
+                        $neededMethods[] = 'set' . $columnNameCC;
+                        $neededMethods[] = 'add' . $columnNameCC;
+                        break;
+                    default:
+                        var_dump($associationMapping);die();
+                        break;
+                }
+            }
+            foreach ($neededMethods as $neededMethod) {
+                if (!$reflectionClass->hasMethod($neededMethod)) {
+                    $this->interface->show('[Mapping]  FAIL - The entity-method "' . $className . '->' . $neededMethod . '()" is missing.');
+                    $fail = true;
+                }
+            }
+        }
+        if (!$fail) {
+            $this->interface->show('[Mapping]  OK - All necessary methods are present.');
+        } else {
+            $exit += 4;
+        }
+
         if (!$validator->schemaInSyncWithMetadata()) {
             echo '[Database] FAIL - The database schema is not in sync with the current mapping file.' . "\n";
             $exit += 2;
