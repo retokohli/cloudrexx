@@ -59,7 +59,7 @@ class MediaEventListener extends DefaultEventListener
      * @param array $search \Cx\Core_Modules\Search\Controller\Search
      */
     public function SearchFindContent($search) {
-        $result   = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->cx->getComponent('Media')->getMediaForSearchComponent($search->getTerm()));
+        $result   = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->getComponent('Media')->getMediaForSearchComponent($search->getTerm()));
         $search->appendResult($result);
     }
 
