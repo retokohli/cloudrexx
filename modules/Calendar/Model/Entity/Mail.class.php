@@ -113,6 +113,16 @@ class Mail extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set id
+     *
+     * @param integer $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * Set title
      *
      * @param string $title
