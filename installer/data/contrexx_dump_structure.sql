@@ -3871,7 +3871,6 @@ ALTER TABLE contrexx_access_user_attribute_name ADD CONSTRAINT FK_90502F6CB6E62E
 ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);
 ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
 ALTER TABLE contrexx_access_user_attribute ADD CONSTRAINT FK_D97727BE727ACA70 FOREIGN KEY (parent_id) REFERENCES contrexx_access_user_attribute (id);
-ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323B6E62EFA FOREIGN KEY (attribute_id) REFERENCES contrexx_access_user_attribute (id);
 ALTER TABLE contrexx_access_user_attribute_value ADD CONSTRAINT FK_B0DEA323A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_user_profile (user_id);
 ALTER TABLE contrexx_access_user_profile ADD CONSTRAINT FK_959DBF6CA76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);
 ALTER TABLE contrexx_access_user_profile ADD CONSTRAINT FK_959DBF6C2B36786B FOREIGN KEY (title) REFERENCES contrexx_access_user_title (id);

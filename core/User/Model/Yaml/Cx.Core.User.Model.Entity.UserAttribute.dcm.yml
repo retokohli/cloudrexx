@@ -51,9 +51,9 @@ Cx\Core\User\Model\Entity\UserAttribute:
     userAttributeName:
       targetEntity: Cx\Core\User\Model\Entity\UserAttributeName
       mappedBy: userAttribute
-    userAttributeValue:
-      targetEntity: Cx\Core\User\Model\Entity\UserAttributeValue
-      mappedBy: attribute
+#    userAttributeValue:
+#      targetEntity: Cx\Core\User\Model\Entity\UserAttributeValue
+#      mappedBy: attribute
   manyToOne:
     children:
       targetEntity: Cx\Core\User\Model\Entity\UserAttribute

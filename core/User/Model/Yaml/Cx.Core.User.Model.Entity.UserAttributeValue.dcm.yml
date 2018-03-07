@@ -28,12 +28,12 @@ Cx\Core\User\Model\Entity\UserAttributeValue:
       length: 65535
       nullable: false
   manyToOne:
-    attribute:
-      targetEntity: Cx\Core\User\Model\Entity\UserAttribute
-      inversedBy: userAttributeValue
-      joinColumns:
-        attribute_id:
-          referencedColumnName: id
+#    attribute:
+#      targetEntity: Cx\Core\User\Model\Entity\UserAttribute
+#      inversedBy: userAttributeValue
+#      joinColumns:
+#        attribute_id:
+#          referencedColumnName: id
     user:
       targetEntity: Cx\Core\User\Model\Entity\UserProfile
       inversedBy: userAttributeValues
