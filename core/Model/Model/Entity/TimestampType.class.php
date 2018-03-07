@@ -67,7 +67,9 @@ class TimestampType extends \Doctrine\DBAL\Types\Type {
         if (!$val) {
             throw ConversionException::conversionFailedFormat($value, $this->getName(), 'Y-m-d H:i:s');
         }
-        return $val;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $dateTime = $cx->getComponent('DateTime');
+        return $dateTime->db2intern($val);
     }
 
     /**
@@ -78,7 +80,11 @@ class TimestampType extends \Doctrine\DBAL\Types\Type {
         if ($value === null) {
             return null;
         }
-        return $value->format('Y-m-d H:i:s');
+        // If the value of the field is NULL the method convertToDatabaseValue() is not called.
+        // http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $dateTime = $cx->getComponent('DateTime');
+        return $dateTime->inter2db($value)->format('Y-m-d H:i:s');
     }
 
     /**
