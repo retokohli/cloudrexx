@@ -187,21 +187,14 @@ class RegistrationForm extends \Cx\Modules\Calendar\Model\Entity\RegistrationFor
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -284,6 +277,17 @@ class RegistrationForm extends \Cx\Modules\Calendar\Model\Entity\RegistrationFor
     /**
      * {@inheritDoc}
      */
+    public function removeEvent(\Cx\Modules\Calendar\Model\Entity\Event $events)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeEvent', array($events));
+
+        return parent::removeEvent($events);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setEvents($events)
     {
 
@@ -312,6 +316,17 @@ class RegistrationForm extends \Cx\Modules\Calendar\Model\Entity\RegistrationFor
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addRegistrationFormField', array($registrationFormField));
 
         return parent::addRegistrationFormField($registrationFormField);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeRegistrationFormField(\Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormFields)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeRegistrationFormField', array($registrationFormFields));
+
+        return parent::removeRegistrationFormField($registrationFormFields);
     }
 
     /**

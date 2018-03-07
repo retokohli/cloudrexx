@@ -187,6 +187,10 @@ class Group extends \Cx\Core\User\Model\Entity\Group implements \Doctrine\ORM\Pr
      */
     public function getGroupId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getGroupId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getGroupId', array());
 

@@ -209,6 +209,10 @@ class UserAttributeValue extends \Cx\Core\User\Model\Entity\UserAttributeValue i
      */
     public function getAttributeId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getAttributeId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAttributeId', array());
 
@@ -253,6 +257,10 @@ class UserAttributeValue extends \Cx\Core\User\Model\Entity\UserAttributeValue i
      */
     public function getUserId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getUserId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUserId', array());
 
@@ -275,6 +283,10 @@ class UserAttributeValue extends \Cx\Core\User\Model\Entity\UserAttributeValue i
      */
     public function getHistory()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getHistory();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getHistory', array());
 

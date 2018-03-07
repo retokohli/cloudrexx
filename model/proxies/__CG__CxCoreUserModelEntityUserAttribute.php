@@ -187,21 +187,14 @@ class UserAttribute extends \Cx\Core\User\Model\Entity\UserAttribute implements 
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -328,6 +321,17 @@ class UserAttribute extends \Cx\Core\User\Model\Entity\UserAttribute implements 
     /**
      * {@inheritDoc}
      */
+    public function removeParent(\Cx\Core\User\Model\Entity\UserAttribute $parent)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeParent', array($parent));
+
+        return parent::removeParent($parent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getParent()
     {
 
@@ -350,6 +354,17 @@ class UserAttribute extends \Cx\Core\User\Model\Entity\UserAttribute implements 
     /**
      * {@inheritDoc}
      */
+    public function removeUserAttributeName(\Cx\Core\User\Model\Entity\UserAttributeName $userAttributeName)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeUserAttributeName', array($userAttributeName));
+
+        return parent::removeUserAttributeName($userAttributeName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getUserAttributeName()
     {
 
@@ -367,6 +382,17 @@ class UserAttribute extends \Cx\Core\User\Model\Entity\UserAttribute implements 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addUserAttributeValue', array($userAttributeValue));
 
         return parent::addUserAttributeValue($userAttributeValue);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeUserAttributeValue(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValue)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeUserAttributeValue', array($userAttributeValue));
+
+        return parent::removeUserAttributeValue($userAttributeValue);
     }
 
     /**

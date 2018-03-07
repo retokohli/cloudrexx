@@ -187,21 +187,14 @@ class Category extends \Cx\Modules\Calendar\Model\Entity\Category implements \Do
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -273,6 +266,17 @@ class Category extends \Cx\Modules\Calendar\Model\Entity\Category implements \Do
     /**
      * {@inheritDoc}
      */
+    public function removeCategoryName(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeCategoryName', array($categoryNames));
+
+        return parent::removeCategoryName($categoryNames);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getCategoryNameByLangId($langId)
     {
 
@@ -301,6 +305,17 @@ class Category extends \Cx\Modules\Calendar\Model\Entity\Category implements \Do
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addEvent', array($event));
 
         return parent::addEvent($event);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeEvent(\Cx\Modules\Calendar\Model\Entity\Event $events)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeEvent', array($events));
+
+        return parent::removeEvent($events);
     }
 
     /**

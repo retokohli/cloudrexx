@@ -198,6 +198,10 @@ class UserProfile extends \Cx\Core\User\Model\Entity\UserProfile implements \Doc
      */
     public function getUserId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getUserId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUserId', array());
 
@@ -664,6 +668,28 @@ class UserProfile extends \Cx\Core\User\Model\Entity\UserProfile implements \Doc
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUserTitle', array());
 
         return parent::getUserTitle();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addUserAttributeValue(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValues)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addUserAttributeValue', array($userAttributeValues));
+
+        return parent::addUserAttributeValue($userAttributeValues);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeUserAttributeValue(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValues)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeUserAttributeValue', array($userAttributeValues));
+
+        return parent::removeUserAttributeValue($userAttributeValues);
     }
 
     /**

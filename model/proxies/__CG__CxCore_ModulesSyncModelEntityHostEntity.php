@@ -198,6 +198,10 @@ class HostEntity extends \Cx\Core_Modules\Sync\Model\Entity\HostEntity implement
      */
     public function getEntityId()
     {
+        if ($this->__isInitialized__ === false) {
+            return  parent::getEntityId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getEntityId', array());
 
@@ -264,6 +268,10 @@ class HostEntity extends \Cx\Core_Modules\Sync\Model\Entity\HostEntity implement
      */
     public function getSyncId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getSyncId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSyncId', array());
 
@@ -286,6 +294,10 @@ class HostEntity extends \Cx\Core_Modules\Sync\Model\Entity\HostEntity implement
      */
     public function getHostId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getHostId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getHostId', array());
 

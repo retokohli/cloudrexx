@@ -187,21 +187,14 @@ class Locale extends \Cx\Core\Locale\Model\Entity\Locale implements \Doctrine\OR
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -246,6 +239,28 @@ class Locale extends \Cx\Core\Locale\Model\Entity\Locale implements \Doctrine\OR
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOrderNo', array());
 
         return parent::getOrderNo();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addLocale', array($locales));
+
+        return parent::addLocale($locales);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeLocale', array($locales));
+
+        return parent::removeLocale($locales);
     }
 
     /**
@@ -356,6 +371,28 @@ class Locale extends \Cx\Core\Locale\Model\Entity\Locale implements \Doctrine\OR
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSourceLanguage', array());
 
         return parent::getSourceLanguage();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addFrontend(\Cx\Core\View\Model\Entity\Frontend $frontends)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addFrontend', array($frontends));
+
+        return parent::addFrontend($frontends);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeFrontend(\Cx\Core\View\Model\Entity\Frontend $frontends)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeFrontend', array($frontends));
+
+        return parent::removeFrontend($frontends);
     }
 
     /**

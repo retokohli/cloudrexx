@@ -198,6 +198,10 @@ class Page extends \Cx\Core\ContentManager\Model\Entity\Page implements \Doctrin
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 

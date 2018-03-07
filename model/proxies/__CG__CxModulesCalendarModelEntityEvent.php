@@ -187,21 +187,14 @@ class Event extends \Cx\Modules\Calendar\Model\Entity\Event implements \Doctrine
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -1813,6 +1806,17 @@ class Event extends \Cx\Modules\Calendar\Model\Entity\Event implements \Doctrine
     /**
      * {@inheritDoc}
      */
+    public function removeEventField(\Cx\Modules\Calendar\Model\Entity\EventField $eventFields)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeEventField', array($eventFields));
+
+        return parent::removeEventField($eventFields);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setEventFields($eventFields)
     {
 
@@ -1841,6 +1845,17 @@ class Event extends \Cx\Modules\Calendar\Model\Entity\Event implements \Doctrine
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addInvite', array($invite));
 
         return parent::addInvite($invite);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeInvite(\Cx\Modules\Calendar\Model\Entity\Invite $invite)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeInvite', array($invite));
+
+        return parent::removeInvite($invite);
     }
 
     /**
@@ -1885,6 +1900,17 @@ class Event extends \Cx\Modules\Calendar\Model\Entity\Event implements \Doctrine
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addRegistration', array($registration));
 
         return parent::addRegistration($registration);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeRegistration(\Cx\Modules\Calendar\Model\Entity\Registration $registrations)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeRegistration', array($registrations));
+
+        return parent::removeRegistration($registrations);
     }
 
     /**
@@ -1940,6 +1966,28 @@ class Event extends \Cx\Modules\Calendar\Model\Entity\Event implements \Doctrine
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addCategories', array($category));
 
         return parent::addCategories($category);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addCategory(\Cx\Modules\Calendar\Model\Entity\Category $categories)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addCategory', array($categories));
+
+        return parent::addCategory($categories);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeCategory(\Cx\Modules\Calendar\Model\Entity\Category $categories)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeCategory', array($categories));
+
+        return parent::removeCategory($categories);
     }
 
     /**

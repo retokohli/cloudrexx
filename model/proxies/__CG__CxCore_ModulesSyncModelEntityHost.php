@@ -187,21 +187,14 @@ class Host extends \Cx\Core_Modules\Sync\Model\Entity\Host implements \Doctrine\
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -323,6 +316,17 @@ class Host extends \Cx\Core_Modules\Sync\Model\Entity\Host implements \Doctrine\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addHostEntity', array($hostEntity));
 
         return parent::addHostEntity($hostEntity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntities)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeHostEntity', array($hostEntities));
+
+        return parent::removeHostEntity($hostEntities);
     }
 
     /**

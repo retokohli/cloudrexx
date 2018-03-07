@@ -187,21 +187,14 @@ class DataAccess extends \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess imp
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -317,6 +310,28 @@ class DataAccess extends \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess imp
     /**
      * {@inheritDoc}
      */
+    public function addDataAccessApiKey(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addDataAccessApiKey', array($dataAccessApiKeys));
+
+        return parent::addDataAccessApiKey($dataAccessApiKeys);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeDataAccessApiKey(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeDataAccessApiKey', array($dataAccessApiKeys));
+
+        return parent::removeDataAccessApiKey($dataAccessApiKeys);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function addDataAccessApiKeys(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
     {
 
@@ -345,6 +360,17 @@ class DataAccess extends \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess imp
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addRelation', array($relation));
 
         return parent::addRelation($relation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relations)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeRelation', array($relations));
+
+        return parent::removeRelation($relations);
     }
 
     /**
@@ -422,6 +448,17 @@ class DataAccess extends \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess imp
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addSync', array($sync));
 
         return parent::addSync($sync);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeSync(\Cx\Core_Modules\Sync\Model\Entity\Sync $syncs)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeSync', array($syncs));
+
+        return parent::removeSync($syncs);
     }
 
     /**

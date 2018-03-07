@@ -198,6 +198,10 @@ class Country extends \Cx\Core\Country\Model\Entity\Country implements \Doctrine
      */
     public function getAlpha2()
     {
+        if ($this->__isInitialized__ === false) {
+            return  parent::getAlpha2();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAlpha2', array());
 
@@ -246,6 +250,28 @@ class Country extends \Cx\Core\Country\Model\Entity\Country implements \Doctrine
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOrd', array());
 
         return parent::getOrd();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addLocale', array($locales));
+
+        return parent::addLocale($locales);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeLocale', array($locales));
+
+        return parent::removeLocale($locales);
     }
 
     /**

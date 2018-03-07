@@ -187,21 +187,14 @@ class ApiKey extends \Cx\Core_Modules\DataAccess\Model\Entity\ApiKey implements 
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -224,6 +217,28 @@ class ApiKey extends \Cx\Core_Modules\DataAccess\Model\Entity\ApiKey implements 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getApiKey', array());
 
         return parent::getApiKey();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addDataAccessApiKey(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addDataAccessApiKey', array($dataAccessApiKeys));
+
+        return parent::addDataAccessApiKey($dataAccessApiKeys);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeDataAccessApiKey(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeDataAccessApiKey', array($dataAccessApiKeys));
+
+        return parent::removeDataAccessApiKey($dataAccessApiKeys);
     }
 
     /**

@@ -234,21 +234,14 @@ class JsonDataSource extends \Cx\Core\DataSource\Model\Entity\JsonDataSource imp
      */
     public function getId()
     {
+        if ($this->__isInitialized__ === false) {
+            return (int)  parent::getId();
+        }
+
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
-
-        return parent::setId($id);
     }
 
     /**
@@ -304,6 +297,28 @@ class JsonDataSource extends \Cx\Core\DataSource\Model\Entity\JsonDataSource imp
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOptions', array());
 
         return parent::getOptions();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addDataAccess', array($dataAccesses));
+
+        return parent::addDataAccess($dataAccesses);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeDataAccess', array($dataAccesses));
+
+        return parent::removeDataAccess($dataAccesses);
     }
 
     /**
