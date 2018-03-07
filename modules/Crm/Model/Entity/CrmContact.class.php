@@ -93,11 +93,12 @@ class CrmContact
         if (!empty($this->id)) {
             $query = "SELECT c.id, c.customer_id, c.customer_type,
                              c.customer_name, c.customer_addedby,
-                             c.customer_currency, c.contact_amount, c.contact_familyname, c.contact_title,
+                             c.customer_currency, c.contact_amount,
+                             c.contact_familyname, c.contact_title,
                              c.contact_role, c.contact_customer, c.contact_language,c.company_size,
                              c.notes, c.contact_type,c.user_account, c.updated_date, c.added_date,
                              c.industry_type, e.email,p.phone, c.datasource,
-                             c.gender,c.profile_picture, c.`email_delivery`,
+                             c.gender, c.salutation, c.profile_picture, c.`email_delivery`,
                              a.address, a.city, a.state, a.zip, a.country, w.url, 
                              `com`.`customer_name` as `linkedCompany`
                          FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
@@ -133,6 +134,7 @@ class CrmContact
                 $this->account_id       = $objResult->fields['user_account'];
                 $this->datasource       = $objResult->fields['datasource'];
                 $this->contact_gender   = $objResult->fields['gender'];
+                $this->salutation       = $objResult->fields['salutation'];
                 $this->profile_picture  = $objResult->fields['profile_picture'];
                 $this->emailDelivery    = $objResult->fields['email_delivery'];
 
@@ -182,6 +184,7 @@ class CrmContact
                            c.user_account,
                            c.datasource,
                            c.gender,
+                           c.salutation,
                            c.contact_language,
                            con.customer_name AS contactCustomer,
                            t.label AS cType,
@@ -242,6 +245,7 @@ class CrmContact
             'contact_type'      => isset ($this->contactType) ? (int) $this->contactType : '',
             'user_account'      => isset ($this->account_id) ? (int) $this->account_id : '',
             'gender'            => isset ($this->contact_gender) ? (int) $this->contact_gender : '',
+            'salutation'        => isset ($this->salutation) ? (int) $this->salutation : 0,
             'profile_picture'   => array ( 'val' => isset ($this->profile_picture) && !empty($this->profile_picture) ? $this->profile_picture : null, 'omitEmpty' => true),
             'email_delivery'    => isset ($this->emailDelivery) ? contrexx_input2int($this->emailDelivery) : 1,
         );
@@ -366,6 +370,7 @@ class CrmContact
         $this->account_id       = 0;
         $this->datasource       = 0;
         $this->contact_gender   = 0;
+        $this->salutation       = 0;
         $this->profile_picture  = '';
         $this->emailDelivery    = 1;
 

@@ -1172,7 +1172,13 @@ class CrmManager extends CrmLibrary
                 $langId = $custDetails['contact_language'];
                 $langName = \FWLanguage::getLanguageParameter($langId, 'name');
                 $langName ? $objTpl->touchBlock("contactLang") : $objTpl->hideBlock("contactLang");
+
+                // load the title profile attributes from access user
+                $profileAttribute = new \User_Profile_Attribute();
+                $salutation = $profileAttribute->getCoreAttributeTitle($custDetails['salutation']);
                 $objTpl->setVariable(array(
+                        'CRM_CONTACT_SALUTATION'    => isset($salutation['names'][BACKEND_LANG_ID])
+                            ? $salutation['names'][BACKEND_LANG_ID] : $salutation['names'][LANG_ID],
                         'CRM_CONTACT_NAME'          => contrexx_raw2xhtml($custDetails['customer_name']),
                         'CRM_CONTACT_FAMILY_NAME'   => contrexx_raw2xhtml($custDetails['contact_familyname']),
                         'CRM_CONTACT_ROLE'          => contrexx_raw2xhtml($custDetails['contact_role']),
@@ -1225,6 +1231,7 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_CONTACT_PHONE'       => $_ARRAYLANG['TXT_CRM_PHONE'],
                 'TXT_CRM_CONTACT_WEBSITE'     => $_ARRAYLANG['TXT_CRM_WEBSITE'],
                 'TXT_CRM_SOCIAL_NETWORK'      => $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
+                'TXT_CRM_SALUTATION'          => $_ARRAYLANG['TXT_CRM_SALUTATION'],
                 'TXT_CRM_CONTACT_ADDRESSES'   => $_ARRAYLANG['TXT_CRM_TITLE_ADDRESS'],
                 'TXT_CRM_CONTACT_DESCRIPTION' => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
                 'TXT_CRM_IMAGE_DELETE'        => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
@@ -1998,6 +2005,7 @@ END;
         $this->contact->contactType      = $contactType;
         $this->contact->companySize      = isset($_POST['companySize']) ? contrexx_input2raw($_POST['companySize']) : 0;
         $this->contact->contact_gender   = isset($_POST['contact_gender']) ? (int) $_POST['contact_gender'] : 0;
+        $this->contact->salutation       = isset($_POST['salutation']) ? (int) $_POST['salutation'] : 0;
         $this->contact->emailDelivery    = empty($_POST) || isset($_POST['emailDelivery']) ? 1 : 0;
 
         $accountUserID                   = (isset($_POST['contactId'])) ? intVal($_POST['contactId']) : 0;
@@ -2425,6 +2433,19 @@ END;
             $objUser = false;
         }
 
+        // load the title profile attributes from access user
+        $profileAttribute = new \User_Profile_Attribute();
+        $salutations = $profileAttribute->getCoreAttributeTitle();
+        foreach ($salutations as $salutation) {
+            $this->_objTpl->setVariable(array(
+                'SALUTATION_SELECT'     =>  ($salutation['value'] == $this->contact->salutation) ? 'selected=selected' : '',
+                'SALUTATION_ID'         =>  $salutation['value'],
+                'TXT_SALUTATION_NAME'   =>  isset($salutation['names'][BACKEND_LANG_ID])
+                    ? $salutation['names'][BACKEND_LANG_ID] : $salutation['names'][LANG_ID],
+            ));
+            $this->_objTpl->parse("crmContactSalutationOptions");
+        }
+
         $this->_objTpl->setVariable(array(
             'CRM_ADDRESS_HEADER_CLASS'      => $showAddress ? 'header-collapse' : 'header-expand',
             'CRM_ADDRESS_BLOCK_DISPLAY'     => $showAddress ? 'table-row-group' : 'none',
@@ -2527,6 +2548,7 @@ END;
                 'TXT_CRM_CUSTOMERTYPE'        =>    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                 'TXT_CRM_SOCIAL_NETWORK'      =>    $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
                 'TXT_CRM_GENDER'              =>    $_ARRAYLANG['TXT_CRM_GENDER'],
+                'TXT_CRM_SALUTATION'          =>    $_ARRAYLANG['TXT_CRM_SALUTATION'],
                 'TXT_CRM_NOT_SPECIFIED'       =>    $_ARRAYLANG['TXT_CRM_NOT_SPECIFIED'],
                 'TXT_CRM_GENDER_MALE'         =>    $_ARRAYLANG['TXT_CRM_GENDER_MALE'],
                 'TXT_CRM_GENDER_FEMALE'       =>    $_ARRAYLANG['TXT_CRM_GENDER_FEMALE'],

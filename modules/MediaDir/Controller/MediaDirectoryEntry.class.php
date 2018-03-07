@@ -1687,6 +1687,13 @@ JSCODE;
         }
 
         if ($objCategoriesLevels !== false && $objCategoriesLevels->RecordCount() > 0) {
+            // check if any thumbnail placeholders are present in the template
+            $placeholders = $objTpl->getPlaceholderList('mediadir_' . strtolower($list));
+            $hasThumbnailPlaceholders = !empty(preg_grep('/^' . $this->moduleLangVar . '_ENTRY_' . $list . '_THUMBNAIL_FORMAT_' . '/', $placeholders));
+            if ($hasThumbnailPlaceholders) {
+                $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+            }
+
             while(!$objCategoriesLevels->EOF) {
                 // assign ID to related variable based on the requested type (category or level)
                 if ($intType == 1) {
@@ -1695,12 +1702,34 @@ JSCODE;
                     $levelId = $objCategoriesLevels->fields['elm_id'];
                 }
 
+                $picture = contrexx_raw2xhtml($objCategoriesLevels->fields['elm_picture']);
                 $objTpl->setVariable(array(
                     $this->moduleLangVar . '_ENTRY_' . $list . '_ID'        => $objCategoriesLevels->fields['elm_id'],
                     $this->moduleLangVar . '_ENTRY_' . $list . '_NAME'      => contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']),
                     $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
                     $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId),
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE'   => '<img src="'.$picture.'" border="0" alt="'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'" />',
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE_SOURCE' => $pictrue,
                 ));
+
+                // parse thumbnails
+                if ($hasThumbnailPlaceholders && !empty($picture)) {
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($picture, PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($picture, PATHINFO_BASENAME);
+                    $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                        $objTpl->setVariable(
+                            $this->moduleLangVar . '_ENTRY_' . $list . '_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
+                    }
+                }
+
                 $objTpl->parse('mediadir_' . strtolower($list));
                 $objCategoriesLevels->MoveNext();
             }
@@ -1714,13 +1743,18 @@ JSCODE;
         global $objDatabase;
         $query = "SELECT
             cat_rel.`category_id` AS `elm_id`,
+            cat_image.`picture` AS `elm_picture`,
             cat_name.`category_name` AS `elm_name`
           FROM
             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS cat_rel
           INNER JOIN
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_categories AS cat_image
+          ON
+            cat_image.`id` = cat_rel.`category_id`
+          INNER JOIN
             ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names AS cat_name
           ON
-            cat_rel.`category_id` = cat_name.`category_id`
+            cat_name.`category_id` = cat_image.`id`
           WHERE
             cat_rel.`entry_id` = ?
           AND
@@ -1737,13 +1771,18 @@ JSCODE;
         global $objDatabase;
         $query = "SELECT
             level_rel.`level_id` AS `elm_id`,
+            level_image.`picture` AS `elm_picture`,
             level_name.`level_name` AS `elm_name`
           FROM
             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level_rel
           INNER JOIN
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_levels AS level_image
+          ON
+            level_image.`id` = level_rel.`level_id`
+          INNER JOIN
             ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_name
           ON
-            level_rel.`level_id` = level_name.`level_id`
+            level_name.`level_id` = level_image.`id`
           WHERE
             level_rel.`entry_id` = ?
           AND

@@ -841,17 +841,25 @@ namespace Cx\Core\Core\Controller {
              *
              * Enable \DBG to see what happened
              */
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 if (file_exists($this->websiteDocumentRootPath . '/offline.html')) {
                     $offlinePath = $this->websiteDocumentRootPath;
                 } else {
                     $offlinePath = $this->codeBaseDocumentRootPath;
                 }
+                // remove CSRF token
+                output_reset_rewrite_vars();
                 echo file_get_contents($offlinePath . '/offline.html');
                 \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
                 \DBG::dump($e->getTrace());
+                \DBG::msg('GET:');
+                \DBG::dump($_GET);
+                \DBG::msg('POST:');
+                \DBG::dump($_POST);
+                \DBG::msg('COOKIE:');
+                \DBG::dump($_COOKIE);
                 die();
             }
         }
@@ -2284,7 +2292,10 @@ namespace Cx\Core\Core\Controller {
             $cx = $this;
             register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
                 $parsingTime = $cx->stopTimer();
-                \DBG::log("(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\"");
+                \DBG::log(
+                    "(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\" \"" .
+                    memory_get_peak_usage(true) . "\""
+                );
             });
         }
 
