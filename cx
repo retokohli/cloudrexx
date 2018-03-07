@@ -1171,10 +1171,10 @@ case "${COMMANDS[0]}" in
             dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
-            grep "$(tac tmp/log/dbg.log | grep -m1 -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
+            grep "$(tac tmp/log/dbg.log | grep -m1 -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
             exit
         elif [[ ${ARGUMENTS["follow"]} ]]; then
-            tail -f -n0 tmp/log/dbg.log | less
+            tail -f -n0 tmp/log/dbg.log
             exit
         elif [[ ${ARGUMENTS["clear-usercache"]} ]]; then
             dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'
