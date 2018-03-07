@@ -77,17 +77,17 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     private $lvl;
 
     /**
-     * @var Cx\Core\ContentManager\Model\Entity\Node
+     * @var \Doctrine\Common\Collections\Collection
      */
     private $children;
 
     /**
-     * @var Cx\Core\ContentManager\Model\Entity\Page
+     * @var \Doctrine\Common\Collections\Collection
      */
     private $pages;
 
     /**
-     * @var Cx\Core\ContentManager\Model\Entity\Node
+     * @var \Cx\Core\ContentManager\Model\Entity\Node
      */
     private $parent;
 
@@ -201,7 +201,30 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Add children
      *
-     * @param Cx\Core\ContentManager\Model\Entity\Node $children
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $children
+     * @return Node
+     */
+    public function addChild(\Cx\Core\ContentManager\Model\Entity\Node $children)
+    {
+        $this->children[] = $children;
+
+        return $this;
+    }
+
+    /**
+     * Remove children
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $children
+     */
+    public function removeChild(\Cx\Core\ContentManager\Model\Entity\Node $children)
+    {
+        $this->children->removeElement($children);
+    }
+
+    /**
+     * Add children
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $children
      */
     public function addChildren(\Cx\Core\ContentManager\Model\Entity\Node $children)
     {
@@ -217,7 +240,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Get children
      *
-     * @return Doctrine\Common\Collections\Collection $children
+     * @return \Doctrine\Common\Collections\Collection $children
      */
     public function getChildren($lang = null)
     {
@@ -233,7 +256,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Add a page
      *
-     * @param Cx\Core\ContentManager\Model\Entity\Page $page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page
      */
     public function addPage(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
@@ -241,9 +264,19 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     }
 
     /**
+     * Remove pages
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $pages
+     */
+    public function removePage(\Cx\Core\ContentManager\Model\Entity\Page $pages)
+    {
+        $this->pages->removeElement($pages);
+    }
+
+    /**
      * Get pages
      *
-     * @return Doctrine\Common\Collections\Collection $pages
+     * @return \Doctrine\Common\Collections\Collection $pages
      */
     public function getPages($inactive_langs = false, $aliases = false)
     {
@@ -300,7 +333,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Set parent
      *
-     * @param Cx\Core\ContentManager\Model\Entity\Node $parent
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $parent
      */
     public function setParent(\Cx\Core\ContentManager\Model\Entity\Node $parent)
     {
@@ -310,7 +343,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Get parent
      *
-     * @return Cx\Core\ContentManager\Model\Entity\Node $parent
+     * @return \Cx\Core\ContentManager\Model\Entity\Node $parent
      */
     public function getParent()
     {

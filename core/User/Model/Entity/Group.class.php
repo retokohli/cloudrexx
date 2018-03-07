@@ -63,7 +63,7 @@ class Group extends \Cx\Model\Base\EntityBase {
     private $homepage;
 
     /**
-     * @var Cx\Core\User\Model\Entity\User
+     * @var \Doctrine\Common\Collections\Collection
      */
     private $user;
 
@@ -202,7 +202,7 @@ class Group extends \Cx\Model\Base\EntityBase {
     /**
      * Add user
      *
-     * @param Cx\Core\User\Model\Entity\User $user
+     * @param \Cx\Core\User\Model\Entity\User $user
      */
     public function addUser(\Cx\Core\User\Model\Entity\User $user)
     {
@@ -221,7 +221,7 @@ class Group extends \Cx\Model\Base\EntityBase {
     /**
      * Get user
      *
-     * @return Doctrine\Common\Collections\Collection $user
+     * @return \Doctrine\Common\Collections\Collection $user
      */
     public function getUser()
     {

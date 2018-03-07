@@ -138,12 +138,12 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     private $users;
 
     /**
-     * @var Cx\Core\User\Model\Entity\ProfileTitle
+     * @var \Doctrine\Common\Collections\Collection
      */
     private $userTitle;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var \Cx\Core\User\Model\Entity\ProfileTitle
      */
     protected $userAttributeValues;
 
@@ -555,7 +555,7 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     /**
      * Set users
      *
-     * @param Cx\Core\User\Model\Entity\User $users
+     * @param \Cx\Core\User\Model\Entity\User $users
      */
     public function setUsers(\Cx\Core\User\Model\Entity\User $users)
     {
@@ -565,7 +565,7 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     /**
      * Get users
      *
-     * @return Cx\Core\User\Model\Entity\User $users
+     * @return \Cx\Core\User\Model\Entity\User $users
      */
     public function getUsers()
     {
@@ -575,7 +575,7 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     /**
      * Set userTitle
      *
-     * @param Cx\Core\User\Model\Entity\ProfileTitle $userTitle
+     * @param \Cx\Core\User\Model\Entity\ProfileTitle $userTitle
      */
     public function setUserTitle(\Cx\Core\User\Model\Entity\ProfileTitle $userTitle)
     {
@@ -585,11 +585,34 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     /**
      * Get userTitle
      *
-     * @return Cx\Core\User\Model\Entity\ProfileTitle $userTitle
+     * @return \Cx\Core\User\Model\Entity\ProfileTitle $userTitle
      */
     public function getUserTitle()
     {
         return $this->userTitle;
+    }
+
+    /**
+     * Add userAttributeValues
+     *
+     * @param \Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValues
+     * @return UserProfile
+     */
+    public function addUserAttributeValue(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValues)
+    {
+        $this->userAttributeValues[] = $userAttributeValues;
+
+        return $this;
+    }
+
+    /**
+     * Remove userAttributeValues
+     *
+     * @param \Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValues
+     */
+    public function removeUserAttributeValue(\Cx\Core\User\Model\Entity\UserAttributeValue $userAttributeValues)
+    {
+        $this->userAttributeValues->removeElement($userAttributeValues);
     }
 
     /**

@@ -67,7 +67,7 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     protected $options;
 
     /**
-     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $dataAccesses;
 
@@ -140,6 +140,29 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
      */
     public function getOptions() {
         return $this->options;
+    }
+
+    /**
+     * Add dataAccesses
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses
+     * @return DataSource
+     */
+    public function addDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    {
+        $this->dataAccesses[] = $dataAccesses;
+
+        return $this;
+    }
+
+    /**
+     * Remove dataAccesses
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses
+     */
+    public function removeDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    {
+        $this->dataAccesses->removeElement($dataAccesses);
     }
 
     /**

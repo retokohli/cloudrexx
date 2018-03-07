@@ -75,7 +75,7 @@ class Registration extends \Cx\Model\Base\EntityBase {
     protected $type;
 
     /**
-     * @var Cx\Modules\Calendar\Model\Entity\Invite
+     * @var \Cx\Modules\Calendar\Model\Entity\Invite
      */
     protected $invite;
 
@@ -105,12 +105,12 @@ class Registration extends \Cx\Model\Base\EntityBase {
     protected $paid;
 
     /**
-     * @var Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue
+     * @var \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue
      */
     protected $registrationFormFieldValues;
 
     /**
-     * @var Cx\Modules\Calendar\Model\Entity\Event
+     * @var \Cx\Modules\Calendar\Model\Entity\Event
      */
     protected $event;
 
@@ -242,7 +242,7 @@ class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * Set invite
      *
-     * @param Cx\Modules\Calendar\Model\Entity\Invite $invite
+     * @param \Cx\Modules\Calendar\Model\Entity\Invite $invite
      */
     public function setInvite($invite)
     {
@@ -252,7 +252,7 @@ class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * Get invite
      *
-     * @return Cx\Modules\Calendar\Model\Entity\Invite $invite
+     * @return \Cx\Modules\Calendar\Model\Entity\Invite $invite
      */
     public function getInvite()
     {
@@ -362,11 +362,21 @@ class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * Add registrationFormFieldValues
      *
-     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue
+     * @param \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue
      */
     public function addRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
     {
         $this->registrationFormFieldValues[] = $registrationFormFieldValue;
+    }
+
+    /**
+     * Remove registrationFormFieldValues
+     *
+     * @param \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues
+     */
+    public function removeRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues)
+    {
+        $this->registrationFormFieldValues->removeElement($registrationFormFieldValues);
     }
 
     /**
@@ -403,7 +413,7 @@ class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * Get registrationFormFieldValues
      *
-     * @return Doctrine\Common\Collections\Collection $registrationFormFieldValues
+     * @return \Doctrine\Common\Collections\Collection $registrationFormFieldValues
      */
     public function getRegistrationFormFieldValues()
     {
@@ -413,7 +423,7 @@ class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * Set event
      *
-     * @param Cx\Modules\Calendar\Model\Entity\Event $event
+     * @param \Cx\Modules\Calendar\Model\Entity\Event $event
      */
     public function setEvent(\Cx\Modules\Calendar\Model\Entity\Event $event)
     {
@@ -423,7 +433,7 @@ class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * Get event
      *
-     * @return Cx\Modules\Calendar\Model\Entity\Event $event
+     * @return \Cx\Modules\Calendar\Model\Entity\Event $event
      */
     public function getEvent()
     {
