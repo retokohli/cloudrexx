@@ -1018,8 +1018,7 @@ function internal_dockerexec {
         ARGS+=("$index")
     done
     if read -r -t 0; then
-        data=$(cat /dev/stdin)
-        echo "$data" | docker "${ARGS[@]}"
+        cat /dev/stdin | docker "${ARGS[@]}"
     else
         docker "${ARGS[@]}"
     fi
