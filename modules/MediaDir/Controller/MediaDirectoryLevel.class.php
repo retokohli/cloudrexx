@@ -346,6 +346,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
 
                 foreach ($arrLevels as $key => $arrLevel) {
+                    $intBlockId = $arrExistingBlocks[$i];
+
                     if($this->arrSettings['settingsLevelOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
 
@@ -373,6 +375,25 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
                     } else {
                         $strLevelCmd = null;
+                    }
+
+                    // parse entries
+                    if (
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries') &&
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entry')
+                    ) {
+                        $objEntry = new MediaDirectoryEntry($this->moduleName);
+                        $objEntry->getEntries(null, $arrLevel['levelId'], null, null, false, null, true);
+                        if ($objEntry->countEntries()) {
+                            // set mediadirCategoriesLevels_row_N_entry tempalte block to be parsed
+                            $objEntry->setStrBlockName($this->moduleNameLC.'CategoriesLevels_row_'. $intBlockId . '_entry');
+
+                            // prarse related entries
+                            $objEntry->listEntries($objTpl, 5, 'category_level');
+                            $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        } else {
+                            $objTpl->hideBlock($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        }
                     }
 
                     //parse variables
@@ -404,8 +425,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             );
                         }
                     }
-
-                    $intBlockId = $arrExistingBlocks[$i];
 
                     $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_'.$intBlockId);
                     $objTpl->clearVariables();
