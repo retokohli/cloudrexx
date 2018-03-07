@@ -64,8 +64,9 @@ class BackendTable extends HTML_Table {
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->templateFile = empty($options['template']) || !file_exists($options['template'])
-                  ? ASCMS_CORE_PATH.'/Html/View/Template/Generic/Table.html'
+                  ? $cx->getCodeBaseCorePath().'/Html/View/Template/Generic/Table.html'
                   : $options['template'];
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $this->hasMasterTableHeader = !empty($options['header']);
@@ -463,7 +464,8 @@ class BackendTable extends HTML_Table {
      */
     function _getAttrString($attributes)
     {
-        $template = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic/');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $template = new \Cx\Core\Html\Sigma($cx->getCodeBaseCorePath().'/Html/View/Template/Generic/');
         $template->loadTemplateFile('Attribute.html');
 
         $strAttr = '';
