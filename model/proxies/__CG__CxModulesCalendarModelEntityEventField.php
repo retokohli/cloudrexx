@@ -198,10 +198,6 @@ class EventField extends \Cx\Modules\Calendar\Model\Entity\EventField implements
      */
     public function getEventId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getEventId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getEventId', array());
 
@@ -246,10 +242,6 @@ class EventField extends \Cx\Modules\Calendar\Model\Entity\EventField implements
      */
     public function getLangId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getLangId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLangId', array());
 

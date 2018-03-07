@@ -198,10 +198,6 @@ class RegistrationFormFieldName extends \Cx\Modules\Calendar\Model\Entity\Regist
      */
     public function getFieldId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getFieldId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFieldId', array());
 
@@ -224,10 +220,6 @@ class RegistrationFormFieldName extends \Cx\Modules\Calendar\Model\Entity\Regist
      */
     public function getFormId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getFormId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFormId', array());
 
@@ -272,10 +264,6 @@ class RegistrationFormFieldName extends \Cx\Modules\Calendar\Model\Entity\Regist
      */
     public function getLangId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getLangId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLangId', array());
 

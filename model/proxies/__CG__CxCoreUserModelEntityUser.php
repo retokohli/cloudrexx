@@ -187,10 +187,6 @@ class User extends \Cx\Core\User\Model\Entity\User implements \Doctrine\ORM\Prox
      */
     public function getId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
@@ -745,6 +741,17 @@ class User extends \Cx\Core\User\Model\Entity\User implements \Doctrine\ORM\Prox
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getGroup', array());
 
         return parent::getGroup();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isBackendGroupUser()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'isBackendGroupUser', array());
+
+        return parent::isBackendGroupUser();
     }
 
     /**

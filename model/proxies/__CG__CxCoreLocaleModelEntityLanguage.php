@@ -220,10 +220,6 @@ class Language extends \Cx\Core\Locale\Model\Entity\Language implements \Doctrin
      */
     public function getIso1()
     {
-        if ($this->__isInitialized__ === false) {
-            return  parent::getIso1();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getIso1', array());
 

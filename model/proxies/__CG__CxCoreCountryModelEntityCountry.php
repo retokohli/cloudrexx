@@ -198,10 +198,6 @@ class Country extends \Cx\Core\Country\Model\Entity\Country implements \Doctrine
      */
     public function getAlpha2()
     {
-        if ($this->__isInitialized__ === false) {
-            return  parent::getAlpha2();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAlpha2', array());
 

@@ -73,10 +73,10 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'changes', 'oldHostEntities', 'validators', 'virtual');
+            return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'changes', 'originChanges', 'oldHostEntities', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'changes', 'oldHostEntities', 'validators', 'virtual');
+        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'changes', 'originChanges', 'oldHostEntities', 'validators', 'virtual');
     }
 
     /**
@@ -187,14 +187,21 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
      */
     public function getId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setId($id)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
+
+        return parent::setId($id);
     }
 
     /**

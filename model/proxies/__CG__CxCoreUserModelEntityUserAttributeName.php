@@ -198,10 +198,6 @@ class UserAttributeName extends \Cx\Core\User\Model\Entity\UserAttributeName imp
      */
     public function getAttributeId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getAttributeId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAttributeId', array());
 
@@ -224,10 +220,6 @@ class UserAttributeName extends \Cx\Core\User\Model\Entity\UserAttributeName imp
      */
     public function getLangId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getLangId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLangId', array());
 

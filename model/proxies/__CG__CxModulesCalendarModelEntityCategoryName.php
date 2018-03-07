@@ -198,10 +198,6 @@ class CategoryName extends \Cx\Modules\Calendar\Model\Entity\CategoryName implem
      */
     public function getCatId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getCatId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCatId', array());
 
@@ -246,10 +242,6 @@ class CategoryName extends \Cx\Modules\Calendar\Model\Entity\CategoryName implem
      */
     public function getLangId()
     {
-        if ($this->__isInitialized__ === false) {
-            return (int)  parent::getLangId();
-        }
-
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLangId', array());
 
