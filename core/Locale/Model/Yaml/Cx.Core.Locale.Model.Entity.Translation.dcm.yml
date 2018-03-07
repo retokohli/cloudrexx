@@ -1,4 +1,4 @@
-Cx\Core\ContentManager\Model\Entity\Translation:
+Cx\Core\Locale\Model\Entity\Translation:
   type: entity
   table: translations
   repositoryClass: Gedmo\Translatable\Entity\Repository\TranslationRepository
