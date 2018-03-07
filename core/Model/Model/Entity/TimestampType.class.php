@@ -69,7 +69,8 @@ class TimestampType extends \Doctrine\DBAL\Types\Type {
         }
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime');
-        return $dateTime->db2intern($val);
+        $dateTime->db2intern($val);
+        return $val;
     }
 
     /**
@@ -84,7 +85,8 @@ class TimestampType extends \Doctrine\DBAL\Types\Type {
         // http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime');
-        return $dateTime->inter2db($value)->format('Y-m-d H:i:s');
+        $dateTime->intern2db($value);
+        return $value->format('Y-m-d H:i:s');
     }
 
     /**
