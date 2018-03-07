@@ -100,16 +100,6 @@ class Group extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set groupId
-     *
-     * @param integer $groupId
-     */
-    public function setGroupId($groupId)
-    {
-        $this->groupId = $groupId;
-    }
-
-    /**
      * Set groupName
      *
      * @param string $groupName
