@@ -3,16 +3,12 @@ SET SESSION `sql_mode`=(SELECT REPLACE(REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY','
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
   `access_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
-  PRIMARY KEY (`access_id`,`group_id`),
-  INDEX IDX_A07C12734FEA67CF (`access_id`),
-  INDEX IDX_A07C1273FE54D947 (`group_id`)
+  PRIMARY KEY (`access_id`,`group_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_group_static_ids` (
   `access_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
-  PRIMARY KEY (`access_id`,`group_id`),
-  INDEX IDX_DC26D8B04FEA67CF (`access_id`),
-  INDEX IDX_DC26D8B0FE54D947 (`group_id`)
+  PRIMARY KEY (`access_id`,`group_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_id` (
   `id` int(11) NOT NULL,
@@ -59,7 +55,8 @@ CREATE TABLE `contrexx_access_user_attribute_value` (
   `history_id` int NOT NULL DEFAULT '0',
   `value` text NOT NULL,
   PRIMARY KEY (`attribute_id`,`user_id`,`history_id`),
-  FULLTEXT KEY `value` (`value`)
+  FULLTEXT KEY `value` (`value`),
+  INDEX `IDX_B0DEA323A76ED395` (`user_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_core_attribute` (
   `id` varchar(25) NOT NULL,
@@ -3863,10 +3860,6 @@ ALTER TABLE contrexx_module_calendar_events_categories ADD CONSTRAINT FK_3974DFD
 ALTER TABLE contrexx_module_calendar_registration_form_field_name ADD CONSTRAINT FK_1C1E8341443707B0 FOREIGN KEY (field_id) REFERENCES contrexx_module_calendar_registration_form_field (id);
 ALTER TABLE contrexx_module_calendar_registration_form_field ADD CONSTRAINT FK_AAEED23C5288FD4F FOREIGN KEY (form) REFERENCES contrexx_module_calendar_registration_form (id);
 ALTER TABLE contrexx_module_calendar_event_field ADD CONSTRAINT FK_F76EF62C71F7E88B FOREIGN KEY (event_id) REFERENCES contrexx_module_calendar_event (id);
-ALTER TABLE contrexx_access_group_dynamic_ids ADD CONSTRAINT FK_A07C12734FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
-ALTER TABLE contrexx_access_group_dynamic_ids ADD CONSTRAINT FK_A07C1273FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
-ALTER TABLE contrexx_access_group_static_ids ADD CONSTRAINT FK_DC26D8B04FEA67CF FOREIGN KEY (access_id) REFERENCES contrexx_access_id (id);
-ALTER TABLE contrexx_access_group_static_ids ADD CONSTRAINT FK_DC26D8B0FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
 ALTER TABLE contrexx_access_user_attribute_name ADD CONSTRAINT FK_90502F6CB6E62EFA FOREIGN KEY (attribute_id) REFERENCES contrexx_access_user_attribute (id);
 ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43A76ED395 FOREIGN KEY (user_id) REFERENCES contrexx_access_users (id);
 ALTER TABLE contrexx_access_rel_user_group ADD CONSTRAINT FK_401DFD43FE54D947 FOREIGN KEY (group_id) REFERENCES contrexx_access_user_groups (group_id);
