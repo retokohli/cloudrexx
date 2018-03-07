@@ -82,16 +82,6 @@ class IdMapping extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set id
-     *
-     * @param integer $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * Set foreignHost
      *
      * @param string $foreignHost

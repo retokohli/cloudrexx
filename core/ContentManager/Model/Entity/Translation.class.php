@@ -10,14 +10,4 @@ class Translation extends \Gedmo\Translatable\Entity\MappedSuperclass\AbstractTr
     /**
      * All required columns are mapped through inherited superclass
      */
-
-    /**
-     * Set id
-     *
-     * @param integer $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
 }

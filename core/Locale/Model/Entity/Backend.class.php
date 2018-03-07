@@ -73,16 +73,6 @@ class Backend extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set id
-     *
-     * @param integer $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * Set iso1
      *
      * @param \Cx\Core\Locale\Model\Entity\Language $iso1

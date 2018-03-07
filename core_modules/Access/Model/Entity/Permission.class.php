@@ -156,16 +156,6 @@ class Permission extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set id
-     *
-     * @param integer $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * Set the allowed protocols
      *
      * @param array $allowedProtocols

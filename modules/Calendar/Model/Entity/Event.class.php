@@ -458,16 +458,6 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set id
-     *
-     * @param integer $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * Set type
      *
      * @param integer $type

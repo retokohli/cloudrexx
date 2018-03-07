@@ -92,16 +92,6 @@ class SystemComponent extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set id
-     *
-     * @param integer $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * Set name
      *
      * @param string $name
