@@ -829,7 +829,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `org_phone` varchar(20) NOT NULL DEFAULT '',
   `org_email` varchar(255) NOT NULL,
   `host_mediadir_id` int(11) NOT NULL,
-  INDEX IDX_90D256CF9DB6EA93 (`registration_form`),
+  INDEX contrexx_module_calendar_registration_form_ibkf (`registration_form`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_event_field` (
@@ -864,7 +864,7 @@ CREATE TABLE `contrexx_module_calendar_invite` (
   `invitee_id` int(11) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `token` varchar(32) NOT NULL,
-  INDEX IDX_842085E171F7E88B (event_id),
+  INDEX contrexx_module_calendar_event_id_ibfk (event_id),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_host` (
