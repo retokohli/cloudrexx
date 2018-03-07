@@ -3904,11 +3904,20 @@ class NewsletterManager extends NewsletterLib
                 } else if($crmUser->contact_gender == 2){
                     $arrUserData['sex'] = 'm';
                 }
+
+                $profileAttribute = new \User_Profile_Attribute();
+                $salutations = $profileAttribute->getCoreAttributeTitle();
+                $salutation = '';
+                if (isset($salutations['title_' . $crmUser->salutation])) {
+                    $salutation = $salutations['title_' . $crmUser->salutation]['desc'];
+                }
+                
                 // crm dos not support the following fields:
-                // salutation, birthday, industry_sector, country
+                // birthday, industry_sector, country
                 $arrUserData['email']           = $crmUser->email;
                 $arrUserData['lastname']        = $crmUser->family_name;
                 $arrUserData['firstname']       = $crmUser->customerName;
+                $arrUserData['salutation']      = $salutation;
                 $arrUserData['address']         = $crmUser->address;
                 $arrUserData['company']         = $crmUser->linkedCompany;
                 $arrUserData['title']           = $crmUser->contact_title;
