@@ -20,8 +20,8 @@ CREATE TABLE `contrexx_access_rel_user_group` (
   `user_id` int NOT NULL,
   `group_id` int NOT NULL,
   PRIMARY KEY (`user_id`,`group_id`),
-  INDEX IDX_401DFD43A76ED395 (`user_id`),
-  INDEX IDX_401DFD43FE54D947 (`group_id`)
+  INDEX `contrexx_access_rel_user_group_user_id_ibfk` (`user_id`),
+  INDEX `contrexx_access_rel_user_group_group_id_ibfk` (`group_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_settings` (
   `key` varchar(32) NOT NULL DEFAULT '',
@@ -40,14 +40,14 @@ CREATE TABLE `contrexx_access_user_attribute` (
   `access_id` int NOT NULL,
   `read_access_id` int NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX IDX_D97727BE727ACA70 (`parent_id`)
+  INDEX `contrexx_access_user_attribute_parent_id_ibfk` (`parent_id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_access_user_attribute_name` (
   `attribute_id` int NOT NULL DEFAULT '0',
   `lang_id` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`attribute_id`,`lang_id`),
-  INDEX IDX_90502F6CB6E62EFA (`attribute_id`)
+  INDEX `contrexx_access_user_attribute_name_attribute_id_ibfk` (`attribute_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_attribute_value` (
   `attribute_id` int NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE `contrexx_access_user_attribute_value` (
   `value` text NOT NULL,
   PRIMARY KEY (`attribute_id`,`user_id`,`history_id`),
   FULLTEXT KEY `value` (`value`),
-  INDEX `IDX_B0DEA323A76ED395` (`user_id`)
+  INDEX `contrexx_access_user_attribute_value_user_id_ibfk` (`user_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_core_attribute` (
   `id` varchar(25) NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE `contrexx_access_user_profile` (
   `picture` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`user_id`),
   KEY `profile` (`firstname`(100),`lastname`(100),`company`(50)),
-  INDEX IDX_959DBF6C2B36786B (`title`)
+  INDEX `contrexx_access_user_profile_title_ibfk` (`title`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_title` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -200,7 +200,7 @@ CREATE TABLE `contrexx_content_node` (
   `rgt` int(11) NOT NULL,
   `lvl` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `IDX_E5A18FDD727ACA70` (`parent_id`),
+  KEY `contrexx_content_node_parent_id_ibfk` (`parent_id`),
   CONSTRAINT `contrexx_content_node_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_content_page` (
@@ -244,7 +244,7 @@ CREATE TABLE `contrexx_content_page` (
   `cmd` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `node_id` (`node_id`,`lang`),
-  KEY `IDX_D8E86F54460D9FD7` (`node_id`),
+  KEY `contrexx_content_page_node_id_ibfk` (`node_id`),
   CONSTRAINT `contrexx_content_page_ibfk_3` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_core_country` (
@@ -427,15 +427,15 @@ CREATE TABLE `contrexx_core_module_sync_change` (
   `origin_entity_index_data` longtext NOT NULL COMMENT '(DC2Type:array)',
   `contents` longtext NOT NULL COMMENT '(DC2Type:array)',
   PRIMARY KEY (`id`),
-  INDEX IDX_E98B92F1FA50C422 (`sync_id`),
-  INDEX IDX_E98B92F14F27D14F (`origin_sync_id`)
+  INDEX `contrexx_core_module_sync_change_sync_id_ibfk` (`sync_id`),
+  INDEX `contrexx_core_module_sync_change_origin_sync_id_ibfk` (`origin_sync_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_change_host` (
   `change_id` int(11) NOT NULL,
   `host_id` int(11) NOT NULL,
   PRIMARY KEY (`change_id`,`host_id`),
-  INDEX IDX_92C38FE0213C8BF4 (`change_id`),
-  INDEX IDX_92C38FE01FB8D185 (`host_id`)
+  INDEX `contrexx_core_module_sync_change_host_change_id_ibfk` (`change_id`),
+  INDEX `contrexx_core_module_sync_change_host_host_id_ibfk` (`host_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_host` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -851,7 +851,7 @@ CREATE TABLE `contrexx_module_calendar_events_categories` (
   `event_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   PRIMARY KEY (`event_id`, `category_id`),
-  INDEX IDX_3974DFDB71F7E88B (`event_id`)
+  INDEX `contrexx_module_calendar_events_categories_event_id_ibfk` (`event_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_invite` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -902,7 +902,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `payment_method` int(11) NOT NULL,
   `paid` int(11) NOT NULL,
   UNIQUE INDEX UNIQ_7F5FE63EA417747 (`invite_id`),
-  INDEX IDX_7F5FE6371F7E88B (`event_id`),
+  INDEX `contrexx_module_calendar_registration_event_id_ibfk` (`event_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_registration_form` (
@@ -928,14 +928,14 @@ CREATE TABLE `contrexx_module_calendar_registration_form_field_name` (
   `name` varchar(255) NOT NULL,
   `default` mediumtext NOT NULL,
   PRIMARY KEY (`field_id`,`form_id`,`lang_id`),
-  INDEX IDX_1C1E8341443707B0 (`field_id`)
+  INDEX `contrexx_module_calendar_registration_form_field_name_13` (`field_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_registration_form_field_value` (
   `reg_id` int(7) NOT NULL,
   `field_id` int(7) NOT NULL,
   `value` mediumtext NOT NULL,
-  INDEX IDX_F58DB1FA990B26CC(`reg_id`),
-  INDEX IDX_F58DB1FA443707B0(`field_id`),
+  INDEX `contrexx_module_calendar_registration_form_field_value_11` (`reg_id`),
+  INDEX `contrexx_module_calendar_registration_form_field_value_14` (`field_id`),
   PRIMARY KEY (`reg_id`,`field_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_rel_event_host` (
@@ -3022,7 +3022,7 @@ CREATE TABLE `contrexx_module_order_invoice_item` (
   `description` varchar(255) NOT NULL,
   `price` decimal(10,0) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `IDX_ED28B9B52989F1FD` (`invoice_id`),
+  KEY `contrexx_module_order_invoice_item_invoice_id_ibfk` (`invoice_id`),
   CONSTRAINT `contrexx_module_order_invoice_item_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `contrexx_module_order_invoice` (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_order_order` (
@@ -3102,8 +3102,8 @@ CREATE TABLE `contrexx_module_pim_product_upgrade` (
   `product_id` int(11) NOT NULL,
   `upgrade_product_id` int(11) NOT NULL,
   PRIMARY KEY (`product_id`,`upgrade_product_id`),
-  KEY `IDX_8541336E4584665A` (`product_id`),
-  KEY `IDX_8541336E667E081F` (`upgrade_product_id`),
+  KEY `contrexx_module_pim_product_upgrade_product_id_ibfk` (`product_id`),
+  KEY `contrexx_module_pim_product_upgrade_upgrade_product_id_ibfk` (`upgrade_product_id`),
   CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`),
   CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_2` FOREIGN KEY (`upgrade_product_id`) REFERENCES `contrexx_module_pim_product` (`id`)
 ) ENGINE=InnoDB;
