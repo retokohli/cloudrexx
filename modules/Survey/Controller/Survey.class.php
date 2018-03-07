@@ -678,6 +678,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '') {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
@@ -728,6 +729,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '' && strlen($objChoiceAns->fields['votes']) > 5) {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
@@ -1309,6 +1311,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '') {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
@@ -1359,6 +1362,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '' && strlen($objChoiceAns->fields['votes']) > 5) {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
