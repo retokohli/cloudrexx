@@ -827,6 +827,11 @@ class ReflectionComponent {
             }
             $em->flush();
         }
+
+        // Update proxies
+        $destPath = $em->getConfiguration()->getProxyDir();
+        $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        $em->getProxyFactory()->generateProxyClasses($metadatas, $destPath);
     }
 
     /**
