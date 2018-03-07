@@ -332,6 +332,8 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
 
                 foreach ($arrCategories as $key => $arrCategory) {
+                    $intBlockId = $arrExistingBlocks[$i];
+
                     if($this->arrSettings['settingsCategoryOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrCategory['catName'][0],0,1));
 
@@ -368,6 +370,25 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $strCategoryCmd = null;
                     }
 
+                    // parse entries
+                    if (
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries') &&
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entry')
+                    ) {
+                        $objEntry = new MediaDirectoryEntry($this->moduleName);
+                        $objEntry->getEntries(null, null, $arrCategory['catId'], null, false, null, true);
+                        if ($objEntry->countEntries()) {
+                            // set mediadirCategoriesLevels_row_N_entry tempalte block to be parsed
+                            $objEntry->setStrBlockName($this->moduleNameLC.'CategoriesLevels_row_'. $intBlockId . '_entry');
+
+                            // prarse related entries
+                            $objEntry->listEntries($objTpl, 5, 'category_level');
+                            $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        } else {
+                            $objTpl->hideBlock($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        }
+                    }
+
                     $childrenString = $this->createCategorieTree($arrCategory, $levelId);
 
                     //parse variables
@@ -400,9 +421,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                             );
                         }
                     }
-
-                    $intBlockId = $arrExistingBlocks[$i];
-
 
                     $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_'.$intBlockId);
                     $objTpl->clearVariables();
