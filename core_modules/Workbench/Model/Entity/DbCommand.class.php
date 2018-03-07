@@ -224,7 +224,7 @@ class DbCommand extends Command {
 
             case 'validate':
                 // doctrine orm:validate-schema
-                if ($this->validateSchema() != 0) {
+                if ($this->validateSchema(isset($arguments[2]) && $arguments[2] == '-v') != 0) {
                     echo 'Your schema is not valid. Please correct this before you proceed';
                     return;
                 }
@@ -381,7 +381,7 @@ class DbCommand extends Command {
         return $retVal;
     }
     
-    protected function validateSchema() {
+    protected function validateSchema($verbose = false) {
         $em = $this->cx->getDb()->getEntityManager();
 
         $validator = new \Doctrine\ORM\Tools\SchemaValidator($em);
@@ -411,23 +411,15 @@ class DbCommand extends Command {
             $reflectionClass = new \ReflectionClass($className);
             $neededMethods = array();
             foreach ($classMetaData->getFieldNames() as $columnName) {
-                $columnNameCC = preg_replace_callback(
-                    '/_([a-z0-9])/',
-                    function($match) {
-                        return strtoupper($match[1]);
-                    },
-                    ucfirst($columnName)
+                $columnNameCC = \Doctrine\Common\Inflector\Inflector::classify(
+                    $columnName
                 ); 
                 $neededMethods[] = 'get' . $columnNameCC;
                 $neededMethods[] = 'set' . $columnNameCC;
             }
             foreach ($classMetaData->getAssociationMappings() as $associationMapping) {
-                $columnNameCC = preg_replace_callback(
-                    '/_([a-z0-9])/',
-                    function($match) {
-                        return strtoupper($match[1]);
-                    },
-                    ucfirst($associationMapping['fieldName'])
+                $columnNameCC = \Doctrine\Common\Inflector\Inflector::classify(
+                    $associationMapping['fieldName']
                 ); 
                 switch ($associationMapping['type']) {
                     case \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_ONE:
@@ -439,9 +431,23 @@ class DbCommand extends Command {
                     case \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY:
                     case \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY:
                         // check set, get and add
+                        $columnNameCCSingle = \Doctrine\Common\Inflector\Inflector::singularize(
+                            $columnNameCC
+                        );
                         $neededMethods[] = 'get' . $columnNameCC;
-                        $neededMethods[] = 'set' . $columnNameCC;
-                        $neededMethods[] = 'add' . $columnNameCC;
+                        if ($verbose) {
+                            if ($columnNameCCSingle != $columnNameCC && $reflectionClass->hasMethod('set' . $columnNameCC)) {
+                                $this->interface->show('[Mapping]  INFO - Unused method "' . $className . '->set' . $columnNameCC . '()".');
+                            }
+                            if ($reflectionClass->hasMethod('set' . $columnNameCCSingle)) {
+                                $this->interface->show('[Mapping]  INFO - Unused method "' . $className . '->set' . $columnNameCCSingle . '()".');
+                            }
+                            if ($reflectionClass->hasMethod('add' . $columnNameCC)) {
+                                $this->interface->show('[Mapping]  INFO - Unused method "' . $className . '->add' . $columnNameCC . '()".');
+                            }
+                        }
+                        $neededMethods[] = 'remove' . $columnNameCCSingle;
+                        $neededMethods[] = 'add' . $columnNameCCSingle;
                         break;
                     default:
                         var_dump($associationMapping);die();
