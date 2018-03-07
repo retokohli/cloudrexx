@@ -1,9 +1,9 @@
 <?php
 
-namespace Cx\Core\ContentManager\Model\Entity;
+namespace Cx\Core\Locale\Model\Entity;
 
 /**
- * Cx\Core\ContentManager\Model\Entity\Translation
+ * Cx\Core\Locale\Model\Entity\Translation
  */
 class Translation extends \Gedmo\Translatable\Entity\MappedSuperclass\AbstractTranslation
 {
