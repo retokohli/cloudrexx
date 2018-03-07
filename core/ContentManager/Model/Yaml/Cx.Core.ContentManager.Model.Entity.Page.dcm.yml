@@ -212,6 +212,7 @@ Cx\Core\ContentManager\Model\Entity\Page:
       joinColumn:
         name: node_id
         referencedColumnName: id
+        cascade: [remove]
         onDelete: "SET NULL"
         onUpdate: "NO ACTION"
   lifecycleCallbacks:
