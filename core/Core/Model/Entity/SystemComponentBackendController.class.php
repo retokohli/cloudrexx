@@ -216,7 +216,11 @@ class SystemComponentBackendController extends Controller {
                 }
             }
         }
-        if (isset($originalCommands[current($cmd)]['translatable']) && $originalCommands[current($cmd)]['translatable']) {
+        if (
+            isset($originalCommands[current($cmd)]) &&
+            isset($originalCommands[current($cmd)]['translatable']) &&
+            $originalCommands[current($cmd)]['translatable']
+        ) {
             $navigation->setVariable(
                 'FRONTEND_LANG_MENU', \Env::get('init')->getUserFrontendLangMenu(true)
             );
