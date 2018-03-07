@@ -935,11 +935,8 @@ class ReflectionComponent {
         // deactivate in modules
         $adoDb = $cx->getDb()->getAdoDb();
         $query = '
-            UPDATE
+            DELETE FROM
                 `' . DBPREFIX . 'modules`
-            SET
-                `is_active` = 0,
-                `is_licensed` = 0
             WHERE
                 `name` = \'' . $this->componentName . '\'
         ';
