@@ -239,16 +239,6 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set dataAccessApiKeys
-     *
-     * @param \Doctrine\Common\Collections\ArrayCollection $dataAccessApiKeys
-     */
-    public function setDataAccessApiKeys(\Doctrine\Common\Collections\ArrayCollection $dataAccessApiKeys)
-    {
-        $this->dataAccessApiKeys = $dataAccessApiKeys;
-    }
-
-    /**
      * Get dataAccessApiKeys
      *
      * @return Doctrine\Common\Collections\Collection $dataAccessApiKeys
@@ -264,16 +254,6 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
      * @param Cx\Core_Modules\Sync\Model\Entity\Relation $relation
      */
     public function addRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relation)
-    {
-        $this->relations[] = $relation;
-    }
-
-    /**
-     * Ensure compatibility with ViewGenerator
-     *
-     * @param Cx\Core_Modules\Sync\Model\Entity\Relation $relation
-     */
-    public function addRelations(\Cx\Core_Modules\Sync\Model\Entity\Relation $relation)
     {
         $this->relations[] = $relation;
     }
@@ -346,26 +326,6 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     public function addSync(\Cx\Core_Modules\Sync\Model\Entity\Sync $sync)
     {
         $this->syncs[] = $sync;
-    }
-
-    /**
-     * Ensure compatibility with ViewGenerator
-     *
-     * @param \Cx\Core_Modules\Sync\Model\Entity\Sync $sync
-     */
-    public function addSyncs(\Cx\Core_Modules\Sync\Model\Entity\Sync $sync)
-    {
-        $this->syncs[] = $sync;
-    }
-
-    /**
-     * Set Sync
-     *
-     * @param \Doctrine\Common\Collections\ArrayCollection $sync
-     */
-    public function setSyncs(\Doctrine\Common\Collections\ArrayCollection $sync)
-    {
-        $this->syncs = $sync;
     }
 
     /**

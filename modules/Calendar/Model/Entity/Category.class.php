@@ -148,16 +148,6 @@ class Category extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Modules\Calendar\Model\Entity\CategoryName $categoryName
-     */
-    public function addCategoryNames(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryName)
-    {
-        $this->categoryNames[] = $categoryName;
-    }
-
-    /**
      * Set categoryNames
      *
      * @param Doctrine\Common\Collections\Collection $categoryNames

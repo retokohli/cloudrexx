@@ -201,16 +201,6 @@ class RegistrationFormField extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldName
-     */
-    public function addRegistrationFormFieldNames(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldName)
-    {
-        $this->registrationFormFieldNames[] = $registrationFormFieldName;
-    }
-
-    /**
      * Set registrationFormFieldNames
      *
      * @param \Doctrine\Common\Collections\ArrayCollection $registrationFormFieldNames
@@ -258,16 +248,6 @@ class RegistrationFormField extends \Cx\Model\Base\EntityBase {
      * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue
      */
     public function addRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
-    {
-        $this->registrationFormFieldValues[] = $registrationFormFieldValue;
-    }
-
-    /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue
-     */
-    public function addRegistrationFormFieldValues(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
     {
         $this->registrationFormFieldValues[] = $registrationFormFieldValue;
     }

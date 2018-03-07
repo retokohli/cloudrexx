@@ -268,19 +268,9 @@ class Permission extends \Cx\Model\Base\EntityBase {
     /**
      * Set the read data access
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection $dataAccess
-     */
-    public function setReadDataAccesses(\Doctrine\Common\Collections\ArrayCollection $dataAccess)
-    {
-        $this->readDataAccesses = $dataAccess;
-    }
-
-    /**
-     * Add a read data access
-     *
      * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
-    public function addReadDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    public function setReadDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
     {
         $this->readDataAccesses[] = $dataAccess;
     }
@@ -298,19 +288,9 @@ class Permission extends \Cx\Model\Base\EntityBase {
     /**
      * Set the write data access
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection $dataAccess
-     */
-    public function setWriteDataAccesses(\Doctrine\Common\Collections\ArrayCollection $dataAccess)
-    {
-        $this->writeDataAccesses = $dataAccess;
-    }
-
-    /**
-     * Add a write data access
-     *
      * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
-    public function addWriteDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    public function setWriteDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
     {
         $this->writeDataAccesses[] = $dataAccess;
     }

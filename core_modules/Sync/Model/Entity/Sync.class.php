@@ -221,16 +221,6 @@ class Sync extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Core_Modules\Sync\Model\Entity\Relation $relation
-     */
-    public function addRelations(\Cx\Core_Modules\Sync\Model\Entity\Relation $relation)
-    {
-        $this->relations[] = $relation;
-    }
-
-    /**
      * Get relations
      *
      * @return Doctrine\Common\Collections\Collection $relations
@@ -247,7 +237,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function setRelations($relations)
     {
-        $this->relations = $relations;
+        $this->relations[] = $relations;
     }
 
     /**
@@ -256,16 +246,6 @@ class Sync extends \Cx\Model\Base\EntityBase {
      * @param Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity
      */
     public function addHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity)
-    {
-        $this->hostEntities[] = $hostEntity;
-    }
-
-    /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity
-     */
-    public function addHostEntities(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity)
     {
         $this->hostEntities[] = $hostEntity;
     }
@@ -394,7 +374,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function setHostEntities($hostEntities)
     {
-        $this->hostEntities = $hostEntities;
+        $this->hostEntities[] = $hostEntities;
     }
 
     /**
@@ -403,16 +383,6 @@ class Sync extends \Cx\Model\Base\EntityBase {
      * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
      */
     public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
-    {
-        $this->changes[] = $change;
-    }
-
-    /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
-     */
-    public function addChanges(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
     {
         $this->changes[] = $change;
     }
@@ -434,37 +404,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function setChanges($changes)
     {
-        $this->changes = $changes;
-    }
-
-    /**
-     * Add originchange
-     *
-     * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
-     */
-    public function addOriginChanges(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
-    {
-        $this->originChanges[] = $change;
-    }
-
-    /**
-     * Get originchanges
-     *
-     * @return Doctrine\Common\Collections\Collection $changes
-     */
-    public function getOriginChanges()
-    {
-        return $this->originChanges;
-    }
-
-    /**
-     * Set originchanges
-     *
-     * @param array $changes
-     */
-    public function setOriginChanges($changes)
-    {
-        $this->originChanges = $changes;
+        $this->changes[] = $changes;
     }
     
     public function calculateRelations($spooler, $eventType, $entityClassName, $entityIndexData, $entity) {

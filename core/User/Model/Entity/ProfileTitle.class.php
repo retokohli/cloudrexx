@@ -136,13 +136,4 @@ class ProfileTitle extends \Cx\Model\Base\EntityBase {
     {
         return $this->userProfile;
     }
-
-    /**
-     * Set UserProfile
-     *
-     * @param \Doctrine\Common\Collections\ArrayCollection $userProfile
-     */
-    public function setUserProfile(\Doctrine\Common\Collections\ArrayCollection $userProfile) {
-        $this->userProfile = $userProfile;
-    }
 }

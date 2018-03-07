@@ -1952,16 +1952,6 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Modules\Calendar\Model\Entity\EventField $eventField
-     */
-    public function addEventFields(\Cx\Modules\Calendar\Model\Entity\EventField $eventField)
-    {
-        $this->eventFields[] = $eventField;
-    }
-
-    /**
      * Set eventFields
      *
      * @param Doctrine\Common\Collections\Collection $eventFields
@@ -2038,16 +2028,6 @@ class Event extends \Cx\Model\Base\EntityBase {
      * @param Cx\Modules\Calendar\Model\Entity\Registration $registration
      */
     public function addRegistration(\Cx\Modules\Calendar\Model\Entity\Registration $registration)
-    {
-        $this->registrations[] = $registration;
-    }
-
-    /**
-     * Ensures compatibility with ViewGenerator
-     *
-     * @param Cx\Modules\Calendar\Model\Entity\Registration $registration
-     */
-    public function addRegistrations(\Cx\Modules\Calendar\Model\Entity\Registration $registration)
     {
         $this->registrations[] = $registration;
     }
