@@ -282,7 +282,7 @@ CREATE TABLE `contrexx_core_locale_backend` (
   `id` int AUTO_INCREMENT NOT NULL,
   `iso_1` varchar(2) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX UNIQ_B8F1327C4FC20EF (iso_1)
+  UNIQUE INDEX `contrexx_core_locale_backend_iso_1_ibfk` (iso_1)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_locale_language` (
   `iso_1` varchar(2) NOT NULL,
@@ -851,7 +851,8 @@ CREATE TABLE `contrexx_module_calendar_events_categories` (
   `event_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   PRIMARY KEY (`event_id`, `category_id`),
-  INDEX `contrexx_module_calendar_events_categories_event_id_ibfk` (`event_id`)
+  INDEX `contrexx_module_calendar_events_categories_event_id_ibfk` (`event_id`),
+  INDEX `contrexx_module_calendar_events_categories_category_id_ibfk` (`category_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_invite` (
   `id` int NOT NULL AUTO_INCREMENT,
