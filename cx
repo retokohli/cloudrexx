@@ -863,6 +863,7 @@ function get_config_array {
         local working_directory
         working_directory=$(get_real_pwd)
         working_directory=${working_directory//" "/""}
+        working_directory=${working_directory//"_"/""}
         working_directory=${working_directory,,}
         CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
