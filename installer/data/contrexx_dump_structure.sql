@@ -11,7 +11,7 @@ CREATE TABLE `contrexx_access_group_static_ids` (
   PRIMARY KEY (`access_id`,`group_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_id` (
-  `id` int(11) NOT NULL,
+  `id` int(11) AUTO_INCREMENT NOT NULL,
   `entity_class_name` varchar(255) NOT NULL,
   `entity_class_id` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)

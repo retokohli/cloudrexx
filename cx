@@ -33,7 +33,7 @@ DEFAULT_CONFIG=(
     ["port"]=80
     ["hostname"]=""
     ["php-version"]=""
-    ["db-image"]="mariadb:5"
+    ["db-image"]="mariadb:10.1"
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
     ["db-name"]="dev"
     ["db-pass"]="123456"
@@ -43,7 +43,7 @@ DEFAULT_CONFIG=(
 ARGUMENTS=(
     ["port"]=80
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
-    ["db-image"]="mariadb:5"
+    ["db-image"]="mariadb:10.1"
     ["source-repo"]="https://github.com/Cloudrexx/cloudrexx.git"
     ["source-branch"]="master"
     ["scripts-repo"]="https://github.com/Cloudrexx/scripts.git"
@@ -882,7 +882,11 @@ function get_config_array {
         CONFIG["php-image"]=${DEFAULT_CONFIG["php-image"]}
     fi
     if [[ "${CONFIG["db-image"]}" == "" ]]; then
-        CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
+        if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
+            CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
+        else
+            CONFIG["db-image"]="mariadb:5"
+        fi
     fi
     if [[ "${CONFIG["db-host"]}" == "" ]]; then
         CONFIG["db-host"]=${DEFAULT_CONFIG["db-host"]}

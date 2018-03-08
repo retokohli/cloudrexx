@@ -415,7 +415,12 @@ class DbCommand extends Command {
                     $columnName
                 ); 
                 $neededMethods[] = 'get' . $columnNameCC;
-                $neededMethods[] = 'set' . $columnNameCC;
+                if (
+                    !$classMetaData->isIdentifier($columnName) ||
+                    !$classMetaData->isIdGeneratorIdentity()
+                ) {
+                    $neededMethods[] = 'set' . $columnNameCC;
+                }
             }
             foreach ($classMetaData->getAssociationMappings() as $associationMapping) {
                 $columnNameCC = \Doctrine\Common\Inflector\Inflector::classify(
