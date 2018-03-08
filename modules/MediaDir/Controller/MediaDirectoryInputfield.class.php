@@ -94,10 +94,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
-        // LANG_ID is set to backend or frontend interface language.
-        // If LANG_ID is not yet set, then we've been requested from
-        // the frontend and the resolver did already set FRONTEND_LANG_ID
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
 
         $whereFormId  = 'AND (`form`.`active` = 1)';
         $joinFormsTbl = 'LEFT JOIN `' . DBPREFIX .'module_' . $this->moduleTablePrefix . '_forms` as form
@@ -370,7 +367,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 $objAddStep = new MediaDirectoryAddStep($this->moduleName);
                 $i = 0;
                 $isFileInputFound = false;
-                foreach ($this->arrInputfields as $key => $arrInputfield) {
+                $langId = static::getOutputLocale()->getId();
+                foreach ($this->arrInputfields as $arrInputfield) {
                     $strInputfield = null;
 
                     if($arrInputfield['required'] == 1) {
@@ -393,7 +391,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
                             switch($strType) {
                                 case 'add_step':
-                                    $objAddStep->addNewStep(empty($arrInputfield['name'][FRONTEND_LANG_ID]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][FRONTEND_LANG_ID]);
+                                    $objAddStep->addNewStep(empty($arrInputfield['name'][$langId]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$langId]);
                                     $strInputfield = $objInputfield->getInputfield(1, $arrInputfield, $intEntryId, $objAddStep);
                                     break;
                                 case 'field_group':
@@ -487,7 +485,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                             }
 
                             $objTpl->setVariable(array(
-                                'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => $strStartTitle.(empty($arrInputfield['name'][FRONTEND_LANG_ID]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][FRONTEND_LANG_ID].$strRequiered).$strEndTitle,
+                                'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => $strStartTitle.(empty($arrInputfield['name'][$langId]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$langId].$strRequiered).$strEndTitle,
                                 $this->moduleLangVar.'_INPUTFIELD_FIELD' => $strInputfield,
                                 $this->moduleLangVar.'_INPUTFIELD_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                             ));
@@ -814,7 +812,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             INSERT INTO
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names
             SET
-                `lang_id` = '".intval(FRONTEND_LANG_ID)."',
+                `lang_id` = '".intval(static::getOutputLocale()->getId())."',
                 `form_id` = '".$this->intFormId."',
                 `field_id` = '".intval($intInsertId)."',
                 `field_name` = '',

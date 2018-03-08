@@ -116,7 +116,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
         }
 
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
 
         $objCategories = $objDatabase->Execute("
             SELECT
@@ -839,7 +839,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                                                 AND 
                                                     (rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId()."))
                                                 AND
-                                                    (rel_inputfield.`lang_id` = '".FRONTEND_LANG_ID."')
+                                                    (rel_inputfield.`lang_id` = '" . static::getOutputLocale()->getId() . "')
                                                 AND ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))
                                                     " . $whereCategory . "
                                                 GROUP BY

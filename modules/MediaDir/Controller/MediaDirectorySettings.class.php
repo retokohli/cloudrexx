@@ -1340,6 +1340,7 @@ EOF;
 
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleNameLC.'_settings_modify_form.html');
 
+        $langId = static::getOutputLocale()->getId();
         $objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS' => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELDS'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_FORM' => $_ARRAYLANG['TXT_MEDIADIR_FORM'],
@@ -1361,8 +1362,8 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE'],
             'TXT_'.$this->moduleLangVar.'_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_EXP_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_EXP_SEARCH'],
-            $this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
-            $this->moduleLangVar.'_SETTINGS_FORM_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
+            $this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => $langId,
+            $this->moduleLangVar.'_SETTINGS_FORM_DEFAULT_LANG_ID' => $langId,
             'TXT_'.$this->moduleLangVar.'_NAME' =>  $_CORELANG['TXT_NAME'],
             'TXT_'.$this->moduleLangVar.'_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PICTURE' =>  $_CORELANG['TXT_IMAGE'],

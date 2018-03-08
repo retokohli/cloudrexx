@@ -95,7 +95,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereLevelId = null;
         }
 
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $whereActive = "AND (level.active='1') ";
         } else {

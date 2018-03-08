@@ -65,6 +65,7 @@ class MediaDirectoryInputfieldResponsibles extends \Cx\Modules\MediaDir\Controll
         global $objDatabase, $objInit, $_ARRAYLANG, $_CORELANG;
 
         $intId = intval($arrInputfield['id']);
+        $langId = static::getOutputLocale()->getId();
 
         switch ($intView) {
             default:
@@ -102,7 +103,7 @@ class MediaDirectoryInputfieldResponsibles extends \Cx\Modules\MediaDir\Controll
 
                             $objInputfieldValue->MoveNext();
                         }
-                        $arrValue[0] = $arrValue[FRONTEND_LANG_ID];
+                        $arrValue[0] = $arrValue[$langId];
                         $intNumElements = count($arrParents);
                     }
                 } else {
@@ -359,15 +360,16 @@ EOF;
         $intId = intval($arrInputfield['id']);
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
+        $langId = static::getOutputLocale()->getId();
 
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
-            if(in_array(FRONTEND_LANG_ID, $arrTranslationStatus)) {
-                $intLangId = FRONTEND_LANG_ID;
+            if(in_array($langId, $arrTranslationStatus)) {
+                $intLangId = $langId;
             } else {
                 $intLangId = $intEntryDefaultLang;
             }
         } else {
-            $intLangId = FRONTEND_LANG_ID;
+            $intLangId = $langId;
         }
 
         $objInputfieldValue = $objDatabase->Execute("

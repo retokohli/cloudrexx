@@ -148,7 +148,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strSlugField = '';
         $strJoinSlug = '';
 
-        $langId = FRONTEND_LANG_ID;
+        $langId = MediaDirectoryLibrary::getOutputLocale()->getId();
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && !empty($strSearchTerm)) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
@@ -409,7 +409,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
-            $strWhereLangId = "AND (entry.`lang_id` = ".FRONTEND_LANG_ID.") ";
+            $strWhereLangId = "AND (entry.`lang_id` = ". MediaDirectoryLibrary::getOutputLocale()->getId() .") ";
         }
 
         $query = "
@@ -1263,7 +1263,7 @@ JSCODE;
                        `validate_date`='".$strValidateDate."',
                        `update_date`='".$strValidateDate."',
                        `added_by`='".$intUserId."',
-                       `lang_id`='".FRONTEND_LANG_ID."',
+                       `lang_id`='" . static::getOutputLocale()->getId() . "',
                        `hits`='0',
                        `last_ip`='".$strLastIp."',
                        `confirmed`='".$intConfirmed."',

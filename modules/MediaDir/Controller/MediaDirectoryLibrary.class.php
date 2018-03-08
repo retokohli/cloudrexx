@@ -609,7 +609,7 @@ class MediaDirectoryLibrary
 
     function getSelectorJavascript(){
         global $objInit;
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
 
         if($objInit->mode == 'frontend') {
             self::getSettings();
