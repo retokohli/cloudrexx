@@ -5,6 +5,8 @@ Cx\Core_Modules\Access\Model\Entity\AccessId:
     id:
       id: true
       type: integer
+      generator:
+        strategy: auto
     entity_class_name:
       type: string
       nullable: false
