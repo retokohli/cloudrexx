@@ -167,23 +167,6 @@ class Checkout extends CheckoutLibrary {
             $arrFieldValues['contact_phone'] = !empty($_REQUEST['contact_phone']) && ($_REQUEST['contact_phone'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_phone'])) : '';
             $arrFieldValues['contact_email'] = !empty($_REQUEST['contact_email']) && ($_REQUEST['contact_email'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_email'])) : '';
 
-            //get keys of passed data
-            if (!isset($this->arrCurrencies[$invoiceCurrency]) && ($key = array_search(strtoupper($invoiceCurrency), $this->arrCurrencies))) {
-                $invoiceCurrency = $key;
-            }
-            if ((strtolower($contactTitle) !== self::MISTER) && (strtolower($contactTitle) !== self::MISS)) {
-                if (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER']) {
-                    $contactTitle = self::MISTER;
-                } elseif (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS']) {
-                    $contactTitle = self::MISS;
-                }
-            } else {
-                $contactTitle = strtolower($contactTitle);
-            }
-            if (!isset($this->arrCountries[$contactCountry]) && ($key = array_search(ucfirst(strtolower($contactCountry)), $this->arrCountries))) {
-                $contactCountry = $key;
-            }
-
             $arrUserData = array(
                 'text' => array(
                     'invoice_number' => array(
