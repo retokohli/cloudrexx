@@ -237,8 +237,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $this->strBlockName = $this->moduleNameLC."EntryList";
         }
 
-        if($objInit->mode == 'frontend') {
-            if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
+        if ($objInit->mode == 'frontend') {
+            if (intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
                 $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
             }
         }

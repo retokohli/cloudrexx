@@ -237,7 +237,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
 
 
-    function listInputfields($objTpl, $intView, $intEntryId)
+    function listInputfields($objTpl, $intView, $intEntryId = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
@@ -258,7 +258,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
                 $i=0;
                 $intLastId = 0;
-                foreach ($this->arrInputfields as $key => $arrInputfield) {
+                foreach ($this->arrInputfields as $arrInputfield) {
                     $strMustfield = $arrInputfield['required']==1 ? 'checked="checked"' : '';
                     $strExpSearch = $arrInputfield['search']==1 ? 'checked="checked"' : '';
 
@@ -288,7 +288,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         ));
 
                         //fieldname
-                        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        foreach ($this->arrFrontendLanguages as $arrLang) {
                             $objTpl->setVariable(array(
                                 $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_ID' => $arrLang['id'],
                                 $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_SHORTCUT' => $arrLang['lang'],
@@ -299,7 +299,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         }
 
                         //default values
-                        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        foreach ($this->arrFrontendLanguages as $arrLang) {
                             $objTpl->setVariable(array(
                                 $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_ID' => $arrLang['id'],
                                 $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_SHORTCUT' => $arrLang['lang'],
@@ -310,7 +310,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         }
 
                         //infotext
-                        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        foreach ($this->arrFrontendLanguages as $arrLang) {
                             $objTpl->setVariable(array(
                                 $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_ID' => $arrLang['id'],
                                 $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_SHORTCUT' => $arrLang['lang'],
@@ -529,7 +529,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 3:
                 //frontend View
-                foreach ($this->arrInputfields as $key => $arrInputfield) {
+                foreach ($this->arrInputfields as $arrInputfield) {
                     $intInputfieldId = intval($arrInputfield['id']);
                     $intInputfieldType = intval($arrInputfield['type']);
 
@@ -589,7 +589,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             case 4:
                 //Exp Search View
                 $strInputfields = '';
-                foreach ($this->arrInputfields as $key => $arrInputfield) {
+                foreach ($this->arrInputfields as $arrInputfield) {
                     if($this->checkFieldTypeIsExpSeach($arrInputfield['type'])) {
                         if(!empty($arrInputfield['type'])) {
                             $strType = $arrInputfield['type_name'];
@@ -710,7 +710,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
         $inputfieldId = isset($arrData['inputfieldId']) ? $arrData['inputfieldId'] : array();
 
-        foreach ($inputfieldId as $intKey => $intFieldId) {
+        foreach ($inputfieldId as $intFieldId) {
             $intFieldId = intval($intFieldId);
             $intFieldOrder = intval($arrData['inputfieldOrder'][$intFieldId]);
             $arrFieldNames = contrexx_input2raw($arrData['inputfieldName'][$intFieldId]);
@@ -860,7 +860,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             $arrElements[1]['id'] = $intNeighborId;
             $arrElements[1]['order'] = $intNeighborOrder;
 
-            foreach ($arrElements as $key => $arrData) {
+            foreach ($arrElements as $arrData) {
                 if($arrData['id'] == 1) {
                     $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".intval($arrData['order'])."' WHERE `selector_id`='9' AND `form_id`='".$this->intFormId."'");
                 } else if ($arrData['id'] == 2) {
@@ -947,7 +947,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
         $i = 0;
         $intLastId = 0;
-        foreach ($this->arrInputfields as $key => $arrInputfield) {
+        foreach ($this->arrInputfields as $arrInputfield) {
             $strMustfield = $arrInputfield['required']==1 ? 'checked="checked"' : '';
             $strExpSearch = $arrInputfield['search']==1 ? 'checked="checked"' : '';
 
@@ -977,7 +977,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 ));
 
                 //fieldname
-                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                foreach ($this->arrFrontendLanguages as $arrLang) {
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_ID' => $arrLang['id'],
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_SHORTCUT' => $arrLang['lang'],
@@ -988,7 +988,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 }
 
                 //default values
-                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                foreach ($this->arrFrontendLanguages as $arrLang) {
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_ID' => $arrLang['id'],
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_SHORTCUT' => $arrLang['lang'],
@@ -1001,7 +1001,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
 
                 //infotext
-                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                foreach ($this->arrFrontendLanguages as $arrLang) {
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_ID' => $arrLang['id'],
                         $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_SHORTCUT' => $arrLang['lang'],
@@ -1266,7 +1266,7 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objTemplate;
 
-        foreach ($this->arrInputfields as $key => $arrInputfield) {
+        foreach ($this->arrInputfields as $arrInputfield) {
             if($arrInputfield['id'] != 1 && $arrInputfield['id'] != 2 && $arrInputfield['type'] != 16 && $arrInputfield['type'] != 18) {
                 $strType = $arrInputfield['type_name'];
                 $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield".ucfirst($strType);
@@ -1284,7 +1284,7 @@ EOF;
                 $arrPlaceholders = $objInputfield->arrPlaceholders;
                 $strPlaceholders = null;
 
-                foreach ($arrPlaceholders as $key => $strPlaceholder) {
+                foreach ($arrPlaceholders as $strPlaceholder) {
                     $strPlaceholders .= '[['.strtoupper($strPlaceholder).']]&nbsp;';
                 }
 

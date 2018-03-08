@@ -1671,7 +1671,7 @@ EOF;
                     break;
                 case 'settingsActiveLanguages':
                     $varValue = join(",",$varValue);
-                        $oldActiveLanguage = explode(',', $this->arrSettings['settingsActiveLanguages']);
+                    $oldActiveLanguage = explode(',', $this->arrSettings['settingsActiveLanguages']);
                 default:
                     if (!$this->saveSetting($strName, $varValue)) {
                         return false;

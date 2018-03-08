@@ -400,7 +400,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $intEntryDourationStart = 0;
         $strOnSubmit = '';
 
-        if(!empty($_GET['id'])) {
+        if(!empty($_GET['id']) || !empty($_POST['entryId'])) {
             \Permission::checkAccess(MediaDirectoryAccessIDs::ModifyEntry, 'static');
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
             $intEntryId = intval($_GET['id']);
