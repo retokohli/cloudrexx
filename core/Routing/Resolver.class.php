@@ -231,6 +231,10 @@ class Resolver {
 
         // used for LinkGenerator
         define('FRONTEND_LANG_ID', $this->lang);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getDb()->getTranslationListener()->setTranslatableLocale(
+            \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+        );
         // used to load template file
         \Env::get('init')->setFrontendLangId($this->lang);
 
@@ -260,7 +264,6 @@ class Resolver {
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
-                                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                                 $sessionObj = $cx->getComponent('Session')->getSession();
                             }
                             $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
