@@ -777,7 +777,7 @@ class ViewGenerator {
                 $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
-                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($name);
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($field);
                     if (
                         $entityObject->isSingleValuedAssociation($field) &&
                         in_array('set' . $methodBaseName, $classMethods)
@@ -829,7 +829,7 @@ class ViewGenerator {
                 $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
-                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($name);
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($field);
                     if (
                         (
                             $entityObject->isSingleValuedAssociation($field) &&
