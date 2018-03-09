@@ -563,12 +563,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     $objUser->getUsername(),
                     $restoreLink,
-                    $objUserMail->getSenderName()
+                    $objUserMail->getSenderName(),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyText()
             );
@@ -579,12 +581,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
                     $restoreLink,
-                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyHtml()
             );

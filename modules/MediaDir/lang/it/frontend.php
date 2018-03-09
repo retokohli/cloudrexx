@@ -26,34 +26,11 @@
  */
 
 /**
- * Main controller for Net Manager
- *
- * @copyright   Cloudrexx AG
- * @author      Project Team SS4U <info@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @access      public
  * @package     cloudrexx
- * @subpackage  core_netmanager
+ * @subpackage  module_mediadir
  */
+$_ARRAYLANG['TXT_MEDIADIR_SEARCH_TERM'] = 'Termine di ricerca';
 
-namespace Cx\Core\NetManager\Controller;
-
-/**
- * Main controller for Net Manager
- *
- * @copyright   Cloudrexx AG
- * @author      Project Team SS4U <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  core_netmanager
- */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-
-    /**
-     * Get the Controller classes
-     *
-     * @return array name of the controller classes
-     */
-    public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array('Backend');
-    }
-}

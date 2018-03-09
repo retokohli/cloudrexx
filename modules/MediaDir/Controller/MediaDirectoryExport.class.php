@@ -81,7 +81,7 @@ class MediaDirectoryExport extends MediaDirectoryLibrary
 
             $objForm = new MediaDirectoryForm($intFormId, $this->moduleName);
             $objInputfields = new MediaDirectoryInputfield($intFormId, false, null, $this->moduleName);
-            $strFilename = contrexx_raw2encodedUrl($objForm->arrForms[$intFormId]['formName'][0])."_".mktime().".csv";
+            $strFilename = contrexx_raw2encodedUrl($objForm->arrForms[$intFormId]['formName'][0])."_".time().".csv";
 
             if($arrCategoryIds != null) {
                 foreach($arrCategoryIds as $intKey => $intCategoryId) {

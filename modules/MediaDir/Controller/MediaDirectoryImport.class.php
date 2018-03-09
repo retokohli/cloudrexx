@@ -78,8 +78,8 @@ class MediaDirectoryImport extends MediaDirectoryLibrary
                 SET
                     `order` = '0',
                     `form_id` = '".$formId."',
-                    `create_date` = '".mktime()."',
-                    `validate_date` = '".mktime()."',
+                    `create_date` = '".time()."',
+                    `validate_date` = '".time()."',
                     `added_by` = '".$intUserId."',
                     `lang_id` = '".FRONTEND_LANG_ID."',
                     `ready_to_confirm` = '1',

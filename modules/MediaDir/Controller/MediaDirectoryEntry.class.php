@@ -103,12 +103,21 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         parent::getFrontendLanguages();
     }
 
+    /**
+     * Reset fetch entry list
+     *
+     * Use this method to reset the fetch entry list before calling
+     * {@see MediaDirectoryEntry::getEntries} again, unless any
+     * previously loaded entries shall kept loaded.
+     */
+    public function resetEntries() {
+        $this->arrEntries = array();
+        $this->recordCount = 0;
+    }
+
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
-
-        $this->arrEntries = array();
-        $this->recordCount = 0;
 
         $this->intEntryId = intval($intEntryId);
         $this->intLevelId = intval($intLevelId);
@@ -363,8 +372,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
                 $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
                 $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
-                $arrEntry['slug_field_id'] = $objEntries->fields['slug_field_id'];
-                $arrEntry['slug'] = $objEntries->fields['slug'];
+                $arrEntry['slug_field_id'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug_field_id'] : 0;
+                $arrEntry['slug'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug'] : '';
                 $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
 
                 $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
@@ -1188,8 +1197,8 @@ JSCODE;
         //get data
         $intId = intval($intEntryId);
         $intFormId = intval($arrData['formId']);
-        $strCreateDate = mktime();
-        $strUpdateDate = mktime();
+        $strCreateDate = time();
+        $strUpdateDate = time();
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
         $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
@@ -1240,11 +1249,11 @@ JSCODE;
                 $intActive = 1;
                 $intShowIn = 2;
                 $intDurationType = $this->arrSettings['settingsEntryDisplaydurationType'];
-                $intDurationStart = mktime();
+                $intDurationStart = time();
                 $intDurationEnd = mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear);
             }
 
-            $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
+            $strValidateDate = $intConfirmed == 1 ? time() : 0;
 
             //insert new entry
             $objResult = $objDatabase->Execute("
@@ -1303,7 +1312,7 @@ JSCODE;
             }
 
             $strAdditionalQuery = join(",", $arrAdditionalQuery);
-            $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
+            $strValidateDate = $intConfirmed == 1 ? time() : 0;
 
             $objUpdateEntry = $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
@@ -1326,6 +1335,7 @@ JSCODE;
         //////////////////////
 
         $error = false;
+        $titleData = array();
 
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
@@ -1377,12 +1387,17 @@ JSCODE;
                 continue;
             }
 
+            if (($arrInputfield['context_type'] == 'title' || empty($titleData)) && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
+                $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+            }
+
             // slugify slug value
-            if ($arrInputfield['context_type'] == 'slug') {
+            if ($arrInputfield['context_type'] == 'slug' && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
                 $slugValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
                 array_walk(
                     $slugValues,
-                    array($this, 'slugify')
+                    array($this, 'slugify'),
+                    $titleData
                 );
                 $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] = $slugValues;
             }
@@ -1675,6 +1690,9 @@ JSCODE;
         return $strDropdownUsers;
     }
 
+    /**
+     * Parse template blocks mediadir_category or mediadir_level
+     */
     public function parseCategoryLevels($intType, $intEntryId=null, $objTpl) {
         $categoryId = null;
         $levelId = null;
@@ -1712,10 +1730,10 @@ JSCODE;
                 $objTpl->setVariable(array(
                     $this->moduleLangVar . '_ENTRY_' . $list . '_ID'        => $objCategoriesLevels->fields['elm_id'],
                     $this->moduleLangVar . '_ENTRY_' . $list . '_NAME'      => contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']),
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId),
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId, true).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId, true),
                     $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE'   => '<img src="'.$picture.'" border="0" alt="'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'" />',
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE_SOURCE' => $pictrue,
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE_SOURCE' => $picture,
                 ));
 
                 // parse thumbnails
@@ -1746,7 +1764,20 @@ JSCODE;
 
 
     protected function getCategories($intEntryId = null) {
-        global $objDatabase;
+        switch ($this->arrSettings['settingsCategoryOrder']) {
+            case 0:
+                // custom order
+                $sortOrder = 'cat_image.`order` ASC';
+                break;
+
+            case 1:
+            case 2:
+            default:
+                // alphabetical order
+                $sortOrder = 'cat_name.`category_name` ASC';
+                break;
+        }
+
         $query = "SELECT
             cat_rel.`category_id` AS `elm_id`,
             cat_image.`picture` AS `elm_picture`,
@@ -1766,15 +1797,27 @@ JSCODE;
           AND
             cat_name.`lang_id` = ?
           ORDER BY
-            cat_name.`category_name` ASC
-          ";
+            ". $sortOrder;
 
-        return $objDatabase->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
     }
 
 
     protected function getLevels($intEntryId = null) {
-        global $objDatabase;
+        switch ($this->arrSettings['settingsLevelOrder']) {
+            case 0:
+                // custom order
+                $sortOrder = 'level_image.`order` ASC';
+                break;
+
+            case 1:
+            case 2:
+            default:
+                // alphabetical order
+                $sortOrder = 'level_name.`level_name` ASC';
+                break;
+        }
+
         $query = "SELECT
             level_rel.`level_id` AS `elm_id`,
             level_image.`picture` AS `elm_picture`,
@@ -1794,10 +1837,9 @@ JSCODE;
           AND
             level_name.`lang_id` = ?
           ORDER BY
-            level_name.`level_name` ASC
-          ";
+            ". $sortOrder;
 
-        return $objDatabase->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
     }
 
 

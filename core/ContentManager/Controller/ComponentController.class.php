@@ -91,6 +91,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'METADESC',
                 'METAROBOTS',
                 'METAIMAGE',
+                'METAIMAGE_WIDTH',
+                'METAIMAGE_HEIGHT',
                 'CONTENT_TITLE',
                 //'CONTENT_TEXT',
                 'CSS_NAME',

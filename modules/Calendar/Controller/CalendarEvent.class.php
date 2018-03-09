@@ -1797,6 +1797,7 @@ class CalendarEvent extends CalendarLibrary
         $seriesPatternType              = 0;
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
+        $seriesPatternEndDate           = '';
         $seriesExeptions = '';
 
         if($seriesStatus == 1) {
@@ -2301,6 +2302,7 @@ class CalendarEvent extends CalendarLibrary
             $this->place_website = $place_website;
             $this->place_phone   = $place_phone;
             $this->place_map     = '';
+            $this->google        = true;
         } else {
             $this->org_name   = $place;
             $this->org_street = $place_street;

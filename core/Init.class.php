@@ -1044,6 +1044,8 @@ class InitCMS
         $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$componentName].$langCode.'/'.$mode.'.php');
 
         if (!$path) {
+            // restore $_ARRAYLANG
+            $_ARRAYLANG = $arrayLangBackup;
             throw new \InitCMSException($arrayLangBackup['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND']);
         }
 
