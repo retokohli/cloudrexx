@@ -243,7 +243,13 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 );
                 return $locale;
             },
-            'user' => function($userId) {
+            'user' => function($sessionId) {
+                $session = \Cx\Core\Session\Model\Entity\Session::getInstance();
+                $session->read($sessionId);
+                $userId = $session->userId;
+                if (!$userId) {
+                    return $sessionId;
+                }
                 return \FWUser::getFWUserObject()->objUser->getUser($userId);
             },
             'theme' => function($themeId) {
