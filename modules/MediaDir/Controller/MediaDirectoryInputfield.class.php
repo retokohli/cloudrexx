@@ -631,55 +631,50 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
     {
         global $objDatabase;
 
-        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+        foreach ($this->arrFrontendLanguages as $arrLang) {
+            $sourceLocaleId = static::getOutputLocale()->getId();
+
             if (empty($arrFieldNames[0])){
                 $arrFieldNames[0] = '';
             }
-            $strFieldName = $arrFieldNames[$arrLang['id']];
-            $strFieldDefaultValue = $arrFieldDefaultValues[$arrLang['id']];
-            $strFieldInfo = $arrFieldInfos[$arrLang['id']];
 
-            if ($arrLang['id'] == FRONTEND_LANG_ID) {
-                if ($this->arrInputfields[$intFieldId]['name'][0] == $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] != $arrFieldNames[$arrLang['id']]) {
-                    $strFieldName = $arrFieldNames[FRONTEND_LANG_ID];
-                }
-                if ($this->arrInputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrFieldDefaultValues[$arrLang['id']]) {
-                    $strFieldDefaultValue = $arrFieldDefaultValues[FRONTEND_LANG_ID];
-                }
+            if (isset($arrFieldNames[$arrLang['id']])) {
+                $strFieldName = $arrFieldNames[$arrLang['id']];
+            } else {
+                $strFieldName = $arrFieldNames[$sourceLocaleId];
+            }
 
-                if ($this->arrInputfields[$intFieldId]['info'][0] == $arrFieldInfos[0] && $this->arrInputfields[$intFieldId]['info'][$arrLang['id']] != $arrFieldInfos[$arrLang['id']]) {
-                    $strFieldInfo = $arrFieldInfos[FRONTEND_LANG_ID];
-                }
+            if (isset($arrFieldDefaultValues[$arrLang['id']])) {
+                $strFieldDefaultValue = $arrFieldDefaultValues[$arrLang['id']];
+            } else {
+                $strFieldDefaultValue = $arrFieldDefaultValues[$sourceLocaleId];
+            }
 
-                if ($this->arrInputfields[$intFieldId]['name'][0] != $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] == $arrFieldNames[$arrLang['id']] ||
-                        $this->arrInputfields[$intFieldId]['name'][0] != $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] != $arrFieldNames[$arrLang['id']] ||
-                        $this->arrInputfields[$intFieldId]['name'][0] == $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] == $arrFieldNames[$arrLang['id']]) {
+            if (isset($arrFieldInfos[$arrLang['id']])) {
+                $strFieldInfo = $arrFieldInfos[$arrLang['id']];
+            } else {
+                $strFieldInfo = $arrFieldInfos[$sourceLocaleId];
+            }
+
+            if ($arrLang['id'] == static::getOutputLocale()->getId()) {
+                if (
+                    // value of output locale has changed
+                    $this->arrInputfields[$intFieldId]['name'][0] != $arrFieldNames[0]
+                ) {
                     $strFieldName = $arrFieldNames[0];
                 }
 
-                if ($this->arrInputfields[$intFieldId]['default_value'][0] != $arrFieldDefaultValues[0] && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] == $arrFieldDefaultValues[$arrLang['id']] ||
-                        $this->arrInputfields[$intFieldId]['default_value'][0] != $arrFieldDefaultValues[0] && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrFieldDefaultValues[$arrLang['id']] ||
-                        $this->arrInputfields[$intFieldId]['default_value'][0] == $arrFieldDefaultValues[0] && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] == $arrFieldDefaultValues[$arrLang['id']]) {
+                if (
+                    $this->arrInputfields[$intFieldId]['default_value'][0] != $arrFieldDefaultValues[0]
+                ) {
                     $strFieldDefaultValue = $arrFieldDefaultValues[0];
                 }
 
-                if ($this->arrInputfields[$intFieldId]['info'][0] != $arrFieldInfos[0] && $this->arrInputfields[$intFieldId]['info'][$arrLang['id']] == $arrFieldInfos[$arrLang['id']] ||
-                        $this->arrInputfields[$intFieldId]['info'][0] != $arrFieldInfos[0] && $this->arrInputfields[$intFieldId]['info'][$arrLang['id']] != $arrFieldInfos[$arrLang['id']] ||
-                        $this->arrInputfields[$intFieldId]['info'][0] == $arrFieldInfos[0] && $this->arrInputfields[$intFieldId]['info'][$arrLang['id']] == $arrFieldInfos[$arrLang['id']]) {
+                if (
+                    $this->arrInputfields[$intFieldId]['info'][0] != $arrFieldInfos[0]
+                ) {
                     $strFieldInfo = $arrFieldInfos[0];
                 }
-            }
-
-            if (empty($strFieldName)) {
-                $strFieldName = $arrFieldNames[0];
-            }
-
-            if (empty($strFieldDefaultValue)) {
-                $strFieldDefaultValue = $arrFieldDefaultValues[0];
-            }
-
-            if (empty($strFieldInfo)) {
-                $strFieldInfo = $arrFieldInfos[0];
             }
 
             $objSaveInputfieldName = $objDatabase->Execute('

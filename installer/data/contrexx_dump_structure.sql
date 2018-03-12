@@ -2452,6 +2452,7 @@ CREATE TABLE `contrexx_module_mediadir_categories_names` (
   `category_name` varchar(255) NOT NULL,
   `category_description` mediumtext NOT NULL,
   `category_metadesc` varchar(160) NOT NULL DEFAULT '',
+  UNIQUE INDEX `category` (`lang_id`, `category_id`),
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=InnoDB;
@@ -2498,7 +2499,8 @@ CREATE TABLE `contrexx_module_mediadir_form_names` (
   `lang_id` int(1) NOT NULL,
   `form_id` int(7) NOT NULL,
   `form_name` varchar(255) NOT NULL,
-  `form_description` mediumtext NOT NULL
+  `form_description` mediumtext NOT NULL,
+  UNIQUE INDEX `form` (`lang_id`, `form_id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_mediadir_forms` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
@@ -2519,6 +2521,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfield_names` (
   `field_name` varchar(255) NOT NULL,
   `field_default_value` mediumtext NOT NULL,
   `field_info` mediumtext NOT NULL,
+  UNIQUE INDEX `field` (`lang_id`, `form_id`, `field_id`),
   KEY `field_id` (`field_id`),
   KEY `lang_id` (`lang_id`)
 ) ENGINE=InnoDB;
@@ -2558,6 +2561,7 @@ CREATE TABLE `contrexx_module_mediadir_level_names` (
   `level_name` varchar(255) NOT NULL,
   `level_description` mediumtext NOT NULL,
   `level_metadesc` varchar(160) NOT NULL DEFAULT '',
+  UNIQUE INDEX `level` (`lang_id`, `level_id`),
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`level_id`)
 ) ENGINE=InnoDB;

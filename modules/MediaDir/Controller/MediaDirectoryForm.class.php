@@ -312,7 +312,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             FROM
                 '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_form_names
             WHERE
-                lang_id='.FRONTEND_LANG_ID.'
+                lang_id='.static::getOutputLocale()->getId().'
                 AND `form_id` = "'.$intFormId.'"
             LIMIT
                 1
@@ -336,7 +336,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             $strName        = $arrName[$arrLang['id']];
             $strDescription = $arrDescription[$arrLang['id']];
 
-            if ($arrLang['id'] == FRONTEND_LANG_ID) {
+            if ($arrLang['id'] == static::getOutputLocale()->getId()) {
                 if ($arrName[0] != $strOldDefaultName) {
                     $strName = $arrName[0];
                 }

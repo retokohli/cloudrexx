@@ -657,6 +657,20 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
 
         $arrMetaDesc = $arrData['categoryMetaDesc'];
 
+        // set default values taken from output locale
+        if (empty($arrName[0])) {
+            $arrName[0] = '[[' . $_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY'] . ']]';
+        }
+        if (
+            empty($arrMetaDesc[0]) &&
+            isset($arrMetaDesc[static::getOutputLocale()->getId()])
+        ) {
+            $arrMetaDesc[0] = $arrMetaDesc[static::getOutputLocale()->getId()];
+        }
+        if (empty($arrMetaDesc[0])) {
+            $arrMetaDesc[0] = '';
+        }
+                        
         if(empty($intId)) {
             //insert new category
             $objInsertAttributes = $objDatabase->Execute("
@@ -675,9 +689,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 $intId = $objDatabase->Insert_ID();
 
                 foreach ($this->arrFrontendLanguages as $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']."]]";
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
-
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
                     $metaDesc = $arrMetaDesc[$arrLang['id']];
@@ -732,9 +743,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
 
                 if($objInsertNames !== false) {
                     foreach ($this->arrFrontendLanguages as $arrLang) {
-                        if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']."]]";
-                        if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
-                        
                         $strName = $arrName[$arrLang['id']];
                         $strDescription = $arrDescription[$arrLang['id']];
                         $metaDesc = $arrMetaDesc[$arrLang['id']];
