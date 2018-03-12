@@ -455,6 +455,7 @@ class CrmLibrary
 
         $objResult = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleNameLC}_task_types` ORDER BY `sorting`");
 
+        $sorto = 'ASC';
         if (isset($_GET['sortf']) && isset($_GET['sorto'])) {
             $sortf = ($_GET['sortf'] == 1)? 'name':'sorting';
             $sorto = ($_GET['sorto'] == 'ASC')? 'DESC' : 'ASC';
@@ -1464,6 +1465,7 @@ class CrmLibrary
                 $filter['term'] = '"'.$filter['term'].'*"';
                 break;
             }
+            $genderQuery = '';
             if (!empty($gender)) {
                 $genderQuery = "OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE id = c.id AND gender = '".$gender."' LIMIT 1)";
             }
@@ -2977,7 +2979,14 @@ class CrmLibrary
             $objImage = new \ImageManager();
         }
         if (empty($arrSettings)) {
-            $arrSettings = array();
+            $arrSettings = array(
+                'profile_thumbnail_pic_width'   => array(),
+                'profile_thumbnail_pic_height'  => array(),
+                'profile_thumbnail_scale_color' => array(),
+                'profile_thumbnail_method'      => array(),
+                'max_profile_pic_width'         => array(),
+                'max_profile_pic_height'        => array(),
+            );
             $arrSettings['profile_thumbnail_pic_width']['value'] = 80;
             $arrSettings['profile_thumbnail_pic_height']['value'] = 60;
             $arrSettings['profile_thumbnail_scale_color']['value'] = '';
@@ -3387,10 +3396,7 @@ class CrmLibrary
      *
      * @param String $query
      *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     *
-     * @return true
+     * @return integer
      */
     function countRecordEntries($query)
     {
@@ -3398,6 +3404,10 @@ class CrmLibrary
 
         $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
                                                     FROM    ('.$query.') AS num');
+
+        if (!$objEntryResult) {
+            return 0;
+        }
 
         return intval($objEntryResult->fields['numberOfEntries']);
     }

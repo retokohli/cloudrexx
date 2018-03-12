@@ -2310,7 +2310,7 @@ END;
                         'CRM_CONTACT_WEBSITE_NAME'    => "contactwebsite_{$Count}_{$website['profile']}_{$website['primary']}",
                         'CRM_CONTACT_WEBSITE'         => contrexx_raw2xhtml(html_entity_decode($website['value'], ENT_QUOTES, CONTREXX_CHARSET)),
                         'CRM_WEBSITE_PROFILE'         => !empty($this->websiteProfileOptions[$website['profile']]) ? $_ARRAYLANG[$this->websiteProfileOptions[$website['profile']]] : '',
-                        'CRM_WEBSITE_OPTION'          => $website['type'] != '' && !empty($this->websiteOptions[$website['type']]) ? $_ARRAYLANG[$this->websiteOptions[$website['type']]] : '',
+                        'CRM_WEBSITE_OPTION'          => isset($website['type']) && $website['type'] != '' && !empty($this->websiteOptions[$website['type']]) ? $_ARRAYLANG[$this->websiteOptions[$website['type']]] : '',
                         'CRM_CONTACT_WEB_ID_NAME'     => "website_{$Count}",
                         'CRM_CONTACT_WEB_ID'          => (int) $website['id'],
                         'CRM_CONTACT_WEBSITE_PRIMARY' => ($website['primary']) ? "primary_field" : "not_primary_field",
@@ -4370,7 +4370,7 @@ END;
         $sortingFields = array("d.id", "d.title", "d.quoted_price",  "c.customer_name", "u.username", "d.due_date");
         $sorto = (isset ($_GET['sorto'])) ? (((int) $_GET['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
         $sortf = (isset ($_GET['sortf']) && in_array($sortingFields[$_GET['sortf']], $sortingFields)) ? $sortingFields[$_GET['sortf']] : $sortingFields[0];
-        $sortLink = "&sorto={$_GET['sorto']}&sortf={$_GET['sortf']}";
+        $sortLink = isset($_GET['sorto']) && isset($_GET['sortf']) ? "&sorto={$_GET['sorto']}&sortf={$_GET['sortf']}" : '';
 
         $query = "SELECT
                        d.id,
@@ -4436,7 +4436,8 @@ END;
             }
         }
 
-        $sortOrder = ($_GET['sorto'] == 0) ? 1 : 0;
+        $sortOrder = isset($_GET['sorto']) && ($_GET['sorto'] == 0) ? 1 : 0;
+        $term      = isset($_GET['term']) ? contrexx_input2xhtml($_GET['term']) : '';
         $objTpl->setVariable(array(
                 'CRM_NAME_SORT'                 => "&sortf=1&sorto=$sortOrder",
                 'CRM_PRICE_SORT'                => "&sortf=2&sorto=$sortOrder",
@@ -4462,7 +4463,7 @@ END;
                 'TXT_SELECT_ENTRIES'            => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
                 'TXT_CRM_FILTERS'               =>  $_ARRAYLANG['TXT_CRM_FILTERS'],
                 'TXT_CRM_DEALS_RESPONSIBLE'     =>  $_ARRAYLANG['TXT_CRM_PROJECT_RESPONSIBLE'],
-                'CRM_DEALS_SEARCH_TERM'         =>  contrexx_input2xhtml($_GET['term']),
+                'CRM_DEALS_SEARCH_TERM'         =>  $term,
                 'TXT_CRM_ENTER_SEARCH_TERM'     => $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
                 'TXT_CRM_CONFIRM_DELETE_ENTRY'  => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
                 'TXT_CRM_ENTRY_DELETED_SUCCESS' => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS']
@@ -4485,7 +4486,7 @@ END;
         \JS::registerCSS("modules/Crm/View/Style/main.css");
         \JS::registerCSS("modules/Crm/View/Style/contact.css");
 
-        $redirect     = $_REQUEST['redirect'] ? $_REQUEST['redirect'] : base64_encode('&act=deals');
+        $redirect     = isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : base64_encode('&act=deals');
         $objTpl = $this->_objTpl;
         $objTpl->loadTemplateFile("module_{$this->moduleNameLC}_deals_modify.html");
         $settings = $this->getSettings();
@@ -4749,9 +4750,9 @@ END;
 
                 'CRM_DEALS_TITLE'               => contrexx_raw2xhtml($fields['title']),
                 'PM_PROJECT_DOMAIN_ID'          => (int) $fields['website'],
-                'PM_PROJECT_DOMAIN_NAME'        => contrexx_raw2xhtml($fields['siteName']),
+                'PM_PROJECT_DOMAIN_NAME'        => isset($fields['siteName']) ? contrexx_raw2xhtml($fields['siteName']) : '',
                 'CRM_DEALS_CUSTOMER'            => (int) $fields['customer'],
-                'CRM_DEALS_CUSTOMER_NAME'       => contrexx_raw2xhtml($fields['customer_name']),
+                'CRM_DEALS_CUSTOMER_NAME'       => isset($fields['customer_name']) ? contrexx_raw2xhtml($fields['customer_name']) : '',
                 'CRM_DEALS_QUOTED_PRICE'        => contrexx_raw2xhtml($fields['quoted_price']),
                 'DEALS_DUE_DATE'                => contrexx_raw2xhtml($fields['due_date']),
                 'CRM_REDIRECT_LINK'             => $redirect,
@@ -4853,7 +4854,7 @@ END;
                     'status'        => $status
             );
 
-            $field_set = '';
+            $field_set = array();
             foreach ($fields as $col => $val) {
                 if ($val !== null) {
                     $field_set[] = "`$col` = '".contrexx_input2db($val)."'";
@@ -4994,7 +4995,7 @@ END;
                     'status'        => $status
             );
 
-            $field_set = '';
+            $field_set = array();
             foreach ($fields as $col => $val) {
                 if ($val !== null) {
                     $field_set[] = "`$col` = '".contrexx_input2db($val)."'";
@@ -5045,7 +5046,6 @@ END;
         } elseif (!empty($id)) {
             $objResult = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleNameLC}_industry_types` WHERE id = $id");
 
-            $name     = $objResult->fields['industry_type'];
             $sorting  = $objResult->fields['sorting'];
             $status   = $objResult->fields['status'];
             $parentId = $objResult->fields['parent_id'];
@@ -5181,7 +5181,7 @@ END;
                     'status'        => $status
             );
 
-            $field_set = '';
+            $field_set = array();
             foreach ($fields as $col => $val) {
                 if ($val !== null) {
                     $field_set[] = "`$col` = '".contrexx_input2db($val)."'";
@@ -5337,7 +5337,7 @@ END;
                     'status'        => $status
             );
 
-            $field_set = '';
+            $field_set = array();
             foreach ($fields as $col => $val) {
                 if ($val !== null) {
                     $field_set[] = "`$col` = '".contrexx_input2db($val)."'";
@@ -5381,7 +5381,6 @@ END;
         } elseif (!empty($id)) {
             $objResult = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleNameLC}_memberships` WHERE id = $id");
 
-            $name    = $objResult->fields['industry_type'];
             $sorting = $objResult->fields['sorting'];
             $status  = $objResult->fields['status'];
 
@@ -5675,6 +5674,7 @@ END;
         $customer['cur_name']   = stripslashes($objResult->fields['cur_name']);
         $row = 0;
         while (!$contactPerson->EOF) {
+            $customer['customer'][$row] = array();
             $customer['customer'][$row]['name'] = stripslashes($contactPerson->fields['customer_name']." ".$contactPerson->fields['contact_familyname']);
             $customer['customer'][$row]['email'] = stripslashes($contactPerson->fields['email']);
             $customer['customer'][$row]['id'] = intval($contactPerson->fields['id']);
