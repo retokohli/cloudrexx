@@ -1801,7 +1801,7 @@ JSCODE;
           ORDER BY
             ". $sortOrder;
 
-        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
@@ -1841,7 +1841,7 @@ JSCODE;
           ORDER BY
             ". $sortOrder;
 
-        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
