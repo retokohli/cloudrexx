@@ -132,6 +132,26 @@ class EsiWidget extends Widget {
     const ESI_VAR_NAME_COUNTRY = 'country';
 
     /**
+     * @const int Index for ESI variable for additional path parts
+     */
+    const ESI_VAR_ID_PATH = 128;
+
+    /**
+     * @const string Name of ESI variable for additional path parts
+     */
+    const ESI_VAR_NAME_PATH = 'path';
+
+    /**
+     * @const int Index for ESI variable for query string
+     */
+    const ESI_VAR_ID_QUERY = 256;
+
+    /**
+     * @const string Name of ESI variable for query string
+     */
+    const ESI_VAR_NAME_QUERY = 'query';
+
+    /**
      * ESI variables configured to be sent for this Widget
      *
      * @var int Combination of the constants
@@ -287,6 +307,8 @@ class EsiWidget extends Widget {
             static::ESI_VAR_ID_USER => static::ESI_VAR_NAME_USER,
             static::ESI_VAR_ID_CURRENCY => static::ESI_VAR_NAME_CURRENCY,
             static::ESI_VAR_ID_COUNTRY => static::ESI_VAR_NAME_COUNTRY,
+            static::ESI_VAR_ID_PATH => static::ESI_VAR_NAME_PATH,
+            static::ESI_VAR_ID_QUERY => static::ESI_VAR_NAME_QUERY,
         );
         foreach ($esiVars as $esiVarId=>$esiVarName) {
             if (!$this->isEsiVariableActive($esiVarId)) {
@@ -327,6 +349,12 @@ class EsiWidget extends Widget {
                         $esiVarValue = $this->getComponent(
                             'GeoIp'
                         )->getCountryCode(array());
+                        break;
+                    case static::ESI_VAR_NAME_PATH:
+                        $esiVarValue = $cx->getResolver()->getAdditionalPathParts();
+                        break;
+                    case static::ESI_VAR_NAME_QUERY:
+                        $esiVarValue = urlencode(var_export($_GET, true));
                         break;
                 }
             }
