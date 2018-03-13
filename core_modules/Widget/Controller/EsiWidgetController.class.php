@@ -35,6 +35,8 @@
 
 namespace Cx\Core_Modules\Widget\Controller;
 
+class EsiWidgetControllerException extends \Exception {}
+
 /**
  * JsonAdapter Controller to handle EsiWidgets
  * Usage:
@@ -244,13 +246,13 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 return $locale;
             },
             'user' => function($sessionId) {
-                $session = \Cx\Core\Session\Model\Entity\Session::getInstance();
-                $session->read($sessionId);
-                $userId = $session->userId;
-                if (!$userId) {
-                    return $sessionId;
+                $currentSessionId = session_id();
+                if (empty($currentSessionId)) {
+                    session_id($sessionId);
+                } else if ($currentSessionId != $sessionId) {
+                    throw new \EsiWidgetControllerException();
                 }
-                return \FWUser::getFWUserObject()->objUser->getUser($userId);
+                return $sessionId;
             },
             'theme' => function($themeId) {
                 $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
