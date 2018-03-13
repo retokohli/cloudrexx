@@ -281,6 +281,9 @@ class EsiWidget extends Widget {
 
     /**
      * Returns the params for the JsonAdapter call
+     * If you add an ESI variable core_module Cache needs to be updated as well:
+     * - Controller\CacheLib (multiple times)
+     * - Model\Entity\ReverseProxyCloudrexx::globDrop()
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
