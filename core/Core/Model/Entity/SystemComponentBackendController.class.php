@@ -358,6 +358,35 @@ class SystemComponentBackendController extends Controller {
                 }
                 switch ($cmd[1]) {
                     case '':
+                        \Cx\Core\Setting\Controller\Setting::init(
+                            $this->getName(),
+                            null,
+                            'FileSystem',
+                            null,
+                            \Cx\Core\Setting\Controller\Setting::REPOPULATE
+                        );
+                        \Cx\Core\Setting\Controller\Setting::storeFromPost();
+                        \Cx\Core\Setting\Controller\Setting::setEngineType(
+                            $this->getName(),
+                            'FileSystem',
+                            'config'
+                        );
+                        \Cx\Core\Setting\Controller\Setting::show(
+                            $template,
+                            $this->getName() . '/' . implode('/', $cmd),
+                            $this->getName(),
+                            $_ARRAYLANG[
+                                'TXT_' . strtoupper(
+                                    $this->getType()
+                                ) . '_' . strtoupper(
+                                    $this->getName() . '_ACT_' . $cmd[0] . '_DEFAULT'
+                                )
+                            ],
+                            'TXT_' . strtoupper(
+                                $this->getType() . '_' . $this->getName()
+                            ) . '_'
+                        );
+                        break;
                     default:
                         if (!$template->blockExists('mailing')) {
                             return;
