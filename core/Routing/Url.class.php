@@ -709,10 +709,23 @@ class Url {
             $url = new static($url);
         }
 
+        // build regexp to identify system files
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $systemFolders = $cx->getSystemFolders();
+        array_walk($systemFolders, function($systemFolder) {
+            return preg_quote($systemFolder, '/');
+        });
+        $systemFolderRegexp = '/^'.
+            preg_quote($cx->getWebsiteOffsetPath(), '/') .
+            '(' . join('|', $systemFolders) . ')($|[#?\/])/';
+
         // disable virtual language dir if not in Backend
-        if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1 && $url->getProtocol() != 'file'){
+        if (
+            preg_match($systemFolderRegexp, '/' . $url->getPath()) < 1 && 
+            $url->getProtocol() != 'file'
+        ) {
             $url->setMode('frontend');
-        }else{
+        } else {
             $url->setMode('backend');
         }
         return $url;
