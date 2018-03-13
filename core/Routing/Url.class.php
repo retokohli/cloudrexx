@@ -711,34 +711,21 @@ class Url {
 
         // build regexp to identify system files
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        // TODO: implement proper getters in \Cx\Core\Core\Controller\Cx
-        //        for all system folders
-        $systemFolders = array(
-            preg_quote($cx->getBackendFolderName(), '/'),
-            preg_quote($cx->getConfigFolderName(), '/'),
-            preg_quote($cx->getCoreFolderName(), '/'),
-            preg_quote($cx->getCoreModuleFolderName(), '/'),
-            preg_quote(FOLDER_NAME_CUSTOMIZING, '/'),
-            preg_quote(FOLDER_NAME_FEED, '/'),
-            preg_quote(\Cx\Core\Core\Controller\Cx::FOLDER_NAME_IMAGES, '/'),
-            preg_quote('installer', '/'),
-            preg_quote('lang', '/'),
-            preg_quote($cx->getLibraryFolderName(), '/'),
-            preg_quote(FOLDER_NAME_MEDIA, '/'),
-            preg_quote($cx->getModelFolderName(), '/'),
-            preg_quote($cx->getModuleFolderName(), '/'),
-            preg_quote($cx->getThemesFolderName(), '/'),
-            preg_quote(FOLDER_NAME_TEMP, '/'),
-        );
-        $systemFolderRegexp = '/^'. preg_quote($cx->getWebsiteOffsetPath(), '/') . '(' . join('|', $systemFolders) . ')($|[#?\/])/';
+        $systemFolders = $cx->getSystemFolders();
+        array_walk($systemFolders, function($systemFolder) {
+            return preg_quote($systemFolder, '/');
+        });
+        $systemFolderRegexp = '/^'.
+            preg_quote($cx->getWebsiteOffsetPath(), '/') .
+            '(' . join('|', $systemFolders) . ')($|[#?\/])/';
 
         // disable virtual language dir if not in Backend
         if (
             preg_match($systemFolderRegexp, '/' . $url->getPath()) < 1 && 
             $url->getProtocol() != 'file'
-        ){
+        ) {
             $url->setMode('frontend');
-        }else{
+        } else {
             $url->setMode('backend');
         }
         return $url;
