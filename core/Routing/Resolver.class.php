@@ -1092,9 +1092,9 @@ class Resolver {
 
     /**
      * Returns the passed path additional to the resolved page's path
-     * @return string Offset path
+     * @return string Offset path without leading slash
      */
     public function getAdditionalPath() {
-        return $this->additionalPath;
+        return substr($this->additionalPath, 1);
     }
 }
