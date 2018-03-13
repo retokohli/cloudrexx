@@ -417,6 +417,14 @@ Cache clear all';
                         echo 'Unknown cache engine' . "\n";
                         return;
                     }
+                    if ($options == CacheLib::CACHE_ENGINE_MEMCACHED) {
+                        if (!extension_loaded('memcached')) {
+                            dl('memcached');
+                        }
+                        $droppedKeys = $this->cache->clearMemcached();
+                        echo $droppedKeys . ' keys dropped from Memcached' . "\n";
+                        return;
+                    }
                     $this->cache->_deleteAllFiles($options);
                     break;
                 }
@@ -424,7 +432,7 @@ Cache clear all';
                 break;
             case 'page':
                 if (!empty($options)) {
-                    $this->cache>_deleteSingleFile($options);
+                    $this->cache->deleteSingleFile($options);
                     break;
                 }
                 // @TODO: this will drop ESI cache too

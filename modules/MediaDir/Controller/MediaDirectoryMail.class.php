@@ -109,7 +109,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
                                                     WHERE
                                                         action_id='".$this->intAction."'
                                                     AND
-                                                        lang_id='".intval(FRONTEND_LANG_ID)."'
+                                                        lang_id='" . static::getOutputLocale()->getId() . "'
                                                     AND
                                                         active='1'
                                                     LIMIT 1");
@@ -168,7 +168,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
                                                         ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
                                                     WHERE (rel_inputfield.`entry_id`='".$this->intEntryId."')
                                                     AND (rel_inputfield.`field_id` = (".$strRelQuery."))
-                                                    AND (rel_inputfield.`lang_id` = '".FRONTEND_LANG_ID."')
+                                                    AND (rel_inputfield.`lang_id` = '" . static::getOutputLocale()->getId() . "')
                                                     AND (rel_inputfield.`value` != '')
                                                     GROUP BY value
                                                     ");

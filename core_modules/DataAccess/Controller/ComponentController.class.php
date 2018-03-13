@@ -280,7 +280,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             $response->send($outputModule);
         } catch (\Exception $e) {
-            global $_ARRAYLANG;
+            $lang = \Env::get('init')->getComponentSpecificLanguageData(
+                $this->getName(),
+                false
+            );
             
             $response->setStatus(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_ERROR
@@ -288,7 +291,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $response->addMessage(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::MESSAGE_TYPE_ERROR,
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'],
+                    $lang['TXT_CORE_MODULE_DATA_ACCESS_ERROR'],
                     get_class($e),
                     $e->getMessage()
                 )

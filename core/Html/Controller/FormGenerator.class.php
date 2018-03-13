@@ -809,7 +809,10 @@ CODE;
             throw new \Exception('Entity not found');
         }
 
-        $foreignEntityGetter = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($assocMapping["fieldName"]));
+        $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+            $assocMapping['fieldName']
+        );
+        $foreignEntityGetter = 'get' . $methodBaseName;
         $foreignEntities = $localEntity->$foreignEntityGetter();
 
         $htmlElements = array();
@@ -852,7 +855,10 @@ CODE;
                 if (!$foreignForeignEntity) {
                     continue;
                 }
-                $foreignEntityIdentifierGetter = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($foreignEntityIdentifierField));
+                $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                    $foreignEntityIdentifierField
+                );
+                $foreignEntityIdentifierGetter = 'get' . $methodBaseName;
                 $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->$foreignEntityIdentifierGetter();
             }
 

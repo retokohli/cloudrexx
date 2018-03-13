@@ -57,6 +57,12 @@ class ResolverException extends \Exception {};
 class Resolver {
     protected $em = null;
     protected $url = null;
+
+    /**
+     * @var Cx\Core\Routing\Url
+     */
+    protected $originalUrl = null;
+
     /**
      * language id.
      * @var integer
@@ -161,6 +167,7 @@ class Resolver {
      */
     public function init($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
         $this->url = $url;
+        $this->originalUrl = clone $url;
         $this->em = $entityManager;
         $this->lang = $lang;
         $this->pathOffset = $pathOffset;
@@ -224,6 +231,10 @@ class Resolver {
 
         // used for LinkGenerator
         define('FRONTEND_LANG_ID', $this->lang);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getDb()->getTranslationListener()->setTranslatableLocale(
+            \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+        );
         // used to load template file
         \Env::get('init')->setFrontendLangId($this->lang);
 
@@ -253,7 +264,6 @@ class Resolver {
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
-                                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                                 $sessionObj = $cx->getComponent('Session')->getSession();
                             }
                             $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
@@ -402,7 +412,7 @@ class Resolver {
             $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
         ) {
             // does this work for fallback(/aliases)?
-            $additionalPath = substr('/' . $this->url->getSuggestedTargetPath(), strlen($this->page->getPath()));
+            $additionalPath = substr('/' . $this->originalUrl->getSuggestedTargetPath(), strlen($this->page->getPath()));
             $componentController = $this->em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')->findOneBy(array('name'=>$this->page->getModule()));
             if ($componentController) {
                 $parts = array();
