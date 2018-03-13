@@ -2520,20 +2520,20 @@ namespace Cx\Core\Core\Controller {
          */
         public function getSystemFolders() {
             return array(
-                $cx->getBackendFolderName(),
-                $cx->getConfigFolderName(),
-                $cx->getCoreFolderName(),
-                $cx->getCoreModuleFolderName(),
+                $this->getBackendFolderName(),
+                $this->getConfigFolderName(),
+                $this->getCoreFolderName(),
+                $this->getCoreModuleFolderName(),
                 static::FOLDER_NAME_CUSTOMIZING,
                 static::FOLDER_NAME_FEED,
                 static::FOLDER_NAME_IMAGES,
                 '/installer',
                 '/lang',
-                $cx->getLibraryFolderName(),
+                $this->getLibraryFolderName(),
                 static::FOLDER_NAME_MEDIA,
-                $cx->getModelFolderName(),
-                $cx->getModuleFolderName(),
-                $cx->getThemesFolderName(),
+                $this->getModelFolderName(),
+                $this->getModuleFolderName(),
+                $this->getThemesFolderName(),
                 static::FOLDER_NAME_TEMP,
             );
         }

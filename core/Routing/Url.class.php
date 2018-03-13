@@ -712,8 +712,8 @@ class Url {
         // build regexp to identify system files
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $systemFolders = $cx->getSystemFolders();
-        array_walk($systemFolders, function($systemFolder) {
-            return preg_quote($systemFolder, '/');
+        array_walk($systemFolders, function(&$systemFolder) {
+            $systemFolder = preg_quote($systemFolder, '/');
         });
         $systemFolderRegexp = '/^'.
             preg_quote($cx->getWebsiteOffsetPath(), '/') .
