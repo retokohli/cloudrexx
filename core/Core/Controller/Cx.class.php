@@ -2524,17 +2524,17 @@ namespace Cx\Core\Core\Controller {
                 $cx->getConfigFolderName(),
                 $cx->getCoreFolderName(),
                 $cx->getCoreModuleFolderName(),
-                FOLDER_NAME_CUSTOMIZING,
-                FOLDER_NAME_FEED,
+                static::FOLDER_NAME_CUSTOMIZING,
+                static::FOLDER_NAME_FEED,
                 static::FOLDER_NAME_IMAGES,
                 '/installer',
                 '/lang',
                 $cx->getLibraryFolderName(),
-                FOLDER_NAME_MEDIA,
+                static::FOLDER_NAME_MEDIA,
                 $cx->getModelFolderName(),
                 $cx->getModuleFolderName(),
                 $cx->getThemesFolderName(),
-                FOLDER_NAME_TEMP,
+                static::FOLDER_NAME_TEMP,
             );
         }
 
