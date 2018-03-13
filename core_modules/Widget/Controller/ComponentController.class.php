@@ -259,6 +259,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return string Decoded string
      */
     public function decode($string) {
-        return base64_decode(strtr($base64url, '-.', '+/'));
+        return base64_decode(strtr($string, '-.', '+/'));
     }
 }
