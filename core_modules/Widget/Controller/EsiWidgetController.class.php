@@ -207,13 +207,14 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                     // get referrer
                     $headers = $params['response']->getRequest()->getHeaders();
                     $fragments = array();
-                    if (isset($headers['Referer'])) {
+                    if (!empty($params['get']['path'])) {
                         // -> get additional path fragments
-                        $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
-                        $pathParts = $refUrl->getPathParts();
-                        $offsetPathParts = explode('/', $this->cx->getWebsiteOffsetPath());
-                        $offsetPathParts[] = \Env::get('virtualLanguageDirectory');
-                        $fragments = array_diff_assoc($pathParts, $offsetPathParts);
+                        $fragments = explode(
+                            '/',
+                            $this->getComponent('Widget')->decode(
+                                $params['get']['path']
+                            )
+                        );
                     }
                     // get the component
                     $pageComponent = $this->getComponent($page->getModule());
