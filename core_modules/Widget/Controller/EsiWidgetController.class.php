@@ -263,10 +263,17 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 return $currencyCode;
             },
             'path' => function($base64Path) {
-                return base64_decode($base64Path);
+                return $this->getSystemComponentController()->decode(
+                    $base64Path
+                );
             },
             'query' => function($base64Query) {
-                return unserialize(base64_decode($base64Query));
+                $queryParams = array();
+                parse_str(
+                    $this->getSystemComponentController()->decode($base64Query),
+                    $queryParams
+                );
+                return $queryParams;
             },
             'ref' => function($originalUrl) use ($params) {
                 $headers = $params['response']->getRequest()->getHeaders();

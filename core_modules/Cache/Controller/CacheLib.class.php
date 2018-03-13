@@ -1118,7 +1118,7 @@ class CacheLib
                 continue;
             }
             // security: abort if any mysterious characters are found
-            if (!preg_match('/^[a-zA-Z0-9-+\/=]+$/', $params[$long])) {
+            if (!preg_match('/^[a-zA-Z0-9-=\.]+$/', $params[$long])) {
                 return array();
             }
             if ($long == 'ref') {

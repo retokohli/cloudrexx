@@ -354,12 +354,14 @@ class EsiWidget extends Widget {
                         )->getCountryCode(array());
                         break;
                     case static::ESI_VAR_NAME_PATH:
-                        $esiVarValue = base64_encode(
+                        $esiVarValue = $this->getComponentController()->encode(
                             $cx->getResolver()->getAdditionalPath()
                         );
                         break;
                     case static::ESI_VAR_NAME_QUERY:
-                        $esiVarValue = base64_encode(serialize($_GET));
+                        $esiVarValue = $this->getComponentController()->encode(
+                            http_build_query($_GET)
+                        );
                         break;
                 }
             }
