@@ -355,7 +355,7 @@ class EsiWidget extends Widget {
                         break;
                     case static::ESI_VAR_NAME_PATH:
                         $esiVarValue = base64_encode(
-                            $cx->getResolver()->getAdditionalPathParts()
+                            $cx->getResolver()->getAdditionalPath()
                         );
                         break;
                     case static::ESI_VAR_NAME_QUERY:
