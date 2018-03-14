@@ -3114,16 +3114,16 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (!$this->arrSettings['news_feed_status']) {
             foreach ($arrLanguages as $LangId => $arrLanguage) {
                 if ($arrLanguage['frontend'] == 1) {
-                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml')) {
-                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath() . '/news_' . \FWLanguage::getLanguageParameter($LangId, 'lang') . '.xml')) {
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath() . '/news_' . \FWLanguage::getLanguageParameter($LangId, 'lang') . '.xml');
                     }
 
-                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml')) {
-                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath() . '/news_headlines_' . \FWLanguage::getLanguageParameter($LangId, 'lang') . '.xml')) {
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath() . '/news_headlines_' . \FWLanguage::getLanguageParameter($LangId, 'lang') . '.xml');
                     }
 
-                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js')) {
-                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');
+                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath() . '/news_' .\FWLanguage::getLanguageParameter($LangId, 'lang') . '.js')) {
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath() . '/news_' . \FWLanguage::getLanguageParameter($LangId, 'lang') . '.js');
                     }
                 }
             }
