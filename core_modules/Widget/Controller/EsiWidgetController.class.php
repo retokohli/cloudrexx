@@ -35,6 +35,12 @@
 
 namespace Cx\Core_Modules\Widget\Controller;
 
+/**
+ * Exception for wrong usage of ESI widget
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage coremodules_widget
+ */
 class EsiWidgetControllerException extends \Exception {}
 
 /**
