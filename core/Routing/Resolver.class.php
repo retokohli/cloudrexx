@@ -770,7 +770,9 @@ class Resolver {
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+                    header('HTTP/1.1 301 Moved Permanently');
                     header('Location: ' . $target);
+                    header('Connection: close');
                     exit;
                 }
             }
@@ -786,7 +788,9 @@ class Resolver {
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+            header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $target);
+            header('Connection: close');
             exit;
         }
 
