@@ -228,7 +228,7 @@ class NewsLibrary
      */
     protected function getCategoryMenu(
             $categories,
-            $selectedCategory = 0,
+            $selectedCategory = array(),
             $hiddenCategories = array(),
             $onlyCategoriesWithEntries = false,
             $showLevel = true
@@ -1389,7 +1389,10 @@ class NewsLibrary
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);
                 if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
-                    $monthlyStats[$newsYear.'_'.$newsMonth]['name'] = $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear;
+                    $monthlyStats[$newsYear . '_' . $newsMonth] = array(
+                        'name' => $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear,
+                        'news' => array(),
+                    );
                 }
                 $monthlyStats[$newsYear.'_'.$newsMonth]['news'][] = $objResult->fields;
                 $objResult->MoveNext();

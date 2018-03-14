@@ -2260,7 +2260,7 @@ RSS2JSCODE;
                        'NEWS_ARCHIVE_LINK'          => $htmlLink,
                        'NEWS_ARCHIVE_LINK_TARGET'   => $linkTarget,
                        'NEWS_ARCHIVE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
-                       'NEWS_ARCHIVE_CATEGORY'      => stripslashes($news['name']),
+                       'NEWS_ARCHIVE_CATEGORY'      => !empty($news['name']) ? stripslashes($news['name']) : '',
                        'NEWS_ARCHIVE_AUTHOR'        => contrexx_raw2xhtml($author),
                        'NEWS_ARCHIVE_PUBLISHER'     => contrexx_raw2xhtml($publisher),
                        'NEWS_ARCHIVE_COUNT_COMMENTS'=> contrexx_raw2xhtml($objResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),

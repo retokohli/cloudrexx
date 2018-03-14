@@ -1784,7 +1784,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             $frameIds = '';
             $associatedFrameIds = '';
-            $arrAssociatedFrameIds = explode(';', $objTeaser->arrTeasers[$newsid]['teaser_frames']);
+            $arrAssociatedFrameIds = array();
+            if (!empty($objTeaser->arrTeasers[$newsid]['teaser_frames'])) {
+                $arrAssociatedFrameIds = explode(';', $objTeaser->arrTeasers[$newsid]['teaser_frames']);
+            }
+
             foreach ($arrAssociatedFrameIds as $teaserFrameId) {
                 if (empty($teaserFrameId)) {
                     continue;
@@ -2302,7 +2306,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             $id = intval($_POST['newsId']);
             $userId = $objFWUser->objUser->getId();
-            $changelog = mktime();
+            $changelog = time();
 
             $date = $this->dateFromInput($_POST['newsDate']);
 
@@ -2773,8 +2777,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // Change sorting
-        if (is_array($_POST['newsCatSorting']) && !empty($_POST['newsCatSorting'])) {
-            $newSorting = $_POST['newsCatSorting'];
+        $newSorting = isset($_POST['newsCatSorting']) ? contrexx_input2raw($_POST['newsCatSorting']) : array();
+        if (is_array($newSorting) && !empty($newSorting)) {
             asort($newSorting);
             foreach($newSorting as $catId => $catSort) {
                 $this->objNestedSet->moveTree($catId, $this->objNestedSet->getParent($catId)->id, NESE_MOVE_BELOW);
@@ -3110,9 +3114,17 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (!$this->arrSettings['news_feed_status']) {
             foreach ($arrLanguages as $LangId => $arrLanguage) {
                 if ($arrLanguage['frontend'] == 1) {
-                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');
+                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml')) {
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    }
+
+                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml')) {
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    }
+
+                    if (file_exists(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js')) {
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');
+                    }
                 }
             }
             return;
@@ -4647,6 +4659,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $userId        = $objUser->getId();
 
             if ($userName) {
+                $userAttr[$i] = array();
                 $userAttr[$i]['id']    = $userId;
                 $userAttr[$i]['label'] = \FWUser::getParsedUserTitle($userId, '', true);
                 $userAttr[$i]['value'] = \FWUser::getParsedUserTitle($userId);
