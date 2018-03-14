@@ -368,8 +368,7 @@ class SystemComponentBackendController extends Controller {
                         \Cx\Core\Setting\Controller\Setting::storeFromPost();
                         \Cx\Core\Setting\Controller\Setting::setEngineType(
                             $this->getName(),
-                            'FileSystem',
-                            'config'
+                            'FileSystem'
                         );
                         \Cx\Core\Setting\Controller\Setting::show(
                             $template,
