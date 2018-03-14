@@ -771,7 +771,6 @@ class Resolver {
                     \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
                     header('Location: ' . $target, true, 301);
-                    header('Connection: close');
                     exit;
                 }
             }
