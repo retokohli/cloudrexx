@@ -536,9 +536,10 @@ class Resolver {
             // TODO: Cache this redirect. This is not done yet since we would
             // need to drop the complete page cache (since we don't know which
             // is the correct cache file for this redirect)
-            header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $target);
-            header('Connection: close');
+            header('Location: ' . $target, true, 301);
+            if (!$this->page->isTargetInternal()) {
+                header('Connection: close');
+            }
             exit;
         }
 
@@ -559,9 +560,7 @@ class Resolver {
             // TODO: Cache this redirect. This is not done yet since we would
             // need to drop the complete page cache (since we don't know which
             // is the correct cache file for this redirect)
-            header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $correctUrl->toString());
-            header('Connection: close');
+            header('Location: ' . $correctUrl->toString(), true, 301);
             exit();
         }
         return $this->page;
@@ -747,7 +746,8 @@ class Resolver {
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-                    header('Location: ' . $target);
+                    header('Location: ' . $target, true, 301);
+                    header('Connection: close');
                     exit;
                 } else {
                     if ($target[0] == '/') {
@@ -770,8 +770,7 @@ class Resolver {
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-                    header('HTTP/1.1 301 Moved Permanently');
-                    header('Location: ' . $target);
+                    header('Location: ' . $target, true, 301);
                     header('Connection: close');
                     exit;
                 }
@@ -788,9 +787,7 @@ class Resolver {
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-            header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $target);
-            header('Connection: close');
+            header('Location: ' . $target, true, 301);
             exit;
         }
 
