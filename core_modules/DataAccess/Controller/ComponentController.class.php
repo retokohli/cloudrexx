@@ -134,8 +134,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         // handle CLI
         if (php_sapi_name() == 'cli') {
-            // we force usage of output module "raw" in CLI
-            array_unshift($arguments, 'raw');
+            try {
+                $this->getOutputModule(current($arguments));
+            } catch (\Exception $e) {
+                // we force usage of output module "raw" in CLI
+                array_unshift($arguments, 'raw');
+            }
             
             // method will not be set in CLI, there for we educate-guess it
             $method = 'get';
