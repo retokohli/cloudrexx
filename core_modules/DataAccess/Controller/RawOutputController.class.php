@@ -164,7 +164,31 @@ class RawOutputController extends OutputController {
         if (!count($data)) {
             return '(Empty set)' . static::LINE_END;
         }
+        if ($this->array_depth($data) == 1) {
+            $data = array($data);
+        }
         return $this->tablify($data);
+    }
+
+    /**
+     * Detects the depth of an array
+     * @param array $array Array to analyze
+     * @return int Depth of $array
+     */
+    protected function array_depth(array $array) {
+        $max_depth = 1;
+
+        foreach ($array as $value) {
+            if (is_array($value)) {
+                $depth = array_depth($value) + 1;
+
+                if ($depth > $max_depth) {
+                    $max_depth = $depth;
+                }
+            }
+        }
+
+        return $max_depth;
     }
 
     /**
