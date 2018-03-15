@@ -261,7 +261,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $this->_objTpl->loadTemplateFile('module_contact_settings.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_SETTINGS'];
 
-        $arrSettings = &$this->getSettings();
+        $arrSettings = $this->getSettings();
 
         $this->_objTpl->setVariable(array(
                 'TXT_CONTACT_SETTINGS'                          => $_ARRAYLANG['TXT_CONTACT_SETTINGS'],
@@ -1142,9 +1142,10 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         if (empty($recipients)) {
             // make an empty one so there's at least one
             $recipients[0] = array(
-                    'id'    => 1,
-                    'email' => '',
-                    'editType' => 'new'
+                'id'       => 1,
+                'email'    => '',
+                'editType' => 'new',
+                'lang'     => array(),
             );
 
             foreach ($arrActiveSystemFrontendLanguages as $langID => $lang) {
@@ -1573,7 +1574,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 'order_id'      => $orderId,
                 'is_required'   => $is_required,
                 'check_type'    => $checkType,
-                'editType'      => $editType
+                'editType'      => $editType,
+                'lang'          => array(),
             );
             $orderId++;
 
@@ -1642,10 +1644,11 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             }
 
             $recipients[$key] = array(
-                    'id'    => $key,
-                    'email' => $mail,
-                    'sort'  => $sortCounter++,
-                    'editType' => $editTypes[$key]
+                'id'       => $key,
+                'email'    => $mail,
+                'sort'     => $sortCounter++,
+                'editType' => $editTypes[$key],
+                'lang'     => array(),
             );
 
             foreach (array_keys(\FWLanguage::getActiveFrontendLanguages()) as $langId) {
