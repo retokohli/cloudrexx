@@ -68,10 +68,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
         $arrForms = array();
 
-        // LANG_ID is set to backend or frontend interface language.
-        // If LANG_ID is not yet set, then we've been requested from
-        // the frontend and the resolver did already set FRONTEND_LANG_ID
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
 
         if(!empty($intFormId)) {
             $whereFormId = "form.id='".$intFormId."' AND";
@@ -315,7 +312,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             FROM
                 '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_form_names
             WHERE
-                lang_id='.FRONTEND_LANG_ID.'
+                lang_id='.static::getOutputLocale()->getId().'
                 AND `form_id` = "'.$intFormId.'"
             LIMIT
                 1
@@ -339,7 +336,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             $strName        = $arrName[$arrLang['id']];
             $strDescription = $arrDescription[$arrLang['id']];
 
-            if ($arrLang['id'] == FRONTEND_LANG_ID) {
+            if ($arrLang['id'] == static::getOutputLocale()->getId()) {
                 if ($arrName[0] != $strOldDefaultName) {
                     $strName = $arrName[0];
                 }
