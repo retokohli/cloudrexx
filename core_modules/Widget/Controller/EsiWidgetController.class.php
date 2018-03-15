@@ -36,6 +36,14 @@
 namespace Cx\Core_Modules\Widget\Controller;
 
 /**
+ * Exception for wrong usage of ESI widget
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage coremodules_widget
+ */
+class EsiWidgetControllerException extends \Exception {}
+
+/**
  * JsonAdapter Controller to handle EsiWidgets
  * Usage:
  * - Create a subclass that implements parseWidget()
@@ -243,8 +251,14 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 );
                 return $locale;
             },
-            'user' => function($userId) {
-                return \FWUser::getFWUserObject()->objUser->getUser($userId);
+            'user' => function($sessionId) {
+                $currentSessionId = session_id();
+                if (empty($currentSessionId)) {
+                    session_id($sessionId);
+                } else if ($currentSessionId != $sessionId) {
+                    throw new \EsiWidgetControllerException();
+                }
+                return $sessionId;
             },
             'theme' => function($themeId) {
                 $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();

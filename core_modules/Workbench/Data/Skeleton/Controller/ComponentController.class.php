@@ -51,6 +51,16 @@ namespace Cx\Modules\Skeleton\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
+     * Returns all Controller class names for this component (except this)
+     *
+     * Be sure to return all your controller classes if you add your own
+     * @return array List of Controller class names (without namespace)
+     */
+    public function getControllerClasses() {
+        return array('Frontend', 'Backend');
+    }
+
+    /**
      * Returns a list of JsonAdapter class names
      *
      * The array values might be a class name without namespace. In that case
