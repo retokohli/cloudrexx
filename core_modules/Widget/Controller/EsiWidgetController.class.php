@@ -256,7 +256,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 if (empty($currentSessionId)) {
                     session_id($sessionId);
                 } else if ($currentSessionId != $sessionId) {
-                    throw new \EsiWidgetControllerException();
+                    throw new EsiWidgetControllerException();
                 }
                 return $sessionId;
             },
