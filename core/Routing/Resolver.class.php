@@ -739,7 +739,7 @@ class Resolver {
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
                 $this->resolvePage(true);
-            } else { //external target - redirect via HTTP 302
+            } else { //external target - redirect via HTTP 301
                 if (\FWValidator::isUri($target)) {
                     $this->headers['Location'] = $target;
                     $emptyString = '';
@@ -776,7 +776,7 @@ class Resolver {
             }
         }
 
-        //if we followed one or more redirections, the user shall be redirected by 302.
+        //if we followed one or more redirections, the user shall be redirected by 301.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
             $target = $this->page->getURL($this->pathOffset, array());
