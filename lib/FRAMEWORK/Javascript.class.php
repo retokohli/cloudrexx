@@ -340,6 +340,19 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                     }
                 });'
         ),
+        // Extends standard "chosen" above, introduced in MediaDir.
+        // Usage:
+        //  cx.jQuery([selector])
+        //    .chosen([options])
+        //    .chosenSortable([extra options]);
+        'chosen-sortable' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/chosen/chosen-sortable.min.js',
+                // Use the full version for debugging
+                //'lib/javascript/jquery/chosen/chosen-sortable.js',
+            ),
+            'dependencies' => array('jqueryui', 'chosen'),
+        ),
         'backend' => array(
             'jsfiles' => array(
                 'lib/javascript/switching_content.js',
