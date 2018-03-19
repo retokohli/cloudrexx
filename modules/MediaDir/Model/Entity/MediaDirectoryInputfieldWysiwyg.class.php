@@ -65,6 +65,7 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
         global $objDatabase, $objInit, $_ARRAYLANG;;
 
         $intId = intval($arrInputfield['id']);
+        $langId = static::getOutputLocale()->getId();
 
         switch ($intView) {
             default:
@@ -90,8 +91,8 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
                         }
 // TODO: What if the current language value is missing?
 // The empty string is an inconvenient default!
-//                        $arrValue[0] = $arrValue[FRONTEND_LANG_ID];
-                        $arrValue[0] = (isset($arrValue[FRONTEND_LANG_ID]) ? $arrValue[FRONTEND_LANG_ID] : '');
+//                        $arrValue[0] = $arrValue[$langId];
+                        $arrValue[0] = (isset($arrValue[$langId]) ? $arrValue[$langId] : '');
                     }
                 } else {
                     $arrValue = null;
@@ -208,15 +209,16 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
         $intId = intval($arrInputfield['id']);
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
+        $langId = static::getOutputLocale()->getId();
 
         if ($this->arrSettings['settingsTranslationStatus'] == 1) {
-            if (in_array(FRONTEND_LANG_ID, $arrTranslationStatus)) {
-                $intLangId = FRONTEND_LANG_ID;
+            if (in_array($langId, $arrTranslationStatus)) {
+                $intLangId = $langId;
             } else {
                 $intLangId = $intEntryDefaultLang;
             }
         } else {
-            $intLangId = FRONTEND_LANG_ID;
+            $intLangId = $langId;
         }
 
         $objInputfieldValue = $objDatabase->Execute("

@@ -630,7 +630,7 @@ class Category
         $arrSelectCoreExpressions = array();
         //$arrSelectLocaleExpressions = array();
         $this->filtered_search_count = 0;
-        $sqlCondition = '';
+        $sqlCondition = array();
 
         // set filter
         if (isset($filter) && is_array($filter) && count($filter) || !empty($search)) {
@@ -705,7 +705,12 @@ class Category
 
         // parse filter
         if (isset($arrFilter) && is_array($arrFilter)) {
-            if (count($arrFilterConditions = $this->parseFilterConditions($arrFilter))) {
+            $arrFilterConditions = $this->parseFilterConditions($arrFilter);
+            if (
+                count($arrFilterConditions) &&
+                !empty($arrFilterConditions['conditions']) &&
+                !empty($arrFilterConditions['tables'])
+            ) {
                 $arrConditions[] = implode(' AND ', $arrFilterConditions['conditions']);
                 $tblLocales = isset($arrFilterConditions['tables']['locale']);
             }
@@ -801,7 +806,10 @@ class Category
      */
     private function parseFilterConditions($arrFilter)
     {
-        $arrConditions = array();
+        $arrConditions = array(
+            'conditions' => array(),
+            'tables'     => array(),
+        );
         foreach ($arrFilter as $attribute => $condition) {
             /**
              * $attribute is the attribute like 'is_active' or 'name'
@@ -934,7 +942,7 @@ class Category
 
         if ($objCategoryId !== false) {
             while (!$objCategoryId->EOF) {
-                $arrCategoryIds[$objCategoryId->fields['id']] = '';
+                $arrCategoryIds[$objCategoryId->fields['id']] = array();
                 $objCategoryId->MoveNext();
             }
         }

@@ -278,12 +278,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved virtual page
      */
     public function resolve($parts, $page) {
-        // in case the requested URL does not contain any slug-parts
-        // there is nothing for us to do as it is a regular page request
-        if (empty($parts)) {
-            return;
-        }
-
         // abort resolving in case pretty-URLs is not in case
         $objMediaDirectoryEntry = new MediaDirectoryEntry($this->getName());
         if (!$objMediaDirectoryEntry->arrSettings['usePrettyUrls']) {
@@ -296,10 +290,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $detailPage = $page;
         $slugCount = count($parts);
         $cmd = $page->getCmd();
+        $noParts = false;
 
-        // Extract slug part from the end of the requested URL.
-        // This might be the slug of an entry, level or category
-        $slug = array_pop($parts);
+        if (empty($parts)) {
+            $noParts = true;
+        } else {
+            // Extract slug part from the end of the requested URL.
+            // This might be the slug of an entry, level or category
+            $slug = array_pop($parts);
+        }
 
         // fetch category & level from page's CMD in case the requested URL
         // does not contain a category nor a level 
@@ -317,6 +316,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $categoryId = $pageArguments[0];
                 }
             }
+        }
+
+        // in case the requested URL does not contain any slug-parts
+        // there is nothing else for us to do as it is a regular page request
+        if ($noParts) {
+            // inject level as request arguments from page's CMD
+            if ($levelId) {
+                $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
+            }
+
+            // inject category as request arguments from page's CMD
+            if ($categoryId) {
+                $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
+            }
+
+            return;
         }
 
         // check if the extracted slug is an entry
@@ -418,20 +433,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // in case we have not yet identified a category and a level
         // lets check if the requested URL does contain any
         // virtual level or category
+        $matchedLevelId = 0;
+        $matchedCategoryId = 0;
         while (
             $slug &&
             !($levelId && $categoryId)
         ) {
             // let's check if a level exists by the supplied slug
-            if (!$levelId && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
+            if (!$matchedLevelId && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
                 $objMediaDirectoryLevel = new MediaDirectoryLevel(null, null, 0, $this->getName());
-                $levelId = $objMediaDirectoryLevel->findOneBySlug($slug);
+                $matchedLevelId = $objMediaDirectoryLevel->findOneBySlug($slug);
+                if ($matchedLevelId) {
+                    $levelId = $matchedLevelId;
+                }
             }
 
             // let's check if a category exists by the supplied slug
-            if (!$categoryId) {
+            if (!$matchedCategoryId) {
                 $objMediaDirectoryCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
-                $categoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
+                $matchedCategoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
+                if ($matchedCategoryId) {
+                    $categoryId = $matchedCategoryId;
+                }
             }
 
             // fetch parent slug (if any is left)

@@ -1000,6 +1000,10 @@ namespace Cx\Core\Core\Controller {
             if (!isset($_CONFIG)) {
                 die('System halted: Unable to load basic configuration!');
             }
+
+            if (empty($_SERVER['SERVER_NAME'])) {
+                $_SERVER['SERVER_NAME'] = $_CONFIG['domainUrl'];
+            }
         }
 
         protected function setCustomizingPath() {
@@ -1546,6 +1550,9 @@ namespace Cx\Core\Core\Controller {
                             if (!defined('LANG_ID')) {
                                 define('LANG_ID', $langId);
                             }
+                            $this->getDb()->getTranslationListener()->setTranslatableLocale(
+                                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+                            );
                         }
                     }
                     if (!\Env::get('Resolver')) {
@@ -1597,7 +1604,8 @@ namespace Cx\Core\Core\Controller {
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
                 } catch (\Exception $e) {
-                    throw new \Exception($e);
+                    fwrite(STDERR, 'ERROR: ' . $e->getMessage() . PHP_EOL);
+                    return;
                 }
 
             }
@@ -2503,6 +2511,31 @@ namespace Cx\Core\Core\Controller {
          */
         public function getThemesFolderName() {
             return self::FOLDER_NAME_THEMES;
+        }
+
+        /**
+         * Returns a list of system folders
+         * Contains all folders that are re-routed to Cloudrexx by .htaccess
+         * @return array List of folders relative to website offset path
+         */
+        public function getSystemFolders() {
+            return array(
+                $this->getBackendFolderName(),
+                $this->getConfigFolderName(),
+                $this->getCoreFolderName(),
+                $this->getCoreModuleFolderName(),
+                static::FOLDER_NAME_CUSTOMIZING,
+                static::FOLDER_NAME_FEED,
+                static::FOLDER_NAME_IMAGES,
+                '/installer',
+                '/lang',
+                $this->getLibraryFolderName(),
+                static::FOLDER_NAME_MEDIA,
+                $this->getModelFolderName(),
+                $this->getModuleFolderName(),
+                $this->getThemesFolderName(),
+                static::FOLDER_NAME_TEMP,
+            );
         }
 
         /**

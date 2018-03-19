@@ -4016,11 +4016,6 @@ die("Shop::processRedirect(): This method is obsolete!");
                 }
             }
         }
-//die();
-        // Clear the ship-to country if there is no shipping
-        if (!Cart::needs_shipment()) {
-            $_SESSION['shop']['countryId2'] = 0;
-        }
         $shipper_id = (empty($_SESSION['shop']['shipperId'])
             ? null : $_SESSION['shop']['shipperId']);
         $payment_id = (empty($_SESSION['shop']['paymentId'])
@@ -4051,7 +4046,11 @@ die("Shop::processRedirect(): This method is obsolete!");
         $objOrder->address($_SESSION['shop']['address2']);
         $objOrder->city($_SESSION['shop']['city2']);
         $objOrder->zip($_SESSION['shop']['zip2']);
-        $objOrder->country_id($_SESSION['shop']['countryId2']);
+        if (!Cart::needs_shipment()) {
+            $objOrder->country_id(0);
+        } else {
+            $objOrder->country_id($_SESSION['shop']['countryId2']);
+        }
         $objOrder->phone($_SESSION['shop']['phone2']);
         $objOrder->vat_amount($_SESSION['shop']['vat_price']);
         $objOrder->shipment_amount($_SESSION['shop']['shipment_price']);

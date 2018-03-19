@@ -682,6 +682,7 @@ class Downloads extends DownloadsLibrary
 
 //
 //            foreach ($this->arrPermissionTypes as $protectionType) {
+//                $arrCategoryPermissions[$protectionType]              = array();
 //                $arrCategoryPermissions[$protectionType]['protected'] = isset($_POST['downloads_category_'.$protectionType]) && $_POST['downloads_category_'.$protectionType];
 //                $arrCategoryPermissions[$protectionType]['groups'] = !empty($_POST['downloads_category_'.$protectionType.'_associated_groups']) ? array_map('intval', $_POST['downloads_category_'.$protectionType.'_associated_groups']) : array();
 //            }
