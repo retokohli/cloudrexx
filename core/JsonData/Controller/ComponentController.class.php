@@ -101,7 +101,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 unset($arguments[static::ARGUMENT_INDEX_OUTPUT_MODULE]);
                 unset($arguments[static::ARGUMENT_INDEX_DATA_ADAPTER]);
                 unset($arguments[static::ARGUMENT_INDEX_DATA_METHOD]);
-                $dataArguments = array('get' => $arguments);
+                $dataArguments = array('get' => $arguments, 'post' => $dataArguments);
                 if (!isset($arguments['response'])) {
                     $arguments['response'] = $this->cx->getResponse();
                 }
@@ -112,7 +112,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if (empty($data['message'])) {
                         throw new \Exception('Fetching data failed without message');
                     }
-                    throw new \Exception($data['message']);
                 }
                 
                 switch ($outputModule) {

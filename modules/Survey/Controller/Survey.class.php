@@ -678,6 +678,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '') {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
@@ -728,6 +729,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '' && strlen($objChoiceAns->fields['votes']) > 5) {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
@@ -1309,6 +1311,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '') {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
@@ -1359,6 +1362,7 @@ END;
                                         if ($objChoiceAns->fields['votes'] != '' && strlen($objChoiceAns->fields['votes']) > 5) {
                                             $choiceVote[] = json_decode($objChoiceAns->fields['votes']);
                                         } else {
+                                            $choiceVote[$choice_count] = array();
                                             foreach ($choices as $key => $choice) {
                                                 $choiceVote[$choice_count][$key] = 0;
                                             }
@@ -1686,6 +1690,9 @@ END;
                                                 WHERE groups.isActive != "0"
                                                 AND Questions.id='.$id);
         $cou = 1;
+        if (!$QuestionDatas) {
+            return;
+        }
 
         while(!$QuestionDatas->EOF) {
             // This is the additional field information
@@ -1734,7 +1741,8 @@ END;
             if($InputType == 6) {
                 $SurveyOptionText .= "<table>";
             }
-            $j = 1;
+            $j        = 1;
+            $text_row = '';
             while (!$objResult->EOF) {
                 if(trim($objResult->fields['answer']) != "") {
                     if(!empty($InputType)) {
@@ -1812,7 +1820,7 @@ END;
                 'SURVEY_TITLE'          => $question_wrap,
                 'SURVEY_OPTIONS_TEXT'   => $SurveyOptionTexts,
                 'SURVEY_COMMENT_BOX'    => $commentBox,
-                'SURVEY_ID'             => $idOfSurvey,
+                'SURVEY_ID'             => $id,
                 'SURVEY_TEXT_ROW'       => $text_row,
                 'TXT_ADDINFO'           => '<input type="hidden" id="addInfo" name="addInfo" value="'.contrexx_raw2xhtml($additionalInfo).'">',
                 'TXT_HIDDENFIELD'       => '<input type="hidden" name="Survey_id_'.$cou.'" value="'.contrexx_raw2xhtml($QuestionDatas->fields['questionId']).'"/>'

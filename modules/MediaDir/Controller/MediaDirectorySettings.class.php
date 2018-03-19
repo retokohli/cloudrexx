@@ -1340,6 +1340,7 @@ EOF;
 
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleNameLC.'_settings_modify_form.html');
 
+        $langId = static::getOutputLocale()->getId();
         $objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS' => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELDS'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_FORM' => $_ARRAYLANG['TXT_MEDIADIR_FORM'],
@@ -1361,8 +1362,8 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE'],
             'TXT_'.$this->moduleLangVar.'_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_EXP_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_EXP_SEARCH'],
-            $this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
-            $this->moduleLangVar.'_SETTINGS_FORM_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
+            $this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => $langId,
+            $this->moduleLangVar.'_SETTINGS_FORM_DEFAULT_LANG_ID' => $langId,
             'TXT_'.$this->moduleLangVar.'_NAME' =>  $_CORELANG['TXT_NAME'],
             'TXT_'.$this->moduleLangVar.'_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
@@ -1670,7 +1671,7 @@ EOF;
                     break;
                 case 'settingsActiveLanguages':
                     $varValue = join(",",$varValue);
-                        $oldActiveLanguage = explode(',', $this->arrSettings['settingsActiveLanguages']);
+                    $oldActiveLanguage = explode(',', $this->arrSettings['settingsActiveLanguages']);
                 default:
                     if (!$this->saveSetting($strName, $varValue)) {
                         return false;
@@ -1779,13 +1780,13 @@ EOF;
         $langCount = count(explode(',',$this->arrSettings['settingsActiveLanguages']));
         foreach($objEntries->arrEntries as $arrEntry) {
 
-            if ($arrEntry['slug_field_id'] && $arrEntry['slug']) {
+            if (!empty($arrEntry['slug_field_id']) && !empty($arrEntry['slug'])) {
                 // slug exists and has a value, nothing to do with this entry
                 continue;
             }
 
             // check if the entry's slug field is set
-            if (!$arrEntry['slug_field_id']) {
+            if (empty($arrEntry['slug_field_id'])) {
 
                 // get form definition of the entry
                 $arrForm = $objEntries->getFormDefinitionOfEntry(
@@ -1793,12 +1794,12 @@ EOF;
                 );
 
                 // check if form's slug field already exists
-                if ($arrForm['slug_field_id']) {
+                if (!empty($arrForm['slug_field_id'])) {
                     $arrEntry['slug_field_id'] = $arrForm['slug_field_id'];
                 } else {
 
                     // check if form's slug field was already created
-                    if ($formsWithFieldAlreadyCreated[$arrForm['formId']]) {
+                    if (isset($formsWithFieldAlreadyCreated[$arrForm['formId']])) {
                         $arrEntry['slug_field_id'] = $formsWithFieldAlreadyCreated[$arrForm['formId']];
                     } else { // create slug field for form
                         $objInputfields = new MediaDirectoryInputfield(
@@ -1850,7 +1851,7 @@ EOF;
             }
 
             // check if entry already has a slug value set
-            if (!$arrEntry['slug']) {
+            if (empty($arrEntry['slug'])) {
 
                 // get primary field value of each lang
                 $firstFieldQuery = "
@@ -1869,9 +1870,8 @@ EOF;
                 if ($firstField) {
                     while (!$firstField->EOF) {
                         $langId = $firstField->fields['lang_id'];
-                        $slugFromFirstField = $this->slugify(
-                            $firstField->fields['value']
-                        );
+                        $slugFromFirstField = $firstField->fields['value'];
+                        $this->slugify($slugFromFirstField);
 
                         // store slug value for entry in db
                         $query = "

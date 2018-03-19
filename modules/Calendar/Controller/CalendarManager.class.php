@@ -73,7 +73,7 @@ class CalendarManager extends CalendarLibrary
         global $_ARRAYLANG, $objTemplate;
 
         parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/View/Template/Backend');
-        $this->act = $_REQUEST['act'];
+        $this->act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
 
         $contentNavigation = '<a href="index.php?cmd='.$this->moduleName.'" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'].' </a>';
         $contentNavigation .= \Permission::checkAccess(180, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_event" class="'.($this->act == 'modify_event' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_NEW_EVENT'].' </a>' : '';
@@ -92,7 +92,8 @@ class CalendarManager extends CalendarLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-        switch ($_GET['act']) {
+        $act = isset($_GET['act']) ? $_GET['act'] : '';
+        switch ($act) {
             case 'settings':
                 \Permission::checkAccess(181, 'static');
                 $this->showSettings();
@@ -1102,7 +1103,7 @@ class CalendarManager extends CalendarLibrary
 
             //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
+                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => '',
             ));
 
             $this->_objTpl->parse('eventTabMenuDescTab');
@@ -1389,7 +1390,8 @@ class CalendarManager extends CalendarLibrary
 
         $objSettings = new \Cx\Modules\Calendar\Controller\CalendarSettings();
 
-        switch ($_GET['tpl']) {
+        $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
+        switch ($tpl) {
             /* case 'hosts':
                 $objSettings->hosts($this->_objTpl);
                 break;

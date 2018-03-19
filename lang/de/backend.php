@@ -703,6 +703,7 @@ $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = "Benutzerkonto aktiviert";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED'] = "Benutzerkonto deaktiviert";
 $_ARRAYLANG['TXT_ACCESS_USERNAME_DESC'] = "Benutzername";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_INVITATION'] = "Benutzerkonto eingerichtet";
+$_ARRAYLANG['TXT_ACCESS_YEAR_DESC'] = "Aktuelle Jahrzahl";
 $_ARRAYLANG['TXT_ACCESS_LINK_DESC'] = "Website Admin-URL";
 $_ARRAYLANG['TXT_ACCESS_EMAIL_DESC'] = "E-Mail Adresse des neuen Benutzers";
 $_ARRAYLANG['TXT_ACCESS_ADDRESS'] = "Adresse";
