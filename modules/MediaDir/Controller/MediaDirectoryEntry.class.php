@@ -115,11 +115,42 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $this->recordCount = 0;
     }
 
+    /**
+     * Load Entries for the given parameters
+     *
+     * Adds Entries to the $arrEntries property array.
+     * @global  array   $_ARRAYLANG
+     * @global  array   $_CORELANG
+     * @global  \Cx\Modules\MediaDir\Controller\ADOConnection $objDatabase
+     * @global  InitCMS $objInit
+     * @param   integer|array   $intEntryId The Entry ID, or array thereof
+     * @param   integer $intLevelId
+     * @param   integer $intCatId
+     * @param   string  $strSearchTerm
+     * @param   boolean $bolLatest
+     * @param   boolean $bolUnconfirmed
+     * @param   boolean $bolActive
+     * @param   integer $intLimitStart
+     * @param   integer $intLimitEnd
+     * @param   integer $intUserId
+     * @param   boolean $bolPopular
+     * @param   integer $intCmdFormId
+     * @param   boolean $bolReadyToConfirm
+     * @param   integer $intLimit
+     * @param   integer $intOffset
+     */
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
-
-        $this->intEntryId = intval($intEntryId);
+        $arrEntryIds = null;
+        $this->intEntryId = null;
+        if ($intEntryId) {
+            if (is_array($intEntryId)) {
+                $arrEntryIds = contrexx_input2int($intEntryId);
+            } else {
+                $this->intEntryId = intval($intEntryId);
+            }
+        }
         $this->intLevelId = intval($intLevelId);
         $this->intCatId = intval($intCatId);
         $this->bolLatest = intval($bolLatest);
@@ -163,8 +194,14 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         if(!empty($this->intEntryId)) {
             $strWhereEntryId = "AND (entry.`id` = ".$this->intEntryId.") ";
         }
-
-
+        if ($arrEntryIds) {
+            $strWhereEntryId = 'AND `entry`.`id` IN ('
+                . join(',', $arrEntryIds) . ') ';
+            if ($this->arrSettings['settingsIndividualEntryOrder']) {
+                $strOrder = 'FIELD(`entry`.`id`, '
+                    . join(', ', $arrEntryIds) . ')';
+            }
+        }
         if(!empty($this->intUserId)) {
             $strWhereEntryId = "AND (entry.`added_by` = ".$this->intUserId.") ";
         }
@@ -188,7 +225,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strOrder = "entry.`popular_hits` DESC";
         }
 
-        if(empty($this->bolLatest) && empty($this->bolPopular) && $this->arrSettings['settingsIndividualEntryOrder'] == 1) {
+        if (!$strOrder
+            && $this->arrSettings['settingsIndividualEntryOrder'] == 1) {
             $strOrder = "entry.`order` ASC, rel_inputfield.`value` ASC";
         }
 
@@ -270,8 +308,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 rel_slug_inputfield.`entry_id` = entry.`id`
                 AND rel_slug_inputfield.`lang_id` = ".$langId."
                 AND (rel_slug_inputfield.`field_id` = (
-                    SELECT 
-                        slug_inputfield.`id` 
+                    SELECT
+                        slug_inputfield.`id`
                     FROM
                         ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_inputfield
                     WHERE
@@ -375,9 +413,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $arrEntry['slug_field_id'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug_field_id'] : 0;
                 $arrEntry['slug'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug'] : '';
                 $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
-
+                $arrEntry['target_entry_ids'] =
+                    $this->getAssociatedEntryIdsByEntryId($arrEntry['entryId']);
                 $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
-
                 $objEntries->MoveNext();
             }
             $this->recordCount = $totalRecords->fields['found_rows'];
@@ -1529,9 +1567,12 @@ JSCODE;
                 }
             }
         }
-
-        if(empty($intEntryId)) {
-            if($intReadyToConfirm == 1) {
+        if (array_key_exists('target_entry_ids', $arrData)) {
+            $this->storeAssociatedEntryIds(
+                $intId, $arrData['target_entry_ids']);
+        }
+        if (empty($intId)) {
+            if ($intReadyToConfirm == 1) {
                 new MediaDirectoryMail(1, $intId, $this->moduleName);
             }
             new MediaDirectoryMail(2, $intId, $this->moduleName);
@@ -2061,4 +2102,219 @@ JSCODE;
         $formId = $this->arrEntries[$entryId]['entryFormId'];
         return $this->objForm->arrForms[$formId];
     }
+
+    /**
+     * Return HTML options for associated entries
+     *
+     * Includes active Entries only.
+     * Entries associated to the one with the given ID have their "selected"
+     * attribute set.
+     * @param   integer $entry_id
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public function getAssociatedEntriesOptions($entry_id)
+    {
+        $this->getEntries(null, null, null, null, null, null, true);
+        $options = $selected = [];
+        if ($entry_id && array_key_exists($entry_id, $this->arrEntries)) {
+            $entry = $this->arrEntries[$entry_id];
+            $options = $selected =
+                array_flip($this->getAssociatedEntryIdsByEntryId($entry_id));
+        }
+        foreach ($this->arrEntries as $entry) {
+            $id = $entry['entryId'];
+            $value = join(', ', $entry['entryFields']);
+            // Update values for existing selected keys, append others
+            $options[$id]= $value;
+        }
+        $option_string = \Html::getOptions($options, $selected);
+        return $option_string;
+    }
+
+    /**
+     * Return an array of Entry IDs associated to the given Entry ID
+     *
+     * Returns false on error.
+     * Mind that the returned array may be empty.
+     * @global  ADOConnection   $objDatabase
+     * @param   integer         $entry_id
+     * @return  array|boolean                   The ID array on success,
+     *                                          false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public function getAssociatedEntryIdsByEntryId($entry_id)
+    {
+        global $objDatabase;
+        $objResult = $objDatabase->Execute('
+            SELECT `target_entry_id`
+            FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_entry_associated_entry
+            WHERE `source_entry_id`=?
+            ORDER BY `ord` ASC',
+            [$entry_id]);
+        if (!$objResult) {
+            return false;
+        }
+        $entry_ids = [];
+        while (!$objResult->EOF) {
+            $entry_ids[] = intval($objResult->fields['target_entry_id']);
+            $objResult->MoveNext();
+        }
+        return $entry_ids;
+    }
+
+    /**
+     * Store an array of target Entry IDs associated to the given source Entry ID
+     *
+     * Returns false on error.
+     * If the source Entry's Form is associated bidirectionally with
+     * the target form, Entries are also associated both ways.
+     * @global  ADOConnection   $objDatabase
+     * @param   integer         $source_entry_id
+     * @param   array           $target_entry_ids
+     * @return  array|boolean                   True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    protected function storeAssociatedEntryIds(
+        $source_entry_id, array $target_entry_ids)
+    {
+        global $objDatabase;
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_entry_associated_entry
+            WHERE `source_entry_id`=?',
+            [$source_entry_id])) {
+            return false;
+        }
+        $this->getEntries($source_entry_id);
+        $entry = $this->arrEntries[$source_entry_id];
+        $form = new MediaDirectoryForm(null, $this->moduleName);
+        $source_form_id = $entry['entryFormId'];
+        // Note: The ordinal used here is ignored FTTB.
+        foreach ($target_entry_ids as $ord => $target_entry_id) {
+            $this->insertAssociatedEntryId(
+                $source_entry_id, $target_entry_id, $ord);
+            $this->getEntries($target_entry_id);
+            $target_entry = $this->arrEntries[$target_entry_id];
+            $target_form_id = $target_entry['entryFormId'];
+            $target_form = $form->arrForms[$target_form_id];
+            $target_form_target_form_ids = $target_form['target_form_ids'];
+            if (in_array($source_form_id, $target_form_target_form_ids)) {
+                $this->insertAssociatedEntryId(
+                    $target_entry_id, $source_entry_id, $ord);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Insert an associated Entry relation
+     *
+     * The relation is added one-way only, from source to target.
+     * Existing records are ignored.
+     * @global  \Cx\Modules\MediaDir\Controller\ADOConnection $objDatabase
+     * @param   integer $source_entry_id
+     * @param   integer $target_entry_id
+     * @param   integer $ord
+     * @return  boolean                     True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    protected function insertAssociatedEntryId(
+        $source_entry_id, $target_entry_id, $ord)
+    {
+        global $objDatabase;
+        return (boolean)$objDatabase->Execute('
+            INSERT IGNORE INTO ' . DBPREFIX . 'module_'
+                . $this->moduleTablePrefix . '_entry_associated_entry (
+                `source_entry_id`, `target_entry_id`, `ord`
+            ) VALUES (
+                ?, ?, ?
+            )',
+            [$source_entry_id, $target_entry_id, $ord]);
+    }
+
+    /**
+     * Delete the Entry with the given ID
+     *
+     * Also deletes all relation data: Levels, Categories, and Inputfields.
+     * @global \Cx\Modules\MediaDir\Controller\ADOConnection $objDatabase
+     * @param   integer $intEntryId
+     * @return  boolean                 True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public static function deleteById($intEntryId)
+    {
+        global $objDatabase;
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_entry_associated_entry
+            WHERE `source_entry_id`=?
+            OR `target_entry_id`=?', [$intEntryId, $intEntryId])) {
+            return false;
+        }
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_rel_entry_levels
+            WHERE `entry_id`=?', [$intEntryId])) {
+            return false;
+        }
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_rel_entry_categories
+            WHERE `entry_id`=?', [$intEntryId])) {
+            return false;
+        }
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_rel_entry_inputfields
+            WHERE `entry_id`=?', [$intEntryId])) {
+            return false;
+        }
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_entries
+            WHERE `id`=?', [$intEntryId])) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Load all Entries associated with the given Entry ID
+     *
+     * The order of associated Forms is applied as defined.
+     * The order of associated Entries for each Form is determined by the
+     * module settings.
+     * Any other, non-associated Entries will be removed from $arrEntries.
+     * If there are no associated Forms or Entries, $arrEntries will be
+     * empty on return.
+     * @param   integer $intEntryId
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public function loadAssociatedEntries($intEntryId)
+    {
+        if (!array_key_exists($intEntryId, $this->arrEntries)) {
+            $this->getEntries($intEntryId);
+        }
+        $entry = $this->arrEntries[$intEntryId];
+        $this->resetEntries();
+        $target_entry_ids = $this->getAssociatedEntryIdsByEntryId($intEntryId);
+        if (!$target_entry_ids) {
+            return;
+        }
+        // Determine and apply order of associated forms
+        $form_id = $entry['entryFormId'];
+        $form = new MediaDirectoryForm(null, $this->moduleName);
+        $target_form_ids = $form->getAssociatedFormIdsByFormId($form_id);
+        if (!$target_form_ids) {
+            return;
+        }
+        // Retrieve intersection of target Forms and Entries.
+        // It's getEntries()' responsibility to apply proper sorting per Form.
+        foreach ($target_form_ids as $target_form_id) {
+            $this->getEntries($target_entry_ids, null, null, null, null,
+                null, true, null, 'n', null, null, $target_form_id);
+        }
+    }
+
 }

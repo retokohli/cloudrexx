@@ -476,7 +476,7 @@ class MediaDirectoryLibrary
 
 
     /**
-     * Get setting if levels or categories shall be included in extended search 
+     * Get setting if levels or categories shall be included in extended search
      * functionality of a specific form.
      *
      * @param   integer $intSelectorId  Set to 9 to get the setting for category.
@@ -583,7 +583,7 @@ class MediaDirectoryLibrary
      *
      * @return string
      */
-    public function getQueryToFindPrimaryInputFieldId() 
+    public function getQueryToFindPrimaryInputFieldId()
     {
         $query = "SELECT
                         first_rel_inputfield.`field_id` AS `id`
@@ -1041,7 +1041,7 @@ EOF;
      *                                                 case no matching mediadir application
      *                                                 could be found
      * @param   boolean $includeDetailApplicationPage  (Optional) Whether or not to include
-     *                                                 the detail application page as a 
+     *                                                 the detail application page as a
      *                                                 feasible url target
      * @return  \Cx\Core\Routing\Url    Returns an Url object of the mediadir location.
      *                                  If location is invalid, method will return NULL.
@@ -1289,7 +1289,7 @@ EOF;
             $level = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
             $arrLevels = $level->arrLevels;
             $arrAllLevels = array();
-            
+
             while ($arrLevels) {
                 $arrLevel = array_pop($arrLevels);
                 if ($arrLevel['levelChildren']) {
@@ -1308,7 +1308,7 @@ EOF;
             $category = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
             $arrCategories = $category->arrCategories;
             $arrAllCategories = array();
-            
+
             while ($arrCategories) {
                 $arrCategory = array_pop($arrCategories);
                 if ($arrCategory['catChildren']) {
@@ -1431,12 +1431,15 @@ EOF;
         );
         $placeholderList = $template->getPlaceholderList($block);
         $placeholderListAsString = join("\n", $placeholderList);
-
-        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderListAsString, $match)) {
+        $match = null;
+        if (preg_match_all(
+                '/MEDIADIR_CONFIG_(FILTER|LIST)_' // $1
+                . '(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL|ASSOCIATED)' // $2
+                . '(?:_([0-9]+))?/', // $3
+                $placeholderListAsString, $match)) {
             foreach ($match[2] as $idx => $key) {
                 $configKey = strtolower($match[1][$idx]);
                 $option = strtolower($key);
-
                 // check for a specific set option value
                 if ($match[3][$idx] !== '') {
                     $value = intval($match[3][$idx]);
@@ -1445,11 +1448,12 @@ EOF;
                     // then the option will be set to TRUE
                     $value = true;
                 }
-
+                // $configKey: "filter", or "list"
+                // $option: "latest", "limit", "offset", "form",
+                //      "category", "level", or "associated"
                 $config[$configKey][$option] = $value;
             }
         }
-
         // If filter MEDIADIR_FILTER_AUTO is present, then we will override the
         // filters by the supplied arguments $formId, $categoryId and $levelId.
         // Otherwise, we will ignore any supplied arguments

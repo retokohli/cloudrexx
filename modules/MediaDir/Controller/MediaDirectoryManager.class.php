@@ -383,31 +383,35 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
     function modifyEntry()
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
-
         \JS::activate('cx');
         \JS::activate('jqueryui');
-
+        \JS::activate('chosen-sortable');
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_modify_entry.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'];
-
-         //get seting values
         parent::getSettings();
-
         $intEntryDourationAlways = '';
         $intEntryDourationPeriod = '';
         $intEntryDourationShowPeriod = 'none';
         $intEntryDourationEnd = 0;
         $intEntryDourationStart = 0;
         $strOnSubmit = '';
-
-        if(!empty($_GET['id']) || !empty($_POST['entryId'])) {
-            \Permission::checkAccess(MediaDirectoryAccessIDs::ModifyEntry, 'static');
-            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
+        $intEntryId = null;
+        if (!empty($_GET['id'])) {
             $intEntryId = intval($_GET['id']);
+        }
+        if (!empty($_POST['entryId'])) {
+            $intEntryId = intval($_POST['entryId']);
+        }
+        if ($intEntryId) {
+            \Permission::checkAccess(
+                MediaDirectoryAccessIDs::ModifyEntry, 'static');
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']
+                . " " . $_ARRAYLANG['TXT_MEDIADIR_EDIT'];
         } else {
-            \Permission::checkAccess(MediaDirectoryAccessIDs::AddEntry, 'static');
-            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
-            $intEntryId = null;
+            \Permission::checkAccess(
+                MediaDirectoryAccessIDs::AddEntry, 'static');
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']
+                . " " . $_ARRAYLANG['TXT_MEDIADIR_ADD'];
         }
 
         //count forms
@@ -415,150 +419,152 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $arrActiveForms = array();
 
         foreach ($objForms->arrForms as $intFormId => $arrForm) {
-            if($arrForm['formActive'] == 1) {
+            if ($arrForm['formActive'] == 1) {
                 $arrActiveForms[] = $intFormId;
             }
         }
 
         $intCountForms = count($arrActiveForms);
 
-        if($intCountForms > 0) {
-            if(intval($intEntryId) == 0 && (empty($_POST['selectedFormId']) && empty($_POST['formId'])) && $intCountForms > 1) {
-                $intFormId = null;
+        if ($intCountForms === 0) {
+            \Cx\Core\Csrf\Controller\Csrf::header(
+                "Location: index.php?cmd=" . $this->moduleName
+                . "&act=settings&tpl=forms");
+            exit;
+        }
+        $intFormId = null;
+        if (!$intEntryId
+            && (empty($_POST['selectedFormId']) && empty($_POST['formId']))
+            && $intCountForms > 1) {
+            $objForms->listForms($this->_objTpl, 2);
+            $this->_objTpl->hideBlock($this->moduleNameLC . 'EntryStatus');
+            $this->_objTpl->hideBlock($this->moduleNameLC . 'InputfieldList');
+            $this->_objTpl->hideBlock($this->moduleNameLC . 'SpezfieldList');
+        } else {
+            //save entry data
+            if(isset($_POST['submitEntryModfyForm']) && !empty($_POST['formId'])) {
+                $objEntry = new MediaDirectoryEntry($this->moduleName);
+                $intEntryId = $objEntry->saveEntry($_POST, $intEntryId);
 
-                //get form selector
-                $objForms->listForms($this->_objTpl, 2, $intFormId);
-
-                //parse blocks
-                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryStatus');
-                $this->_objTpl->hideBlock($this->moduleNameLC.'InputfieldList');
-                $this->_objTpl->hideBlock($this->moduleNameLC.'SpezfieldList');
-            } else {
-                //save entry data
-                if(isset($_POST['submitEntryModfyForm']) && !empty($_POST['formId'])) {
-                    $objEntry = new MediaDirectoryEntry($this->moduleName);
-                    $intEntryId = intval($_POST['entryId']);
-                    $intEntryId = $objEntry->saveEntry($_POST, $intEntryId);
-
-                    if(!empty($_POST['entryId'])) {
-                        if($intEntryId) {
+                if(!empty($_POST['entryId'])) {
+                    if($intEntryId) {
                             $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
-                        } else {
-                            $intEntryId = intval($_POST['entryId']);
-                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
-                        }
                     } else {
-                        if($intEntryId) {
+                        $intEntryId = intval($_POST['entryId']);
+                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                    }
+                } else {
+                    if($intEntryId) {
                             $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
-                        } else {
+                    } else {
                             $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
-                        }
                     }
                 }
+            }
 
-                //get form id
-                if(intval($intEntryId) != 0) {
-                    //get entry data
-                    $objEntry = new MediaDirectoryEntry($this->moduleName);
+            //get form id
+            if(intval($intEntryId) != 0) {
+                //get entry data
+                $objEntry = new MediaDirectoryEntry($this->moduleName);
                     $objEntry->getEntries($intEntryId, null, null, null, null, false,false);
 
-                    if(empty($objEntry->arrEntries)) {
-                        $objEntry->getEntries($intEntryId, null, null, null, null, true,false);
-                    }
-
-                    $intFormId = $objEntry->arrEntries[$intEntryId]['entryFormId'];
-
-                } else {
-                    //set form id
-                    if($intCountForms == 1) {
-                        $intFormId = intval($arrActiveForms[0]);
-                    } else {
-                        $intFormId = intval($_POST['selectedFormId']);
-                    }
-
-                    if(!empty($_POST['formId'])) {
-                        $intFormId = intval($_POST['formId']);
-                    }
+                if(empty($objEntry->arrEntries)) {
+                    $objEntry->getEntries($intEntryId, null, null, null, null, true,false);
                 }
 
-                //get inputfield object
-                $objInputfields = new MediaDirectoryInputfield($intFormId, false, null, $this->moduleName);
+                $intFormId = $objEntry->arrEntries[$intEntryId]['entryFormId'];
 
-                //list inputfields
-                $objInputfields->listInputfields($this->_objTpl, 2, $intEntryId);
+            } else {
+                //set form id
+                if($intCountForms == 1) {
+                    $intFormId = intval($arrActiveForms[0]);
+                } else {
+                    $intFormId = intval($_POST['selectedFormId']);
+                }
 
-                //get translation status date
-                if($this->arrSettings['settingsTranslationStatus'] == 1) {
-                    $ownerRowClass = "row1";
+                if(!empty($_POST['formId'])) {
+                    $intFormId = intval($_POST['formId']);
+                }
+            }
 
-                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                        $strLangStatus = '';
+            //get inputfield object
+            $objInputfields = new MediaDirectoryInputfield($intFormId, false, null, $this->moduleName);
+
+            //list inputfields
+            $objInputfields->listInputfields($this->_objTpl, 2, $intEntryId);
+
+            //get translation status date
+            if($this->arrSettings['settingsTranslationStatus'] == 1) {
+                $ownerRowClass = "row1";
+
+                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                    $strLangStatus = '';
                         if($intEntryId != 0) {
                             if(in_array($arrLang['id'], $objEntry->arrEntries[$intEntryId]['entryTranslationStatus'])) {
-                                $strLangStatus = 'checked="checked"';
-                            }
+                            $strLangStatus = 'checked="checked"';
                         }
+                    }
 
-                        $this->_objTpl->setVariable(array(
+                    $this->_objTpl->setVariable(array(
                             'TXT_'.$this->moduleLangVar.'_TRANSLATION_LANG_NAME' => htmlspecialchars($arrLang['name'], ENT_QUOTES, CONTREXX_CHARSET),
                             $this->moduleLangVar.'_TRANSLATION_LANG_ID' => intval($arrLang['id']),
                             $this->moduleLangVar.'_TRANSLATION_LANG_STATUS' => $strLangStatus,
-                        ));
+                    ));
 
-                        $this->_objTpl->parse($this->moduleNameLC.'TranslationLangList');
-                    }
-
-                    $this->_objTpl->parse($this->moduleNameLC.'TranslationStatus');
-                } else {
-                    $ownerRowClass = "row2";
-                    $this->_objTpl->hideBlock($this->moduleNameLC.'TranslationStatus');
+                    $this->_objTpl->parse($this->moduleNameLC.'TranslationLangList');
                 }
+
+                $this->_objTpl->parse($this->moduleNameLC.'TranslationStatus');
+            } else {
+                $ownerRowClass = "row2";
+                $this->_objTpl->hideBlock($this->moduleNameLC.'TranslationStatus');
+            }
 
                 //get user data
-                $objFWUser = \FWUser::getFWUserObject();
+            $objFWUser = \FWUser::getFWUserObject();
                 $addedBy   = isset($objEntry) ? $objEntry->arrEntries[$intEntryId]['entryAddedBy'] : '';
                 if (!empty($addedBy) && $objUser = $objFWUser->objUser->getUser($addedBy)) {
-                    $userId  = $objUser->getId();
-                } else {
-                    $userId  = $objFWUser->objUser->getId();
-                }
+                $userId  = $objUser->getId();
+            } else {
+                $userId  = $objFWUser->objUser->getId();
+            }
 
-                $this->_objTpl->setVariable(array(
+            $this->_objTpl->setVariable(array(
                     'TXT_'.$this->moduleLangVar.'_OWNER' => $_ARRAYLANG['TXT_MEDIADIR_OWNER'],
-                    $this->moduleLangVar.'_OWNER_ROW'    => $ownerRowClass,
-                    $this->moduleLangVar.'_OWNER_ID'     => $userId,
-                ));
+                $this->moduleLangVar.'_OWNER_ROW'    => $ownerRowClass,
+                $this->moduleLangVar.'_OWNER_ID'     => $userId,
+            ));
 
-                \FWUser::getUserLiveSearch();
+            \FWUser::getUserLiveSearch();
 
-                if ($intEntryId != 0) {
-                    $intEntryDourationStart = 1;
-                    $intEntryDourationEnd = 2;
+            if ($intEntryId != 0) {
+                $intEntryDourationStart = 1;
+                $intEntryDourationEnd = 2;
 
-                    //parse contact data
-                    $objUser     = $objFWUser->objUser;
-                    $intUserId   = intval($objUser->getId());
-                    $strUserMail = '<a href="mailto:'.contrexx_raw2xhtml($objUser->getEmail()).'">'.contrexx_raw2xhtml($objUser->getEmail()).'</a>';
-                    $intUserLang = intval($objUser->getFrontendLanguage());
+                //parse contact data
+                $objUser     = $objFWUser->objUser;
+                $intUserId   = intval($objUser->getId());
+                $strUserMail = '<a href="mailto:'.contrexx_raw2xhtml($objUser->getEmail()).'">'.contrexx_raw2xhtml($objUser->getEmail()).'</a>';
+                $intUserLang = intval($objUser->getFrontendLanguage());
 
-                    if ($objUser = $objUser->getUser($id = $intUserId)) {
-                        //get lang
-                        foreach ($this->arrFrontendLanguages as $intKey => $arrLang) {
-                                if($arrLang['id'] == $intUserLang) {
-                                        $strUserLang = $arrLang['name'];
-                                }
+                if ($objUser = $objUser->getUser($id = $intUserId)) {
+                    //get lang
+                    foreach ($this->arrFrontendLanguages as $intKey => $arrLang) {
+                        if($arrLang['id'] == $intUserLang) {
+                            $strUserLang = $arrLang['name'];
                         }
+                    }
 
-                        //get country
+                    //get country
                         $arrCountry = \Cx\Core\Country\Controller\Country::getById(intval($objUser->getProfileAttribute('country')));
-                        $strCountry = $arrCountry['name'];
+                    $strCountry = $arrCountry['name'];
 
-                        //get title
+                    //get title
                         $objTitle = $objDatabase->Execute("SELECT `title` FROM ".DBPREFIX."access_user_title WHERE id = '".intval($objUser->getProfileAttribute('title'))."' LIMIT 1");
-                        $strTitle = $objTitle->fields['title'];
+                    $strTitle = $objTitle->fields['title'];
 
-                        $this->_objTpl->setVariable(array(
-                            'TXT_'.$this->moduleLangVar.'_CONTACT_DATA' => "Kontaktangaben",
+                    $this->_objTpl->setVariable(array(
+                        'TXT_'.$this->moduleLangVar.'_CONTACT_DATA' => "Kontaktangaben",
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_TITLE' => contrexx_raw2xhtml($strTitle),
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_FIRSTNAME' => contrexx_raw2xhtml($objUser->getProfileAttribute('firstname')),
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_LASTNAME' => contrexx_raw2xhtml($objUser->getProfileAttribute('lastname')),
@@ -572,129 +578,144 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_WEBSITE' => '<a href="'.contrexx_raw2xhtml($objUser->getProfileAttribute('website')).'" target="_blank">'.contrexx_raw2xhtml($objUser->getProfileAttribute('website')).'</a>',
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_MAIL' => $strUserMail,
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_LANG' => $strUserLang,
-                        ));
-                    }
-
-                    $this->_objTpl->parse($this->moduleNameLC.'ContactData');
-                } else {
-                    $intEntryDourationStart = 1;
-                    $intEntryDourationEnd = 2;
-                    $this->_objTpl->hideBlock($this->moduleNameLC.'ContactData');
+                    ));
                 }
+
+                $this->_objTpl->parse($this->moduleNameLC.'ContactData');
+            } else {
+                $intEntryDourationStart = 1;
+                $intEntryDourationEnd = 2;
+                $this->_objTpl->hideBlock($this->moduleNameLC.'ContactData');
+            }
 
                 //get display duration  data
-                switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
-                    case 1:
+            switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
+                case 1:
                         $intDiffDay = $this->arrSettings['settingsEntryDisplaydurationValue'];
-                        $intDiffMonth = 0;
-                        $intDiffYear = 0;
-                        break;
-                    case 2:
-                        $intDiffDay = 0;
+                    $intDiffMonth = 0;
+                    $intDiffYear = 0;
+                    break;
+                case 2:
+                    $intDiffDay = 0;
                         $intDiffMonth = $this->arrSettings['settingsEntryDisplaydurationValue'];
-                        $intDiffYear = 0;
-                        break;
-                    case 3:
-                        $intDiffDay = 0;
-                        $intDiffMonth = 0;
+                    $intDiffYear = 0;
+                    break;
+                case 3:
+                    $intDiffDay = 0;
+                    $intDiffMonth = 0;
                         $intDiffYear = $this->arrSettings['settingsEntryDisplaydurationValue'];
-                        break;
-                }
+                    break;
+            }
 
-                if($intEntryId != 0) {
-                    if(intval($objEntry->arrEntries[$intEntryId]['entryDurationType']) == 1) {
-                        $intEntryDourationAlways = 'selected="selected"';
-                        $intEntryDourationStart = date("d.m.Y", time());
+            if($intEntryId != 0) {
+                if(intval($objEntry->arrEntries[$intEntryId]['entryDurationType']) == 1) {
+                    $intEntryDourationAlways = 'selected="selected"';
+                    $intEntryDourationStart = date("d.m.Y", time());
                         $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
-                    } else {
-                        $intEntryDourationPeriod = 'selected="selected"';
-                        $intEntryDourationShowPeriod = 'inline';
+                } else {
+                    $intEntryDourationPeriod = 'selected="selected"';
+                    $intEntryDourationShowPeriod = 'inline';
                         $intEntryDourationStart = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationStart']);
                         $intEntryDourationEnd = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationEnd']);
-                    }
-
-                    if(intval($objEntry->arrEntries[$intEntryId]['entryDurationNotification']) == 1) {
-                        $this->_objTpl->setVariable(array(
-                            $this->moduleLangVar.'_DISPLAYDURATION_RESET_NOTIFICATION_STATUS' => '<br /><input type="checkbox" name="durationResetNotification" value="1" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'],
-                        ));
-                    }
-                } else {
-                    if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
-                        $intEntryDourationAlways = 'selected="selected"';
-                    } else {
-                        $intEntryDourationPeriod = 'selected="selected"';
-                        $intEntryDourationShowPeriod = 'inline';
-                    }
-
-                    $intEntryDourationStart = date("d.m.Y", time());
-                    $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                 }
+
+                if(intval($objEntry->arrEntries[$intEntryId]['entryDurationNotification']) == 1) {
+                    $this->_objTpl->setVariable(array(
+                            $this->moduleLangVar.'_DISPLAYDURATION_RESET_NOTIFICATION_STATUS' => '<br /><input type="checkbox" name="durationResetNotification" value="1" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'],
+                    ));
+                }
+            } else {
+                if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
+                    $intEntryDourationAlways = 'selected="selected"';
+                } else {
+                    $intEntryDourationPeriod = 'selected="selected"';
+                    $intEntryDourationShowPeriod = 'inline';
+                }
+
+                $intEntryDourationStart = date("d.m.Y", time());
+                    $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
+            }
 
                 if ($intEntryId != 0) {
-                    \ContrexxJavascript::getInstance()->setVariable(
-                        'slugFieldId',
-                        $objEntry->arrEntries[$intEntryId]['slug_field_id'],
-                        'Mediadir'
-                    );
-                }
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'slugFieldId',
+                    $objEntry->arrEntries[$intEntryId]['slug_field_id'],
+                    'Mediadir'
+                );
+            }
 
                 //parse spez fields
-                $this->_objTpl->touchBlock($this->moduleNameLC.'SpezfieldList');
+            $this->_objTpl->touchBlock($this->moduleNameLC.'SpezfieldList');
 
                 //generate javascript
-                parent::setJavascript($this->getSelectorJavascript());
-                parent::setJavascript($objInputfields->getInputfieldJavascript());
+            parent::setJavascript($this->getSelectorJavascript());
+            parent::setJavascript($objInputfields->getInputfieldJavascript());
 
                 //get form onsubmit
-                $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
+            $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
 
-                $this->_objTpl->setVariable(array(
+            $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_ENTRY_STATUS' =>($intEntryId && intval($objEntry->arrEntries[$intEntryId]['entryActive']) ? 'checked="checked"' : ''),
                     $this->moduleLangVar.'_MEDIABROWSER_BUTTON' => $this->getMediaBrowserButton(
                         $_ARRAYLANG['TXT_BROWSE'],
-                        array(
-                            'type'  => 'button',
-                            'id'    => 'mediabrowser_button',
-                            'style' => 'display:none;'
-                        )
-                    ),
-                ));
+                    array(
+                        'type'  => 'button',
+                        'id'    => 'mediabrowser_button',
+                        'style' => 'display:none;'
+                    )
+                ),
+            ));
 
                 //parse blocks
-                $this->_objTpl->hideBlock($this->moduleNameLC.'FormList');
-            }
+            $this->_objTpl->hideBlock($this->moduleNameLC.'FormList');
+        }
 
             //parse global variables
-            $this->_objTpl->setGlobalVariable(array(
-                'TXT_'.$this->moduleLangVar.'_PAGE_TITLE' => $pageTitle,
-                $this->moduleLangVar.'_ENTRY_ID' => $intEntryId,
-                $this->moduleLangVar.'_FORM_ID' => $intFormId,
-                'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
-                $this->moduleLangVar.'_JAVASCRIPT' =>  $this->getJavascript(),
-                $this->moduleLangVar.'_FORM_ONSUBMIT' =>  $strOnSubmit,
-                'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT' =>  $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'],
-                $this->moduleLangVar.'_DEFAULT_LANG_ID' =>  static::getOutputLocale()->getId(),
-                'TXT_'.$this->moduleLangVar.'_SPEZ_FIELDS' => $_ARRAYLANG['TXT_MEDIADIR_SPEZ_FIELDS'],
-                'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION'],
-                'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_ALWAYS' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'],
-                'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_PERIOD' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_PERIOD'],
-                'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_FROM' =>  $_CORELANG['TXT_FROM'],
-                'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_TO' =>  $_CORELANG['TXT_TO'],
-                $this->moduleLangVar.'_DISPLAYDURATION_START' =>  $intEntryDourationStart,
-                $this->moduleLangVar.'_DISPLAYDURATION_END' =>  $intEntryDourationEnd,
-                $this->moduleLangVar.'_DISPLAYDURATION_SELECT_ALWAYS' =>  $intEntryDourationAlways,
-                $this->moduleLangVar.'_DISPLAYDURATION_SELECT_PERIOD' =>  $intEntryDourationPeriod,
-                $this->moduleLangVar.'_DISPLAYDURATION_SHOW_PERIOD' =>  $intEntryDourationShowPeriod,
-                'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
-                'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
-            ));
-        } else {
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=".$this->moduleName."&act=settings&tpl=forms");
-            exit;
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_'.$this->moduleLangVar.'_PAGE_TITLE' => $pageTitle,
+            $this->moduleLangVar.'_ENTRY_ID' => $intEntryId,
+            $this->moduleLangVar.'_FORM_ID' => $intFormId,
+            'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
+            $this->moduleLangVar.'_JAVASCRIPT' =>  $this->getJavascript(),
+            $this->moduleLangVar.'_FORM_ONSUBMIT' =>  $strOnSubmit,
+            'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT' =>  $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'],
+            $this->moduleLangVar.'_DEFAULT_LANG_ID' =>  static::getOutputLocale()->getId(),
+            'TXT_'.$this->moduleLangVar.'_SPEZ_FIELDS' => $_ARRAYLANG['TXT_MEDIADIR_SPEZ_FIELDS'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_ALWAYS' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_PERIOD' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_PERIOD'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_FROM' =>  $_CORELANG['TXT_FROM'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_TO' =>  $_CORELANG['TXT_TO'],
+            $this->moduleLangVar.'_DISPLAYDURATION_START' =>  $intEntryDourationStart,
+            $this->moduleLangVar.'_DISPLAYDURATION_END' =>  $intEntryDourationEnd,
+            $this->moduleLangVar.'_DISPLAYDURATION_SELECT_ALWAYS' =>  $intEntryDourationAlways,
+            $this->moduleLangVar.'_DISPLAYDURATION_SELECT_PERIOD' =>  $intEntryDourationPeriod,
+            $this->moduleLangVar.'_DISPLAYDURATION_SHOW_PERIOD' =>  $intEntryDourationShowPeriod,
+            'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
+            'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
+        ));
+        if (!$intFormId) {
+            return;
         }
+        $form = new MediaDirectoryForm($intFormId, $this->moduleName);
+        if (empty($form->arrForms[$intFormId])
+            || !$form->arrForms[$intFormId]['use_associated_entries']) {
+            return;
+        }
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        $this->_objTpl->setVariable(array(
+            'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES' =>
+                $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES'],
+            'TXT_' . $this->moduleLangVar . '_PLEASE_CHOOSE' =>
+                $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'],
+            'TXT_' . $this->moduleLangVar . '_SELECT_NO_MATCH' =>
+                $_ARRAYLANG['TXT_MEDIADIR_SELECT_NO_MATCH'],
+            'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES_INFO' =>
+                $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO'],
+            $this->moduleLangVar . '_ASSOCIATED_ENTRIES_OPTIONS' =>
+                $objEntry->getAssociatedEntriesOptions($intEntryId),
+        ));
     }
-
-
 
     function modifyCategory()
     {

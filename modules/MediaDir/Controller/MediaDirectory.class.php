@@ -305,10 +305,10 @@ class MediaDirectory extends MediaDirectoryLibrary
         //       was present. Therefore, we have introduced the setting
         //       option 'Legacy behavior' to emulate that previous behavior.
         if (!$this->arrSettings['legacyBehavior'] || $this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
-            if ($intCmdFormId != 0) {   
+            if ($intCmdFormId != 0) {
                 $bolFormUseCategory = $objForms->arrForms[intval($intCmdFormId)]['formUseCategory'];
                 $bolFormUseLevel = $objForms->arrForms[intval($intCmdFormId)]['formUseLevel'];
-            } else {     
+            } else {
                 $bolFormUseCategory = true;
                 $bolFormUseLevel = $this->arrSettings['settingsShowLevels'];
             }
@@ -363,7 +363,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // check show entries
-        $showEntries = 
+        $showEntries =
                // a level has been selected and it is configured to list entries
                $showEntriesOfLevel
                // a category has been selected and it is configured to list entries
@@ -513,7 +513,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
                 $intNumEntries = intval($objEntries->countEntries());
                 if($intNumEntries > $intLimitEnd) {
-                    $objUrl           = clone \Env::get('Resolver')->getUrl();                        
+                    $objUrl           = clone \Env::get('Resolver')->getUrl();
                     $currentUrlParams = $objUrl->getSuggestedParams();
                     $strPaging = getPaging($intNumEntries, $intLimitStart, $currentUrlParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                     $this->_objTpl->setGlobalVariable(array(
@@ -637,7 +637,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
                 // parse GoogleMap
                 $this->parseGoogleMapPlaceholder($this->_objTpl, $this->moduleLangVar.'_SEARCH_GOOGLE_MAP');
-                
+
                 $urlParams = $_GET;
                 unset($urlParams['pos']);
                 unset($urlParams['section']);
@@ -952,15 +952,14 @@ class MediaDirectory extends MediaDirectoryLibrary
         if (isset($config['filter']['level'])) {
             $levelId = $config['filter']['level'];
         }
-
-        // fetch related entries
-        $objEntry->resetEntries();
-        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
-
-        // remove currently parsed entry
-        unset($objEntry->arrEntries[$intEntryId]);
-
-        // abort in case no related entries are present
+        if (isset($config['list']['associated'])) {
+            $objEntry->loadAssociatedEntries($intEntryId);
+        } else {
+            $objEntry->resetEntries();
+            $objEntry->getEntries(null, $levelId, $categoryId, null, $latest,
+                null, true, $offset, $limit, null, null, $formId);
+            unset($objEntry->arrEntries[$intEntryId]);
+        }
         if (empty($objEntry->arrEntries)) {
             // hide block being used to display related entries
             $this->_objTpl->hideBlock($this->moduleNameLC.'RelatedList');
@@ -1118,7 +1117,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             prev($objEntry->arrEntries);
         }
 
-        // In case nextEntryId is not set, then $intEntryId is the last 
+        // In case nextEntryId is not set, then $intEntryId is the last
         // entry in the list ($objEntry->arrEntries).
         // Therefore the next entry of $intEntryId is the first entry of
         // the list (array)

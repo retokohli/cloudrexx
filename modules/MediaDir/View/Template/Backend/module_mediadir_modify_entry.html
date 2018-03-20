@@ -1,28 +1,28 @@
 <!-- START module_mediadir_modify_category.html -->
 <script language="JavaScript" type="text/javascript">
-function getMediaBrowser(e) { // e => jQuery element
+  function getMediaBrowser(e) { // e => jQuery element
     var inputId = e.data('inputId'),
-        isImageField = e.data('isImage'),
-        mediaBrowseInputBox = $J('#' + inputId);
-    cx.variables.get('jquery','mediabrowser')('#mediabrowser_button').trigger('click', {
-        callback: function (data) {
-            if (data.type === 'file') {
-                var path = data.data[0].datainfo.filepath;
-                mediaBrowseInputBox.val(path);
-                mediaBrowseInputBox.trigger('keyup');
-                if (isImageField && $J('#' + inputId + '_preview')) {
-                    changeImagePreview($J('#' + inputId + '_preview'), path);
-                }
-            } else if (data.type === 'page') {
-                var node = data.data[0].node;
-                mediaBrowseInputBox.val(node);
-                mediaBrowseInputBox.trigger('keyup');
-            }
-        },
-        cxMbViews : e.data('views'),
-        cxMbStartmediatype : e.data('startmediatype')
+      isImageField = e.data('isImage'),
+      mediaBrowseInputBox = $J('#' + inputId);
+    cx.variables.get('jquery', 'mediabrowser')('#mediabrowser_button').trigger('click', {
+      callback: function(data) {
+        if (data.type === 'file') {
+          var path = data.data[0].datainfo.filepath;
+          mediaBrowseInputBox.val(path);
+          mediaBrowseInputBox.trigger('keyup');
+          if (isImageField && $J('#' + inputId + '_preview')) {
+            changeImagePreview($J('#' + inputId + '_preview'), path);
+          }
+        } else if (data.type === 'page') {
+          var node = data.data[0].node;
+          mediaBrowseInputBox.val(node);
+          mediaBrowseInputBox.trigger('keyup');
+        }
+      },
+      cxMbViews: e.data('views'),
+      cxMbStartmediatype: e.data('startmediatype')
     });
-}
+  }
 
 /*function ExpandMinimize(toggle){
     elm1 = document.getElementById('{MODULE_NAME}Inputfield_' + toggle + '_Minimized');
@@ -32,27 +32,34 @@ function getMediaBrowser(e) { // e => jQuery element
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }
 */
-function toggleDisplayDouration(){
+  function toggleDisplayDouration() {
     elmSelect = document.getElementById('durationType');
     elmLayer = document.getElementById('durationTypePeriod');
 
     if(elmSelect.value == 1) {
       elmLayer.style.display = 'none';
     } else {
-        elmLayer.style.display = 'inline';
+      elmLayer.style.display = 'inline';
     }
-}
+  }
 
 //adds a datepicker to the display duration fields
-cx.ready(function() {
+  cx.ready(function() {
     $J('input[name=durationStart]').datepicker();
     $J('input[name=durationEnd]').datepicker();
-});
-
-cx.slugify = function(string) {
+    cx.jQuery('#associated-entries-select')
+      .chosen({
+        width: '300px',
+        display_selected_options: false,
+        hide_results_on_select: false,
+        no_results_text: '{TXT_MEDIADIR_SELECT_NO_MATCH}',
+        placeholder_text_multiple: '{TXT_MEDIADIR_PLEASE_CHOOSE}'
+    }).chosenSortable();
+  });
+  cx.slugify = function(string) {
     // replace international characters
     cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
-        string = string.replace(search, replace);
+      string = string.replace(search, replace);
     });
     // replace spaces
     string = string.replace(/\s+/g, '-');
@@ -61,130 +68,142 @@ cx.slugify = function(string) {
     return string;
 }
 
-cx.jQuery(document).ready(function() {
+  cx.jQuery(document).ready(function() {
     var slugFieldId = cx.variables.get("slugFieldId", "Mediadir");
     cx.jQuery("form[name='entryModfyForm'] input[data-id='" + slugFieldId + "']").keyup(function() {
-        var originalSlug  = cx.jQuery(this).val();
-        var slugifiedSlug = cx.slugify(originalSlug);
+      var originalSlug = cx.jQuery(this).val();
+      var slugifiedSlug = cx.slugify(originalSlug);
         if (originalSlug != slugifiedSlug) {
-            cx.jQuery(this).val(slugifiedSlug);
-        }
+        cx.jQuery(this).val(slugifiedSlug);
+      }
     });
-});
+  });
 </script>
 
 {MEDIADIR_JAVASCRIPT}
 
 <style type="text/css">
-    #deselectedCategories,
-    #selectedCategories,
-    #deselectedLevels,
-    #selectedLevels {
-        width: 180px;
-    }
-    .mediadirSelectorLeft {
-        float: left;
-        height: auto !important;
-    }
-    .mediadirSelectorCenter {
-        float: left;
-        height: 100px;
-        padding: 60px 10px 0px 10px;
-    }
-    .ui-autocomplete {
-        max-height: 150px;
-        overflow-y: auto;
-    }
+  #deselectedCategories,
+  #selectedCategories,
+  #deselectedLevels,
+  #selectedLevels {
+    width: 180px;
+  }
+  .mediadirSelectorLeft {
+    float: left;
+    height: auto !important;
+  }
+  .mediadirSelectorCenter {
+    float: left;
+    height: 100px;
+    padding: 60px 10px 0px 10px;
+  }
+  .ui-autocomplete {
+    max-height: 150px;
+    overflow-y: auto;
+  }
 
-    .ui-autocomplete-loading {
-        background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 448px center no-repeat !important;
-    }
-    .mediadirInputfieldDefault {
-        width: 300px;
-    }
-    .mediadirLangInputfield {
-        width: 282px;
-        margin-bottom: 2px;
-        padding-left: 21px !important;
-    }
-    .mediadirInputfieldFileDisplayName {
-        width: 300px;
-        padding-left: 3px !important;
-    }
+  .ui-autocomplete-loading {
+    background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 448px center no-repeat !important;
+  }
+  .mediadirInputfieldDefault {
+    width: 300px;
+  }
+  .mediadirLangInputfield {
+    width: 282px;
+    margin-bottom: 2px;
+    padding-left: 21px !important;
+  }
+  .mediadirInputfieldFileDisplayName {
+    width: 300px;
+    padding-left: 3px !important;
+  }
 </style>
 
 <form name="entryModfyForm" action="index.php?cmd={MODULE_NAME}&act=modify_entry" onsubmit="{MEDIADIR_FORM_ONSUBMIT}" method="post" enctype="multipart/form-data">
-<input name="entryId" type="hidden" value="{MEDIADIR_ENTRY_ID}" />
-<input name="formId" type="hidden" value="{MEDIADIR_FORM_ID}" />
-<input name="langId" type="hidden" value="{MEDIADIR_DEFAULT_LANG_ID}" />
-<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+  <input name="entryId" type="hidden" value="{MEDIADIR_ENTRY_ID}" />
+  <input name="formId" type="hidden" value="{MEDIADIR_FORM_ID}" />
+  <input name="langId" type="hidden" value="{MEDIADIR_DEFAULT_LANG_ID}" />
+  <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>
-        <th colspan="2">{TXT_MEDIADIR_PAGE_TITLE}</th>
+      <th colspan="2">{TXT_MEDIADIR_PAGE_TITLE}</th>
     </tr>
     <!-- BEGIN mediadirFormList -->
     <tr class="row1">
-        <td width="200" valign="top">{TXT_MEDIADIR_CHOOSE_FORM}</td>
-        <td>
-            {MEDIADIR_FORM_LIST}
-        </td>
+      <td width="200" valign="top">{TXT_MEDIADIR_CHOOSE_FORM}</td>
+      <td>
+        {MEDIADIR_FORM_LIST}
+      </td>
     </tr>
     <!-- END mediadirFormList -->
 
     <!-- BEGIN mediadirEntryStatus -->
     <tr class="{MEDIADIR_INPUTFIELD_ROW_CLASS}">
-        <td width="200" valign="top">{TXT_MEDIADIR_ENTRY_STATUS}</td>
-        <td>
-            <input type="hidden" name="status" value="0" />
-            <input type="checkbox" name="status" value="1" {MEDIADIR_ENTRY_STATUS} />
-        </td>
+      <td width="200" valign="top">{TXT_MEDIADIR_ENTRY_STATUS}</td>
+      <td>
+        <input type="hidden" name="status" value="0" />
+        <input type="checkbox" name="status" value="1" {MEDIADIR_ENTRY_STATUS} />
+      </td>
     </tr>
     <!-- END mediadirEntryStatus -->
 
     <!-- BEGIN mediadirInputfieldList -->
     <tr class="{MEDIADIR_INPUTFIELD_ROW_CLASS}">
-        <td width="200" valign="top">{TXT_MEDIADIR_INPUTFIELD_NAME}</td>
-        <td>
-            {MEDIADIR_INPUTFIELD_FIELD}
-        </td>
+      <td width="200" valign="top">{TXT_MEDIADIR_INPUTFIELD_NAME}</td>
+      <td>
+        {MEDIADIR_INPUTFIELD_FIELD}
+      </td>
     </tr>
     <!-- END mediadirInputfieldList -->
-
+    <!-- BEGIN mediadir_associated_entries -->
+    <tr id="associated-entries-row">
+      <td valign="top">{TXT_MEDIADIR_ASSOCIATED_ENTRIES}</td>
+      <td>
+        <select id="associated-entries-select" name="target_entry_ids[]"
+                class="chosen-sortable" multiple>
+          {MEDIADIR_ASSOCIATED_ENTRIES_OPTIONS}
+        </select>
+        <span class="tooltip-trigger icon-info"></span>
+        <span class="tooltip-message">{TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO}</span>
+      </td>
+    </tr>
+    <!-- END mediadir_associated_entries -->
     <!-- BEGIN mediadirSpezfieldList -->
     <tr class="row2">
-        <td colspan="2"><br /></td>
+      <td colspan="2"><br /></td>
     </tr>
     <tr class="row3">
-        <td colspan="2"><b>{TXT_MEDIADIR_SPEZ_FIELDS}</b></td>
+      <td colspan="2"><b>{TXT_MEDIADIR_SPEZ_FIELDS}</b></td>
     </tr>
     <tr class="row1">
-        <td width="200" >{TXT_MEDIADIR_DISPLAYDURATION}</td>
-        <td>
-            <select id="durationType" name="durationType" style="width: 302px;" onchange="toggleDisplayDouration();">
-                <option value="1" {MEDIADIR_DISPLAYDURATION_SELECT_ALWAYS}>{TXT_MEDIADIR_DISPLAYDURATION_ALWAYS}</option>
-                <option value="2" {MEDIADIR_DISPLAYDURATION_SELECT_PERIOD}>{TXT_MEDIADIR_DISPLAYDURATION_PERIOD}</option>
-            </select>
-            <span id="durationTypePeriod" style="display:{MEDIADIR_DISPLAYDURATION_SHOW_PERIOD};">
-                &nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_FROM}&nbsp;<input type="text" name="durationStart" value="{MEDIADIR_DISPLAYDURATION_START}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_TO}&nbsp;<input type="text" name="durationEnd" value="{MEDIADIR_DISPLAYDURATION_END}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS}
-            </span>
-        </td>
+      <td width="200" >{TXT_MEDIADIR_DISPLAYDURATION}</td>
+      <td>
+        <select id="durationType" name="durationType" style="width: 302px;" onchange="toggleDisplayDouration();">
+          <option value="1" {MEDIADIR_DISPLAYDURATION_SELECT_ALWAYS}>{TXT_MEDIADIR_DISPLAYDURATION_ALWAYS}</option>
+          <option value="2" {MEDIADIR_DISPLAYDURATION_SELECT_PERIOD}>{TXT_MEDIADIR_DISPLAYDURATION_PERIOD}</option>
+        </select>
+        <span id="durationTypePeriod" style="display:{MEDIADIR_DISPLAYDURATION_SHOW_PERIOD};">
+          &nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_FROM}&nbsp;<input type="text" name="durationStart" value="{MEDIADIR_DISPLAYDURATION_START}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_TO}&nbsp;<input type="text" name="durationEnd" value="{MEDIADIR_DISPLAYDURATION_END}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS}
+        </span>
+      </td>
     </tr>
     <!-- BEGIN mediadirTranslationStatus -->
     <tr class="row2">
-        <td width="200" >{TXT_MEDIADIR_TRANSLATION_STATUS}</td>
-        <td>
-            <!-- BEGIN mediadirTranslationLangList -->
-            <input type="checkbox" value="{MEDIADIR_TRANSLATION_LANG_ID}" name="translationStatus[]" {MEDIADIR_TRANSLATION_LANG_STATUS}/>&nbsp;{TXT_MEDIADIR_TRANSLATION_LANG_NAME}&nbsp;&nbsp;&nbsp;
-            <!-- END mediadirTranslationLangList -->
-        </td>
+      <td width="200" >{TXT_MEDIADIR_TRANSLATION_STATUS}</td>
+      <td>
+        <!-- BEGIN mediadirTranslationLangList -->
+        <input type="checkbox" value="{MEDIADIR_TRANSLATION_LANG_ID}" name="translationStatus[]" {MEDIADIR_TRANSLATION_LANG_STATUS}/>&nbsp;{TXT_MEDIADIR_TRANSLATION_LANG_NAME}&nbsp;&nbsp;&nbsp;
+        <!-- END mediadirTranslationLangList -->
+      </td>
     </tr>
     <!-- END mediadirTranslationStatus -->
 
     <!-- BEGIN mediadirOwner -->
     <tr class="{MEDIADIR_OWNER_ROW}">
-        <td width="200" >{TXT_MEDIADIR_OWNER}</td>
-        <td>
-            <input class="live-search-user-id" type="text" name="userId" value="{MEDIADIR_OWNER_ID}" />
-        </td>
+      <td width="200" >{TXT_MEDIADIR_OWNER}</td>
+      <td>
+        <input class="live-search-user-id" type="text" name="userId" value="{MEDIADIR_OWNER_ID}" />
+      </td>
     </tr>
     <!-- END mediadirOwner -->
 
@@ -195,69 +214,69 @@ cx.jQuery(document).ready(function() {
 
     <!--
     <tr class="row2">
-        <td colspan="2"><br /></td>
+      <td colspan="2"><br /></td>
     </tr>
     <tr class="row3">
-        <td colspan="2"><b>{TXT_MEDIADIR_CONTACT_DATA}</b></td>
+      <td colspan="2"><b>{TXT_MEDIADIR_CONTACT_DATA}</b></td>
     </tr>
     <tr class="row1">
-        <td width="200" >Anrede</td>
+      <td width="200" >Anrede</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_TITLE}
         </td>
     </tr>
     <tr class="row2">
-        <td>Vorname</td>
+      <td>Vorname</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_FIRSTNAME}
         </td>
     </tr>
     <tr class="row1">
-        <td>Nachname</td>
+      <td>Nachname</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_LASTNAME}
         </td>
     </tr>
     <tr class="row2">
-        <td>Firma</td>
+      <td>Firma</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_COMPANY}
         </td>
     </tr>
     <tr class="row1">
-        <td valign="top">Adresse</td>
+      <td valign="top">Adresse</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_ADRESS}<br />
-            {MEDIADIR_CONTACT_ATTRIBUT_ZIP} {MEDIADIR_CONTACT_ATTRIBUT_CITY}<br />
+        {MEDIADIR_CONTACT_ATTRIBUT_ZIP} {MEDIADIR_CONTACT_ATTRIBUT_CITY}<br />
             {MEDIADIR_CONTACT_ATTRIBUT_COUNTRY}
         </td>
     </tr>
     <tr class="row2">
-        <td >Telefon</td>
+      <td >Telefon</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_PHONE}
         </td>
     </tr>
     <tr class="row1">
-        <td>Fax</td>
+      <td>Fax</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_FAX}
         </td>
     </tr>
     <tr class="row2">
-        <td>E-Mail</td>
+      <td>E-Mail</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_MAIL}
         </td>
     </tr>
     <tr class="row1">
-        <td>Website</td>
+      <td>Website</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_WEBSITE}
         </td>
     </tr>
     <tr class="row2">
-        <td>Sprache</td>
+      <td>Sprache</td>
         <td>
             {MEDIADIR_CONTACT_ATTRIBUT_LANG}
         </td>
@@ -265,10 +284,10 @@ cx.jQuery(document).ready(function() {
     -->
 
     <!-- END mediadirContactData -->
-</table>
-<br />
-<input type="submit" name="submitEntryModfyForm" value="{TXT_MEDIADIR_SUBMIT}" />
-<div id="mediadirErrorMessage" style="display:none; color: #ff0000;"><br />{TXT_MEDIADIR_PLEASE_CHECK_INPUT}</div>
+  </table>
+  <br />
+  <input type="submit" name="submitEntryModfyForm" value="{TXT_MEDIADIR_SUBMIT}" />
+  <div id="mediadirErrorMessage" style="display:none; color: #ff0000;"><br />{TXT_MEDIADIR_PLEASE_CHECK_INPUT}</div>
 </form>
 {MEDIADIR_MEDIABROWSER_BUTTON}
 <!-- END module_mediadir_modify_category.html -->
