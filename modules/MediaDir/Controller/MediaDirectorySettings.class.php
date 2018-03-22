@@ -1446,8 +1446,10 @@ EOF;
                 die();
                 break;
         }
+
         \JS::activate('chosen-sortable');
-        if (!empty($_GET['id'])) {
+        //load form data
+        if(!empty($_GET['id'])) {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_EDIT_FORM_TEMPLATE'];
             $intFormId = intval($_GET['id']);
 
@@ -1513,6 +1515,7 @@ EOF;
             $objInputfields->listPlaceholders($objTpl);
         } else {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_NEW_FORM_TEMPLATE'];
+
             $objTpl->hideBlock($this->moduleNameLC.'InputfieldsForm');
             $objTpl->setGlobalVariable(array(
                 $this->moduleLangVar.'_USE_ASSOCIATED_ENTRIES_OFF' =>

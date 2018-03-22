@@ -955,11 +955,14 @@ class MediaDirectory extends MediaDirectoryLibrary
         if (isset($config['list']['associated'])) {
             $objEntry->loadAssociatedEntries($intEntryId);
         } else {
+            // fetch related entries
             $objEntry->resetEntries();
-            $objEntry->getEntries(null, $levelId, $categoryId, null, $latest,
-                null, true, $offset, $limit, null, null, $formId);
+            $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
+
+            // remove currently parsed entry
             unset($objEntry->arrEntries[$intEntryId]);
         }
+        // abort in case no related entries are present
         if (empty($objEntry->arrEntries)) {
             // hide block being used to display related entries
             $this->_objTpl->hideBlock($this->moduleNameLC.'RelatedList');

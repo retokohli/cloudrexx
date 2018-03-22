@@ -377,4 +377,4 @@ $_ARRAYLANG['TXT_MEDIADIR_USE_ASSOCIATED_ENTRIES_INFO'] = 'Aktivieren Sie diese 
 $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_FORMS'] = 'Verwandte Einträge aus diesen Formularen erlauben';
 $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_FORMS_INFO'] = 'Werden zwei Formulare hier gegenseitig verlinkt, dann werden auch alle danach als "verwandt" deklarierten Einträge in beide Richtungen verknüpft.';
 $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES'] = 'Verwandte Einträge';
-$_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO'] = 'Hier ausgewählte Einträge werden in der Detailansicht als "verwandte Einträge" angezeigt, sofern die entsprechenden Platzhalter in der Vorlage vorhanden sind. Die Reihenfolge der Einträge wird durch die entsprechenden Einstellungen gesteuert.';
+$_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO'] = 'Hier ausgewählte Einträge werden in der Detailansicht als "verwandte Einträge" angezeigt, sofern die notwendigen Platzhalter in der Vorlage vorhanden sind. Die Reihenfolge der Einträge wird durch die entsprechenden Einstellungen gesteuert.';

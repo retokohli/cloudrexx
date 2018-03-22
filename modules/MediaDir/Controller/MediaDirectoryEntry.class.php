@@ -1567,12 +1567,11 @@ JSCODE;
                 }
             }
         }
-        if (array_key_exists('target_entry_ids', $arrData)) {
-            $this->storeAssociatedEntryIds(
-                $intId, $arrData['target_entry_ids']);
-        }
-        if (empty($intId)) {
-            if ($intReadyToConfirm == 1) {
+        $this->storeAssociatedEntryIds($intId,
+            array_key_exists('target_entry_ids', $arrData)
+                ? $arrData['target_entry_ids'] : []);
+        if(empty($intEntryId)) {
+            if($intReadyToConfirm == 1) {
                 new MediaDirectoryMail(1, $intId, $this->moduleName);
             }
             new MediaDirectoryMail(2, $intId, $this->moduleName);
@@ -1593,7 +1592,13 @@ JSCODE;
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objMail = new MediaDirectoryMail(5, $intEntryId, $this->moduleName);
-
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_entry_associated_entry
+            WHERE `source_entry_id`=?
+            OR `target_entry_id`=?', [$intEntryId, $intEntryId])) {
+            return false;
+        }
         //delete entry
         $objDeleteEntry = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE `id`='".intval($intEntryId)."'");
 
@@ -2114,18 +2119,31 @@ JSCODE;
      */
     public function getAssociatedEntriesOptions($entry_id)
     {
-        $this->getEntries(null, null, null, null, null, null, true);
-        $options = $selected = [];
+        if (!array_key_exists($entry_id, $this->arrEntries)) {
+            $this->getEntries($entry_id);
+        }
+        $options = $selected = $target_form_ids = [];
         if ($entry_id && array_key_exists($entry_id, $this->arrEntries)) {
             $entry = $this->arrEntries[$entry_id];
             $options = $selected =
                 array_flip($this->getAssociatedEntryIdsByEntryId($entry_id));
+            $form_id = $entry['entryFormId'];
+            $form = new MediaDirectoryForm($form_id, $this->moduleName);
+            if (array_key_exists($form_id, $form->arrForms)) {
+                $target_form_ids =
+                    $form->arrForms[$form_id]['target_form_ids'];
+            }
+        }
+        $this->resetEntries();
+        foreach ($target_form_ids as $target_form_id) {
+            $this->getEntries(null, null, null, null, null, null, null, null,
+                'n', null, null, $target_form_id);
         }
         foreach ($this->arrEntries as $entry) {
             $id = $entry['entryId'];
             $value = join(', ', $entry['entryFields']);
             // Update values for existing selected keys, append others
-            $options[$id]= $value;
+            $options[$id] = $value;
         }
         $option_string = \Html::getOptions($options, $selected);
         return $option_string;
@@ -2231,52 +2249,6 @@ JSCODE;
                 ?, ?, ?
             )',
             [$source_entry_id, $target_entry_id, $ord]);
-    }
-
-    /**
-     * Delete the Entry with the given ID
-     *
-     * Also deletes all relation data: Levels, Categories, and Inputfields.
-     * @global \Cx\Modules\MediaDir\Controller\ADOConnection $objDatabase
-     * @param   integer $intEntryId
-     * @return  boolean                 True on success, false otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    public static function deleteById($intEntryId)
-    {
-        global $objDatabase;
-        if (!$objDatabase->Execute('
-            DELETE FROM ' . DBPREFIX . 'module_'
-            . $this->moduleTablePrefix . '_entry_associated_entry
-            WHERE `source_entry_id`=?
-            OR `target_entry_id`=?', [$intEntryId, $intEntryId])) {
-            return false;
-        }
-        if (!$objDatabase->Execute('
-            DELETE FROM ' . DBPREFIX . 'module_'
-            . $this->moduleTablePrefix . '_rel_entry_levels
-            WHERE `entry_id`=?', [$intEntryId])) {
-            return false;
-        }
-        if (!$objDatabase->Execute('
-            DELETE FROM ' . DBPREFIX . 'module_'
-            . $this->moduleTablePrefix . '_rel_entry_categories
-            WHERE `entry_id`=?', [$intEntryId])) {
-            return false;
-        }
-        if (!$objDatabase->Execute('
-            DELETE FROM ' . DBPREFIX . 'module_'
-            . $this->moduleTablePrefix . '_rel_entry_inputfields
-            WHERE `entry_id`=?', [$intEntryId])) {
-            return false;
-        }
-        if (!$objDatabase->Execute('
-            DELETE FROM ' . DBPREFIX . 'module_'
-            . $this->moduleTablePrefix . '_entries
-            WHERE `id`=?', [$intEntryId])) {
-            return false;
-        }
-        return true;
     }
 
     /**
