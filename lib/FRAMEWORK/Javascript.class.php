@@ -340,8 +340,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                     }
                 });'
         ),
-        // Extends standard "chosen" above, introduced in MediaDir.
-        // Usage:
+        // Extends standard "chosen" above.  Usage:
         //  cx.jQuery([selector])
         //    .chosen([options])
         //    .chosenSortable([extra options]);
