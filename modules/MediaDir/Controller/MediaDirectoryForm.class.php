@@ -113,7 +113,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 ON form_names.form_id=form.id
                 ".$strJoinSlugField."
             WHERE
-                $whereFormId
+                $whereFormId 
                 form_names.lang_id='".$langId."'
             ORDER BY
                 `order` ASC

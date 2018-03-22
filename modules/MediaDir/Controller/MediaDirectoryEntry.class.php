@@ -308,8 +308,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 rel_slug_inputfield.`entry_id` = entry.`id`
                 AND rel_slug_inputfield.`lang_id` = ".$langId."
                 AND (rel_slug_inputfield.`field_id` = (
-                    SELECT
-                        slug_inputfield.`id`
+                    SELECT 
+                        slug_inputfield.`id` 
                     FROM
                         ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_inputfield
                     WHERE
@@ -416,6 +416,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $arrEntry['target_entry_ids'] =
                     $this->getAssociatedEntryIdsByEntryId($arrEntry['entryId']);
                 $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
+
                 $objEntries->MoveNext();
             }
             $this->recordCount = $totalRecords->fields['found_rows'];
