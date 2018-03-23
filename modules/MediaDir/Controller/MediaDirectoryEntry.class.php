@@ -193,8 +193,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strWhereFormId = "AND (entry.`form_id` = ".$this->intCmdFormId.") ";
         }
 
-        if ($associated
-            && !$this->bolLatest && !$this->bolPopular) {
+        if ($associated) {
             $strJoinAssociated = '
                 JOIN `' . DBPREFIX . 'module_mediadir_entry_associated_entry`
                     AS `associated`
@@ -232,7 +231,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strOrder = "entry.`popular_hits` DESC";
         }
 
-        if (!$strOrder
+        if (!$associated
+            && empty($this->bolLatest) && empty($this->bolPopular)
             && $this->arrSettings['settingsIndividualEntryOrder'] == 1) {
             $strOrder = "entry.`order` ASC, rel_inputfield.`value` ASC";
         }
