@@ -663,6 +663,26 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleNameLC.'FormList');
+
+                if ($objForms->arrForms[$intFormId]['use_associated_entries']) {
+                    \JS::activate('chosen-sortable');
+                    if (!$objEntry) {
+                        $objEntry = new MediaDirectoryEntry($this->moduleName);
+                    }
+                    $this->_objTpl->setVariable(array(
+                        'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES'],
+                        'TXT_' . $this->moduleLangVar . '_PLEASE_CHOOSE' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'],
+                        'TXT_' . $this->moduleLangVar . '_SELECT_NO_MATCH' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_SELECT_NO_MATCH'],
+                        'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES_INFO' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO'],
+                        $this->moduleLangVar . '_ASSOCIATED_ENTRIES_OPTIONS' =>
+                            $objEntry->getAssociatedEntriesOptions(
+                                $intFormId, $intEntryId),
+                    ));
+                }
             }
 
             //parse global variables
@@ -689,26 +709,6 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
                 'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
             ));
-            if (isset($objForms->arrForms[$intFormId])
-                && $objForms->arrForms[$intFormId]['use_associated_entries']) {
-                \JS::activate('chosen-sortable');
-                if (!$objEntry) {
-                    $objEntry = new MediaDirectoryEntry($this->moduleName);
-                }
-                $this->_objTpl->setVariable(array(
-                    'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES' =>
-                        $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES'],
-                    'TXT_' . $this->moduleLangVar . '_PLEASE_CHOOSE' =>
-                        $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'],
-                    'TXT_' . $this->moduleLangVar . '_SELECT_NO_MATCH' =>
-                        $_ARRAYLANG['TXT_MEDIADIR_SELECT_NO_MATCH'],
-                    'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES_INFO' =>
-                        $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO'],
-                    $this->moduleLangVar . '_ASSOCIATED_ENTRIES_OPTIONS' =>
-                        $objEntry->getAssociatedEntriesOptions(
-                            $intFormId, $intEntryId),
-                ));
-            }
         } else {
             \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=".$this->moduleName."&act=settings&tpl=forms");
             exit;
