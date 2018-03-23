@@ -390,28 +390,36 @@ INPUT;
         return $this->imageWebPath.'images/'.$imageName;
     }
 
-
+    /**
+     * Create the thumbnail image file
+     *
+     * The given image path must be relative to the website root,
+     * but with a leading slash prepended.
+     * If the path represents a folder, or if the image file does not exist,
+     * this is a noop.
+     * @param   string  $strPathImage
+     * @return  void
+     */
     function createThumbnail($strPathImage)
     {
-        $arrImageInfo = getimagesize(\Env::get('cx')->getWebsitePath().$strPathImage);
-
-        if (   $arrImageInfo['mime'] == "image/gif"
-            || $arrImageInfo['mime'] == "image/jpeg"
-            || $arrImageInfo['mime'] == "image/jpg"
-            || $arrImageInfo['mime'] == "image/png") {
+        $path = \Env::get('cx')->getWebsitePath() . $strPathImage;
+        if (!file_exists($path) || is_dir($path)) {
+            return;
+        }
+        $arrImageInfo = getimagesize($path);
+        if ($arrImageInfo['mime'] === 'image/gif'
+            || $arrImageInfo['mime'] === 'image/jpeg'
+            || $arrImageInfo['mime'] === 'image/jpg'
+            || $arrImageInfo['mime'] === 'image/png') {
             $objImage = new \ImageManager();
-
             $arrImageInfo = array_merge($arrImageInfo, pathinfo($strPathImage));
-
             $thumbWidth = intval($this->arrSettings['settingsThumbSize']);
             $thumbHeight = intval($thumbWidth / $arrImageInfo[0] * $arrImageInfo[1]);
-
-            $objImage->loadImage(\Env::get('cx')->getWebsitePath().$strPathImage);
+            $objImage->loadImage($path);
             $objImage->resizeImage($thumbWidth, $thumbHeight, 100);
-            $objImage->saveNewImage(\Env::get('cx')->getWebsitePath().$strPathImage . '.thumb', true);
+            $objImage->saveNewImage($path . '.thumb', true);
         }
     }
-
 
     function deleteContent($intEntryId, $intIputfieldId)
     {

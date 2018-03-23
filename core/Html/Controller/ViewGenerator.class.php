@@ -774,6 +774,8 @@ class ViewGenerator {
                     }
                     $renderArray[$field] = '';
                 }
+                // This is necessary to load default values set by constructor
+                $this->object = new $entityClassWithNS(); 
                 $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
