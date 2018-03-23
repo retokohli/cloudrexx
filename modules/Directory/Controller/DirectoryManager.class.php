@@ -58,9 +58,6 @@ class DirectoryManager extends DirectoryLibrary
     var $strOkMessage = '';
     var $_selectedLang;
     var $langId;
-    var $categories = array();
-    var $getLevels = array();
-    var $getCategories = array();
     var $getPlatforms = array();
     var $getLanguages = array();
     var $getCantons = array();
@@ -145,11 +142,9 @@ class DirectoryManager extends DirectoryLibrary
         // general module access check
         \Permission::checkAccess(59, 'static');
 
-        if (!isset($_GET['act'])) {
-            $_GET['act']="";
-        }
+        $this->act = isset($_GET['act']) ? $_GET['act'] : '';
 
-        switch($_GET['act']) {
+        switch($this->act) {
             case "add":
                 \Permission::checkAccess(97, 'static');
                 $this->addCategorie();
@@ -189,7 +184,9 @@ class DirectoryManager extends DirectoryLibrary
                 break;
             case "files":
                 \Permission::checkAccess(96, 'static');
-                $this->showFiles(intval($_GET['cat']), intval($_GET['level']));
+                $catId   = isset($_GET['cat']) ? contrexx_input2int($_GET['cat']) : 0;
+                $levelId = isset($_GET['level']) ? contrexx_input2int($_GET['level']) : 0;
+                $this->showFiles($catId, $levelId);
                 break;
             case "delfile":
                 \Permission::checkAccess(94, 'static');
@@ -268,7 +265,7 @@ class DirectoryManager extends DirectoryLibrary
             'ADMIN_CONTENT'             => $this->_objTpl->get(),
             'CONTENT_TITLE'             => $this->pageTitle,
         ));
-        $this->act = $_REQUEST['act'];
+
         $this->setNavigation();
         return $this->_objTpl->get();
     }
@@ -819,7 +816,7 @@ class DirectoryManager extends DirectoryLibrary
 
         $i= 0;
         $parentId= 0;
-
+        $padding = 0;
         //shows all level 1 categories
         if (in_array(0, $this->categories['parentid'])) {
             foreach($this->categories['name'] as $catKey => $catName) {
@@ -1916,15 +1913,16 @@ EOF;
             }
         }
 
+        $db   = '';
+        $term = isset($_REQUEST['term']) ? htmlspecialchars($_REQUEST['term'], ENT_QUOTES, CONTREXX_CHARSET) : '';
         if ($catId != '') {
             $where  = " AND files.id = rel_cat.dir_id AND rel_cat.cat_id = '".$catId."'";
             $db     = DBPREFIX."module_directory_rel_dir_cat AS rel_cat,";
         } elseif ($levelId != '') {
             $where=" AND files.id = rel_level.dir_id AND rel_level.level_id = '".$levelId."'";
             $db     = DBPREFIX."module_directory_rel_dir_level AS rel_level,";
-        } elseif ($_REQUEST['term']) {
+        } elseif (!empty($term)) {
             //search term
-            $term= htmlspecialchars($_REQUEST['term'], ENT_QUOTES, CONTREXX_CHARSET);
             $where.=" AND (files.title LIKE '%".$term."%' OR files.searchkeys LIKE '%".$term."%' OR files.description LIKE '%".$term."%') ";
         }
         else {
@@ -1948,25 +1946,27 @@ EOF;
         $pagingLimit    = intval($this->settings['pagingLimit']['value']);
         $objResult      = $objDatabase->Execute($query);
         $count          = $objResult->RecordCount();
-        $pos            = intval($_GET['pos']);
+        $pos            = isset($_GET['pos']) ? contrexx_input2int($_GET['pos']) : 0;
         $paging         = getPaging($count, $pos, "&cmd=Directory&act=files&term=".$term.$catIdSort.$levelIdSort, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
         ////// paging end /////////
 
         $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
         $count = $objResult->RecordCount();
 
-        $i=0;
+        $i = 0;
         if ($objResult !== false) {
-            while (!$objResult->EOF)
-            {
-                $file_array[$i]['filename']=$objResult->fields['filename'];
-                $file_array[$i]['title']=$objResult->fields['title'];
-                $file_array[$i]['id']=$objResult->fields['id'];
-                $file_array[$i]['description']=$objResult->fields['description'];
-                $file_array[$i]['hits']=$objResult->fields['hits'];
-                $file_array[$i]['spez']=$objResult->fields['spezial'];
-                $file_array[$i]['date']=$objResult->fields['date'];
-                $file_array[$i]['addedby']=$objResult->fields['addedby'];
+            $file_array = array();
+            while (!$objResult->EOF) {
+                $file_array[$i] = array(
+                    'filename' => $objResult->fields['filename'],
+                    'title'    => $objResult->fields['title'],
+                    'id'       => $objResult->fields['id'],
+                    'description' => $objResult->fields['description'],
+                    'hits'     => $objResult->fields['hits'],
+                    'spez'     => $objResult->fields['spezial'],
+                    'date'     => $objResult->fields['date'],
+                    'addedby'  => $objResult->fields['addedby'],
+                );
                 $i++;
                 $objResult->MoveNext();
             }
@@ -2130,9 +2130,10 @@ EOF;
             'CATEGORY_SELECTED'         => $categorieSe,
             'LEVEL_DESELECTED'          => $levelDe,
             'LEVEL_SELECTED'            => $levelSe,
-            'OS'                        => $platforms,
-            'IP'                        => $dirIp,
-            'HOST'                      => $dirProvider,
+            // TODO: unused variables
+//             'OS'                        => $platforms,
+//             'IP'                        => $dirIp,
+//             'HOST'                      => $dirProvider,
             'ID'                        => $id,
             'TXT_DIRECTORY_SPEZ_SORT'   => $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'],
             'TXT_DIRECTORY_SORT'        => $_ARRAYLANG['TXT_DIRECTORY_SORT'],
@@ -2265,17 +2266,20 @@ EOF;
         $count = $objResult->RecordCount();
 
         //get files
-        $i=0;
+        $i = 0;
         if ($objResult !== false) {
+            $file_array = array();
             while (!$objResult->EOF) {
-                $file_array[$i]['title']=$objResult->fields['title'];
-                $file_array[$i]['id']=$objResult->fields['id'];
-                $file_array[$i]['description']=$objResult->fields['description'];
-                $file_array[$i]['catid']=$objResult->fields['catid'];
-                $file_array[$i]['addedby']=$objResult->fields['addedby'];
-                $file_array[$i]['language']=$objResult->fields['language'];
-                $file_array[$i]['platform']=$objResult->fields['platform'];
-                $file_array[$i]['date']=$objResult->fields['date'];
+                $file_array[$i] = array(
+                    'title'       => $objResult->fields['title'],
+                    'id'          => $objResult->fields['id'],
+                    'description' => $objResult->fields['description'],
+                    'catid'       => $objResult->fields['catid'],
+                    'addedby'     => $objResult->fields['addedby'],
+                    'language'    => $objResult->fields['language'],
+                    'platform'    => $objResult->fields['platform'],
+                    'date'        => $objResult->fields['date'],
+                );
                 $i++;
                 $objResult->MoveNext();
             }

@@ -88,7 +88,6 @@ class Directory extends DirectoryLibrary
     public $arrRows = array();
     public $arrRowsIndex = array();
 
-
     /**
      * Constructor
      */
@@ -277,7 +276,6 @@ class Directory extends DirectoryLibrary
 
         //select View
         if ($this->settings['indexview']['value'] == 1) {
-            $this->arrRows ='';
             $i = 0;
             $firstCol = true;
             ksort($this->arrRowsIndex);

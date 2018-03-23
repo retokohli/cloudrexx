@@ -57,12 +57,71 @@ class DirectoryLibrary
     public $mediaWebPath;
     public $rssLatestTitle = "Directory News";
     public $rssLatestDescription = "The latest Directory entries";
-    public $categories = array();
+
+    /**
+     * category Ids
+     *
+     * @var array
+     */
+    public $categoryIds = array();
+
     public $googleMapStartPoint = array('lat' => 46, 'lon' => 8, 'zoom' => 1);
 
 // TODO:  The following two object variables were declared out of scope.
 // Moved here to fix this, but there may be more!
-    public $levels = array();
+    /**
+     * level Ids
+     *
+     * @var array
+     */
+    public $levelIds = array();
+
+    /**
+     * Categories
+     *
+     * @var array
+     */
+    public $getCategories = array('name' => array(), 'parentid' => array());
+
+    /**
+     * Levels
+     *
+     * @var array
+     */
+    public $getLevels = array('name' => array(), 'parentid' => array(), 'showcategories' => array());
+
+    /**
+     * Levels
+     *
+     * @var array
+     */
+    public $levels = array(
+        'name'           => array(),
+        'parentid'       => array(),
+        'metadesc'       => array(),
+        'metakeys'       => array(),
+        'description'    => array(),
+        'displayorder'   => array(),
+        'status'         => array(),
+        'showcategories' => array(),
+    );
+
+    /**
+     * Categories
+     *
+     * @var array
+     */
+    public $categories = array(
+        'name'         => array(),
+        'parentid'     => array(),
+        'metadesc'     => array(),
+        'metakeys'     => array(),
+        'description'  => array(),
+        'displayorder' => array(),
+        'status'       => array(),
+        'showentries'  => array(),
+    );
+
     public $pageTitle;
 
     /**
@@ -240,7 +299,7 @@ class DirectoryLibrary
         $objResultCat = $objDatabase->Execute("SELECT cat_id FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE dir_id='".$id."'");
         if ($objResultCat !== false) {
             while(!$objResultCat->EOF) {
-                $this->categories[] = $objResultCat->fields['cat_id'];
+                $this->categoryIds[] = $objResultCat->fields['cat_id'];
                 $objResultCat->MoveNext();
             }
         }
@@ -264,11 +323,11 @@ class DirectoryLibrary
         foreach($this->getCategories['name'] as $catKey => $catName) {
             if ($this->getCategories['parentid'][$catKey] == 0) {
                 if ($type == 1) {
-                    if (!in_array($catKey, $this->categories)) {
+                    if (!in_array($catKey, $this->categoryIds)) {
                         $options .= "<option value='".$catKey."'>".$catName."</option>";
                     }
                 } else {
-                    if (in_array($catKey, $this->categories)) {
+                    if (in_array($catKey, $this->categoryIds)) {
                         $options .= "<option value='".$catKey."'>".$catName."</option>";
                     }
                 }
@@ -298,11 +357,11 @@ class DirectoryLibrary
         foreach($this->getCategories['name'] as $catKey => $catName) {
             if ($this->getCategories['parentid'][$catKey] == $parentId) {
                 if ($type == 1) {
-                    if (!in_array($catKey, $this->categories)) {
+                    if (!in_array($catKey, $this->categoryIds)) {
                         $options .= "<option value='".$catKey."' >".$spacer.$catName."</option>";
                     }
                 } else {
-                    if (in_array($catKey, $this->categories)) {
+                    if (in_array($catKey, $this->categoryIds)) {
                         $options .= "<option value='".$catKey."' >".$catName."</option>";
                     }
                 }
@@ -1265,7 +1324,13 @@ class DirectoryLibrary
           $width= "300";
 
         $this->_objTpl->setCurrentBlock('inputfieldsOutput');
-        $arrInputfieldsActive = array();
+        $arrInputfieldsActive = array(
+            'name'        => array(),
+            'typ'         => array(),
+            'read_only'   => array(),
+            'title'       => array(),
+            'is_required' => array(),
+        );
         $arrInputfieldsValue = array();
         $arrSettings = $this->getSettings();
 
@@ -1525,7 +1590,8 @@ function CheckFields() {
         foreach($arrInputfieldsActive['name'] as $inputKey => $inputName) {
             $disabled = "";
             $inputValueField = "";
-            $fieldName = $_ARRAYLANG[$arrInputfieldsActive['title'][$inputKey]];
+            $fieldName = isset($_ARRAYLANG[$arrInputfieldsActive['title'][$inputKey]])
+                ? $_ARRAYLANG[$arrInputfieldsActive['title'][$inputKey]] : '';
 
             if ($arrSettings['levels']['int'] == 1) {
                 ($i % 2)? $class = "row2" : $class = "row1";
@@ -1546,7 +1612,9 @@ function CheckFields() {
                     if ($inputName == "addedby") {
                         $value = $this->getAuthor($arrInputfieldsValue[$inputName]);
                         if ($action == "edit") {
-                            $value .= $this->getAuthor($_POST['inputValue'][$inputName]);
+                            $authorId = isset($_POST['inputValue'][$inputName])
+                                ? $_POST['inputValue'][$inputName] : 0;
+                            $value .= $this->getAuthor($authorId);
                         }
                     } elseif (isset($arrInputfieldsValue[$inputName])) {
                         $value = $arrInputfieldsValue[$inputName];
@@ -2397,7 +2465,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
         $objResultCat = $objDatabase->Execute("SELECT level_id FROM ".DBPREFIX."module_directory_rel_dir_level WHERE dir_id='".$id."'");
         if ($objResultCat !== false) {
             while(!$objResultCat->EOF) {
-                $this->levels[] = $objResultCat->fields['level_id'];
+                $this->levelIds[] = $objResultCat->fields['level_id'];
                 $objResultCat->MoveNext();
             }
         }
@@ -2427,12 +2495,12 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                     }
                     if ($type == 1) {
 // TODO:  $this->levels does not exist!
-                        if (!in_array($levelKey, $this->levels)) {
+                        if (!in_array($levelKey, $this->levelIds)) {
                             $options .= "<option value='".$levelKey."' $style>".$levelName."</option>";
                         }
                     } else {
 // TODO:  $this->levels does not exist!
-                        if (in_array($levelKey, $this->levels)) {
+                        if (in_array($levelKey, $this->levelIds)) {
                             $options .= "<option value='".$levelKey."' $style>".$levelName."</option>";
                         }
                     }
@@ -2466,11 +2534,11 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                     $style = "";
                 }
                 if ($type == 1) {
-                    if (!in_array($levelKey, $this->levels)) {
+                    if (!in_array($levelKey, $this->levelIds)) {
                         $options .= "<option value='".$levelKey."' $style>".$spacer.$levelName."</option>";
                     }
                 } else {
-                    if (in_array($levelKey, $this->levels)) {
+                    if (in_array($levelKey, $this->levelIds)) {
                         $options .= "<option value='".$levelKey."' $style>".$levelName."</option>";
                     }
                 }
