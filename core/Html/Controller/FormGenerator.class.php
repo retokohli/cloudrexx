@@ -155,6 +155,7 @@ class FormGenerator {
      * @return \Cx\Core\Html\Model\Entity\HtmlElement
      */
     public function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
+        global $_ARRAYLANG;
 
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
@@ -165,6 +166,8 @@ class FormGenerator {
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'formtext');
         } else if (isset($fieldOptions['header'])) {
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'header');
+        } else if (isset($_ARRAYLANG[$fieldHeader])) {
+            $fieldHeader = $_ARRAYLANG[$fieldHeader];
         }
         $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldHeader . ' '));
         $group->addChild($label);
