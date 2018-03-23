@@ -952,7 +952,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         if (isset($config['filter']['level'])) {
             $levelId = $config['filter']['level'];
         }
-        if (isset($config['list']['associated'])) {
+        if (isset($config['filter']['associated'])) {
             $objEntry->loadAssociatedEntries($intEntryId);
         } else {
             // fetch related entries

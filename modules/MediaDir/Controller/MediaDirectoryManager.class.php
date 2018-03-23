@@ -386,7 +386,6 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         \JS::activate('cx');
         \JS::activate('jqueryui');
-        \JS::activate('chosen-sortable');
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_modify_entry.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'];
@@ -423,6 +422,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $intCountForms = count($arrActiveForms);
 
+        $objEntry = null;
         if($intCountForms > 0) {
             if(intval($intEntryId) == 0 && (empty($_POST['selectedFormId']) && empty($_POST['formId'])) && $intCountForms > 1) {
                 $intFormId = null;
@@ -689,10 +689,12 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
                 'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
             ));
-            $form = new MediaDirectoryForm($intFormId, $this->moduleName);
-            if (array_key_exists($intFormId, $form->arrForms)
-                && $form->arrForms[$intFormId]['use_associated_entries']) {
-                $objEntry = new MediaDirectoryEntry($this->moduleName);
+            if (isset($objForms->arrForms[$intFormId])
+                && $objForms->arrForms[$intFormId]['use_associated_entries']) {
+                \JS::activate('chosen-sortable');
+                if (!$objEntry) {
+                    $objEntry = new MediaDirectoryEntry($this->moduleName);
+                }
                 $this->_objTpl->setVariable(array(
                     'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES' =>
                         $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES'],
@@ -703,7 +705,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                     'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES_INFO' =>
                         $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO'],
                     $this->moduleLangVar . '_ASSOCIATED_ENTRIES_OPTIONS' =>
-                        $objEntry->getAssociatedEntriesOptions($intEntryId),
+                        $objEntry->getAssociatedEntriesOptions(
+                            $intFormId, $intEntryId),
                 ));
             }
         } else {
