@@ -419,9 +419,7 @@ class CalendarManager extends CalendarLibrary
         // abort in case the event of the invitation is not published
         if (!$event) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    'index.php?cmd=' . $this->moduleName
-                )
+                'index.php?cmd=' . $this->moduleName
             );
             return;
         }
