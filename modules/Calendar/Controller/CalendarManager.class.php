@@ -408,20 +408,22 @@ class CalendarManager extends CalendarLibrary
         if ($eventId != 0) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
             $objEvent->getData();
-        }
 
-        // Fetch requested event.
-        $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
-        $event = $eventRepo->findOneBy(array(
-            'id'     => $eventId,
-        ));
+            // Fetch requested event.
+            $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+            $event = $eventRepo->findOneBy(array(
+                'id' => $eventId,
+            ));
 
-        // abort in case the event of the invitation is not published
-        if (!$event) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(
-                'index.php?cmd=' . $this->moduleName
-            );
-            return;
+            // abort in case the event does not exist
+            if (!$event) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromMagic(
+                        $this->cx->getWebsiteBackendPath() . '/' . $this->moduleName
+                    )
+                );
+                return;
+            }
         }
 
         //parse weekdays
