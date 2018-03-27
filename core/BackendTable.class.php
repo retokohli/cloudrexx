@@ -258,6 +258,7 @@ class BackendTable extends HTML_Table {
                 $callback = $options['rowAttributes'];
                 foreach ($attrs as $rowname=>$rows) {
                     $originalAttributes = $this->getRowAttributes($row);
+                    $data = $originalAttributes;
                     if (
                         is_array($callback) &&
                         isset($callback['adapter']) &&
