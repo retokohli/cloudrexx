@@ -252,6 +252,36 @@ class BackendTable extends HTML_Table {
                 $this->setCellAttributes(0, 0, array('colspan' => $col + is_array($options['functions'])));
                 $this->updateRowAttributes(1, array('class' => 'row3'), true);
             }
+            // adds custom attributes to row
+            if (isset($options['rowAttributes'])) {
+                $row = 1 + $this->hasMasterTableHeader;
+                $callback = $options['rowAttributes'];
+                foreach ($attrs as $rowname=>$rows) {
+                    $originalAttributes = $this->getRowAttributes($row);
+                    if (
+                        is_array($callback) &&
+                        isset($callback['adapter']) &&
+                        isset($callback['method'])
+                    ) {
+                        $json = new \Cx\Core\Json\JsonData();
+                        $jsonResult = $json->data(
+                            $callback['adapter'],
+                            $callback['method'],
+                            array(
+                                'data' => $rows,
+                                'attributes' => $originalAttributes,
+                            )
+                        );
+                        if ($jsonResult['status'] == 'success') {
+                            $data = $jsonResult['data'];
+                        }
+                    } else if(is_callable($callback)){
+                        $data = $callback($data, $originalAttributes);
+                    }
+                    $this->updateRowAttributes($row, $data, true);
+                    $row++;
+                }
+            }
             // add multi-actions
             if (isset($options['multiActions'])) {
                 $multiActionsCode = '
