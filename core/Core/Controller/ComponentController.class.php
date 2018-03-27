@@ -236,7 +236,7 @@ Available commands:
             case 'install':
                 echo "BETA!!\r\n";
                 try {
-                    $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1]);
+                    $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[0]);
                     $component->install();
                 } catch (\BadMethodCallException $e) {
                     echo 'Error: ' . $e->getMessage();
