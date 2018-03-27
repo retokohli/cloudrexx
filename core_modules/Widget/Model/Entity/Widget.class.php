@@ -106,7 +106,7 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
                     $this->parse(
                         $parseTemplate,
                         $this->cx->getResponse(),
-                        $template->getParseTarget()->getComponent->getName(),
+                        $template->getParseTarget()->getSystemComponent()->getName(),
                         get_class($template->getParseTarget()),
                         $template->getParseTarget()->getId(),
                         $args
