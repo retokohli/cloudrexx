@@ -751,19 +751,18 @@ class CalendarRegistration extends CalendarLibrary
         global $objDatabase;
 
         if (!empty($regId)) {
-            $registration = $this
-                ->em
-                ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
-                ->findOneBy(array('id' => $regId));
-            $registration->setType($typeId);
-            $registration->setVirtual(true);
+            $registration = $this->getRegistrationEntity(
+                $regId,
+                array('type', $typeId)
+            );
             //Trigger preUpdate event for Registration Entity
             $this->triggerEvent(
                 'model/preUpdate', $registration,
                 array(
                     'relations' => array(
                         'oneToMany' => 'getRegistrationFormFieldValues',
-                        'manyToOne' => 'getEvent'
+                        'manyToOne' => 'getEvent',
+                        'oneToOne'  => 'getInvite',
                     ),
                     'joinEntityRelations' => array(
                         'getRegistrationFormFieldValues' => array(
