@@ -405,9 +405,25 @@ class CalendarManager extends CalendarLibrary
         $copy = isset($_REQUEST['copy']) && !empty($_REQUEST['copy']);
         $this->_pageTitle = $copy || empty($eventId) ? $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT'] : $_ARRAYLANG['TXT_CALENDAR_EVENT']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
 
-        if($eventId != 0) {
+        if ($eventId != 0) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
             $objEvent->getData();
+        }
+
+        // Fetch requested event.
+        $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+        $event = $eventRepo->findOneBy(array(
+            'id'     => $eventId,
+        ));
+
+        // abort in case the event of the invitation is not published
+        if (!$event) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    'index.php?cmd=' . $this->moduleName
+                )
+            );
+            return;
         }
 
         //parse weekdays
