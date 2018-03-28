@@ -763,8 +763,8 @@ class ForumLibrary
                                                                 'last_post_str'     =>  !empty($strLastPost) ? $strLastPost : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'],
                                                                 'last_post_date'    =>  !empty($strLastPostDate) ? $strLastPostDate : '',
                                                                 'languages'         =>  $this->_arrTranslations[$objResult->fields['cId']],
-                                                                'name'              =>  $this->_arrTranslations[$objResult->fields['cId']][$this->_intLangId]['name'],
-                                                                'description'       =>  $this->_arrTranslations[$objResult->fields['cId']][$this->_intLangId]['desc'],
+                                                                'name'              =>  isset($this->_arrTranslations[$objResult->fields['cId']][$this->_intLangId]) ? $this->_arrTranslations[$objResult->fields['cId']][$this->_intLangId]['name'] : '',
+                                                                'description'       =>  isset($this->_arrTranslations[$objResult->fields['cId']][$this->_intLangId]) ? $this->_arrTranslations[$objResult->fields['cId']][$this->_intLangId]['desc'] : '',
                                             );
                 $this->createForumTree($arrForums,$objResult->fields['cId'],$intLevel+1);
             }
@@ -1182,6 +1182,7 @@ class ForumLibrary
             $objFWUser = \FWUser::getFWUserObject();
 
             while(!$objRS->EOF) {
+                $arrLatestEntries[$index] = array();
                 $arrLatestEntries[$index]['subject'] = !empty($objRS->fields['subject']) ? $objRS->fields['subject'] : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
                 $arrLatestEntries[$index]['post_id'] = $objRS->fields['id'];
                 $arrLatestEntries[$index]['thread_id'] = $objRS->fields['thread_id'];
