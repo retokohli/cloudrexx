@@ -1027,3 +1027,5 @@ $_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND'] = "Anzahl Produ
 $_ARRAYLANG['TXT_SHOP_SETTING_NUM_CATEGORIES_PER_ROW'] = "Anzahl Rubriken pro Zeile";
 $_ARRAYLANG['TXT_SHOP_SETTING_NUM_CATEGORIES_PER_ROW_TOOLTIP'] = "Bestimmen Sie die Anzahl Rubriken, welche pro Zeile im Online Shop aufgeführt werden sollen.";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'] = 'Datei wählen';
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_TYPE'] = 'Pro Produkt';
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_TYPE_TIP'] = 'Gilt die Mindestmenge pro Produkt oder für alle Produkte mit dieser Rabattgruppe gemeinsam?';
