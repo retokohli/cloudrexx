@@ -1004,4 +1004,4 @@ $_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND'] = "Number of pr
 $_ARRAYLANG['TXT_SHOP_SETTING_NUM_CATEGORIES_PER_ROW'] = "Number of categories per row";
 $_ARRAYLANG['TXT_SHOP_SETTING_NUM_CATEGORIES_PER_ROW_TOOLTIP'] = "Set the number of categories that shall be listed per row in the online shop";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_TYPE'] = 'Per product';
-$_ARRAYLANG['TXT_SHOP_DISCOUNT_TYPE_TIP'] = 'Whether to apply the the minimum order quantity for each product separately or to all products with this discount group together';
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_TYPE_TIP'] = 'Whether to apply the the minimum order quantity on each product separately or on all products within this discount group together';

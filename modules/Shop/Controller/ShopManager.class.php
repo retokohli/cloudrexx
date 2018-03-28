@@ -3827,7 +3827,7 @@ if ($test === NULL) {
     {
         if (!isset($_POST['discountId'])) return true;
         $discountId = intval($_POST['discountId']);
-        $discountGroupType = contrexx_input2raw($_POST['discountGroupType']);
+        $discountGroupType = contrexx_input2int($_POST['discountGroupType']);
         $discountGroupName = contrexx_input2raw($_POST['discountGroupName']);
         $discountGroupUnit = contrexx_input2raw($_POST['discountGroupUnit']);
         $arrDiscountCount = contrexx_input2int($_POST['discountCount']);
