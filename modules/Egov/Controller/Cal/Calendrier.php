@@ -47,6 +47,7 @@ function calendar(
     global $HTTP_POST_VARS, $HTTP_GET_VARS;
     global $calendar_txt;
 
+    $calendar_txt['german'] = array();
     $calendar_txt['german']['monthes'] = array('', 'Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni', 'Juli',
                                             'August', 'September', 'Oktober','November', 'Dezember');
     $calendar_txt['german']['days'] = array('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag','Freitag','Samstag', 'Sonntag');
