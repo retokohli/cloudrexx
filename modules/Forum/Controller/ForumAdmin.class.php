@@ -280,12 +280,12 @@ class ForumAdmin extends ForumLibrary {
                $arrLanguages = array();
 
                foreach ($this->_arrLanguages as $intLangId => $arrValues) {
-                   $arrLanguages[$intCounter % 3] = '';
-                   if (isset($arrLanguages[$intCounter % 3])) {
-                       $checkboxHtml   = '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="'.$intLangId.'" />'.$arrValues['long'].' ['.$arrValues['short'].']<br />';
-                       $arrLanguages[$intCounter % 3] .= $checkboxHtml;
+                   if (!isset($arrLanguages[$intCounter % 3])) {
+                       $arrLanguages[$intCounter % 3] = '';
                    }
 
+                   $checkboxHtml = '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="'.$intLangId.'" />'.$arrValues['long'].' ['.$arrValues['short'].']<br />';
+                   $arrLanguages[$intCounter % 3] .= $checkboxHtml;
                    $this->_objTpl->setVariable(array(
                        'CATEGORY_ADD_NAME_LANGID'    =>    $intLangId,
                        'CATEGORY_ADD_DESC_LANGID'    =>    $intLangId,
@@ -648,12 +648,12 @@ class ForumAdmin extends ForumLibrary {
                    foreach ($this->_arrLanguages as $intLangId => $arrValues) {
                        $strChecked   = (array_key_exists($intLangId, $this->_arrTranslations[$intCategoryId])) ? 'checked' : '';
                        $strDisabled  = ($intParentId == 0) ? '' : ((!array_key_exists($intLangId, $this->_arrTranslations[$intParentId])) ? 'disabled="disabled"' : '');
-                       $arrLanguages[$intCounter % 3] = '';
-                       if (isset($arrLanguages[$intCounter % 3])) {
-                           $checkboxHtml = '<input type="checkbox" name="frmUpdateCategory_Languages[]" value="'.$intLangId.'" '.$strDisabled.' '.$strChecked.' />'.$arrValues['long'].' ['.$arrValues['short'].']<br />';
-                           $arrLanguages[$intCounter % 3] .=  $checkboxHtml;
+                       if (!isset($arrLanguages[$intCounter % 3])) {
+                           $arrLanguages[$intCounter % 3] = '';
                        }
 
+                       $checkboxHtml = '<input type="checkbox" name="frmUpdateCategory_Languages[]" value="'.$intLangId.'" '.$strDisabled.' '.$strChecked.' />'.$arrValues['long'].' ['.$arrValues['short'].']<br />';
+                       $arrLanguages[$intCounter % 3] .=  $checkboxHtml;
                        $this->_objTpl->setVariable(array(
                            'CATEGORY_EDIT_NAME_LANGID' => $intLangId,
                            'CATEGORY_EDIT_DESC_LANGID' => $intLangId,
