@@ -909,7 +909,7 @@ class NewsletterLib
         return true;
     }
 
-    protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $realUser)
+    protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $recipientType)
     {
         global $objDatabase;
 
@@ -956,11 +956,25 @@ class NewsletterLib
                     // replace href attribute
                     if (isset($arrLinks[$linkId])) {
 // TODO: use new URL-format
+                        $shortType = '';
+                        switch ($recipientType) {
+                            case NewsletterLib::USER_TYPE_ACCESS:
+                            case NewsletterLib::USER_TYPE_CORE:
+                                $shortType = 'r';
+                                break;
+                            case NewsletterLib::USER_TYPE_NEWSLETTER:
+                                $shortType = 'm';
+                                break;
+                            case NewsletterLib::USER_TYPE_CRM:
+                                $shortType = 'c';
+                                break;
+                        }
+
                         $arrParameters = array(
                             'section'               => 'Newsletter',
                             'n'                     => $MailId,
                             'l'                     => $linkId,
-                            ($realUser ? 'r' : 'm') => $UserId,
+                            $shortType              => $UserId,
                         );
                         $protocol = null;
                         if (\Env::get('config')['forceProtocolFrontend'] != 'none') {

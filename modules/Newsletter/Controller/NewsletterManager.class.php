@@ -3458,6 +3458,9 @@ class NewsletterManager extends NewsletterLib
         }
         $mail->ClearAddresses();
         $mail->ClearAttachments();
+
+        //die('test');
+
         return $ReturnVar;
     }
 
@@ -3613,21 +3616,10 @@ class NewsletterManager extends NewsletterLib
                 break;
         }
 
-        switch ($userData['type']) {
-            case self::USER_TYPE_ACCESS:
-            case self::USER_TYPE_CORE:
-                $realUser = true;
-                break;
-
-            case self::USER_TYPE_NEWSLETTER:
-            default:
-                $realUser = false;
-                break;
-        }
 
         // lets prepare all links for tracker before we replace placeholders
 // TODO: migrate tracker to new URL-format
-        $content_text = self::prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], $realUser);
+        $content_text = self::prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], $userData['type']);
 
         $search = array(
             '[[email]]',

@@ -981,7 +981,6 @@ class Newsletter extends NewsletterLib
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-
         $id    = !empty($_GET['id'])    ? contrexx_input2raw($_GET['id'])    : '';
         $email = !empty($_GET['email']) ? contrexx_input2raw($_GET['email']) : '';
         $code  = !empty($_GET['code'])  ? contrexx_input2raw($_GET['code'])  : '';
@@ -1192,13 +1191,13 @@ class Newsletter extends NewsletterLib
         // prepare links in content for tracking
         if (is_object($objUser) && $objUser->getId()) {
             $userId = $objUser->getId();
-            $realUser = true;
+            $userType = self::USER_TYPE_ACCESS;
         } else {
             $userId = $userId ? $userId : 0;
-            $realUser = false;
-        }
+            $userType = self::USER_TYPE_NEWSLETTER;
+        } 
 
-        $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $realUser);
+        $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $userType);
 
         // Finally replace content placeholder in the template.
         $html = str_replace('[[content]]', $content, $html);
@@ -1241,7 +1240,7 @@ class Newsletter extends NewsletterLib
         if (!isset($_GET['l'])) {
             return false;
         }
-        if (!isset($_GET['r']) && !isset($_GET['m'])) {
+        if (!isset($_GET['r']) && !isset($_GET['m']) && !isset($_GET['c'])) {
             return false;
         }
         return true;
@@ -1269,9 +1268,13 @@ class Newsletter extends NewsletterLib
         $realUser = true;
         if (isset($_GET['m'])) {
             $recipientId = contrexx_input2raw($_GET['m']);
-            $realUser = false;
+            $recipientType = NewsletterLib::USER_TYPE_NEWSLETTER;
         } else if (isset($_GET['r'])) {
             $recipientId = contrexx_input2raw($_GET['r']);
+            $recipientType = NewsletterLib::USER_TYPE_ACCESS;
+        } else if (isset($_GET['c'])) {
+            $recipientId = contrexx_input2raw($_GET['c']);
+            $recipientType = NewsletterLib::USER_TYPE_CRM;
         } else {
             return false;
         }
@@ -1280,20 +1283,17 @@ class Newsletter extends NewsletterLib
 
         if (!empty($recipientId)) {
             // find out recipient type
-            if ($realUser) {
+            if ($recipientType == NewsletterLib::USER_TYPE_ACCESS) {
                 $objUser = \FWUser::getFWUserObject()->objUser->getUser(intval($recipientId));
                 $recipientId = null;
                 if ($objUser !== false) {
                     $recipientId = $objUser->getId();
-                    $recipientType = self::USER_TYPE_ACCESS;
                 }
-
             } else {
                 $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
                 $recipientId = null;
                 if (!($objUser === false || $objUser->RecordCount() != 1)) {
                     $recipientId = $objUser->fields['id'];
-                    $recipientType = self::USER_TYPE_NEWSLETTER;
                 }
             }
         }
