@@ -673,6 +673,10 @@ class CalendarRegistration extends CalendarLibrary
 
         if (!empty($regId)) {
             $registration = $this->getRegistrationEntity($regId);
+            if (!$registration) {
+                return false;
+            }
+
             //Trigger preRemove event for Registration Entity
             $this->triggerEvent(
                 'model/preRemove', $registration,
@@ -900,15 +904,16 @@ class CalendarRegistration extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
                 ->findOneById($id);
         }
+
+        if (!$registration) {
+            return null;
+        }
+
         if ($registration->getInvite()) {
             $registration->getInvite()->setVirtual(true);
             $this->em->detach($registration->getInvite());
         }
         $registration->setVirtual(true);
-
-        if (!$registration) {
-            return null;
-        }
 
         if (!$formDatas) {
             return $registration;
