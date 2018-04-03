@@ -2537,7 +2537,7 @@ EOF;
             ':</td><td> <input style="width: 148px;" type="text" name="inputValue[city]" value="" /></td></tr><tr><td>'.
             $_ARRAYLANG['TXT_DIR_F_COUNTRY'].
             ':</td><td> <select style="width: 148px;" name="inputValue[country]">'.
-            $this->getCountryMenuoptions($selectedCountryName = '').'</select></td></tr></table><br />'.
+            $this->getCountryMenuoptions('').'</select></td></tr></table><br />'.
             '<input type="button" onclick="getAddress();" value="'.
             $_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'].'" /><br /><br />'.
             $_ARRAYLANG['TXT_DIR_LON'].

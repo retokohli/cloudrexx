@@ -308,7 +308,7 @@ $this->arrRows[2] = '';
         $description    = isset($arrAttributes['description']) ? $arrAttributes['description'] : '';
         $directoryTitle = '';
         if (isset($arrAttributes['title'])) {
-            $directoryTitle = htmlentities($arrAttributes['title'], ENT_QUOTES, CONTREXX_CHARSET);
+            $directoryTitle = contrexx_raw2xhtml($arrAttributes['title']);
         }
 
         $this->_objTpl->setVariable(array(
@@ -2135,10 +2135,10 @@ $this->arrRows[2] = '';
         $this->_getProxyInformations();
         $client = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
         $time = time();
-        $voteNEW = isset($_GET['vote']) ? intval($_GET['vote']) : 0;
-        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-        $cid = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
-        $lid = intval($_GET['lid']);
+        $voteNEW = isset($_GET['vote']) ? contrexx_input2int($_GET['vote']) : 0;
+        $id      = isset($_GET['id']) ? contrexx_input2int($_GET['id']) : 0;
+        $cid     = isset($_GET['cid']) ? contrexx_input2int($_GET['cid']) : 0;
+        $lid     = intval($_GET['lid']);
 
         //get clients
         $objResult = $objDatabase->SelectLimit("
