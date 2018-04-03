@@ -305,9 +305,15 @@ $this->arrRows[2] = '';
         }
 
         // set variables
+        $description    = isset($arrAttributes['description']) ? $arrAttributes['description'] : '';
+        $directoryTitle = '';
+        if (isset($arrAttributes['title'])) {
+            $directoryTitle = htmlentities($arrAttributes['title'], ENT_QUOTES, CONTREXX_CHARSET);
+        }
+
         $this->_objTpl->setVariable(array(
             'DIRECTORY_TREE' => $this->navtree,
-            'DIRECTORY_DESCRIPTION' => "<br />".$arrAttributes['description'],
+            'DIRECTORY_DESCRIPTION' => "<br />". $description,
             'TYPE_SELECTION' => $this->typeSelection,
             'TXT_DIRECTORY_DIR' => $_ARRAYLANG['TXT_DIR_DIRECTORY'],
 // TODO: Not defined
@@ -315,7 +321,7 @@ $this->arrRows[2] = '';
             'DIRECTORY_ROW_WIDTH' => $this->rowWidth,
             'DIRECTORY_ROW1' => $this->arrRows[1]."<br />",
             'DIRECTORY_ROW2' => $this->arrRows[2]."<br />",
-            'DIRECTORY_TITLE' => htmlentities($arrAttributes['title'], ENT_QUOTES, CONTREXX_CHARSET),
+            'DIRECTORY_TITLE' => $directoryTitle,
             'DIRECTORY_XML_LINK' => $xmlLink,
             'DIRECTORY_INSERT_FEEDS' => $insertFeeds,
         ));
@@ -2129,9 +2135,9 @@ $this->arrRows[2] = '';
         $this->_getProxyInformations();
         $client = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
         $time = time();
-        $voteNEW = intval($_GET['vote']);
-        $id = intval($_GET['id']);
-        $cid = intval($_GET['cid']);
+        $voteNEW = isset($_GET['vote']) ? intval($_GET['vote']) : 0;
+        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        $cid = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
         $lid = intval($_GET['lid']);
 
         //get clients
@@ -2150,7 +2156,7 @@ $this->arrRows[2] = '';
         }
 
         $feedTitle = '';
-        if (!checkForSpider() && isset($id) && isset($voteNEW) && $client != $clientOLD) {
+        if (!checkForSpider() && $id && $voteNEW && $client != $clientOLD) {
             if ($voteNEW > 10) {
                 $voteNEW = 10;
             } elseif ($voteNEW < 1) {

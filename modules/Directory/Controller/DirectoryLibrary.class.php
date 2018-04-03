@@ -1281,6 +1281,7 @@ class DirectoryLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $userId = contrexx_addslashes($id);
+        $author = '';
 
         if (is_numeric($userId)) {
             $objResultauthor = $objDatabase->Execute("SELECT id, username FROM ".DBPREFIX."access_users WHERE id = '".$userId."'");
@@ -1718,6 +1719,8 @@ function CheckFields() {
                     }
                     if ($action !== "confirm") {
                         $initImgUploader  = true;
+                        $inputFieldValue  = !empty($arrInputfieldsValue[$inputName])
+                            ? $arrInputfieldsValue[$inputName] : '';
                         $inputValueField .=
                             "<input type=\"text\" name=\"$inputName\" id=\"input_{$inputName}\" value style=\"width:".$width."px;\" />";
                         $inputValueField .=
@@ -1727,7 +1730,7 @@ function CheckFields() {
                         $inputValueField .=
                             "<input type=\"hidden\" name=\"inputValue[".
                             $inputName."]\" class=\"input_{$inputName}\" value='".
-                            $arrInputfieldsValue[$inputName]."' />";
+                            $inputFieldValue ."' />";
                     }
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
                     break;

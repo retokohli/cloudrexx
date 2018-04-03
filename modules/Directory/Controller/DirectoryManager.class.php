@@ -1050,8 +1050,8 @@ class DirectoryManager extends DirectoryLibrary
         $catCategorie       = intval($_POST['category']);
         $catName            = contrexx_strip_tags($_POST['name']);
         $catDescription     = contrexx_strip_tags($_POST['description']);
-        $catMetadesc        = contrexx_strip_tags($_POST['metadesc']);
-        $catMetakeys        = contrexx_strip_tags($_POST['metakeys']);
+        $catMetadesc        = isset($_POST['metadesc']) ? contrexx_strip_tags($_POST['metadesc']) : '';
+        $catMetakeys        = isset($_POST['metakeys']) ? contrexx_strip_tags($_POST['metakeys']) : '';
         $catShowEntries     = contrexx_strip_tags($_POST['showentries']);
 
         //insert into database
@@ -1976,12 +1976,13 @@ EOF;
         $this->_objTpl->setCurrentBlock('filesRow');
         if (!empty($file_array))
         {
+            $catName = '';
             //show files
             foreach ($file_array as $file)
             {
 
                 //get categorie name
-                $catId          = $file['catid'];
+                $catId          = isset($file['catid']) ? $file['catid'] : '';
 
                 $objResult_Name = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_directory_categories WHERE id='".$catId."'");
                 if ($objResult_Name !== false) {
@@ -2216,7 +2217,8 @@ EOF;
 
         // Sort
         if (isset($_GET['sort']) || empty($_SESSION['order'])) {
-            switch ($_GET['sort'])
+            $getSort = isset($_GET['sort']) ? $_GET['sort'] : '';
+            switch ($getSort)
             {
                 case 'date':
                 $_SESSION['order']=($_SESSION['order']=="files.date desc")? "files.date asc" : "files.date desc";
@@ -2237,7 +2239,7 @@ EOF;
 
         if (isset($catId)) {
             $where=" AND catid=".$catId;
-        } elseif ($_POST['term']) {
+        } elseif (isset($_POST['term'])) {
             //check search term
             $term= htmlspecialchars($_POST['term'], ENT_QUOTES, CONTREXX_CHARSET);
             $where.=" AND (title LIKE '%".$term."%' OR filename LIKE '%".$term."%' OR description LIKE '%".$term."%') ";
@@ -2535,7 +2537,7 @@ EOF;
             ':</td><td> <input style="width: 148px;" type="text" name="inputValue[city]" value="" /></td></tr><tr><td>'.
             $_ARRAYLANG['TXT_DIR_F_COUNTRY'].
             ':</td><td> <select style="width: 148px;" name="inputValue[country]">'.
-            $this->getCountryMenuoptions().'</select></td></tr></table><br />'.
+            $this->getCountryMenuoptions($selectedCountryName = '').'</select></td></tr></table><br />'.
             '<input type="button" onclick="getAddress();" value="'.
             $_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'].'" /><br /><br />'.
             $_ARRAYLANG['TXT_DIR_LON'].
@@ -2868,6 +2870,7 @@ EOF;
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_homecontent.html');
 
         //get settings
+        $homeContent = 0;
         $objResult = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."settings WHERE setid = '49'");
         if ($objResult !== false) {
             $homeContent = $objResult->fields['setvalue'];
@@ -3085,12 +3088,13 @@ EOF;
 
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
         }
-        if ($_POST['inputValue']['zoom'] != "") {
+        $zoom = isset($_POST['inputValue']['zoom']) ? $_POST['inputValue']['zoom'] : '';
+        if ($zoom != "") {
             $googleStartPoint  = intval($_POST['inputValue']['lat']);
             $googleStartPoint .= '.'.intval($_POST['inputValue']['lat_fraction']);
             $googleStartPoint .= ':'.intval($_POST['inputValue']['lon']);
             $googleStartPoint .= '.'.intval($_POST['inputValue']['lon_fraction']);
-            $googleStartPoint .= ':'.intval($_POST['inputValue']['zoom']);
+            $googleStartPoint .= ':'.contrexx_input2int($zoom);
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".$googleStartPoint."' WHERE setname='googlemap_start_location'");
         }
     }
