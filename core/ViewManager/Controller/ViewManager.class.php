@@ -2078,7 +2078,10 @@ CODE;
            $componentDirectory = $component->getDirectory() . '/View/Template/Frontend';
             if (file_exists($componentDirectory)) {
                 foreach (glob("$componentDirectory/*") as $componentFile) {
-                   $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+                    if (!isset($componentFiles[$component->getType()])) {
+                        $componentFiles[$component->getType()] = array();
+                    }
+                    $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
                 }
             }
         }
