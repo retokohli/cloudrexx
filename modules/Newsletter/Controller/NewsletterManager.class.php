@@ -3459,8 +3459,6 @@ class NewsletterManager extends NewsletterLib
         $mail->ClearAddresses();
         $mail->ClearAttachments();
 
-        //die('test');
-
         return $ReturnVar;
     }
 
