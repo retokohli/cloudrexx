@@ -3590,7 +3590,13 @@ class NewsletterManager extends NewsletterLib
         $codeResult     = $objDatabase->Execute('SELECT `code` FROM `'.DBPREFIX.'module_newsletter_tmp_sending` WHERE `newsletter` = '.$NewsletterID.' AND `email` = "'.$userData['email'].'"');
         $code           = $codeResult->fields['code'];
 // TODO: replace with new methode $this->GetBrowserViewURL()
-        $browserViewUrl = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID;
+
+        $crmId = '';
+        if($userData['type'] == self::USER_TYPE_CRM) {
+            $crmId = '&cId='.$userData['id'];
+        }
+
+        $browserViewUrl = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID. $crmId;
 
         if ($format == 'text') {
             $NewsletterBody = $_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW']."\n".$browserViewUrl;

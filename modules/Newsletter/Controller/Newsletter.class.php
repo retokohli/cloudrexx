@@ -984,6 +984,7 @@ class Newsletter extends NewsletterLib
         $id    = !empty($_GET['id'])    ? contrexx_input2raw($_GET['id'])    : '';
         $email = !empty($_GET['email']) ? contrexx_input2raw($_GET['email']) : '';
         $code  = !empty($_GET['code'])  ? contrexx_input2raw($_GET['code'])  : '';
+        $crmId = !empty($_GET['cId'])  ? contrexx_input2raw($_GET['cId'])  : '';
 
         $unsubscribe = '';
         $profile     = '';
@@ -1111,6 +1112,32 @@ class Newsletter extends NewsletterLib
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
             //$unsubscribe = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'unsubscribe', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
             //$profile     = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'profile', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+        } elseif (!empty($crmId)) {
+            $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+            $crmUser->load($crmId);
+
+            // TODO: implement salutation as soon as available
+            $gender = $crmUser->contact_gender == 1
+                ? 'gender_female'
+                : ($crmUser->contact_gender == 2
+                    ? 'gender_male'
+                    : 'gender_undefined'
+                );
+            $email                     = $crmUser->email;
+            $lastname                  = $crmUser->family_name;
+            $firstname                 = $crmUser->customerName;
+            $address                   = $crmUser->address;
+            $sex                       = \FWUser::getFWUserObject()->objUser->objAttribute->getById($gender)->getName();
+            $company                   = $crmUser->linkedCompany;
+            $title                     = $crmUser->contact_title;
+            $position                  = $crmUser->contact_role;
+            $zip                       = $crmUser->zip;
+            $city                      = $crmUser->city;
+            $website                   = $crmUser->url;
+            $phoneOffice               = $crmUser->phone;
+            $phonePrivate              = $crmUser->phone;
+            $phoneMobile               = $crmUser->phone;
+            $fax                       = $crmUser->phone;
         } else {
             // no user found by the specified e-mail address, therefore we will unset any profile specific data to prevent leaking any privacy data
             $email  = '';
@@ -1192,6 +1219,9 @@ class Newsletter extends NewsletterLib
         if (is_object($objUser) && $objUser->getId()) {
             $userId = $objUser->getId();
             $userType = self::USER_TYPE_ACCESS;
+        } elseif (!empty($crmId)) {
+            $userId = $crmId;
+            $userType = self::USER_TYPE_CRM;
         } else {
             $userId = $userId ? $userId : 0;
             $userType = self::USER_TYPE_NEWSLETTER;
@@ -1244,15 +1274,6 @@ class Newsletter extends NewsletterLib
             return false;
         }
         return true;
-
-// TODO: what is this?
-                        $newUrl->setParam('n', $MailId);
-                        $newUrl->setParam('l', $linkId);
-                        if ($realUser) {
-                            $newUrl->setParam('r', $UserId);
-                        } else {
-                            $newUrl->setParam('m', $UserId);
-                        }
     }
 
     /**
@@ -1289,7 +1310,7 @@ class Newsletter extends NewsletterLib
                 if ($objUser !== false) {
                     $recipientId = $objUser->getId();
                 }
-            } else {
+            } elseif ($recipientType == NewsletterLib::USER_TYPE_NEWSLETTER) {
                 $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
                 $recipientId = null;
                 if (!($objUser === false || $objUser->RecordCount() != 1)) {
