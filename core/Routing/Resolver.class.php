@@ -640,7 +640,7 @@ class Resolver {
 
             //(III) extend our url object with matched path / params
             $this->url->setTargetPath($result['matchedPath'].$result['unmatchedPath']);
-            $this->url->setParams($this->url->getSuggestedParams());
+            $this->url->setParams($this->url->getSuggestedParams() . $this->url->getSuggestedAnchor());
 
             $this->page = $result['page'];
         }
