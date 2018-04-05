@@ -109,6 +109,12 @@ class Url {
     protected $suggestedParams = '';
 
     /**
+     * #anchor
+     * @var string
+     */
+    protected $suggestedAnchor = '';
+
+    /**
      * The/Module
      * Found/Path/To/Module
      * The/Special/Module
@@ -294,19 +300,20 @@ class Url {
             return;
         }
         $matches = array();
-        $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
+        $matchCount = preg_match('/([^\?#]+)([^#]*)(.*)/', $this->path, $matches);
 
         if ($matchCount == 0) {//seemingly, no parameters are set.
             $this->suggestedTargetPath = $this->path;
             $this->suggestedParams = '';
         } else {
-            $parts = explode('?', $this->path);
+            $parts = preg_split('/\?#/', $this->path);
             if ($parts[0] == '') { // we have no path or filename, just set parameters
                 $this->suggestedTargetPath = '';
                 $this->suggestedParams = $this->path;
             } else {
                 $this->suggestedTargetPath = $matches[1];
                 $this->suggestedParams = $matches[2];
+                $this->suggestedAnchor = $matches[3];
             }
         }
 
@@ -581,6 +588,9 @@ class Url {
         return $this->suggestedParams;
     }
 
+    public function getSuggestedAnchor() {
+        return $this->suggestedAnchor;
+    }
 
     public static function fromRequest() {
         if (php_sapi_name() === 'cli') {
