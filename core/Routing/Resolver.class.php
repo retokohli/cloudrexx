@@ -785,7 +785,7 @@ class Resolver {
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-            header('Location: ' . $target, true, 301);
+            header('Location: ' . $target . $this->url->getSuggestedAnchor(), true, 301);
             exit;
         }
 
