@@ -229,14 +229,16 @@ class Resolver {
             }
         }
 
-        // used for LinkGenerator
-        define('FRONTEND_LANG_ID', $this->lang);
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getDb()->getTranslationListener()->setTranslatableLocale(
-            \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
-        );
-        // used to load template file
-        \Env::get('init')->setFrontendLangId($this->lang);
+        if ($this->lang) {
+            // used for LinkGenerator
+            define('FRONTEND_LANG_ID', $this->lang);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getDb()->getTranslationListener()->setTranslatableLocale(
+                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+            );
+            // used to load template file
+            \Env::get('init')->setFrontendLangId($this->lang);
+        }
 
 
 
