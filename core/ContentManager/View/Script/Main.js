@@ -1050,6 +1050,15 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
             }
 
             var page = cx.cm.page;
+            // in case we are creating a new page, then cx.cm.page is not yet defined
+            if (typeof(page) == 'undefined') {
+                page = {
+                    customContent:"",
+                    useCustomContentForAllChannels:0,
+                    applicationTemplate:"",
+                    useCustomApplicationTemplateForAllChannels:0
+                }
+            }
             cx.jQuery('span.area').text(response.data.area);
             cx.jQuery('span.folderPath').text(response.data.path);
             cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
