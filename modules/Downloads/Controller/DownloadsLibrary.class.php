@@ -71,7 +71,8 @@ class DownloadsLibrary
         'new_file_time_limit'           => 604800,
         'updated_file_time_limit'       => 604800,
         'associate_user_to_groups'      => '',
-        'list_downloads_current_lang'   => 1
+        'list_downloads_current_lang'   => 1,
+        'integrate_into_search_component'=> 1,
     );
 
     /**

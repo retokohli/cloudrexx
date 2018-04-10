@@ -2697,6 +2697,7 @@ class DownloadsManager extends DownloadsLibrary
             $this->arrConfig['use_attr_author']             = !empty($_POST['downloads_settings_attribute_author']) ? intval($_POST['downloads_settings_attribute_author']) : 0;
             $this->arrConfig['use_attr_website']            = !empty($_POST['downloads_settings_attribute_website']) ? intval($_POST['downloads_settings_attribute_website']) : 0;
             $this->arrConfig['list_downloads_current_lang'] = !empty($_POST['downloads_settings_list_downloads_current_lang']) ? contrexx_input2int($_POST['downloads_settings_list_downloads_current_lang']) : 0;
+            $this->arrConfig['integrate_into_search_component'] = !empty($_POST['downloads_settings_integrate_into_search_component']) ? contrexx_input2int($_POST['downloads_settings_integrate_into_search_component']) : 0;
             $this->arrConfig['most_viewed_file_count']      = !empty($_POST['downloads_settings_most_viewed_file_count']) ? intval($_POST['downloads_settings_most_viewed_file_count']) : $this->arrConfig['most_viewed_file_count'];
             $this->arrConfig['most_downloaded_file_count']  = !empty($_POST['downloads_settings_most_downloaded_file_count']) ? intval($_POST['downloads_settings_most_downloaded_file_count']) : $this->arrConfig['most_downloaded_file_count'];
             $this->arrConfig['most_popular_file_count']     = !empty($_POST['downloads_settings_most_popular_file_count']) ? intval($_POST['downloads_settings_most_popular_file_count']) : $this->arrConfig['most_popular_file_count'];
@@ -2744,6 +2745,9 @@ class DownloadsManager extends DownloadsLibrary
             ($action == 'mailtemplate_overview' || $action == 'mailtemplate_edit');
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_SETTINGS_LISTING'                => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'],
+            'TXT_DOWNLOADS_SETTINGS_SEARCH'                 => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_SEARCH'],
+            'TXT_DOWNLOADS_INTEGRATE_INTO_SEARCH_COMPONENT' => $_ARRAYLANG['TXT_DOWNLOADS_INTEGRATE_INTO_SEARCH_COMPONENT'],
+            'TXT_DOWNLOADS_INTEGRATE_INTO_SEARCH_COMPONENT_TXT'=> $_ARRAYLANG['TXT_DOWNLOADS_INTEGRATE_INTO_SEARCH_COMPONENT_TXT'],
             'TXT_DOWNLOADS_OVERVIEW_PAGE'                   => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'],
             'TXT_DOWNLOADS_COL_COUNT'                       => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'],
             'TXT_DOWNLOADS_COL_COUNT_DESC'                  => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT_DESC'],
@@ -2804,6 +2808,7 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_SETTINGS_ATTRIBUTE_AUTHOR_CHECKED'   => $this->arrConfig['use_attr_author'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_WEBSITE_CHECKED'  => $this->arrConfig['use_attr_website'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_LIST_DOWNLOADS_CURRENT_LANG'=> $this->arrConfig['list_downloads_current_lang'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_INTEGRATE_INTO_SEARCH_COMPONENT'=> $this->arrConfig['integrate_into_search_component'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_MOST_VIEWED_FILE_COUNT'     => $this->arrConfig['most_viewed_file_count'],
             'DOWNLOADS_SETTINGS_MOST_DOWNLOADED_FILE_COUNT' => $this->arrConfig['most_downloaded_file_count'],
             'DOWNLOADS_SETTINGS_MOST_POPULAR_FILE_COUNT'    => $this->arrConfig['most_popular_file_count'],

@@ -177,6 +177,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $download = new Download();
         $downloadLibrary = new DownloadsLibrary();
         $config = $downloadLibrary->getSettings();
+
+        // abort in case downloads shall not be included into the global
+        // fulltext search component
+        if (!$config['integrate_into_search_component']) {
+            return array();
+        }
+
+        // lookup downloads by given keyword
         $downloadAsset = $download->getDownloads(
             null,
             $searchTerm,
@@ -207,5 +215,4 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         return $result;
     }
-
 }
