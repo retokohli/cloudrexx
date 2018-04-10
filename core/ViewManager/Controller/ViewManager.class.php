@@ -2075,7 +2075,9 @@ CODE;
         $components = $objSystemComponent->findAll();
         $componentFiles = array();
         foreach ($components as $component) {
-           $componentDirectory = $component->getDirectory() . '/View/Template/Frontend';
+            $componentDirectory = $cx->getClassLoader()->getFilePath(
+                $component->getDirectory(false) . '/View/Template/Frontend'
+            );
             if (file_exists($componentDirectory)) {
                 foreach (glob("$componentDirectory/*") as $componentFile) {
                    $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);

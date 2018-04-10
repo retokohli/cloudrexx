@@ -809,10 +809,20 @@ class CalendarEventManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
             $this->moduleLangVar.'_EVENT_START'             => $this->format2userDateTime($startDate),
             $this->moduleLangVar.'_EVENT_START_DATE'        => $this->format2userDate($startDate),
+            $this->moduleLangVar.'_EVENT_START_DATE_DAY'    => $this->formatDateTime2user($startDate, 'd'),
+            $this->moduleLangVar.'_EVENT_START_DATE_MONTH'  => $this->formatDateTime2user($startDate, 'm'),
+            $this->moduleLangVar.'_EVENT_START_DATE_YEAR'   => $this->formatDateTime2user($startDate, 'Y'),
             $this->moduleLangVar.'_EVENT_START_TIME'        => $this->format2userTime($startDate),
+            $this->moduleLangVar.'_EVENT_START_TIME_MINUTE' => $this->formatDateTime2user($startDate, 'i'),
+            $this->moduleLangVar.'_EVENT_START_TIME_HOUR'   => $this->formatDateTime2user($startDate, 'H'),
             $this->moduleLangVar.'_EVENT_END'               => $this->format2userDateTime($endDate),
             $this->moduleLangVar.'_EVENT_END_DATE'          => $this->format2userDate($endDate),
+            $this->moduleLangVar.'_EVENT_END_DATE_DAY'      => $this->formatDateTime2user($endDate, 'd'),
+            $this->moduleLangVar.'_EVENT_END_DATE_MONTH'    => $this->formatDateTime2user($endDate, 'm'),
+            $this->moduleLangVar.'_EVENT_END_DATE_YEAR'     => $this->formatDateTime2user($endDate, 'Y'),
             $this->moduleLangVar.'_EVENT_END_TIME'          => $this->format2userTime($endDate),
+            $this->moduleLangVar.'_EVENT_END_TIME_MINUTE'   => $this->formatDateTime2user($endDate, 'i'),
+            $this->moduleLangVar.'_EVENT_END_TIME_HOUR'     => $this->formatDateTime2user($endDate, 'H'),
             $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,
             $this->moduleLangVar.'_EVENT_TEASER'            => $objEvent->teaser,
             $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
@@ -896,6 +906,13 @@ class CalendarEventManager extends CalendarLibrary
         if (($this->arrSettings['placeData'] == 1) && $objEvent->place == '' && $objEvent->place_street == '' && $objEvent->place_zip == '' && $objEvent->place_city == '' && $objEvent->place_country == '' && $objEvent->place_website == '' && $objEvent->place_phone == '') {
             $objTpl->hideBlock('calendarEventAddress');
         } else {
+            if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
+                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
+                list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
+            } else {
+                $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
+                $placeLinkSource   = $objEvent->place_link;
+            }
             if($objEvent->google) {
 // TODO: implement with new Google Maps Embed API. see https://developers.google.com/maps/documentation/embed/guide
                 /*$googleCoordinates = self::_getCoorinates($objEvent->place_street, $objEvent->place_zip, $objEvent->place_city);
@@ -934,13 +951,6 @@ class CalendarEventManager extends CalendarLibrary
 
             $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
             $placeWebsiteSource= $objEvent->place_website;
-
-            $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
-            $placeLinkSource   = $objEvent->place_link;
-            if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
-                list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
-            }
 
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
@@ -1436,11 +1446,21 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
                     $this->moduleLangVar.'_EVENT_START'          => $this->format2userDateTime($startDate),
                     $this->moduleLangVar.'_EVENT_START_DATE'     => $this->format2userDate($startDate),
+                    $this->moduleLangVar.'_EVENT_START_DATE_DAY' => $this->formatDateTime2user($startDate, 'd'),
+                    $this->moduleLangVar.'_EVENT_START_DATE_MONTH'=> $this->formatDateTime2user($startDate, 'm'),
+                    $this->moduleLangVar.'_EVENT_START_DATE_YEAR'=> $this->formatDateTime2user($startDate, 'Y'),
                     $this->moduleLangVar.'_EVENT_START_TIME'     => $this->format2userTime($startDate),
+                    $this->moduleLangVar.'_EVENT_START_TIME_MINUTE'=> $this->formatDateTime2user($startDate, 'i'),
+                    $this->moduleLangVar.'_EVENT_START_TIME_HOUR'=> $this->formatDateTime2user($startDate, 'H'),
                     $this->moduleLangVar.'_EVENT_DATE'           => $this->format2userDate($startDate),
                     $this->moduleLangVar.'_EVENT_END'            => $this->format2userDateTime($endDate),
                     $this->moduleLangVar.'_EVENT_END_DATE'       => $this->format2userDate($endDate),
+                    $this->moduleLangVar.'_EVENT_END_DATE_DAY'   => $this->formatDateTime2user($endDate, 'd'),
+                    $this->moduleLangVar.'_EVENT_END_DATE_MONTH' => $this->formatDateTime2user($endDate, 'm'),
+                    $this->moduleLangVar.'_EVENT_END_DATE_YEAR'  => $this->formatDateTime2user($endDate, 'Y'),
                     $this->moduleLangVar.'_EVENT_END_TIME'       => $this->format2userTime($endDate),
+                    $this->moduleLangVar.'_EVENT_END_TIME_MINUTE'=> $this->formatDateTime2user($endDate, 'i'),
+                    $this->moduleLangVar.'_EVENT_END_TIME_HOUR'  => $this->formatDateTime2user($endDate, 'H'),
                     $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
                     $this->moduleLangVar.'_EVENT_CATEGORY'       =>
                         implode(', ', $category_names),
@@ -1451,6 +1471,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_SERIES'         => $objEvent->seriesStatus == 1 ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/Repeat.png" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
                     $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $freeSeats,
                     $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
+                    'TXT_' . $this->moduleLangVar . '_MORE_INFO' => $_ARRAYLANG['TXT_CALENDAR_MORE_INFO'],
                 ));
 
                 // hide attachment template block in case no attachment is set
@@ -1771,7 +1792,7 @@ class CalendarEventManager extends CalendarLibrary
      */
     function _setNextSeriesElement(
         $objEvent,
-        &$additionalRecurrences,
+        &$additionalRecurrences = array(),
         $addAdditionalRecurrence = false
     ) {
         $objCloneEvent = clone $objEvent;
@@ -1897,6 +1918,7 @@ class CalendarEventManager extends CalendarLibrary
         }
 
         $isAllowedEvent = true;
+        $getNextEvent = false;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
             case 1:
                 $getNextEvent = false;

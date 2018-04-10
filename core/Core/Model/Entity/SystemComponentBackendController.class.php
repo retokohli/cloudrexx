@@ -66,7 +66,15 @@ class SystemComponentBackendController extends Controller {
     public function getCommands() {
         $cmds = array();
         foreach ($this->getEntityClasses() as $class) {
-            $cmds[] = preg_replace('#' . preg_quote($this->getNamespace() . '\\Model\\Entity\\') . '#', '', $class);
+            if (is_a($class, '')) {
+                continue;
+            }
+            $cmdName = preg_replace('#' . preg_quote($this->getNamespace() . '\\Model\\Entity\\') . '#', '', $class);
+            if (is_subclass_of($class, '\Gedmo\Translatable\Translatable')) {
+                $cmds[$cmdName] = array('translatable' => true);
+            } else {
+                $cmds[] = $cmdName;
+            }
         }
         $cmds['Settings'] = array('Help');
         return $cmds;
@@ -167,6 +175,7 @@ class SystemComponentBackendController extends Controller {
                 $cmd[0] = key($commands);
             }
         }
+        $originalCommands = $commands;
         $this->checkAndModifyCmdByPermission($cmd, $commands);
         foreach ($commands as $key => $command) {
             $subNav         = array();
@@ -175,8 +184,13 @@ class SystemComponentBackendController extends Controller {
             if (is_array($command) && isset($command['children'])) {
                 $subNav = array_merge(array('' => array('permission' => $this->defaultPermission)), $command['children']);
             } else {
-                if (is_array($command) && array_key_exists('permission', $command)) {
-                    unset($command['permission']); // navigation might contain only the permission key, unset it
+                if (is_array($command)) {
+                    if (array_key_exists('permission', $command)) {
+                        unset($command['permission']); // navigation might contain only the permission key, unset it
+                    }
+                    if (array_key_exists('translatable', $command)) {
+                        unset($command['translatable']); // navigation might contain only the translatable key, unset it
+                    }
                 }
                 $subNav = is_array($command) && !empty($command)  ? array_merge(array(''), $command) : array();
             }
@@ -201,6 +215,15 @@ class SystemComponentBackendController extends Controller {
                     $first = false;
                 }
             }
+        }
+        if (
+            isset($originalCommands[current($cmd)]) &&
+            isset($originalCommands[current($cmd)]['translatable']) &&
+            $originalCommands[current($cmd)]['translatable']
+        ) {
+            $navigation->setVariable(
+                'FRONTEND_LANG_MENU', \Env::get('init')->getUserFrontendLangMenu(true)
+            );
         }
         return $navigation;
     }
@@ -335,6 +358,34 @@ class SystemComponentBackendController extends Controller {
                 }
                 switch ($cmd[1]) {
                     case '':
+                        \Cx\Core\Setting\Controller\Setting::init(
+                            $this->getName(),
+                            null,
+                            'FileSystem',
+                            null,
+                            \Cx\Core\Setting\Controller\Setting::REPOPULATE
+                        );
+                        \Cx\Core\Setting\Controller\Setting::storeFromPost();
+                        \Cx\Core\Setting\Controller\Setting::setEngineType(
+                            $this->getName(),
+                            'FileSystem'
+                        );
+                        \Cx\Core\Setting\Controller\Setting::show(
+                            $template,
+                            $this->getName() . '/' . implode('/', $cmd),
+                            $this->getName(),
+                            $_ARRAYLANG[
+                                'TXT_' . strtoupper(
+                                    $this->getType()
+                                ) . '_' . strtoupper(
+                                    $this->getName() . '_ACT_' . $cmd[0] . '_DEFAULT'
+                                )
+                            ],
+                            'TXT_' . strtoupper(
+                                $this->getType() . '_' . $this->getName()
+                            ) . '_'
+                        );
+                        break;
                     default:
                         if (!$template->blockExists('mailing')) {
                             return;

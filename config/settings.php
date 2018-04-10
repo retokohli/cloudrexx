@@ -169,6 +169,7 @@ $_CONFIG['cacheProxyCacheConfig']         = "{\"ip\":\"127.0.0.1\",\"port\":\"80
 $_CONFIG['cacheSsiProcessorConfig']       = "{\"ip\":\"127.0.0.1\",\"port\":\"8080\"}";
 $_CONFIG['internalSsiCache']              = "off";
 $_CONFIG['cacheUserCacheMemcacheConfig']  = "{\"ip\":\"127.0.0.1\",\"port\":11211}";
+$_CONFIG['cacheUserCacheMemcachedConfig'] = "{\"ip\":\"127.0.0.1\",\"port\":11211}";
 
 /**
 * -------------------------------------------------------------------------

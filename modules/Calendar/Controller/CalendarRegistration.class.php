@@ -673,6 +673,10 @@ class CalendarRegistration extends CalendarLibrary
 
         if (!empty($regId)) {
             $registration = $this->getRegistrationEntity($regId);
+            if (!$registration) {
+                return false;
+            }
+
             //Trigger preRemove event for Registration Entity
             $this->triggerEvent(
                 'model/preRemove', $registration,
@@ -751,19 +755,18 @@ class CalendarRegistration extends CalendarLibrary
         global $objDatabase;
 
         if (!empty($regId)) {
-            $registration = $this
-                ->em
-                ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
-                ->findOneBy(array('id' => $regId));
-            $registration->setType($typeId);
-            $registration->setVirtual(true);
+            $registration = $this->getRegistrationEntity(
+                $regId,
+                array('type', $typeId)
+            );
             //Trigger preUpdate event for Registration Entity
             $this->triggerEvent(
                 'model/preUpdate', $registration,
                 array(
                     'relations' => array(
                         'oneToMany' => 'getRegistrationFormFieldValues',
-                        'manyToOne' => 'getEvent'
+                        'manyToOne' => 'getEvent',
+                        'oneToOne'  => 'getInvite',
                     ),
                     'joinEntityRelations' => array(
                         'getRegistrationFormFieldValues' => array(
@@ -901,15 +904,16 @@ class CalendarRegistration extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
                 ->findOneById($id);
         }
+
+        if (!$registration) {
+            return null;
+        }
+
         if ($registration->getInvite()) {
             $registration->getInvite()->setVirtual(true);
             $this->em->detach($registration->getInvite());
         }
         $registration->setVirtual(true);
-
-        if (!$registration) {
-            return null;
-        }
 
         if (!$formDatas) {
             return $registration;

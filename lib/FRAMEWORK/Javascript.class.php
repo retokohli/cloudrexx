@@ -215,12 +215,6 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'ckeditor'     => array(
-            'jsfiles'       => array(
-                'lib/ckeditor/ckeditor.js',
-            ),
-            'dependencies' => array('jquery'),
-        ),
         'js-cookie' => array(
             'jsfiles'       => array(
                 'lib/javascript/js-cookie.min.js',
@@ -345,6 +339,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                         });
                     }
                 });'
+        ),
+        // Extends standard "chosen" above.  Usage:
+        //  cx.jQuery([selector])
+        //    .chosen([options])
+        //    .chosenSortable([extra options]);
+        'chosen-sortable' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/chosen/chosen-sortable.min.js',
+                // Use the full version for debugging
+                //'lib/javascript/jquery/chosen/chosen-sortable.js',
+            ),
+            'dependencies' => array('jqueryui', 'chosen'),
         ),
         'backend' => array(
             'jsfiles' => array(
@@ -786,6 +792,20 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     }
 
     /**
+     * Register a JavaScript library that can later (after preContentLoad hook)
+     * be loaded by any component by calling \JS::activate($name).
+     * This method should only be used within the preContentLoad hook.
+     *
+     * @param   $name   string  Name of the library to register
+     * @param   $definition array   Meta information about the library.
+     *                              See static::$available for schema
+     *                              definition.
+     */
+    public static function registerJsLibrary($name, $definition = array()) {
+        static::$available[$name] = $definition;
+    }
+
+    /**
      * Register a custom css file
      *
      * Add a new, individual CSS file to the list.
@@ -1107,7 +1127,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function grabComments(&$content)
     {
+        // filter HTML-comments
         $content = preg_replace_callback('#<!--.*?-->#ms', array('JS', '_storeComment'), $content);
+
+        // filter esi-includes
+        $content = preg_replace_callback('#<esi:include src="([^"]+)" onerror="continue"/>#', array('JS', '_storeComment'), $content);
     }
 
 

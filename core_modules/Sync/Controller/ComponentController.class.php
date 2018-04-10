@@ -571,6 +571,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if (!$host->handleChange($change)) {
                         $severity = 'WARNING';
                         $host->disable();
+                        \DBG::msg(
+                            'SYNC ERROR: Host "' . $host->getHost() .
+                                '" could not handle change #' .
+                                $change->getId() . '. Host disabled.'
+                        );
                         break 2;
                     }
                     $i++;

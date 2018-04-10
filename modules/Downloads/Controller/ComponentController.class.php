@@ -45,12 +45,22 @@ namespace Cx\Modules\Downloads\Controller;
  * @subpackage  module_downloads
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-    public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array();
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllerClasses()
+    {
+        return array('EsiWidget');
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson()
+    {
+        return array('EsiWidgetController');
+    }
      /**
      * Load your component.
      *
@@ -83,62 +93,53 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
+
     /**
-     * Do something before content is loaded from DB
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * {@inheritdoc}
      */
-    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $arrMatches, $cl, $objDownloadLib, $downloadBlock, $matches, $objDownloadsModule, $themesPages, $page_template;
-        switch ($this->cx->getMode()) {
-            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                // Set download groups
-                if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
-                    /** @ignore */
-                    if ($cl->loadFile(ASCMS_MODULE_PATH.'/Downloads/Controller/DownloadsLibrary.class.php')) {
-                        $objDownloadLib = new DownloadsLibrary();
-                        $objDownloadLib->setGroups($arrMatches[1], \Env::get('cx')->getPage()->getContent());
-                    }
-                }
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        // downloads group
+        $groups            = Group::getGroups();
+        $groupsPlaceholders = $groups->getGroupsPlaceholders();
+        $this->registerDownloadsWidgets($groupsPlaceholders, \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_PLACEHOLDER);
 
-                //--------------------------------------------------------
-                // Parse the download block 'downloads_category_#ID_list'
-                //--------------------------------------------------------
-                $content = $this->cx->getPage()->getContent();
-                $this->cx->getPage()->setContent($this->parseDownloadsForTemplate($content));
-                $themesPages['index']   = $this->parseDownloadsForTemplate($themesPages['index']);
-                $themesPages['sidebar'] = $this->parseDownloadsForTemplate($themesPages['sidebar']);
-                $page_template          = $this->parseDownloadsForTemplate($page_template);
-                break;
-
-            default:
-                break;
-        }
-
-
+        // downloads category list
+        $categoriesBlocks = Category::getCategoryWidgetNames();
+        $this->registerDownloadsWidgets($categoriesBlocks, \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_BLOCK);
     }
 
     /**
-     * Parse the downloads by category, used to replace downloads in template
+     * Register the downloads widgets
      *
-     * @param string $content  Template Content to parse
+     * @param array   $widgets widgets array
+     * @param string  $type Widget type
      *
-     * @return string
+     * @return null
      */
-    public function parseDownloadsForTemplate($content)
-    {
-        $downloadBlock = preg_replace_callback(
-            "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
-            function($matches) {
-                \Env::get('init')->loadLanguageData('Downloads');
-                if (isset($matches[2])) {
-                    $downloads = new Downloads($matches[2], array('category' => $matches[1]));
-                    return $downloads->getPage();
-                }
-            },
-            $content
-        );
-        return $downloadBlock;
+    protected function registerDownloadsWidgets($widgets, $type) {
+
+        $pos = 0;
+        if (isset($_GET['pos'])) {
+            $pos = intval($_GET['pos']);
+        }
+        $widgetController = $this->getComponent('Widget');
+        foreach ($widgets as $widgetName) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                $widgetName,
+                $type,
+                '',
+                '',
+                array('pos' => $pos)
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
+            );
+            $widgetController->registerWidget($widget);
+        }
     }
 
     /**
@@ -154,6 +155,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
         $eventListener = new \Cx\Modules\Downloads\Model\Event\DownloadsEventListener($this->cx);
+        $evm->addEventListener('SearchFindContent', $eventListener);
         $evm->addEventListener('mediasource.load', $eventListener);
 
         // locale event listener
@@ -162,4 +164,65 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
+    /**
+     * Find Downloads by keyword $searchTerm and return them in a
+     * two-dimensional array compatible to be used by Search component.
+     *
+     * @param   string  $searchTerm The keyword to search by
+     * @return  array   Two-dimensional array of Downloads found by keyword
+     *                  $searchTerm.
+     *                  If integration into search component is disabled or
+     *                  no Download matched the giving keyword, then an
+     *                  empty array is retured.
+     */
+    public function getDownloadsForSearchComponent($searchTerm) {
+        $result = array();
+        $download = new Download();
+        $downloadLibrary = new DownloadsLibrary();
+        $config = $downloadLibrary->getSettings();
+
+        // abort in case downloads shall not be included into the global
+        // fulltext search component
+        if (!$config['integrate_into_search_component']) {
+            return array();
+        }
+
+        // lookup downloads by given keyword
+        $downloadAsset = $download->getDownloads(
+            null,
+            $searchTerm,
+            null,
+            null,
+            null,
+            null,
+            $config['list_downloads_current_lang']
+        );
+
+        if (!$downloadAsset) {
+            return array();
+        }
+
+        $langId = DownloadsLibrary::getOutputLocale()->getId();
+
+        while (!$downloadAsset->EOF) {
+            try {
+                $url = DownloadsLibrary::getApplicationUrl(
+                    $downloadAsset->getAssociatedCategoryIds()
+                );
+            } catch (DownloadsLibraryException $e) {
+                $downloadAsset->next();
+                continue;
+            }
+            $url->setParam('id', $downloadAsset->getId());
+            $result[] = array(
+                'Score'   => 100,
+                'Title'   => $downloadAsset->getName($langId),
+                'Content' => $downloadAsset->getTrimmedDescription($langId),
+                'Link'    => $url->toString()
+            );
+            $downloadAsset->next();
+        }
+
+        return $result;
+    }
 }
