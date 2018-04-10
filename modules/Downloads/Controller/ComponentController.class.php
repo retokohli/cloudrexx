@@ -205,15 +205,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $langId = DownloadsLibrary::getOutputLocale()->getId();
 
         while (!$downloadAsset->EOF) {
-            $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                $this->getName(),
-                '',
-                '',
-                array(
-                    'category' => current($downloadAsset->getAssociatedCategoryIds()),
-                    'id' => $downloadAsset->getId(),
-                )
-            );
+            try {
+                $url = DownloadsLibrary::getApplicationUrl(
+                    $downloadAsset->getAssociatedCategoryIds()
+                );
+            } catch (DownloadsLibraryException $e) {
+                $downloadAsset->next();
+                continue;
+            }
+            $url->setParam('id', $downloadAsset->getId());
             $result[] = array(
                 'Score'   => 100,
                 'Title'   => $downloadAsset->getName($langId),

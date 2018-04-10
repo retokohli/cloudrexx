@@ -2023,15 +2023,13 @@ class DownloadsManager extends DownloadsLibrary
         // parse frontend preview link
         if ($objCategory->getId()) {
             try {
-                $categoryFrontendURI = \Cx\Core\Routing\Url::fromModuleAndCmd('Downloads', '', DownloadsLibrary::getOutputLocale()->getId(), array('category' => $objCategory->getId()), '', false);
-            } catch (\Exception $e) {}
-            if ($categoryFrontendURI) {
+                $categoryFrontendURI = DownloadsLibrary::getApplicationUrl(array($objCategory->getId()));
                 $this->objTemplate->setVariable(array(
                     'TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'      => $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'],
                     'DOWNLOADS_CATEGORY_FRONTEND_URI'           => $categoryFrontendURI
                 ));
                 $this->objTemplate->parse('downloads_category_frontend_link');
-            } else {
+            } catch (DownloadsLibraryException $e) {
                 $this->objTemplate->hideBlock('downloads_category_frontend_link');
             }
         } else {
