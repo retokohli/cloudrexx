@@ -314,7 +314,7 @@ EOF;
             SET
                 `entry_id`='".intval($intEntryId)."',
                 `added_by`='".intval($intAddedBy)."',
-                `date`='".mktime()."',
+                `date`='".time()."',
                 `ip`='".$strRemoteAddress."',
                 `name`='".contrexx_addslashes($arrCommentData['commentName'])."',
                 `mail`='".contrexx_addslashes($arrCommentData['commentMail'])."',
@@ -335,8 +335,6 @@ EOF;
 
 
     function refreshComments($intEnrtyId, $strPageSection, $strPageCmd) {
-        global $_LANGID;
-
         $arrComment = $this->getLastComment($intEnrtyId);
 
         $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -344,7 +342,7 @@ EOF;
             'module' => contrexx_addslashes($strPageSection),
             'cmd' => contrexx_addslashes($strPageCmd),
             'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-            'lang' => intval($_LANGID),
+            'lang' => static::getOutputLocale()->getId(),
         ));
 
         if (count($pages)) {

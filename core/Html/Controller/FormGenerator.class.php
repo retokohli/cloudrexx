@@ -155,6 +155,7 @@ class FormGenerator {
      * @return \Cx\Core\Html\Model\Entity\HtmlElement
      */
     public function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
+        global $_ARRAYLANG;
 
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
@@ -165,6 +166,8 @@ class FormGenerator {
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'formtext');
         } else if (isset($fieldOptions['header'])) {
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'header');
+        } else if (isset($_ARRAYLANG[$fieldHeader])) {
+            $fieldHeader = $_ARRAYLANG[$fieldHeader];
         }
         $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldHeader . ' '));
         $group->addChild($label);
@@ -317,9 +320,10 @@ class FormGenerator {
                     }
                     $select = new \Cx\Core\Html\Model\Entity\DataElement(
                         $name,
-                        \Html::getOptions($arrEntities, $selected),
+                        $selected,
                         \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
-                        $validator
+                        $validator,
+                        $arrEntities
                     );
                     if (isset($options['attributes'])) {
                         $select->setAttributes($options['attributes']);
@@ -382,9 +386,10 @@ class FormGenerator {
                 $options = \Cx\Core\Country\Controller\Country::getMenuoptions($value);
                 $select = new \Cx\Core\Html\Model\Entity\DataElement(
                     $name,
-                    $options,
+                    '',
                     \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
                 );
+                $select->addChild(new \Cx\Core\Html\Model\Entity\TextElement($options));
                 if (isset($options['attributes'])) {
                     $select->setAttributes($options['attributes']);
                 }
@@ -432,11 +437,12 @@ class FormGenerator {
                     $value = explode(',', $value);
                     $value = array_combine($value, $value);
                 }
-                $selectOptions = \Html::getOptions($values, $value);
                 $select = new \Cx\Core\Html\Model\Entity\DataElement(
                     $name,
-                    $selectOptions,
-                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                    $value,
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+                    null,
+                    $values
                 );
                 if ($type == 'multiselect') {
                     $select->setAttribute('multiple');
@@ -806,7 +812,10 @@ CODE;
             throw new \Exception('Entity not found');
         }
 
-        $foreignEntityGetter = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($assocMapping["fieldName"]));
+        $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+            $assocMapping['fieldName']
+        );
+        $foreignEntityGetter = 'get' . $methodBaseName;
         $foreignEntities = $localEntity->$foreignEntityGetter();
 
         $htmlElements = array();
@@ -849,7 +858,10 @@ CODE;
                 if (!$foreignForeignEntity) {
                     continue;
                 }
-                $foreignEntityIdentifierGetter = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($foreignEntityIdentifierField));
+                $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                    $foreignEntityIdentifierField
+                );
+                $foreignEntityIdentifierGetter = 'get' . $methodBaseName;
                 $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->$foreignEntityIdentifierGetter();
             }
 

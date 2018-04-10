@@ -1,5 +1,4 @@
 <?php
-
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,23 +22,20 @@ namespace Doctrine\Common\Cache;
 use \Memcached;
 
 /**
- * Memcached cache driver.
- * Not implemented until doctrine 2.2, so we made it compatible with doctrine 2.0
+ * Memcached cache provider.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.2
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
- * @author  David Abdemoulaie <dave@hobodave.com>
- * @author  Nicola Tommasi <nicola.tommasi@comvation.com>
+ * @link   www.doctrine-project.org
+ * @since  2.2
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author Jonathan Wage <jonwage@gmail.com>
+ * @author Roman Borschel <roman@code-factory.org>
+ * @author David Abdemoulaie <dave@hobodave.com>
  */
-class MemcachedCache extends AbstractCache
+class MemcachedCache extends CacheProvider
 {
     /**
-     * @var Memcached
+     * @var Memcached|null
      */
     private $memcached;
 
@@ -47,6 +43,8 @@ class MemcachedCache extends AbstractCache
      * Sets the memcache instance to use.
      *
      * @param Memcached $memcached
+     *
+     * @return void
      */
     public function setMemcached(Memcached $memcached)
     {
@@ -56,7 +54,7 @@ class MemcachedCache extends AbstractCache
     /**
      * Gets the memcached instance used by the cache.
      *
-     * @return Memcached
+     * @return Memcached|null
      */
     public function getMemcached()
     {
@@ -66,15 +64,7 @@ class MemcachedCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    public function getIds()
-    {
-        return $this->memcached->getAllKeys();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _doFetch($id)
+    protected function doFetch($id)
     {
         return $this->memcached->get($id);
     }
@@ -82,15 +72,24 @@ class MemcachedCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    protected function _doContains($id)
+    protected function doFetchMultiple(array $keys)
     {
-        return (false !== $this->memcached->get($id));
+        return $this->memcached->getMulti($keys);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _doSave($id, $data, $lifeTime = 0)
+    protected function doContains($id)
+    {
+        return false !== $this->memcached->get($id)
+            || $this->memcached->getResultCode() !== Memcached::RES_NOTFOUND;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doSave($id, $data, $lifeTime = 0)
     {
         if ($lifeTime > 30 * 24 * 3600) {
             $lifeTime = time() + $lifeTime;
@@ -101,16 +100,35 @@ class MemcachedCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    protected function _doDelete($id)
+    protected function doDelete($id)
     {
-        return $this->memcached->delete($id);
+        return $this->memcached->delete($id)
+            || $this->memcached->getResultCode() === Memcached::RES_NOTFOUND;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _doFlush()
+    protected function doFlush()
     {
         return $this->memcached->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doGetStats()
+    {
+        $stats   = $this->memcached->getStats();
+        $servers = $this->memcached->getServerList();
+        $key     = $servers[0]['host'] . ':' . $servers[0]['port'];
+        $stats   = $stats[$key];
+        return array(
+            Cache::STATS_HITS   => $stats['get_hits'],
+            Cache::STATS_MISSES => $stats['get_misses'],
+            Cache::STATS_UPTIME => $stats['uptime'],
+            Cache::STATS_MEMORY_USAGE     => $stats['bytes'],
+            Cache::STATS_MEMORY_AVAILABLE => $stats['limit_maxbytes'],
+        );
     }
 }

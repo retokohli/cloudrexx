@@ -70,34 +70,63 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
     public $_currentXMLElement;
     public $_currentXMLArrayToFill;
 
+    /**
+     * Language id
+     *
+     * @var integer
+     */
+    protected $langId = null;
 
     /**
-    * PHP5 constructor
-    * @global \Cx\Core\Html\Sigma
-    * @see \Cx\Core\Html\Sigma::setErrorHandling, \Cx\Core\Html\Sigma::setVariable, initialize()
-    */
-    function __construct($administrate = false)
+     * Creates a new Teaser controller
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param boolean $administrate (optional) True for backend, false otherwise (default)
+     * @param integer $langId (optional) Language ID, if not specified FRONTEND_LANG_ID is used
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     */
+    public function __construct($administrate = false, $langId = null, &$nextUpdateDate = null)
     {
         parent::__construct();
         $this->administrate = $administrate;
 
+        $this->langId = $langId;
+        if (null === $langId) {
+            $this->langId = FRONTEND_LANG_ID;
+        }
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_initialize();
+        $this->_initialize($nextUpdateDate);
     }
 
-
-    function _initialize()
+    /**
+     * Initializes this controller
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     */
+    protected function _initialize(&$nextUpdateDate = null)
     {
-        $this->initializeTeasers();
+        $this->initializeTeasers($nextUpdateDate);
         $this->initializeTeaserFrames();
         //$this->_initializeTeaserTemplates();
         $this->initializeTeaserFrameTemplates();
     }
 
-
-    function initializeTeasers()
+    /**
+     * Loads the teasers parsed by this controller from DB
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     */
+    protected function initializeTeasers(&$nextUpdateDate = null)
     {
         global $objDatabase, $_CORELANG;
 
@@ -113,12 +142,22 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblN.teaser_show_link,
                    tblN.teaser_image_path,
                    tblN.teaser_image_thumbnail_path,
+                   tblN.startdate,
+                   tblN.enddate,
+                   tblN.allow_comments,
+                   tblN.author_id,
+                   tblN.publisher_id,
+                   tblN.enable_tags,
+                   tblN.source,
+                   tblN.url1,
+                   tblN.url2,
+                   tblN.changelog,
                    tblL.title,
                    tblL.text AS teaser_full_text,
                    tblL.teaser_text
               FROM ".DBPREFIX."module_news AS tblN
              INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
-             WHERE tblL.lang_id=".FRONTEND_LANG_ID."
+             WHERE tblL.lang_id=". contrexx_input2int($this->langId) ."
                AND tblN.teaser_frames != '' ".
               ($this->administrate == false
                 ? " AND tblN.validated='1'
@@ -136,8 +175,37 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     : " AND tblN.frontend_access_id=0 ")
                 : '')."
              ORDER BY date DESC");
+
+        $nextUpdateDate = null;
         if ($objResult !== false) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->fields['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $arrFrames = explode(';', $objResult->fields['teaser_frames']);
                 foreach ($arrFrames as $frameId) {
                     if (!isset($this->arrFrameTeaserIds[$frameId])) {
@@ -169,10 +237,9 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 } else {
                     $author = '';
                 }
-                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
                     $image = $objResult->fields['teaser_image_thumbnail_path'];
-                } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists($cx->getWebsitePath() .'/' .\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
+                } elseif (!empty($objResult->fields['teaser_image_path']) && $this->arrSettings['use_thumbnails'] && file_exists($cx->getWebsitePath() .'/' .\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
                     $image = \ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']);
                 } elseif (!empty($objResult->fields['teaser_image_path'])) {
                     $image = $objResult->fields['teaser_image_path'];
@@ -181,19 +248,32 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 }
                 $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
                 $this->arrTeasers[$objResult->fields['id']] = array(
-                    'id'                => $objResult->fields['id'],
-                    'date'              => $objResult->fields['date'],
-                    'title'             => $objResult->fields['title'],
-                    'teaser_frames'     => $objResult->fields['teaser_frames'],
-                    'redirect'          => $objResult->fields['redirect'],
-                    'ext_url'           => $extUrl,
-                    'category'          => implode(', ', contrexx_raw2xhtml($newsCategories)),
-                    'category_id'       => array_keys($newsCategories),
-                    'teaser_full_text'  => $objResult->fields['teaser_full_text'],
-                    'teaser_text'       => $objResult->fields['teaser_text'],
-                    'teaser_show_link'  => $objResult->fields['teaser_show_link'],
-                    'author'            => $author,
-                    'teaser_image_path' => $image,
+                    'id'                            => $objResult->fields['id'],
+                    'newsid'                        => $objResult->fields['id'],
+                    'date'                          => $objResult->fields['date'],
+                    'newsdate'                      => $objResult->fields['date'],
+                    'title'                         => $objResult->fields['title'],
+                    'newstitle'                     => $objResult->fields['title'],
+                    'teaser_frames'                 => $objResult->fields['teaser_frames'],
+                    'redirect'                      => $objResult->fields['redirect'],
+                    'commentactive'                 => $objResult->fields['allow_comments'],
+                    'author_id'                     => $objResult->fields['author_id'],
+                    'publisher_id'                  => $objResult->fields['publisher_id'],
+                    'enable_tags'                   => $objResult->fields['enable_tags'],
+                    'source'                        => $objResult->fields['source'],
+                    'url1'                          => $objResult->fields['url1'],
+                    'url2'                          => $objResult->fields['url2'],
+                    'changelog'                     => $objResult->fields['changelog'],
+                    'ext_url'                       => $extUrl,
+                    'category'                      => implode(', ', contrexx_raw2xhtml($newsCategories)),
+                    'category_id'                   => array_keys($newsCategories),
+                    'teaser_full_text'              => $objResult->fields['teaser_full_text'],
+                    'text'                          => $objResult->fields['teaser_full_text'],
+                    'teaser_text'                   => $objResult->fields['teaser_text'],
+                    'teaser_show_link'              => $objResult->fields['teaser_show_link'],
+                    'author'                        => $author,
+                    'teaser_image_path'             => $image,
+                    'teaser_image_thumbnail_path'   => $image,
                 );
                 $objResult->MoveNext();
             }
@@ -262,21 +342,30 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
     }
 
 
+    /**
+     * Set teaser frames
+     *
+     * @param array  $arrTeaserFrames array of teaser frame names
+     * @param string $code            code
+     */
     function setTeaserFrames($arrTeaserFrames, &$code)
     {
-        global $objDatabase;
-
         $arrTeaserFramesNames = array_flip($this->arrTeaserFrameNames);
 
         foreach ($arrTeaserFrames as $teaserFrameName) {
             $arrMatches = preg_grep('/^'.$teaserFrameName.'$/i', $arrTeaserFramesNames);
-
-            if (count($arrMatches)>0) {
-                $frameId = array_keys($arrMatches);
-                $id = $frameId[0];
+            if (empty($arrMatches)) {
+                continue;
+            }
+            if (count($arrMatches) > 0) {
+                $frameId    = array_keys($arrMatches);
+                $id         = $frameId[0];
                 $templateId = $this->arrTeaserFrames[$id]['frame_template_id'];
-                $code = str_replace("{TEASERS_".$teaserFrameName."}", $this->_getTeaserFrame($id, $templateId), $code);
-
+                $code       = str_replace(
+                    "{TEASERS_" . $teaserFrameName . "}",
+                    $this->_getTeaserFrame($id, $templateId),
+                    $code
+                );
             }
         }
     }
@@ -312,6 +401,22 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     }
 
                     if (isset($this->arrFrameTeaserIds[$id][$nr])) {
+                        if (!empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])) {
+                            $teaserUrl = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'];
+                        } else {
+                            $teaserUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'News',
+                                $this->findCmdById(
+                                    'details',
+                                    $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']
+                                ),
+                                $this->langId,
+                                array(
+                                    'newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'],
+                                    'teaserId' => $this->arrTeaserFrames[$id]['id'],
+                                )
+                            );
+                        }
                         $teaserBlockCode = str_replace('{TEASER_CATEGORY}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_DATE}', date(ASCMS_DATE_FORMAT_DATE, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
@@ -319,12 +424,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $teaserBlockCode = str_replace('{TEASER_TITLE}', contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_MORE}', $_CORELANG['TXT_READ_MORE'], $teaserBlockCode);
                         if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
-                            $teaserBlockCode = str_replace(
-                                '{TEASER_URL}',
-                                empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
-                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
-                                    : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode
-                            );
+                            $teaserBlockCode = str_replace('{TEASER_URL}', $teaserUrl, $teaserBlockCode);
                             $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- BEGIN teaser_link -->', '', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- END teaser_link -->', '', $teaserBlockCode);
@@ -336,19 +436,22 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
+
+                        $teaserBlockTpl = new \Cx\Core\Html\Sigma();
+                        $teaserBlockTpl->setTemplate(
+                            $teaserBlockCode,
+                            false
+                        );
+                        $emulatedResult = new \stdClass();
+                        $emulatedResult->fields = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]];
+                        $this->parseNewsPlaceholders(
+                            $teaserBlockTpl,
+                            $emulatedResult,
+                            $teaserUrl
+                        );
+                        $teaserBlockCode = $teaserBlockTpl->get();
                     } elseif ($this->administrate) {
-                        $teaserBlockCode = str_replace('{TEASER_CATEGORY}', 'TXT_CATEGORY', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_DATE}', 'TXT_DATE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', 'TXT_LONG_DATE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TITLE}', 'TXT_TITLE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_MORE}', $_CORELANG['TXT_READ_MORE'], $teaserBlockCode);   
-                        $teaserBlockCode = str_replace('{TEASER_URL}', 'TXT_URL', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', 'TXT_URL_TARGET', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', 'TXT_IMAGE_PATH', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TEXT}', $this->arrSettings['news_use_teaser_text'] ? 'TXT_TEXT' : '', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', 'TXT_FULL_TEXT', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_AUTHOR}', 'TEASER_AUTHOR', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_EXT_URL}', 'TEASER_EXT_URL', $teaserBlockCode);
+                        $teaserBlockCode = preg_replace('/{(NEWS|TEASER_[A-Z0-9_]+)}/', '\1', $teaserBlockCode);
                     } else {
                         $teaserBlockCode = '&nbsp;';
                     }
@@ -478,6 +581,24 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
         }
     }
 
-}
+    /**
+     * Getter for language id
+     *
+     * @return integer
+     */
+    function getLangId()
+    {
+        return $this->langId;
+    }
 
-?>
+    /**
+     * Set lang id
+     *
+     * @param integer $langId
+     */
+    function setLangId($langId)
+    {
+        $this->langId = $langId;
+    }
+
+}

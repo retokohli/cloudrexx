@@ -38,6 +38,8 @@
 namespace Cx\Core_Modules\News\Controller;
 use \Cx\Core\Json\JsonAdapter;
 
+class JsonNewsException extends \Exception {};
+
 /**
  * JsonNews
  * Json controller for news module
@@ -67,7 +69,9 @@ class JsonNews implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getAllNews');
+        return array(
+            'getAllNews'
+        );
     }
 
     /**
@@ -82,7 +86,7 @@ class JsonNews implements JsonAdapter {
      * @return Object
      */
     public function getDefaultPermissions() {
-        return null;
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false);
     }
 
     /**

@@ -72,6 +72,15 @@ class NewsLibrary
     protected $errMsg = array();
 
     /**
+     * Cached value of setting option use_thumbnails
+     *
+     * @var boolean
+     */
+    static $useThumbnails;
+
+    public $newsMetaKeys = '';
+
+    /**
      * Initializes the NestedSet object
      * which is needed to manage the news categories.
      *
@@ -143,11 +152,17 @@ class NewsLibrary
     /**
      * Generates the formated ul/li of Archive list
      * Used in the template's
-     *
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param integer $langId Language id
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
      * @return string Formated ul/li of Archive list
      */
-    public function getNewsArchiveList() {
-        $monthlyStats = $this->getMonthlyNewsStats();
+    public function getNewsArchiveList($langId = null, &$nextUpdateDate = null)
+    {
+        $monthlyStats = $this->getMonthlyNewsStats(array(), $langId, $nextUpdateDate);
 
         $html = '';
         if (!empty($monthlyStats)) {
@@ -169,26 +184,35 @@ class NewsLibrary
      * Generates the formated ul/li of categories
      * Used in the template's
      *
+     * @param integer $langId Language id
+     *
      * @return string Formated ul/li of categories
      */
-    public function getNewsCategories()
+    public function getNewsCategories($langId = null)
     {
 
         $categoriesLang = $this->getCategoriesLangData();
 
-        return $this->_buildNewsCategories($this->nestedSetRootId, $categoriesLang);
+        return $this->_buildNewsCategories($this->nestedSetRootId, $categoriesLang, $langId);
     }
 
     /**
      * Generates the formated ul/li of categories
      * Used in the template's
      *
+     * @param integer   $catId          Category id
+     * @param array     $categoriesLang Category locale
+     * @param integer   $langId         Language id
+     *
      * @return string Formated ul/li of categories
      */
-    function _buildNewsCategories($catId, $categoriesLang)
+    function _buildNewsCategories($catId, $categoriesLang, $langId = null)
     {
+        $html = '';
         if ($this->categoryExists($catId)) {
-
+            if ($langId === null) {
+                $langId = FRONTEND_LANG_ID;
+            }
             $category = $this->objNestedSet->pickNode($catId, true);
             if ($catId != $this->nestedSetRootId) {
                 $html .= "<li>";
@@ -196,14 +220,14 @@ class NewsLibrary
                 $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('News');
                 $newsUrl->setParam('category', $catId);
 
-                $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'</a>';
+                $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][$langId]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][$langId]).'</a>';
             }
 
             $subCategories = $this->objNestedSet->getChildren($catId, true);
             if (!empty($subCategories)) {
                 $html .= "<ul class='news_category_lvl_{$category['level']}'>";
                 foreach ($subCategories as $subCat) {
-                    $html .= $this->_buildNewsCategories($subCat['id'], $categoriesLang);
+                    $html .= $this->_buildNewsCategories($subCat['id'], $categoriesLang, $langId);
                 }
                 $html .= "</ul>";
             }
@@ -689,7 +713,6 @@ class NewsLibrary
         return $strMenu;
     }
 
-
     /**
      * Get Publisher dropdown options
      *
@@ -793,7 +816,6 @@ class NewsLibrary
 
         return $menu;
     }
-
 
     /**
      * Gets only the body content and deleted all the other tags
@@ -1172,19 +1194,16 @@ class NewsLibrary
             return false;
         }
         $status = true;
-        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."languages");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
+        $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+        foreach ($frontendLanguages as $language) {
+            if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
                     VALUES ("
-                        . intval($objResult->fields['id']) . ", "
-                        . intval($newsId) . ", '"
-                        . contrexx_input2db($title) . "', '"
-                        . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
-                        . contrexx_input2db($teaser_text) . "')")){
-                    $status = false;
-                }
-                $objResult->MoveNext();
+                . intval($language['id']) . ", "
+                . intval($newsId) . ", '"
+                . contrexx_input2db($title) . "', '"
+                . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
+                . contrexx_input2db($teaser_text) . "')")){
+                $status = false;
             }
         }
         return $status;
@@ -1196,9 +1215,20 @@ class NewsLibrary
         $imageLink = '';
         $source = '';
         $cx     = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        if (!isset(static::$useThumbnails)) {
+            static::$useThumbnails = false;
+            $query = 'SELECT value FROM `' . DBPREFIX . 'module_news_settings` WHERE `name` = \'use_thumbnails\'';
+            $db = $cx->getDb()->getAdoDb();
+            $objResult = $db->SelectLimit($query, 1);
+            if ($objResult !== false && $objResult->RecordCount()) {
+                static::$useThumbnails = $objResult->fields['value'];
+            }
+        }
+
         if (!empty($thumbnailSource)) {
             $source = $thumbnailSource;
-        } elseif (!empty($imageSource) && file_exists(\ImageManager::getThumbnailFilename($cx->getWebsitePath() .'/' .$imageSource))) {
+        } elseif (!empty($imageSource) && static::$useThumbnails && file_exists(\ImageManager::getThumbnailFilename($cx->getWebsitePath() .'/' .$imageSource))) {
             $source = \ImageManager::getThumbnailFilename($imageSource);
         } elseif (!empty($imageSource)) {
             $source = $imageSource;
@@ -1329,13 +1359,18 @@ class NewsLibrary
 
     /**
      * Returns the news monthly stats by the given filters
-     *
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
      * @access protected
      * @param  array     $categories      category filter
-     *
+     * @param  integer   $langId          Language id
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
      * @return array     $monthlyStats  Monthly status array
      */
-    protected function getMonthlyNewsStats($categories) {
+    protected function getMonthlyNewsStats($categories, $langId = null, &$nextUpdateDate = null)
+    {
         global $objDatabase, $_CORELANG;
 
         $categoryFilter = '';
@@ -1344,6 +1379,9 @@ class NewsLibrary
            $categoryFilter .= ' AND nc.category_id IN ('. implode(', ', contrexx_input2int($categories)) .')';
         }
 
+        if ($langId === null) {
+            $langId = FRONTEND_LANG_ID;
+        }
         $query = '  SELECT      DISTINCT(n.id)   AS id,
                                 n.date           AS date,
                                 n.teaser_image_path AS teaser_image_path,
@@ -1356,6 +1394,8 @@ class NewsLibrary
                                 n.author_id      AS author_id,
                                 n.allow_comments AS commentactive,
                                 n.redirect_new_window AS redirectNewWindow,
+                                n.startdate,
+                                n.enddate,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text
@@ -1364,7 +1404,7 @@ class NewsLibrary
                     LEFT JOIN '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id
                     WHERE       n.validated = "1"
                                 AND n.status = 1
-                                AND nl.lang_id = '.FRONTEND_LANG_ID.'
+                                AND nl.lang_id = '. contrexx_input2int($langId) .'
                                 AND nl.is_active=1
                                 AND (n.startdate <="' . date('Y-m-d H:i:s') . '" OR n.startdate="0000-00-00 00:00:00")
                                 AND (n.enddate >="' . date('Y-m-d H:i:s') . '" OR n.enddate="0000-00-00 00:00:00")
@@ -1378,9 +1418,36 @@ class NewsLibrary
 
         $objResult = $objDatabase->Execute($query);
 
+        $nextUpdateDate = null;
         if ($objResult !== false) {
             $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->field['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $filterDate = $objResult->fields['date'];
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);
@@ -1512,7 +1579,6 @@ class NewsLibrary
 
     }
 
-
     /**
      * Generate the next and previous news links from the current news
      *
@@ -1523,6 +1589,7 @@ class NewsLibrary
     public function parseNextAndPreviousLinks(\Cx\Core\Html\Sigma $objTpl)
     {
         global $objDatabase, $_ARRAYLANG;
+
         $parentBlock    = 'news_details_previous_next_links';
         $previousLink   = 'news_details_previous_link';
         $nextLink       = 'news_details_next_link';
@@ -2004,7 +2071,7 @@ class NewsLibrary
 
                 $newstitle = $currentRelatedDetails['title'];
                 $redirectNewWindow = !empty($currentRelatedDetails['redirect']) && !empty($currentRelatedDetails['redirectNewWindow']);
-                $htmlLink = self::parseLink(
+                $htmlLink  = self::parseLink(
                     $newsUrl,
                     $newstitle,
                     contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'),
@@ -2165,12 +2232,13 @@ class NewsLibrary
         }
         return $tagList;
     }
+
     /**
-     * Get the news id's and tags using news id (and|or) tag
+     * Get the news IDs and tags using news id (and|or) tag
      *
      * @global object $objDatabase
      * @param integer $newsId News id to get the corresponding related tags
-     * @param string  $tag    Tag string to search the corresponding tags
+     * @param array   $tags   Tag string to search the corresponding tags
      *
      * @return boolean|array Array List of News Related tags
      */
@@ -2222,6 +2290,7 @@ class NewsLibrary
             'newsIds' => $newsIdList
         );
     }
+
     /**
      * Save new tag into database
      *
@@ -2248,6 +2317,7 @@ class NewsLibrary
         $this->errMsg[] = $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'];
         return false;
     }
+
     /**
      * Manipulating the submitted tags from the news Entry form.
      * i)   Adding the new tag if the tag is not availbale already.
@@ -2328,6 +2398,7 @@ class NewsLibrary
         }
         return true;
     }
+
     /**
      * Parsing the News tags.
      *
@@ -2394,11 +2465,13 @@ class NewsLibrary
             }
         }
     }
+
     /**
      * Increment the tags viewing count
      *
      * @global object $objDatabase
-     * @param integer $tagId Tag id
+     * @param array $tagIds tag ids
+     * @return null
      */
     public function incrementViewingCount($tagIds = array())
     {
@@ -2412,9 +2485,10 @@ class NewsLibrary
             'UPDATE `'
             . DBPREFIX . 'module_news_tags`
             SET `viewed_count` = `viewed_count`+1
-            WHERE `id` IN (' . implode(', ', $tagIds) . ')'
+            WHERE `id` IN (' . implode(', ', contrexx_input2int($tagIds)) . ')'
         );
     }
+
     /**
      * Retruns most Frequent(Searched|Viewed) tag details.
      *
@@ -2433,6 +2507,7 @@ class NewsLibrary
             ORDER BY `viewed_count` DESC LIMIT 1';
         return $objDatabase->GetRow($query);
     }
+
     /**
      * Retruns most used tag details
      *
@@ -2458,6 +2533,7 @@ class NewsLibrary
             'maxUsedCount' => $maxUsedTag['maxUsedCount']
         );
     }
+
     /**
      * Register the JS code for the given input field ID
      *
@@ -3082,7 +3158,7 @@ EOF;
 
             $objTpl->setVariable(array(
                 'TXT_NEWS_REDIRECT_INSTRUCTION' => $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'],
-                'NEWS_REDIRECT_URL'             => contrexx_raw2encodedUrl($redirect),
+                'NEWS_REDIRECT_URL'             => $redirect,
                 'NEWS_REDIRECT_NAME'            => contrexx_raw2xhtml($redirectName),
             ));
             if ($objTpl->blockExists('news_redirect')) {
@@ -3139,5 +3215,142 @@ EOF;
                 $objTpl->hideBlock('news_comments_count');
             }
         }
+    }
+
+    /**
+     * Get all the News global placeholder names
+     *
+     * @return array
+     */
+    public function getNewsGlobalPlaceholderNames()
+    {
+        $placeholders = array(
+            'TOP_NEWS_FILE',
+            'NEWS_CATEGORIES',
+            'NEWS_ARCHIVES',
+            'NEWS_RECENT_COMMENTS_FILE'
+        );
+
+        // Get Headlines placeholders
+        for ($i = 1; $i <= 10; $i++) {
+            $id = '';
+            if ($i > 1) {
+                $id = $i;
+            }
+            $placeholders[] = 'HEADLINES' . $id . '_FILE';
+        }
+
+        // Set news teasers
+        $teaser      = new Teasers();
+        $teaserNames = array_flip($teaser->arrTeaserFrameNames);
+        if (empty($teaserNames)) {
+            return $placeholders;
+        }
+
+        foreach ($teaserNames as $teaserName) {
+            $placeholders[] = 'TEASERS_' . $teaserName;
+        }
+
+        return $placeholders;
+    }
+
+    public function getTagCloudContent() {
+        // STEP 1: Fetch base data
+
+        $query = '
+            SELECT
+                `tags`.`id`,
+                `tags`.`tag`,
+                `tags`.`viewed_count`,
+                COUNT(`newstags`.`news_id`) AS `usages`
+            FROM
+                `' . DBPREFIX . 'module_news_tags` AS `tags`
+            JOIN
+                `' . DBPREFIX . 'module_news_rel_tags` AS `newstags`
+            ON
+                `newstags`.`tag_id` = `tags`.`id`
+            GROUP BY
+                `tags`.`id`
+            ORDER BY
+                `tags`.`tag`
+        ';
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $result = $cx->getDb()->getAdoDb()->query(
+            $query
+        );
+
+        if (!$result) {
+            return;
+        }
+
+        // STEP 2: Count sums
+
+        $tagData = array();
+        while (!$result->EOF) {
+            $tagData[] = array(
+                'name' => $result->fields['tag'],
+                'viewed_count' => $result->fields['viewed_count'],
+                'usages' => $result->fields['usages'],
+            );
+            $result->MoveNext();
+        }
+        // TODO: Check if those can be generated by query
+        $totalCount = array_sum(array_column($tagData, 'viewed_count'));
+        $totalUsages = array_sum(array_column($tagData, 'usages'));
+
+        // STEP 3: Calculate tag weight values
+
+        $viewCountFactor = 1;
+        if ($totalCount) {
+            $viewCountFactor = 100 / $totalCount;
+        }
+        $usagesFactor = 1;
+        if ($totalUsages) {
+            $usagesFactor = 10 / $totalUsages;
+        }
+        $tagValues = array();
+        // TODO: Check if those can be generated by query
+        foreach ($tagData as $tag) {
+            $tagValues[$tag['name']] = 1 +
+                $tag['viewed_count'] * $viewCountFactor +
+                $tag['usages'] * $usagesFactor;
+        }
+
+        // calculate meta infos to tag values
+        // TODO: This could be calculated in query
+        $lowestValue = min($tagValues);
+        $highestValue = max($tagValues);
+        $highestOffset = $highestValue - $lowestValue;
+
+        // STEP 4: Generate output
+
+        $cssClasses = array(
+            'newsTagCloudSmallest', // first quarter of tags
+            'newsTagCloudSmall', // second quarter of tags
+            'newsTagCloudMedium', // third quarter of tags
+            'newsTagCloudLarge', // fourth quarter of tags
+            'newsTagCloudLargest', // tag(s) with highest value
+        );
+        
+        $template = new \Cx\Core\Html\Sigma(
+            $cx->getCodeBaseCoreModulePath() . '/News/View/Template/Frontend'
+        );
+        $template->loadTemplateFile('TagCloud.html');
+        foreach ($tagValues as $tag => $value) {
+            // move tag values to start at 0
+            $value = $value - $lowestValue;
+            $cssClassIndex = 4;
+            if ($value < $highestOffset) {
+                $cssClassIndex = floor($value / 4);
+            }
+            $template->setVariable(array(
+                'TAG' => $tag,
+                'WEIGHT_CLASS' => $cssClasses[$cssClassIndex],
+            ));
+            $template->parse('tag');
+        }
+
+        return $template;
     }
 }

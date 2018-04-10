@@ -61,9 +61,16 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTemplate);
     }
 
-    function getRecentNewsComments()
+    /**
+     * @todo This does not respect scheduled publishing!
+     */
+    function getRecentNewsComments($langId = 0)
     {
         global $objDatabase;
+
+        if (empty($langId)) {
+            $langId = \Env::get('init')->getDefaultFrontendLangId();
+        }
 
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
 
@@ -94,7 +101,7 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         LEFT JOIN
                               `".DBPREFIX."module_news_locale` AS nLocale
                         ON
-                            `news`.id = `nLocale`.news_id AND `nLocale`.lang_id = ". FRONTEND_LANG_ID ."
+                            `news`.id = `nLocale`.news_id AND `nLocale`.lang_id = ". $langId ."
                         WHERE
                             `news`.status = 1
                         AND

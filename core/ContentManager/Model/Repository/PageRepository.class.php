@@ -91,7 +91,7 @@ class PageRepository extends EntityRepository {
      */
     public function findAll()
     {
-        return $this->findBy(array(), true);
+        return $this->findBy(array(), null, null, null, true);
     }
 
     public function find($id, $lockMode = 0, $lockVersion = NULL, $useResultCache = true) {
@@ -106,7 +106,7 @@ class PageRepository extends EntityRepository {
      * @return array
      * @override
      */
-    public function findBy(array $criteria, $inactive_langs = false)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null, $inactive_langs = false)
     {
         $activeLangs = \FWLanguage::getActiveFrontendLanguages();
 
@@ -678,13 +678,22 @@ class PageRepository extends EntityRepository {
             $path = substr($path, 1);
         }
         $parts = explode('/', $path);
-        $lang = \FWLanguage::getLanguageIdByCode($parts[0]);
+        $lang = false;
+        if ($search_mode == self::SEARCH_MODE_PAGES_ONLY) {
+            if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                $lang = \FWLanguage::getLanguageIdByCode($parts[0]);
+            } else {
+                $lang = \FWLanguage::getDefaultLangId();
+            }
+        }
         // let's see if path starts with a language (which it should)
         if ($lang !== false) {
             if ($search_mode != self::SEARCH_MODE_PAGES_ONLY) {
                 return false;
             }
-            unset($parts[0]);
+            if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                unset($parts[0]);
+            }
         } else {
             if ($search_mode != self::SEARCH_MODE_ALIAS_ONLY) {
                 return false;
@@ -694,7 +703,7 @@ class PageRepository extends EntityRepository {
             $pages = $this->findBy(array(
                 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                 'slug' => $parts[0],
-            ), true);
+            ), null, null, null, true);
             $page = null;
             if (count($pages) == 1) {
                 $page = $pages[0];
@@ -854,6 +863,7 @@ class PageRepository extends EntityRepository {
 
 // TODO: basically the method \Cx\Core\ContentManager\Model\Entity\Page::cutTarget() would provide us a ready to use $crit array
 //       Check if we could directly use the array from cutTarget() and implement a public method to cutTarget()
+        $sourcePage = $page;
         $nodeId = $page->getTargetNodeId();
         $module = $page->getTargetModule();
         $cmd    = $page->getTargetCmd();
@@ -873,7 +883,7 @@ class PageRepository extends EntityRepository {
             $nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
             $node = $nodeRepository->find($nodeId);
             if(!$node) {
-                throw new PageRepositoryException('No target page found!');
+                throw new PageRepositoryException('No target page found for Node-ID: ' . $nodeId . ' of Page-ID:' . $sourcePage->getId() . ' with Slug:' . $sourcePage->getSlug());
             }
             $page = $node->getPage($langId);
         }

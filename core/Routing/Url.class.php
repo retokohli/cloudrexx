@@ -90,7 +90,7 @@ class Url {
      */
     protected $path = null;
     /**
-     * Virtual language directory, like 'de' or 'en'
+     * Virtual language directory, like 'de', 'en' or 'en-GB'
      * @var string
      */
     protected $langDir = '';
@@ -135,6 +135,12 @@ class Url {
     protected $fragment = '';
 
     /**
+     * Holds the cache for Url::getSystemPortByServiceName()
+     * @var array
+     */
+    protected static $systemInternetServiceProtocolPorts = array();
+
+    /**
      * Initializes $domain, $protocol, $port and $path.
      * @param string $url http://example.com/Test
      * @param bool $replacePorts - indicates if we need to replace ports with default ones
@@ -163,7 +169,7 @@ class Url {
             $this->port = $this->getDefaultPort();
         }
         if (!$this->port) {
-            $this->port = getservbyname($this->protocol, 'tcp');
+            $this->port = static::getSystemPortByServiceName($this->protocol, 'tcp');
         }
         $path = '';
         if (isset($data['path'])) {
@@ -703,10 +709,23 @@ class Url {
             $url = new static($url);
         }
 
+        // build regexp to identify system files
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $systemFolders = $cx->getSystemFolders();
+        array_walk($systemFolders, function(&$systemFolder) {
+            $systemFolder = preg_quote($systemFolder, '/');
+        });
+        $systemFolderRegexp = '/^'.
+            preg_quote($cx->getWebsiteOffsetPath(), '/') .
+            '(' . join('|', $systemFolders) . ')($|[#?\/])/';
+
         // disable virtual language dir if not in Backend
-        if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1 && $url->getProtocol() != 'file'){
+        if (
+            preg_match($systemFolderRegexp, '/' . $url->getPath()) < 1 && 
+            $url->getProtocol() != 'file'
+        ) {
             $url->setMode('frontend');
-        }else{
+        } else {
             $url->setMode('backend');
         }
         return $url;
@@ -747,6 +766,7 @@ class Url {
      * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
+     * @throws \Cx\Core\Routing\UrlException If no page was found
      * @return \Cx\Core\Routing\Url Url object for the supplied module, cmd and lang
      */
     public static function fromNodeId($nodeId, $lang = '', $parameters = array(), $protocol = '') {
@@ -758,6 +778,9 @@ class Url {
             'node' => $nodeId,
             'lang' => $lang,
         ));
+        if (!$page) {
+            throw new UrlException('Unable to find a page with Node-ID:' . $nodeId . ' in language:' . $lang . '!');
+        }
         return static::fromPage($page, $parameters, $protocol);
     }
 
@@ -853,7 +876,7 @@ class Url {
             $relativeUrl .= $this->path . (empty($this->fragment) ? '' : '#' . $this->fragment);
             return $relativeUrl;
         }
-        $defaultPort = getservbyname($this->protocol, 'tcp');
+        $defaultPort = static::getSystemPortByServiceName($this->protocol, 'tcp');
         $portPart = '';
         if ($this->port && (!$defaultPort || $this->port != $defaultPort || $forcePort)) {
             $portPart = ':' . $this->port;
@@ -862,6 +885,28 @@ class Url {
             $this->domain .
             $portPart .
             $this->toString(false);
+    }
+
+    /**
+     * Get port number associated with an Internet service and protocol.
+     *
+     * This method is an alias to getservbyname(), whereas the result will be
+     * cached for later usages.
+     *
+     * @param   string  $service    The Internet service name, as a string.
+     * @param   string  $protocol   Either "tcp" or "udp" (in lowercase).
+     * @return  int The Internet port which corresponds to service for the
+     *              specified protocol as per /etc/services.
+     */
+    public static function getSystemPortByServiceName($service, $protocol) {
+        if (!isset(static::$systemInternetServiceProtocolPorts[$service])) {
+            static::$systemInternetServiceProtocolPorts[$service] = array();
+        }
+        if (!isset(static::$systemInternetServiceProtocolPorts[$service][$protocol])) {
+            static::$systemInternetServiceProtocolPorts[$service][$protocol] = getservbyname($service, $protocol);
+        }
+
+        return static::$systemInternetServiceProtocolPorts[$service][$protocol];
     }
 
     /**

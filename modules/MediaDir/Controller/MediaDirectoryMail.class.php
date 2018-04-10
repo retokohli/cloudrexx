@@ -100,7 +100,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
 
     function loadTemplate()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $objRSLoadTemplate = $objDatabase->Execute("SELECT
                                                         title, content, recipients
@@ -109,7 +109,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
                                                     WHERE
                                                         action_id='".$this->intAction."'
                                                     AND
-                                                        lang_id='".intval($_LANGID)."'
+                                                        lang_id='" . static::getOutputLocale()->getId() . "'
                                                     AND
                                                         active='1'
                                                     LIMIT 1");
@@ -142,7 +142,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
 
     function parsePlaceholders()
     {
-        global $objDatabase, $_LANGID, $_CONFIG;
+        global $objDatabase, $_CONFIG;
 
         if($this->objUser != false) {
             $strUserNick = $this->objUser->getUsername();
@@ -168,7 +168,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
                                                         ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
                                                     WHERE (rel_inputfield.`entry_id`='".$this->intEntryId."')
                                                     AND (rel_inputfield.`field_id` = (".$strRelQuery."))
-                                                    AND (rel_inputfield.`lang_id` = '".$_LANGID."')
+                                                    AND (rel_inputfield.`lang_id` = '" . static::getOutputLocale()->getId() . "')
                                                     AND (rel_inputfield.`value` != '')
                                                     GROUP BY value
                                                     ");
@@ -177,19 +177,19 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
-        if($objEntry->checkPageCmd('detail'.intval($intEntryFormId))) {
-            $strDetailCmd = 'detail'.intval($intEntryFormId);
-        } else {
-            $strDetailCmd = 'detail';
-        }
+        $objEntry->getEntries($this->intEntryId);
+
+        $strDetailUrl = '';
+        try {
+            $strDetailUrl = $objEntry->getDetailUrl(true)->toString();
+        } catch (MediaDirectoryEntryException $e) {}
 
         $strProtocol = ASCMS_PROTOCOL;
         $strDomain = $_CONFIG['domainUrl'].\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $strDate = date(ASCMS_DATE_FORMAT);
-        $strEntryLink = urldecode($strProtocol."://".$strDomain.'/index.php?section='.$this->moduleName.'&cmd='.$strDetailCmd.'&eid='.$this->intEntryId);
 
         $arrPlaceholder = array('[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[LINK]]', '[[URL]]', '[[DATE]]');
-        $arrReplaceContent = array($strUserNick, $strUserFirstname, $strUserLastname, $strEntryTitle, $strEntryLink, $strDomain, $strDate);
+        $arrReplaceContent = array($strUserNick, $strUserFirstname, $strUserLastname, $strEntryTitle, $strDetailUrl, $strDomain, $strDate);
 
         for ($x = 0; $x < 7; $x++) {
             $this->strTitle = str_replace($arrPlaceholder[$x], $arrReplaceContent[$x], $this->strTitle);
@@ -205,7 +205,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
     function sendMail()
     {
         global $_CONFIG;
-
+        
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
         $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
