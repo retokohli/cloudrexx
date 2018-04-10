@@ -180,7 +180,7 @@ class ViewGenerator {
                 $this->removeEntry($entityWithNS);
             }
         } catch (\Exception $e) {
-            \Message::add($e->getMessage());
+            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
             return;
         }
     }
@@ -263,8 +263,9 @@ class ViewGenerator {
         // as property to the object
         foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
-            $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
-            $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
+            $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($name);
+            $fieldSetMethodName = 'set' . $methodBaseName;
+            $fieldGetMethodName = 'get' . $methodBaseName;
             if (
                 isset($this->options['fields']) &&
                 isset($this->options['fields'][$name]) &&
@@ -352,6 +353,9 @@ class ViewGenerator {
             // case a) was open in form directly
             $firstOffset = str_replace('\\', '_', strtolower($associationMapping['sourceEntity']));
             $secondOffset = $associationMapping['fieldName'];
+            $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                $associationMapping['fieldName']
+            );
             if (isset($entityData[$secondOffset])) {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
@@ -359,7 +363,7 @@ class ViewGenerator {
                         $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $entityData[$secondOffset],
                     ),
                     $entity,
-                    'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
+                    'set' . $methodBaseName
                 );
                 continue;
             }
@@ -381,7 +385,7 @@ class ViewGenerator {
                         $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $foreignEntityData[$secondOffset],
                     ),
                     $entity,
-                    'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
+                    'set' . $methodBaseName
                 );
             }
         }
@@ -579,7 +583,7 @@ class ViewGenerator {
                 if (isset($params['vg_increment_number'])) {
                     \Html::stripUriParam($actionUrl, 'vg_increment_number');
                 }
-                $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />';
+                $addBtn = '<br /><br /><input type="button" name="addEntity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />';
             }
             $template->setVariable('ADD_BUTTON', $addBtn);
             if (!count($renderObject) || !count(current($renderObject))) {
@@ -743,7 +747,11 @@ class ViewGenerator {
         }
         $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($entityClassWithNS != 'array') {
-            $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
+            try {
+                $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
+            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+                return;
+            }
             $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
             if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
                 $this->setProperCancelUrl('add');
@@ -766,20 +774,25 @@ class ViewGenerator {
                     }
                     $renderArray[$field] = '';
                 }
-                // load single-valued-associations
-                $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
+                // This is necessary to load default values set by constructor
+                $this->object = new $entityClassWithNS(); 
+                $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
-                    if (   \Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
-                        && in_array('set'.ucfirst($field), $classMethods)
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($field);
+                    if (
+                        $entityObject->isSingleValuedAssociation($field) &&
+                        in_array('set' . $methodBaseName, $classMethods)
                     ) {
                         if ($entityObject->getFieldValue($this->object, $field)) {
                             $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
                             continue;
                         }
-                        $renderArray[$field]= new $associationMapping['targetEntity']();
-                    } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
-                        $renderArray[$field]= new $associationMapping['targetEntity']();
+                        $renderArray[$field] = new $associationMapping['targetEntity']();
+                    } else if (
+                        $entityObject->isCollectionValuedAssociation($field)
+                    ) {
+                        $renderArray[$field] = new $associationMapping['targetEntity']();
                     }
                 }
             } elseif ($entityId != 0 && $this->object->entryExists($entityId)) { // load edit entry form
@@ -815,15 +828,18 @@ class ViewGenerator {
 
                 // load single-valued-associations
                 // this is used for those object fields that are associations, but no object has been assigned to yet
-                $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
+                $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
-                    if (!empty($renderArray[$field])) {
-                        if (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
-                            $renderArray[$field] = new $associationMapping['targetEntity']();
-                        }
-                    } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
-                        && in_array('set'.ucfirst($field), $classMethods)
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($field);
+                    if (
+                        (
+                            $entityObject->isSingleValuedAssociation($field) &&
+                            in_array('set' . $methodBaseName, $classMethods)
+                        ) || (
+                            $entityObject->isCollectionValuedAssociation($field) &&
+                            !empty($renderArray[$field])
+                        )
                     ) {
                         $renderArray[$field] = new $associationMapping['targetEntity']();
                     }
@@ -943,6 +959,7 @@ class ViewGenerator {
         // this array is used to store all oneToMany associated entities, because we need to persist them for doctrine,
         // but we can not persist them before the main entity, so we need to buffer them
         $associatedEntityToPersist = array ();
+        $deletedEntities = array();
         foreach ($associationMappings as $name => $value) {
 
             /* if we can not find the class name or the function to save the association we skip the entry, because there
@@ -979,13 +996,18 @@ class ViewGenerator {
                     // if there are any entries which the user wants to delete, we delete them here
                     if (isset($entityData['delete']) && $entityData['delete'] == 1) {
                         $em->remove($associatedEntity);
+                        $deletedEntities[] = $associatedEntity;
                     }
 
                     // save the "n" associated class data to its class
                     $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData, $entityWithNS);
 
                     // Linking 1: link the associated entity to the main entity for doctrine
-                    $methodName = 'add' . str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($name);
+                    $methodBaseNameSingular = \Doctrine\Common\Inflector\Inflector::singularize(
+                        $methodBaseName
+                    );
+                    $methodName = 'add' . $methodBaseNameSingular;
                     if (!in_array($methodName, $classMethods)) {
                         \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'], $name, $methodName), \Message::CLASS_ERROR);
                         continue;
@@ -994,9 +1016,12 @@ class ViewGenerator {
 
                     // Linking 2: link the main entity to its associated entity. This should normally be done by
                     // 'Linking 1' but because not all components have implemented this, we do it here by ourselves
-                    $method = 'set' . ucfirst($value["mappedBy"]);
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                        $value['mappedBy']
+                    );
+                    $method = 'set' . $methodBaseName;
                     if (method_exists($associatedEntity, $method)) {
-                        $associatedEntity->{$method}($entity);
+                        $associatedEntity->$method($entity);
                     }
 
                     // buffer entity, so we can persist it later
@@ -1035,6 +1060,9 @@ class ViewGenerator {
                 // now we can persist the associated entities. We need to do this, because otherwise it will fail,
                 // if yaml does not contain a cascade option
                 foreach ($associatedEntityToPersist as $associatedEntity) {
+                    if (in_array($associatedEntity, $deletedEntities)) {
+                        continue;
+                    }
                     $em->persist($associatedEntity);
                 }
                 $em->flush();
@@ -1099,7 +1127,8 @@ class ViewGenerator {
                 continue;
             }
             $mainEntity = $pageRepo->find($id);
-            $associatedEntities = $mainEntity->{'get'.preg_replace('/_([a-z])/', '\1', ucfirst($mapping))}();
+            $getMethod = 'get' . \Doctrine\Common\Inflector\Inflector::classify($mapping);
+            $associatedEntities = $mainEntity->$getMethod();
             foreach ($associatedEntities as $associatedEntity) {
                 $em->remove($associatedEntity);
             }

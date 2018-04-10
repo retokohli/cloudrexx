@@ -33,7 +33,7 @@ DEFAULT_CONFIG=(
     ["port"]=80
     ["hostname"]=""
     ["php-version"]=""
-    ["db-image"]="mariadb:5"
+    ["db-image"]="mariadb:10.1"
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
     ["db-name"]="dev"
     ["db-pass"]="123456"
@@ -43,7 +43,7 @@ DEFAULT_CONFIG=(
 ARGUMENTS=(
     ["port"]=80
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
-    ["db-image"]="mariadb:5"
+    ["db-image"]="mariadb:10.1"
     ["source-repo"]="https://github.com/Cloudrexx/cloudrexx.git"
     ["source-branch"]="master"
     ["scripts-repo"]="https://github.com/Cloudrexx/scripts.git"
@@ -310,7 +310,8 @@ Synopsis
 Available options are:
     --web               Shows the log of the web docker container (Apache)
     --request           Shows the log of the last request
-    --clear-usercache   Clears the user cache"
+    --clear-usercache   Clears the user cache
+    --follow            Follows the log"
             ;;
         *)
             echo "Executes commands for Cloudrexx installations.
@@ -798,7 +799,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             set_config_array
             ;;
         shell)
-            dockerexec exec -ti "<web-container>" bash
+            dockerexec exec -ti --user www-data "<web-container>" bash
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -862,6 +863,7 @@ function get_config_array {
         local working_directory
         working_directory=$(get_real_pwd)
         working_directory=${working_directory//" "/""}
+        working_directory=${working_directory//"_"/""}
         working_directory=${working_directory,,}
         CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
@@ -880,7 +882,11 @@ function get_config_array {
         CONFIG["php-image"]=${DEFAULT_CONFIG["php-image"]}
     fi
     if [[ "${CONFIG["db-image"]}" == "" ]]; then
-        CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
+        if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
+            CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
+        else
+            CONFIG["db-image"]="mariadb:5"
+        fi
     fi
     if [[ "${CONFIG["db-host"]}" == "" ]]; then
         CONFIG["db-host"]=${DEFAULT_CONFIG["db-host"]}
@@ -989,7 +995,7 @@ function phpexec {
                 echo "Environment not running!"
             fi
         else
-            dockerexec exec -ti "<web-container>" php index.php "$@"
+            dockerexec exec -ti --user www-data "<web-container>" php index.php "$@"
         fi
     else
         php index.php "$@"
@@ -1017,8 +1023,7 @@ function internal_dockerexec {
         ARGS+=("$index")
     done
     if read -r -t 0; then
-        data=$(cat /dev/stdin)
-        echo "$data" | docker "${ARGS[@]}"
+        cat /dev/stdin | docker "${ARGS[@]}"
     else
         docker "${ARGS[@]}"
     fi
@@ -1170,7 +1175,10 @@ case "${COMMANDS[0]}" in
             dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
-            grep "$(tac tmp/log/dbg.log | grep -m1 -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
+            grep "$(tac tmp/log/dbg.log | grep -m1 -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
+            exit
+        elif [[ ${ARGUMENTS["follow"]} ]]; then
+            tail -f -n0 tmp/log/dbg.log
             exit
         elif [[ ${ARGUMENTS["clear-usercache"]} ]]; then
             dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'

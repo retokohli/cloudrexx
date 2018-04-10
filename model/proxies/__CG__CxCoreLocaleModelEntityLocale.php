@@ -244,6 +244,28 @@ class Locale extends \Cx\Core\Locale\Model\Entity\Locale implements \Doctrine\OR
     /**
      * {@inheritDoc}
      */
+    public function addLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addLocale', array($locales));
+
+        return parent::addLocale($locales);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeLocale', array($locales));
+
+        return parent::removeLocale($locales);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function addLocales(\Cx\Core\Locale\Model\Entity\Locale $locales)
     {
 
@@ -349,6 +371,28 @@ class Locale extends \Cx\Core\Locale\Model\Entity\Locale implements \Doctrine\OR
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSourceLanguage', array());
 
         return parent::getSourceLanguage();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addFrontend(\Cx\Core\View\Model\Entity\Frontend $frontends)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addFrontend', array($frontends));
+
+        return parent::addFrontend($frontends);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeFrontend(\Cx\Core\View\Model\Entity\Frontend $frontends)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeFrontend', array($frontends));
+
+        return parent::removeFrontend($frontends);
     }
 
     /**

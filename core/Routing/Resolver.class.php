@@ -92,7 +92,7 @@ class Resolver {
 
     /**
      * Remembers if we've come across a redirection while resolving the URL.
-     * This allow to properly redirect via 302.
+     * This allow to properly redirect.
      * @var boolean
      */
     protected $isRedirection = false;
@@ -146,7 +146,7 @@ class Resolver {
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET
      * @param array $fallbackLanguages (languageId => fallbackLanguageId)
-     * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
+     * @param boolean $forceInternalRedirection does not redirect for internal redirections if set to true.
      *                this is used mainly for testing currently.
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
@@ -161,7 +161,7 @@ class Resolver {
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET
      * @param array $fallbackLanguages (languageId => fallbackLanguageId)
-     * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
+     * @param boolean $forceInternalRedirection does not redirect for internal redirections if set to true.
      *                this is used mainly for testing currently.
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
@@ -231,6 +231,10 @@ class Resolver {
 
         // used for LinkGenerator
         define('FRONTEND_LANG_ID', $this->lang);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getDb()->getTranslationListener()->setTranslatableLocale(
+            \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+        );
         // used to load template file
         \Env::get('init')->setFrontendLangId($this->lang);
 
@@ -260,7 +264,6 @@ class Resolver {
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
-                                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                                 $sessionObj = $cx->getComponent('Session')->getSession();
                             }
                             $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
@@ -533,9 +536,10 @@ class Resolver {
             // TODO: Cache this redirect. This is not done yet since we would
             // need to drop the complete page cache (since we don't know which
             // is the correct cache file for this redirect)
-            header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $target);
-            header('Connection: close');
+            header('Location: ' . $target, true, 301);
+            if (!$this->page->isTargetInternal()) {
+                header('Connection: close');
+            }
             exit;
         }
 
@@ -552,13 +556,10 @@ class Resolver {
             }
             // set query params (like /de/alias1?foo=bar)
             $correctUrl->setParams($this->url->getParamArray());
-            // 301 redirect
             // TODO: Cache this redirect. This is not done yet since we would
             // need to drop the complete page cache (since we don't know which
             // is the correct cache file for this redirect)
-            header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $correctUrl->toString());
-            header('Connection: close');
+            header('Location: ' . $correctUrl->toString(), true, 301);
             exit();
         }
         return $this->page;
@@ -737,14 +738,15 @@ class Resolver {
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
                 $this->resolvePage(true);
-            } else { //external target - redirect via HTTP 302
+            } else { //external target - redirect via HTTP redirect
                 if (\FWValidator::isUri($target)) {
                     $this->headers['Location'] = $target;
                     $emptyString = '';
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-                    header('Location: ' . $target);
+                    header('Location: ' . $target, true, 301);
+                    header('Connection: close');
                     exit;
                 } else {
                     if ($target[0] == '/') {
@@ -767,13 +769,13 @@ class Resolver {
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-                    header('Location: ' . $target);
+                    header('Location: ' . $target, true, 301);
                     exit;
                 }
             }
         }
 
-        //if we followed one or more redirections, the user shall be redirected by 302.
+        //if we followed one or more redirections, the user shall be redirected.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
             $target = $this->page->getURL($this->pathOffset, array());
@@ -783,7 +785,7 @@ class Resolver {
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-            header('Location: ' . $target);
+            header('Location: ' . $target, true, 301);
             exit;
         }
 

@@ -1207,9 +1207,10 @@ class InitCMS
      *  See {@see getJavascript_activetab()} for details, and
      *  {@see \Cx\Core\Setting\Controller\Setting::show()} and {@see \Cx\Core\Setting\Controller\Setting::show_external()}
      *  for implementations.
+     * @param boolean $force (optional) Wheter to force a non-empty return value, default false
      * @return  string            The HTML language dropdown menu code
      */
-    function getUserFrontendLangMenu()
+    function getUserFrontendLangMenu($force = false)
     {
         global $_ARRAYLANG;
 
@@ -1220,27 +1221,15 @@ class InitCMS
         }
 
         $action = CONTREXX_DIRECTORY_INDEX;
-        $command = isset($_REQUEST['cmd']) ? contrexx_input2raw($_REQUEST['cmd']) : '';
+        if ($force) {
+            $command = 'force';
+        } else {
+            $command = isset($_REQUEST['cmd']) ? contrexx_input2raw($_REQUEST['cmd']) : '';
+        }
         switch ($command) {
-            /*case 'xyzzy':
-                // Variant 1:  Use selected GET parameters only
-                // Currently unused, but this could be extended by a few required
-                // parameters and might prove useful for some modules.
-                $query_string = '';
-                // Add more as needed
-                $arrParameter = array('cmd', 'act', 'tpl', 'key', );
-                foreach ($arrParameter as $parameter) {
-                    $value = (isset($_GET[$parameter])
-                      ? $_GET[$parameter] : null);
-                    if (isset($value)) {
-                        $query_string .= "&$parameter=".contrexx_input2raw($value);
-                    }
-                }
-                Html::replaceUriParameter($action, $query_string);
-                // The dropdown is built below
-                break;*/
             case 'Shop':
             case 'country':
+            case 'force':
                 // Variant 2:  Use any (GET) request parameters
                 // Note that this is generally unsafe, as most modules/methods do
                 // not rely on posted data only!

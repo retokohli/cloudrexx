@@ -342,7 +342,7 @@ EOF;
             'module' => contrexx_addslashes($strPageSection),
             'cmd' => contrexx_addslashes($strPageCmd),
             'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-            'lang' => intval(FRONTEND_LANG_ID),
+            'lang' => static::getOutputLocale()->getId(),
         ));
 
         if (count($pages)) {

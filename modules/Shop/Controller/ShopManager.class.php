@@ -3777,6 +3777,20 @@ if ($test === NULL) {
             ));
         }
         self::$objTemplate->parse('discountName');
+        self::$objTemplate->setCurrentBlock('discountType');
+        self::$objTemplate->setVariable(array(
+            'SHOP_DISCOUNT_GROUP_TYPE_OPTIONS' =>
+            \Html::getRadioGroup(
+                'discountGroupType',
+                array(
+                    $_ARRAYLANG['TXT_YES'],
+                    $_ARRAYLANG['TXT_NO']
+                ),
+                Discount::isDiscountCumulative($id)
+            )
+        ));
+        self::$objTemplate->touchBlock('discountType');
+        self::$objTemplate->parse('discountType');
         self::$objTemplate->setCurrentBlock('discountRate');
         if (isset($arrDiscountRates)) {
             $arrDiscountRates = array_reverse($arrDiscountRates, true);
@@ -3813,13 +3827,14 @@ if ($test === NULL) {
     {
         if (!isset($_POST['discountId'])) return true;
         $discountId = intval($_POST['discountId']);
+        $discountGroupType = contrexx_input2int($_POST['discountGroupType']);
         $discountGroupName = contrexx_input2raw($_POST['discountGroupName']);
         $discountGroupUnit = contrexx_input2raw($_POST['discountGroupUnit']);
         $arrDiscountCount = contrexx_input2int($_POST['discountCount']);
         $arrDiscountRate = contrexx_input2float($_POST['discountRate']);
         return Discount::storeDiscountCount(
-            $discountId, $discountGroupName, $discountGroupUnit,
-            $arrDiscountCount, $arrDiscountRate
+            $discountId, $discountGroupType, $discountGroupName,
+            $discountGroupUnit, $arrDiscountCount, $arrDiscountRate
         );
     }
 
