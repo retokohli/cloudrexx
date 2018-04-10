@@ -48,6 +48,11 @@ namespace Cx\Modules\Market\Controller;
  */
 class MarketLibrary
 {
+    /**
+     * @var array specialFields
+     * @access protected
+     */
+    protected $specialFields = array();
 
     function getCategories()
     {
@@ -85,9 +90,10 @@ class MarketLibrary
         }
 
         if($where != '' && $like != ''){
-            $where = "WHERE $where LIKE $like";
+            $where = "WHERE ".contrexx_input2db($where)." LIKE ".contrexx_input2db($like);
         }
-
+        $specFieldCount = $objDatabase->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields`");
+        $specFieldCount = $specFieldCount->fields['count'];
         $objResultEntries = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market '.$where.' '.$orderBy);
            if ($objResultEntries !== false){
                while (!$objResultEntries->EOF) {
@@ -109,11 +115,9 @@ class MarketLibrary
                    $this->entries[$objResultEntries->fields['id']]['status']             = $objResultEntries->fields['status'];
                    $this->entries[$objResultEntries->fields['id']]['regkey']             = $objResultEntries->fields['regkey'];
                    $this->entries[$objResultEntries->fields['id']]['sort_id']             = $objResultEntries->fields['sort_id'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_1']     = $objResultEntries->fields['spez_field_1'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_2']     = $objResultEntries->fields['spez_field_2'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_3']     = $objResultEntries->fields['spez_field_3'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_4']     = $objResultEntries->fields['spez_field_4'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_5']     = $objResultEntries->fields['spez_field_5'];
+                   for ($i = 1; $i <= $specFieldCount; ++$i) {
+                       $this->entries[$objResultEntries->fields['id']]['spez_field_' . $i]      = $objResultEntries->fields['spez_field_' . $i];
+                   }
                    $objResultEntries->MoveNext();
                }
            }
@@ -150,21 +154,33 @@ class MarketLibrary
         return $settings;
     }
 
+    /**
+     * Insert the advertisement entry
+     *
+     * @param integer $backend
+     *
+     * @return null
+     */
 
-
-    function insertEntry($backend){
+    public function insertEntry($backend){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        if($_FILES['pic']['name'] != ""){
+        $settings = $this->getSettings();
+
+        if (!$backend && $settings['useTerms'] && !isset($_POST['confirm'])) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_MARKET_CONFIRM_TERMS'];
+            return;
+        }
+
+        if ($_POST['uploadImage'] != "") {
             $picture = $this->uploadPicture();
-        }elseif (isset($_POST['picOld'])) {
+        } elseif (isset($_POST['picOld'])) {
             $picture = $this->copyPicture($_POST['picOld']);
-        }else{
+        } else{
             $picture = "";
         }
 
         if($picture != "error"){
-
             if($_POST['forfree'] == 1){
                 $price = "forfree";
             }elseif($_POST['agreement'] == 1){
@@ -192,11 +208,11 @@ class MarketLibrary
             }
 
             $objFWUser = \FWUser::getFWUserObject();
-
+            $specFields = $this->getSpecialFieldsQueryPart($objDatabase, $_POST);
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
-								  color='".contrexx_addslashes($_POST['color'])."',
+                                  color='".contrexx_addslashes($_POST['color'])."',
                                   description='".contrexx_addslashes($_POST['description'])."',
                                 premium='".contrexx_addslashes($_POST['premium'])."',
                                   picture='".contrexx_addslashes($picture)."',
@@ -207,19 +223,17 @@ class MarketLibrary
                                   userid='".($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0)."',
                                   name='".contrexx_addslashes($_POST['name'])."',
                                   email='".contrexx_addslashes($_POST['email'])."',
-                                  userdetails='".contrexx_addslashes($_POST['userdetails'])."',
-                                  spez_field_1='".contrexx_addslashes($_POST['spez_1'])."',
-                                  spez_field_2='".contrexx_addslashes($_POST['spez_2'])."',
-                                  spez_field_3='".contrexx_addslashes($_POST['spez_3'])."',
-                                  spez_field_4='".contrexx_addslashes($_POST['spez_4'])."',
-                                  spez_field_5='".contrexx_addslashes($_POST['spez_5'])."',
+                                  userdetails='".contrexx_addslashes($_POST['userdetails'])."', ".
+                                  $specFields.",
                                   regkey='".$key."',
                                   status='".$status."'");
 
             if($objResult !== false){
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'];
-                if($backend == 0){
-                    $this->sendCodeMail($objDatabase->Insert_ID());
+                if($backend == 0 && $settings['confirmFrontend']){
+                    $entryId = $objDatabase->Insert_ID();
+                    $this->sendCodeMail($entryId);
+                    return $entryId;
                 }
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -264,7 +278,7 @@ class MarketLibrary
                 $mailTitle            = $objResult->fields['title'];
                 $mailContent        = $objResult->fields['content'];
                 $mailCC                = $objResult->fields['mailcc'];
-                $mailTo                = $objResult->fields['mailcc'];
+                $mailTo                = $objResult->fields['mailto'];
                 $mailOn                = $objResult->fields['active'];
                 $objResult->MoveNext();
             };
@@ -282,9 +296,6 @@ class MarketLibrary
 
         for($x = 0; $x < 8; $x++){
           $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-        }
-
-        for($x = 0; $x < 8; $x++){
           $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
         }
 
@@ -294,48 +305,32 @@ class MarketLibrary
         $subject     = $mailTitle;
         $message     = $mailContent;
 
-        if (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
-            $objMail = new \phpmailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            if ($_CONFIG['coreSmtpServer'] > 0) {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
+        $objMail->SetFrom($fromMail, $fromName);
+        $objMail->Subject = $subject;
+        $objMail->IsHTML(false);
+        $objMail->Body = $message;
 
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $fromMail;
-            $objMail->FromName = $fromName;
-            $objMail->AddReplyTo($fromMail);
-            $objMail->Subject = $subject;
-            $objMail->IsHTML(false);
-            $objMail->Body = $message;
+        if ($mailTo == 'admin') {
+            $addressee = $fromMail;
+        } else {
+            $addressee = $entryMail;
+        }
 
-            if($mailTo == 'admin'){
-                $addressee = $fromMail;
-            } else {
-                $addressee = $entryMail;
-            }
+        if ($mailOn == 1) {
+            $objMail->AddAddress($addressee);
+            $objMail->Send();
+            $objMail->ClearAddresses();
+        }
 
-            if($mailOn == 1){
-                $objMail->AddAddress($addressee);
+        // Email message
+        foreach ($array as $toCC) {
+            // Email message
+            if (!empty($toCC)) {
+                $objMail->AddAddress($toCC);
                 $objMail->Send();
                 $objMail->ClearAddresses();
-            }
-
-            // Email message
-            foreach($array as $toCC) {
-                // Email message
-                if (!empty($toCC)) {
-                    $objMail->AddAddress($toCC);
-                    $objMail->Send();
-                    $objMail->ClearAddresses();
-                }
             }
         }
     }
@@ -394,9 +389,6 @@ class MarketLibrary
 
             for($x = 0; $x < 8; $x++){
               $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-            }
-
-            for($x = 0; $x < 8; $x++){
               $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
             }
 
@@ -407,86 +399,90 @@ class MarketLibrary
             $subject     = $mailTitle;
             $message     = $mailContent;
 
+            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            if (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
-                $objMail = new \phpmailer();
+            $objMail->SetFrom($fromMail, $fromName);
+            $objMail->Subject = $subject;
+            $objMail->IsHTML(false);
+            $objMail->Body = $message;
+            $objMail->AddAddress($to);
+            $objMail->Send();
+            $objMail->ClearAddresses();
 
-                if ($_CONFIG['coreSmtpServer'] > 0) {
-                    if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
-                }
-
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $fromMail;
-                $objMail->FromName = $fromName;
-                $objMail->AddReplyTo($fromMail);
-                $objMail->Subject = $subject;
-                $objMail->IsHTML(false);
-                $objMail->Body = $message;
-                $objMail->AddAddress($to);
-                $objMail->Send();
-                $objMail->ClearAddresses();
-
-                foreach($array as $toCC) {
-                    // Email message
-                    if (!empty($toCC)) {
-                        $objMail->AddAddress($toCC);
-                        $objMail->Send();
-                        $objMail->ClearAddresses();
-                    }
+            foreach ($array as $toCC) {
+                // Email message
+                if (!empty($toCC)) {
+                    $objMail->AddAddress($toCC);
+                    $objMail->Send();
+                    $objMail->ClearAddresses();
                 }
             }
         }
     }
 
+    /**
+     * Move the uploaded image to destination path from the temp path
+     *
+     * @return mixed $status | false
+     */
 
+    public function uploadPicture()
+    {
 
-    function uploadPicture(){
-
-        $status            = "";
-        $path            = "pictures/";
+        $status = "";
+        $path   = "pictures/";
 
         //check file array
-        if(isset($_FILES) && !empty($_FILES))
-        {
-            //get file info
-            $tmpFile          = $_FILES['pic']['tmp_name'];
-           $fileName         = $_FILES['pic']['name'];
+        $uploaderId = isset($_POST['marketUploaderId'])
+                      ? contrexx_input2raw($_POST['marketUploaderId'])
+                      : 0;
+        $fileName   = isset($_POST['uploadImage'])
+                      ? contrexx_input2raw($_POST['uploadImage'])
+                      : 0;
+        if (empty($uploaderId) || empty($fileName)) {
+            return false;
+        }
+        //get file info
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
+        $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
 
-           if($fileName != "" && \FWValidator::is_file_ending_harmless($fileName)){
-                //check extension
-                   $info     = pathinfo($fileName);
-                $exte     = $info['extension'];
-                $exte     = (!empty($exte)) ? '.' . $exte : '';
-                $part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
-                $rand      = rand(10, 99);
-                $fileName = md5($rand.$fileName).$exte;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
+            return false;
+        }
 
-                //check file
+        if ($fileName != '' && \FWValidator::is_file_ending_harmless($fileName)) {
+            //check extension
+            $info = pathinfo($fileName);
+            $exte = $info['extension'];
+            $exte = (!empty($exte)) ? '.' . $exte : '';
+            $part1 = substr($fileName, 0, strlen($fileName) - strlen($exte));
+            $rand = rand(10, 99);
+            $fileName = md5($rand . $fileName) . $exte;
+
+            //check file
 // TODO: $x is not defined
-                $x = 0;
-                if(file_exists($this->mediaPath.$path.$fileName)){
-                    $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
-                    $fileName = md5($fileName).$exte;
-                }
+            $x = 0;
+            if (file_exists($this->mediaPath . $path . $fileName)) {
+                $fileName = $rand . $part1 . '_' . (time() + $x) . $exte;
+                $fileName = md5($fileName) . $exte;
+            }
 
-                //upload file
-                if(@move_uploaded_file($tmpFile, $this->mediaPath.$path.$fileName)) {
+            //Move the uploaded file to the path specified in the variable $this->mediaPath
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+                if ($objFile->move($this->mediaPath . $path . $fileName, false)) {
                     $objFile = new \File();
-                    $objFile->setChmod($this->mediaPath, $this->mediaWebPath, $path.$fileName);
+                    $objFile->setChmod($this->mediaPath, $this->mediaWebPath, $path . $fileName);
                     $status = $fileName;
-                }else{
+                } else {
                     $status = "error";
                 }
-            }else {
-                $status = "error";
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
             }
+        } else {
+            $status = "error";
         }
 
         return $status;
@@ -551,4 +547,123 @@ class MarketLibrary
             }
         }
     }
+
+    /**
+     * Get the uploader object
+     *
+     * @return \Cx\Core_Modules\Uploader\Model\Entity\Uploader
+     */
+    public function getUploader() {
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        //set instance name so we are able to catch the instance with js
+        $uploader->setCallback('marketUploaderCallback');
+        $uploader->setOptions(array(
+            'id' => 'marketUploader',
+            'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
+            'data-upload-limit' => 1,
+            'style' => 'display:none'
+        ));
+        return $uploader;
+    }
+
+    /**
+     * Get the string to select, insert, update or compare special fields
+     * without a leading or trailing decimal point
+     *
+     * In case of comparison the chaining operator will be added in front of
+     * every special field
+     * @param \ADOConnection    $dbCon              The database connection
+     * @param array             $data               The data to insert or
+     *                                              update the entry
+     * @param string            $comparator         Relational operator
+     *                                              i.e. LIKE
+     * @param string            $compareValue       Value to use with relational
+     *                                              operator
+     * @param string            $chainingOperator   Operator to chain
+     *                                              comparisons i.e. OR
+     * @return string
+     */
+    protected function getSpecialFieldsQueryPart($dbCon, $data = null, $comparator = '', $compareValue = '', $chainingOperator = ',')
+    {
+        $specialFields = array();
+        // get amount of special fields
+        $specialFieldCount = count($this->specialFields);
+        if (empty($specialFieldCount)) {
+            $specialFieldCount = $dbCon->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields` WHERE `lang_id` = 1");
+            $specialFieldCount = $specialFieldCount->fields['count'];
+        }
+        for ($i = 1; $i <= $specialFieldCount; ++$i) {
+            $value = '';
+            // Data needs to  be updated or inserted
+            if (!empty($data)) {
+                $value = '=\'' . contrexx_input2db($data['spez_' . $i]) . '\'';
+            }
+            // Special fields are used in WHERE or similar comparison statements
+            if (
+                 empty($data) &&
+                !empty($comparator) &&
+                !empty($compareValue)
+            ) {
+                $value = ' ' . $comparator . ' ' . $compareValue;
+            }
+            $specialFields[] = 'spez_field_' . $i . $value;
+        }
+        $specialFields = join(' '.$chainingOperator.' ', $specialFields);
+        return $specialFields;
+    }
+
+    /**
+     * Get an array with placeholders and their respective values for parsing
+     * the special fields
+     *
+     * Array structure:
+     * array() {
+     *      'TXT_MARKET_SPEZ_FIELD_[SPEZ_FIELD_ID] => name stored in db,
+     *      'MARKET_SPEZ_FIELD_[SPEZ_FIELD_ID] => value stored in entry,
+     *      [...]
+     * }
+     * @param $dbCon    \ADOConnection          Database connection
+     * @param $template \HTML_Template_Sigma    The template
+     * @param $entries  array                   entry|entries which have special
+     *                                          field values
+     * @param $id       int                     id of entry which special values
+     *                                          shall be parsed
+     * @param string    $type                   Which placeholders shall be
+     *                                          returned either txt, val or both
+     *                                          defaults to both
+     * @return array
+     */
+    protected function parseSpecialFields($dbCon, $template, $entries, $id = 0, $type = 'both') {
+        // get the spez fields
+        if (empty($this->specialFields)) {
+            $objResult = $dbCon->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
+            if ($objResult !== false) {
+                while(!$objResult->EOF) {
+                    $this->specialFields[$objResult->fields['id']] = $objResult->fields['value'];
+                    $objResult->MoveNext();
+                }
+            }
+        }
+
+        $specialVariables = array();
+        if (isset($this->specialFields)) {
+            foreach ($this->specialFields as $specialFieldId => $value) {
+                if ($type == 'both' || $type = 'txt') {
+                    $txtKey = 'TXT_MARKET_SPEZ_FIELD_' . $specialFieldId;
+                    $specialVariables[$txtKey] = $value;
+                }
+                if ($type == 'both' || $type == 'val') {
+                    $valueKey = 'MARKET_SPEZ_FIELD_' . $specialFieldId;
+                    $entryKey = 'spez_field_' . $specialFieldId;
+                    if (count($entries) > 1 || !empty($id)) {
+                        $specialVariables[$valueKey] = $entries[$id][$entryKey];
+                    } else {
+                        $specialVariables[$valueKey] = $entries[$entryKey];
+                    }
+                }
+            }
+        }
+        $template->setVariable($specialVariables);
+    }
+
 }

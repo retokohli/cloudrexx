@@ -124,11 +124,11 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         }
         $allowedExtensions = false;
         if (isset($_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
-            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'];
+            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions']->toArray();
         }
         $uploader = UploaderController::handleRequest(
             array(
-                'allow_extensions' => is_array($allowedExtensions) ? explode(', ', $allowedExtensions) : $allowedExtensions,
+                'allow_extensions' => $allowedExtensions,
                 'target_dir' => $path,
                 'tmp_dir' => $tmpPath
             )
@@ -202,27 +202,24 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $file = false;
             foreach($files as $fileInfo){
                 if ($fileInfo->isFile()) {
-                    $file = $fileInfo->getRealPath();
+                    $file = str_replace(DIRECTORY_SEPARATOR, '/', $fileInfo->getRealPath());
                     break;
                 }
             }
-            if (!$file){
-                throw new UploaderException(PLUPLOAD_TMPDIR_ERR);
-            }
-            \Cx\Lib\FileSystem\FileSystem::move(
-                $file, $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
-                true
-            );
+            if ($file){
+                \Cx\Lib\FileSystem\FileSystem::move(
+                    $file,  rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
+                    true
+                );
 
-            \Cx\Lib\FileSystem\FileSystem::delete_file($file);
-
-            if (isset($fileLocation[2])){
-                $uploader['name'] = $fileLocation[2];
+                if (isset($fileLocation[2])){
+                    $uploader['name'] = $fileLocation[2];
+                }
+                $fileLocation = array(
+                    rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
+                    rtrim($fileLocation[1], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME)
+                );
             }
-            $fileLocation = array(
-                $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
-                $fileLocation[1] . pathinfo( $file, PATHINFO_BASENAME)
-            );
         }
 
         if ($response->getWorstStatus()) {

@@ -884,6 +884,18 @@ class Attributes
                 $option_name = '';
                 // Valid indices are: 'value', 'price', 'order'
                 $option_price = $arrOptions[$option_id]['price'];
+                if (
+                    in_array(
+                        $objAttribute->getType(),
+                        array(
+                            Attribute::TYPE_UPLOAD_MANDATORY,
+                            Attribute::TYPE_UPLOAD_OPTIONAL
+                        )
+                    )
+                ) {
+                    $option = current($arrOptions);
+                    $option_price = $option['price'];
+                }
                 // Note that this *MUST NOT* test for is_integer()
                 // (which $option_id isn't -- it's either an arbitrary
                 // string, or one that represents a positive integer),
@@ -906,10 +918,7 @@ class Attributes
                     $path = Order::UPLOAD_FOLDER.$option_id;
                     if (   $option_name != $option_id
                         && file_exists($path)) {
-                        $option_name =
-                            '<a href="'.$path.
-                            '" target="uploadimage">'.
-                            $option_name.'</a>';
+                        $option_name = \Html::getLink('/' . $path, $option_name, 'uploadimage');
                     }
                 }
                 $options_long[] =

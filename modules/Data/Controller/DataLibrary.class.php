@@ -114,29 +114,20 @@ class DataLibrary
      * Creates an array containing all frontend-languages.
      *
      * Contents:
-     * $arrValue[$langId]['short']        =>    For Example: en, de, fr, ...
+     * $arrValue[$langId]['short']        =>    For Example: en, de, fr, de-CH, ...
      * $arrValue[$langId]['long']        =>    For Example: 'English', 'Deutsch', 'French', ...
      *
-     * @global     ADONewConnection
      * @return    array        $arrReturn
      */
     function createLanguageArray() {
-        global $objDatabase;
 
         $arrReturn = array();
 
-        $objResult = $objDatabase->Execute('SELECT        id,
-                                                        lang,
-                                                        name
-                                            FROM        '.DBPREFIX.'languages
-                                            WHERE        frontend=1
-                                            ORDER BY    id
-                                        ');
-        while (!$objResult->EOF) {
-            $arrReturn[$objResult->fields['id']] = array(    'short'    =>    stripslashes($objResult->fields['lang']),
-                                                            'long'    =>    htmlentities(stripslashes($objResult->fields['name']),ENT_QUOTES, CONTREXX_CHARSET)
-                                                        );
-            $objResult->MoveNext();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            $arrReturn[$frontendLanguage['id']] = array(
+                'short' =>  stripslashes($frontendLanguage['lang']),
+                'long'  =>  htmlentities(stripslashes($frontendLanguage['name']),ENT_QUOTES, CONTREXX_CHARSET)
+            );
         }
 
         return $arrReturn;
@@ -167,13 +158,13 @@ class DataLibrary
 
 
         $query = '
-            SELECT DISTINCT 
+            SELECT DISTINCT
                 category_id
             FROM
                 '.DBPREFIX.'module_data_categories
-           ORDER BY 
+           ORDER BY
                 sort
-            LIMIT 
+            LIMIT
                 '.$intStartingIndex.','.$intLimitIndex;
 
         $objResult = $objDatabase->Execute($query);
@@ -181,7 +172,7 @@ class DataLibrary
         if ($objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 foreach (array_keys($this->_arrLanguages) as $intLangId) {
-                    $arrReturn[intval($objResult->fields['category_id'])][$intLangId] = array(    
+                    $arrReturn[intval($objResult->fields['category_id'])][$intLangId] = array(
                         'name'          => '',
                         'is_active'     => '',
                         'placeholder'   => '',
@@ -198,8 +189,8 @@ class DataLibrary
         //Fill array if possible
         foreach ($arrReturn as $intCategoryId => $arrLanguages) {
             foreach (array_keys($arrLanguages) as $intLanguageId) {
-                $query = '  
-                    SELECT 
+                $query = '
+                    SELECT
                             is_active,
                             name,
                             parent_id,
@@ -211,17 +202,17 @@ class DataLibrary
                             categories.box_width,
                             categories.box_height,
                             categories.template
-                    FROM 
+                    FROM
                             '.DBPREFIX.'module_data_categories      AS categories
-                    LEFT JOIN 
+                    LEFT JOIN
                             '.DBPREFIX.'module_data_placeholders    AS ph
                     ON
                             categories.category_id = ph.ref_id
                         AND
                             `ph`.`type` = "cat"
 
-                    WHERE        
-                            category_id='.$intCategoryId.' 
+                    WHERE
+                            category_id='.$intCategoryId.'
                         AND
                             lang_id='.$intLanguageId.'
                     LIMIT
@@ -309,7 +300,7 @@ class DataLibrary
         } else {
             $limit = "";
         }
-        $query = "  SELECT      
+        $query = "  SELECT
                         dataMessages.message_id,
                         dataMessages.time_created,
                         dataMessages.time_edited,
@@ -319,17 +310,17 @@ class DataLibrary
                         ph.placeholder,
                         dataMessages.release_time              AS release_time,
                         dataMessages.release_time_end          AS release_time_end
-                    FROM 
+                    FROM
                        ".DBPREFIX."module_data_messages        AS dataMessages
-                    LEFT JOIN  
+                    LEFT JOIN
                         ".DBPREFIX."module_data_placeholders   AS ph
-                    ON 
+                    ON
                          dataMessages.message_id = ph.ref_id
                         ".$strLanguageJoin."
-                    WHERE 
+                    WHERE
                         ph.type = 'entry'
                     ".$strLanguageWhere."
-                    ORDER BY 
+                    ORDER BY
                        sort ASC
                     ".$limit;
 
@@ -395,7 +386,7 @@ class DataLibrary
 
                     if ( ($intLanguageId == $this->_intLanguageId && !empty($translations->fields['subject'])) ||
                            empty($arrReturn[$intMessageId]['subject']) ) {
-                       $arrReturn[$intMessageId]['subject'] = 
+                       $arrReturn[$intMessageId]['subject'] =
                            htmlentities(stripslashes($translations->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
                     }
 
@@ -436,7 +427,7 @@ class DataLibrary
         global $objDatabase;
 
         $query = '
-            SELECT 
+            SELECT
                lang_id,
                 is_active,
                 subject,
@@ -451,9 +442,9 @@ class DataLibrary
                 attachment_description,
                 forward_url,
                 forward_target
-            FROM 
+            FROM
                '.DBPREFIX.'module_data_messages_lang
-            WHERE 
+            WHERE
                message_id='.$id;
 
 
@@ -1139,7 +1130,16 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data&amp;cmd=details&amp;id=';
+            $strItemLink = contrexx_raw2xhtml(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Data',
+                    'details',
+                    '',
+                    array(
+                        'id' => '',
+                    )
+                )->toString()
+            );
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['data_rss_messages']) );
@@ -1149,7 +1149,9 @@ class DataLibrary
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Data'
+                    )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
@@ -1192,7 +1194,16 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data&amp;cmd=details&amp;id={ID}#comments';
+            $strItemLink = contrexx_raw2xhtml(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Data',
+                    'details',
+                    '',
+                    array(
+                        'id' => '{ID}#comments',
+                    )
+                )->toString()
+            );
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $objResult = $objDatabase->Execute('SELECT        message_id,
@@ -1213,7 +1224,9 @@ class DataLibrary
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_COMMENTS_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Data'
+                    )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_COMMENTS_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
@@ -1259,7 +1272,16 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data&amp;cmd=details&amp;id=';
+            $strItemLink = contrexx_raw2xhtml(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Data',
+                    'details',
+                    '',
+                    array(
+                        'id' => '',
+                    )
+                )->toString()
+            );
 
             $arrCategories = $this->createCategoryArray();
 
@@ -1281,7 +1303,9 @@ class DataLibrary
                             $objRSSWriter = new \RSSWriter();
                             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                             $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
-                            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data';
+                            $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'Data'
+                            )->toString();
                             $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';
                             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];

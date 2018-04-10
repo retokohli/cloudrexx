@@ -1,30 +1,27 @@
 <!-- START module_mediadir_modify_category.html -->
 <script language="JavaScript" type="text/javascript">
-var mediaBrowseInputBox;
-var mediaBrowserCallback = function(data) {
-    if (data.type=="file") {
-        var path = data.data[0].datainfo.filepath;
-        mediaBrowseInputBox.val(path);
-        mediaBrowseInputBox.trigger('keyup');
-    }
-}
-
-function SetUrl(url, width, height, alt) {
-    document.getElementById(insertBox).value = url;
-    $J('#'+insertBox).trigger('keyup');
-}
-    
-function getFileBrowser(name, type, path)
-{
-    insertBox = name;
-	fileType = type;
-
-	openWindow('?cmd=FileBrowser&standalone=true&type='+fileType+'&path='+path,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-}
-
-function openWindow(theURL,winName,features){
-	browserPopup = window.open(theURL,"Browser",features);
-	browserPopup.focus();
+function getMediaBrowser(e) { // e => jQuery element
+    var inputId = e.data('inputId'),
+        isImageField = e.data('isImage'),
+        mediaBrowseInputBox = $J('#' + inputId);
+    cx.variables.get('jquery','mediabrowser')('#mediabrowser_button').trigger('click', {
+        callback: function (data) {
+            if (data.type === 'file') {
+                var path = data.data[0].datainfo.filepath;
+                mediaBrowseInputBox.val(path);
+                mediaBrowseInputBox.trigger('keyup');
+                if (isImageField && $J('#' + inputId + '_preview')) {
+                    changeImagePreview($J('#' + inputId + '_preview'), path);
+                }
+            } else if (data.type === 'page') {
+                var node = data.data[0].node;
+                mediaBrowseInputBox.val(node);
+                mediaBrowseInputBox.trigger('keyup');
+            }
+        },
+        cxMbViews : e.data('views'),
+        cxMbStartmediatype : e.data('startmediatype')
+    });
 }
 
 /*function ExpandMinimize(toggle){
@@ -40,7 +37,7 @@ function toggleDisplayDouration(){
     elmLayer = document.getElementById('durationTypePeriod');
 
     if(elmSelect.value == 1) {
-    	elmLayer.style.display = 'none';
+      elmLayer.style.display = 'none';
     } else {
         elmLayer.style.display = 'inline';
     }
@@ -51,11 +48,28 @@ cx.ready(function() {
     $J('input[name=durationStart]').datepicker();
     $J('input[name=durationEnd]').datepicker();
 });
-$J(function(){
-   $J('.mediabrowser-button').click(function(){
-       var inputId = $J(this).data('inputId');
-       mediaBrowseInputBox = $J('#' + inputId);
-   });
+
+cx.slugify = function(string) {
+    // replace international characters
+    cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
+        string = string.replace(search, replace);
+    });
+    // replace spaces
+    string = string.replace(/\s+/g, '-');
+    // replace all non-url characters
+    string = string.replace(/[^a-zA-Z0-9-_]/g, '');
+    return string;
+}
+
+cx.jQuery(document).ready(function() {
+    var slugFieldId = cx.variables.get("slugFieldId", "Mediadir");
+    cx.jQuery("form[name='entryModfyForm'] input[data-id='" + slugFieldId + "']").keyup(function() {
+        var originalSlug  = cx.jQuery(this).val();
+        var slugifiedSlug = cx.slugify(originalSlug);
+        if (originalSlug != slugifiedSlug) {
+            cx.jQuery(this).val(slugifiedSlug);
+        }
+    });
 });
 </script>
 
@@ -81,7 +95,7 @@ $J(function(){
         max-height: 150px;
         overflow-y: auto;
     }
-    
+
     .ui-autocomplete-loading {
         background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 448px center no-repeat !important;
     }
@@ -94,11 +108,8 @@ $J(function(){
         padding-left: 21px !important;
     }
     .mediadirInputfieldFileDisplayName {
-        width: 300px;        
+        width: 300px;
         padding-left: 3px !important;
-    }
-    .mediaBrowserScope {
-        display: none;
     }
 </style>
 
@@ -128,7 +139,7 @@ $J(function(){
         </td>
     </tr>
     <!-- END mediadirEntryStatus -->
-    
+
     <!-- BEGIN mediadirInputfieldList -->
     <tr class="{MEDIADIR_INPUTFIELD_ROW_CLASS}">
         <td width="200" valign="top">{TXT_MEDIADIR_INPUTFIELD_NAME}</td>
@@ -167,7 +178,7 @@ $J(function(){
         </td>
     </tr>
     <!-- END mediadirTranslationStatus -->
-    
+
     <!-- BEGIN mediadirOwner -->
     <tr class="{MEDIADIR_OWNER_ROW}">
         <td width="200" >{TXT_MEDIADIR_OWNER}</td>
@@ -178,11 +189,11 @@ $J(function(){
     <!-- END mediadirOwner -->
 
     <!-- END mediadirSpezfieldList -->
-    
+
 
     <!-- BEGIN mediadirContactData -->
-    
-    <!--      
+
+    <!--
     <tr class="row2">
         <td colspan="2"><br /></td>
     </tr>
@@ -252,11 +263,12 @@ $J(function(){
         </td>
     </tr>
     -->
-    
+
     <!-- END mediadirContactData -->
 </table>
 <br />
 <input type="submit" name="submitEntryModfyForm" value="{TXT_MEDIADIR_SUBMIT}" />
 <div id="mediadirErrorMessage" style="display:none; color: #ff0000;"><br />{TXT_MEDIADIR_PLEASE_CHECK_INPUT}</div>
 </form>
+{MEDIADIR_MEDIABROWSER_BUTTON}
 <!-- END module_mediadir_modify_category.html -->

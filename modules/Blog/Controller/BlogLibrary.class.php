@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Blog library
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -113,29 +113,19 @@ class BlogLibrary {
      * Creates an array containing all frontend-languages.
      *
      * Contents:
-     * $arrValue[$langId]['short']      =>  For Example: en, de, fr, ...
+     * $arrValue[$langId]['short']      =>  For Example: en, de, fr, de-CH, ...
      * $arrValue[$langId]['long']       =>  For Example: 'English', 'Deutsch', 'French', ...
      *
-     * @global  ADONewConnection
      * @return  array       $arrReturn
      */
     function createLanguageArray() {
-        global $objDatabase;
 
         $arrReturn = array();
-
-        $objResult = $objDatabase->Execute('SELECT      id,
-                                                        lang,
-                                                        name
-                                            FROM        '.DBPREFIX.'languages
-                                            WHERE       frontend=1
-                                            ORDER BY    id
-                                        ');
-        while (!$objResult->EOF) {
-            $arrReturn[$objResult->fields['id']] = array(   'short' =>  stripslashes($objResult->fields['lang']),
-                                                            'long'  =>  htmlentities(stripslashes($objResult->fields['name']),ENT_QUOTES, CONTREXX_CHARSET)
-                                                        );
-            $objResult->MoveNext();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            $arrReturn[$frontendLanguage['id']] = array(
+                'short' =>  stripslashes($frontendLanguage['lang']),
+                'long'  =>  htmlentities(stripslashes($frontendLanguage['name']),ENT_QUOTES, CONTREXX_CHARSET)
+            );
         }
 
         return $arrReturn;
@@ -322,7 +312,7 @@ class BlogLibrary {
 
                     $objCategoryResult->MoveNext();
                 }
-				
+
                 //Get existing translations for the current entry
                 $objLangResult = $objDatabase->Execute('SELECT  lang_id,
                                                                     is_active,
@@ -620,7 +610,7 @@ class BlogLibrary {
      *
      * @global  array
      * @param   string      $strUsername
-     * @param   string		$strDate
+     * @param   string        $strDate
      * @return  string
      */
     function getPostedByString($strUsername, $strDate) {
@@ -633,14 +623,14 @@ class BlogLibrary {
     }
 
 
-	/**
+    /**
      * Returns an img-Tag for the "posted by" string.
      *
-	 * @param   string		$strDate
+     * @param   string        $strDate
      * @return  string
      */
     function getPostedByIcon($strDate) {
-    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/calendar.gif" alt="'.$strDate.'" />';
+        return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/calendar.gif" alt="'.$strDate.'" />';
     }
 
 
@@ -901,11 +891,11 @@ class BlogLibrary {
     /**
      * Returns an img-Tag for the "tags"-icon.
      *
-	 * @param   string		$strDate
+     * @param   string        $strDate
      * @return  string
      */
     function getTagsIcon() {
-    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/tags.gif" alt="Tags" />';
+        return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/tags.gif" alt="Tags" />';
     }
 
 
@@ -1015,24 +1005,25 @@ class BlogLibrary {
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['blog_rss_messages']) );
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog&amp;cmd=details&amp;id=';
 
                 if (count($arrEntries) > 0) {
                     $objRSSWriter = new \RSSWriter();
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', '', $intLanguageId)->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
                     //Function doesn't exist
                     //$objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
+                    $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                     foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+                        $entryUrl->setParam('id', $intEntryId);
                         $objRSSWriter->addItem(
                             html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                            $strItemLink.$intEntryId,
+                            contrexx_raw2xhtml($entryUrl->toString()),
                             htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                             '',
@@ -1071,8 +1062,6 @@ class BlogLibrary {
             $objFWUser = \FWUser::getFWUserObject();
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog&amp;cmd=details&amp;id={ID}#comments';
-
                 $objResult = $objDatabase->Execute('SELECT      message_id,
                                                                 time_created,
                                                                 user_id,
@@ -1091,19 +1080,31 @@ class BlogLibrary {
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Blog',
+                        '',
+                        $intLanguageId
+                    )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     //Function doesn't exist
                     //$objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
+                    $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Blog',
+                        'details',
+                        $intLanguageId,
+                        array(
+                            'id' => '{ID}#comments',
+                        )
+                    )->toString();
                     while (!$objResult->EOF) {
                         $strUserName = (intval($objResult->fields['user_id']) > 0 && ($objUser = $objFWUser->objUser->getUser($objResult->fields['user_id'])) !== false) ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $objResult->fields['user_name'];
 
                         $objRSSWriter->addItem(
                             htmlspecialchars($objResult->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                            str_replace('{ID}',$objResult->fields['message_id'],$strItemLink),
+                            contrexx_raw2xhtml(str_replace('{ID}',$objResult->fields['message_id'],$strItemLink)),
                             htmlspecialchars($objResult->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($strUserName, ENT_QUOTES, CONTREXX_CHARSET),
                             '',
@@ -1144,8 +1145,6 @@ class BlogLibrary {
 
             //Iterate over all languages
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog&amp;cmd=details&amp;id=';
-
                 $arrEntries = $this->createEntryArray($intLanguageId);
 
                 //If there exist entries in this language go on, otherwise skip
@@ -1162,7 +1161,11 @@ class BlogLibrary {
                             $objRSSWriter = new \RSSWriter();
                             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                             $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog';
+                            $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'Blog',
+                                '',
+                                $intLanguageId
+                            )->toString();
                             $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';
                             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                             //Function doesn't exist
@@ -1170,12 +1173,14 @@ class BlogLibrary {
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                             //Find assigned messages
+                            $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                             foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                                 if ($this->categoryMatches($intCategoryId, $arrEntryValues['categories'][$intLanguageId])) {
                                     //Message is in category, add to feed
+                                    $entryUrl->setParam('id', $intEntryId);
                                     $objRSSWriter->addItem(
                                         html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                                        $strItemLink.$intEntryId,
+                                        contrexx_raw2xhtml($entryUrl->toString()),
                                         htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                                         htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                                         '',
@@ -1207,14 +1212,14 @@ class BlogLibrary {
             }
         }
     }
-    
+
     /**
      * Get mediabrowser button
-     * 
+     *
      * @param string $buttonValue Value of the button
-     * @param string $options     Input button options 
+     * @param string $options     Input button options
      * @param string $callback    Media browser callback function
-     * 
+     *
      * @return null
      */
     public static function getMediaBrowserButton($buttonValue, $options = array(), $callback = '')
@@ -1225,7 +1230,7 @@ class BlogLibrary {
         if ($callback) {
             $mediaBrowser->setCallback($callback);
         }
-        
-        return $mediaBrowser->getXHtml($buttonValue);        
+
+        return $mediaBrowser->getXHtml($buttonValue);
     }
 }
