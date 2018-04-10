@@ -203,10 +203,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         while (!$downloadAsset->EOF) {
-            $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), '', '', array(
-                'category' => current($downloadAsset->getAssociatedCategoryIds()),
-                'id' => $downloadAsset->getId(),
-            ));
+            $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                $this->getName(),
+                '',
+                '',
+                array(
+                    'category' => current($downloadAsset->getAssociatedCategoryIds()),
+                    'id' => $downloadAsset->getId(),
+                )
+            );
             $result[] = array(
                 'Score'   => 100,
                 'Title'   => $downloadAsset->getName(FRONTEND_LANG_ID),
