@@ -155,7 +155,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
         $eventListener = new \Cx\Modules\Downloads\Model\Event\DownloadsEventListener($this->cx);
-        $evm->addEventListener('SearchFindContent',$eventListener);
+        $evm->addEventListener('SearchFindContent', $eventListener);
         $evm->addEventListener('mediasource.load', $eventListener);
 
         // locale event listener
