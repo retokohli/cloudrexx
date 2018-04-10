@@ -202,6 +202,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return array();
         }
 
+        $langId = DownloadsLibrary::getOutputLocale()->getId();
+
         while (!$downloadAsset->EOF) {
             $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
                 $this->getName(),
@@ -214,8 +216,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
             $result[] = array(
                 'Score'   => 100,
-                'Title'   => $downloadAsset->getName(FRONTEND_LANG_ID),
-                'Content' => $downloadAsset->getTrimmedDescription(FRONTEND_LANG_ID),
+                'Title'   => $downloadAsset->getName($langId),
+                'Content' => $downloadAsset->getTrimmedDescription($langId),
                 'Link'    => $url->toString()
             );
             $downloadAsset->next();
