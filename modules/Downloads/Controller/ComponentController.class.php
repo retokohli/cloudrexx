@@ -155,6 +155,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
         $eventListener = new \Cx\Modules\Downloads\Model\Event\DownloadsEventListener($this->cx);
+        $evm->addEventListener('SearchFindContent', $eventListener);
         $evm->addEventListener('mediasource.load', $eventListener);
 
         // locale event listener
@@ -163,4 +164,65 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
+    /**
+     * Find Downloads by keyword $searchTerm and return them in a
+     * two-dimensional array compatible to be used by Search component.
+     *
+     * @param   string  $searchTerm The keyword to search by
+     * @return  array   Two-dimensional array of Downloads found by keyword
+     *                  $searchTerm.
+     *                  If integration into search component is disabled or
+     *                  no Download matched the giving keyword, then an
+     *                  empty array is retured.
+     */
+    public function getDownloadsForSearchComponent($searchTerm) {
+        $result = array();
+        $download = new Download();
+        $downloadLibrary = new DownloadsLibrary();
+        $config = $downloadLibrary->getSettings();
+
+        // abort in case downloads shall not be included into the global
+        // fulltext search component
+        if (!$config['integrate_into_search_component']) {
+            return array();
+        }
+
+        // lookup downloads by given keyword
+        $downloadAsset = $download->getDownloads(
+            null,
+            $searchTerm,
+            null,
+            null,
+            null,
+            null,
+            $config['list_downloads_current_lang']
+        );
+
+        if (!$downloadAsset) {
+            return array();
+        }
+
+        $langId = DownloadsLibrary::getOutputLocale()->getId();
+
+        while (!$downloadAsset->EOF) {
+            try {
+                $url = DownloadsLibrary::getApplicationUrl(
+                    $downloadAsset->getAssociatedCategoryIds()
+                );
+            } catch (DownloadsLibraryException $e) {
+                $downloadAsset->next();
+                continue;
+            }
+            $url->setParam('id', $downloadAsset->getId());
+            $result[] = array(
+                'Score'   => 100,
+                'Title'   => $downloadAsset->getName($langId),
+                'Content' => $downloadAsset->getTrimmedDescription($langId),
+                'Link'    => $url->toString()
+            );
+            $downloadAsset->next();
+        }
+
+        return $result;
+    }
 }
