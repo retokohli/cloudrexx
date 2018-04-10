@@ -99,9 +99,6 @@ class Forum extends ForumLibrary {
             case 'cat':
                 $this->showCategory($_GET['id']);
                 break;
-            case 'userinfo':
-                $this->showProfile($_GET['id']);
-                break;
             case 'notification':
                 $this->showNotifications();
                 break;
@@ -400,7 +397,7 @@ class Forum extends ForumLibrary {
      */
     function showForum($intForumId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache, $_LANGID, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG;
 
         if ($intForumId == 0) {
             //wrong id, redirect
@@ -449,6 +446,9 @@ class Forum extends ForumLibrary {
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>';
         }
 
+        //Initialize the Uploader
+        $this->initForumUploader();
+
         $this->_objTpl->setGlobalVariable(array(
             'FORUM_NAME'                =>    $this->_shortenString($this->_arrTranslations[$intForumId][$this->_intLangId]['name'], $this->_maxStringlength),
             'FORUM_TREE'                =>    $this->_createNavTree($intForumId),
@@ -467,6 +467,7 @@ class Forum extends ForumLibrary {
             'FORUM_SUBJECT'                =>    htmlentities($subject, ENT_QUOTES, CONTREXX_CHARSET),
             'FORUM_KEYWORDS'            =>    htmlentities($keywords, ENT_QUOTES, CONTREXX_CHARSET),
             'FORUM_MESSAGE_INPUT'        =>    $strMessageInputHTML,
+            'TXT_FORUM_CHOOSE_FILE'      =>    $_ARRAYLANG['TXT_FORUM_CHOOSE_FILE']
         ));
 
         if ($objFWUser->objUser->login()) {
@@ -613,7 +614,7 @@ class Forum extends ForumLibrary {
      */
     function showThread($intThreadId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache;
+        global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
         $this->_communityLogin();
@@ -719,7 +720,7 @@ class Forum extends ForumLibrary {
             $this->_objTpl->touchBlock('previewNewPost');
             $this->_objTpl->hideBlock('previewEditPost');
         }
-        
+
         if($_REQUEST['act'] == 'quote'){
             $quoteContent = $this->_getPostingData($intPostId);
             $subject = 'RE: '.addcslashes(htmlentities($quoteContent['subject'], ENT_QUOTES, CONTREXX_CHARSET), '\\');
@@ -765,6 +766,7 @@ class Forum extends ForumLibrary {
             'TXT_FORUM_THREAD_ACTION_CLOSE'         =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_'.$firstPost['is_locked']],
             'TXT_FORUM_THREAD_ACTION_STICKY'        =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_'.$firstPost['is_sticky']],
             'TXT_FORUM_THREAD_ACTION_DELETE'        =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE'],
+            'TXT_FORUM_CHOOSE_FILE'                 =>    $_ARRAYLANG['TXT_FORUM_CHOOSE_FILE'],
             'FORUM_NOTIFICATION_CHECKBOX_CHECKED'   =>    $this->_hasNotification($intThreadId) ? 'checked="checked"' : '',
             'FORUM_SUBJECT'                         =>    stripslashes($subject),
             'FORUM_KEYWORDS'                        =>    stripslashes($keywords),
@@ -898,6 +900,8 @@ class Forum extends ForumLibrary {
         }else{
             $this->_objTpl->touchBlock('addPostAnchor');
         }
+        // initialize the uploader
+        $this->initForumUploader();
 
         //addpost code
         if(!empty($_REQUEST['create']) && $_REQUEST['create'] == $_ARRAYLANG['TXT_FORUM_CREATE_POST']){
@@ -1036,7 +1040,7 @@ class Forum extends ForumLibrary {
                         $fileInfo['name'] != $_REQUEST['forum_attachment_oldname']
                     )
                 ){
-                unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.str_replace(array('./', '.\\'), '', $_REQUEST['forum_attachment_oldname']));
+                unlink(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaForumUploadPath() . '/' . str_replace(array('./', '.\\'), '', $_REQUEST['forum_attachment_oldname']));
             }
 
             $updateQuery = 'UPDATE '.DBPREFIX.'module_forum_postings SET
@@ -1178,6 +1182,37 @@ class Forum extends ForumLibrary {
         return true;
     }
 
+    /**
+     * Uploader callback function
+     *
+     * This is called as soon as uploads have finished.
+     *
+     * @param string  $tempPath    Path to the temporary directory containing the files at this moment
+     * @param string  $tempWebPath Points to the same folder as tempPath, but relative to the webroot
+     * @param array   $data        Data given to setData() when creating the uploader
+     * @param string  $uploadId    upload id
+     * @param array   $fileInfos   uploaded file informations
+     * @param object  $response    Upload api response object
+     *
+     * @return array $tempPath and $tempWebPath
+     */
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    {
+        // in case uploader has been restricted to only allow one single file to be
+        // uploaded, we'll have to clean up any previously uploaded files
+        if (count($fileInfos['name'])) {
+            // new files have been uploaded -> remove existing files
+            if (\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+                foreach (glob($tempPath.'/*') as $file) {
+                    if (basename($file) == $fileInfos['name']) {
+                        continue;
+                    }
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($file);
+                }
+            }
+        }
+        return array($tempPath, $tempWebPath);
+    }
 
     function _hasNotification($intThreadId)
     {
@@ -1254,14 +1289,13 @@ class Forum extends ForumLibrary {
      */
     function _sendNotifications($intThreadId, $strSubject, $strContent){
         global $objDatabase, $_CONFIG;
-        require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
 
         $arrTempSubcribers = array();
         $arrSubscribers = array();
 
         $intCategoryId = $this->_getCategoryIdFromThread($intThreadId);
 
-        $mail =new \PHPMailer();
+        $mail  = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         $query = '    SELECT `subject`, `user_id` FROM `'.DBPREFIX.'module_forum_postings`
                     WHERE `thread_id` = '.$intThreadId.'
                     AND `prev_post_id` = 0';
@@ -1306,10 +1340,8 @@ class Forum extends ForumLibrary {
         }
 
         if(!empty($arrSubscribers)){
-            $mail->CharSet = CONTREXX_CHARSET;
             $mail->IsHTML(false);
-            $mail->From     = $this->_arrSettings['notification_from_email'];
-            $mail->FromName = $this->_arrSettings['notification_from_name'];
+            $mail->SetFrom($this->_arrSettings['notification_from_email'], $this->_arrSettings['notification_from_name']);
             $strThreadURL = 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Forum&cmd=thread&id='.$intThreadId;
             $arrSearch      = array('[[FORUM_THREAD_SUBJECT]]', '[[FORUM_THREAD_STARTER]]', '[[FORUM_LATEST_SUBJECT]]',    '[[FORUM_LATEST_MESSAGE]]',    '[[FORUM_THREAD_URL]]');
             $arrReplace     = array($strFirstPostSubject,         $strFirstPostAuthor,         $strSubject,                $strContent,                 $strThreadURL);
@@ -1526,39 +1558,6 @@ class Forum extends ForumLibrary {
     }
 
     /**
-     * show the user profile - adapted from the community module
-     *
-     * @param integer $userId as in `access_users`
-     * @return void
-     */
-    function showProfile($userId)
-    {
-        global $objDatabase;
-        $this->_communityLogin();
-        $userId = intval($userId);
-        $objResult = $objDatabase->SelectLimit("SELECT email, firstname, lastname, street, zip, phone, mobile, residence, profession, interests, webpage, company FROM ".DBPREFIX."access_users WHERE id=".$userId);
-        if ($objResult !== false) {
-            $this->_objTpl->setVariable(array(
-                'COMMUNITY_FIRSTNAME'    => $objResult->fields['firstname'],
-                'COMMUNITY_LASTNAME'    => $objResult->fields['lastname'],
-                'COMMUNITY_STREET'        => $objResult->fields['street'],
-                'COMMUNITY_ZIP'            => $objResult->fields['zip'],
-                'COMMUNITY_RESIDENCE'    => $objResult->fields['residence'],
-                'COMMUNITY_PROFESSION'    => $objResult->fields['profession'],
-                'COMMUNITY_INTERESTS'    => $objResult->fields['interests'],
-                'COMMUNITY_WEBPAGE'        => preg_replace('#(http://)?(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.;%]+)#i', '<a href="http://$2$3"> $2$3 </a>' , $objResult->fields['webpage']),
-                'COMMUNITY_EMAIL'        => $objResult->fields['email'],
-                'COMMUNITY_COMPANY'        => $objResult->fields['company'],
-                'COMMUNITY_PHONE'        => $objResult->fields['phone'],
-                'COMMUNITY_MOBILE'        => $objResult->fields['mobile'],
-            ));
-        }else{
-            die('DB error: '.$objDatabase->ErrorMsg());
-        }
-        $this->_objTpl->setVariable("FORUM_REFERER", $_SERVER['HTTP_REFERER']);
-    }
-
-    /**
      * show and update notifications
      *
      */
@@ -1680,7 +1679,7 @@ class Forum extends ForumLibrary {
                             offset = document.documentElement.scrollTop;
                         }
                         if(document.getElementById("scrollpos")){
-                        	document.getElementById("scrollpos").value = offset;
+                            document.getElementById("scrollpos").value = offset;
                         }
                     }
                 //]]>

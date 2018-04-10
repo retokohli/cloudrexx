@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Wrapper class for the recursive array
  *
@@ -32,10 +32,21 @@
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.2
  * @package     cloudrexx
- * @subpackage  core 
+ * @subpackage  core
  */
 
 namespace Cx\Core\Model;
+
+/**
+ * Exception class for recursive array access
+ *
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Adrian Berger <adrian.berger@cloudrexx.com>
+ * @version     1.0.0
+ * @package     cloudrexx
+ * @subpackage  core
+ */
+class RecursiveArrayAccessException extends \Exception {}
 
 /**
  * Wrapper class for the recursive array
@@ -45,7 +56,7 @@ namespace Cx\Core\Model;
  * @version     $Id:    Exp $
  * @package     cloudrexx
  * @subpackage  core
- * 
+ *
  * @see         /core/session.class.php
  */
 class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
@@ -59,34 +70,34 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
 
     /**
      * Path of the current array
-     * 
+     *
      * @var string
      */
     protected $offset;
-    
+
     /**
      * Callable funtion on offsetSet
-     * 
+     *
      * @var callable
      */
-    protected $callableOnSet;    
+    protected $callableOnSet;
     /**
      * Callable funtion on offsetGet
-     * 
+     *
      * @var callable
      */
     protected $callableOnGet;
-    
+
     /**
      * Callable funtion on offsetUnset
-     * 
+     *
      * @var callable
      */
     protected $callableOnUnset;
-    
+
     /**
      * Callable function on callableOnValidateKey
-     * 
+     *
      * @var callable
      */
     protected $callableOnValidateKey;
@@ -97,14 +108,14 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      * @var callable
      */
     protected $callableOnSanitizeKey;
-    
+
     /**
-     * 
-     * 
+     *
+     *
      * @var integer
      */
     protected $id;
-    
+
     /**
      *
      * @var int
@@ -131,17 +142,17 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     {
         $this->offset   = $offset;
         $this->parentId = intval($parentId);
-        
+
         $this->callableOnSet   = $callableOnSet;
-        $this->callableOnGet   = $callableOnGet;        
+        $this->callableOnGet   = $callableOnGet;
         $this->callableOnUnset = $callableOnUnset;
         $this->callableOnValidateKey = $callableOnValidateKey;
-        
+
         if ($this->callableOnUnset)
             call_user_func($this->callableOnUnset, $this->offset, $this->parentId);
         if ($this->callableOnSet)
             call_user_func($this->callableOnSet, $this);
-        
+
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 $this[$key] = $value;
@@ -173,8 +184,26 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @return boolean true on success or false on failure.
      */
-    public function offsetExists($offset) {       
-        return isset($this->data[$offset]);
+    public function offsetExists($offset) {
+        return !is_null($offset) && isset($this->data[$offset]);
+    }
+
+    /**
+     * This function checks if the value of an array-index, which is not on first level of the main array, is set
+     * e.g $array['level1']['level2']['level3']
+     *
+     * @param string $offset     string containing the offset e.g 'level1/level2/level3'
+     * @param string $delimiter  the delimiter used in $offset e.g '/'
+     * @return boolean
+     * @throws RecursiveArrayAccessException
+     */
+    public function recursiveOffsetExists($offset, $delimiter = '/') {
+        try {
+            $this->recursiveOffsetGet($offset, $delimiter);
+        } catch(RecursiveArrayAccessException $e){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -195,6 +224,31 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     }
 
     /**
+     * This function returns the value of an array-index which is not on first level of the main array
+     * e.g $array['level1']['level2']['level3']
+     *
+     * @access public
+     * @param string $offset     string containing the offset e.g 'level1/level2/level3'
+     * @param string $delimiter  the delimiter used in $offset e.g '/'
+     * @return mixed value of the array index
+     * @throws RecursiveArrayAccessException
+     */
+    public function recursiveOffsetGet($offset, $delimiter = '/') {
+        $offsetParts = explode($delimiter, $offset);
+        $array = $this->data;
+
+        foreach ($offsetParts as $offsetPart) {
+            // if the array-index is not set, we throw an RecursiveArrayAccessException.
+            // recursiveOffsetExists() will catch this
+            if (!isset($array[$offsetPart])) {
+                throw new RecursiveArrayAccessException('RecursiveArrayOffset "' . $offset . '" could not be found');
+            }
+            $array = $array[$offsetPart];
+        }
+        return $array;
+    }
+
+    /**
      * Offset to set
      *
      * @link     http://php.net/manual/en/arrayaccess.offsetset.php
@@ -210,15 +264,15 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
         if ($callableOnValidateKey) {
             $this->callableOnValidateKey = $callableOnValidateKey;
         }
-        
+
         if ($this->callableOnValidateKey) {
             call_user_func($this->callableOnValidateKey, $offset);
         }
-        
+
         if ($offset === null) {
             $offset = count($this->data);
         }
-        
+
         if ($callableOnSet) {
             $this->callableOnSet = $callableOnSet;
         }
@@ -279,6 +333,38 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     }
 
     /**
+     * This function sets the value of an array-index which is not on first level of the main array
+     * e.g $array['level1']['level2']['level3']
+     * If the previous index i.e ['level1'] is not set it will be set to array.
+     * Note: If it is set but not an array it will be overwritten
+     *
+     * @access public
+     * @param mixed  $value      the value which should be set
+     * @param string $offset     string containing the offset e.g 'level1/level2/level3'
+     * @param string $delimiter  the delimiter used in $offset e.g '/'
+     */
+    public function recursiveOffsetSet($value, $offset, $delimiter = '/') {
+        $offsetParts = explode($delimiter, $offset);
+
+        $arrayPointer = $this;
+        foreach ($offsetParts as $index=>$offset) {
+            // if index is the last value of the offset, we set it to $value
+            if ($index == count($offsetParts) - 1) {
+                $arrayPointer[$offset] = $value;
+                break;
+            }
+            // If the index is not set or not an RecursiveArrayAccess instance, we set/reset it to an array
+            if (
+                !isset($arrayPointer[$offset]) ||
+                !is_a($arrayPointer[$offset], __CLASS__)
+            ) {
+                $arrayPointer[$offset] = array();
+            }
+            $arrayPointer = $arrayPointer[$offset];
+        }
+    }
+
+    /**
      * Offset to unset
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
@@ -290,9 +376,9 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     public function offsetUnset($offset) {
         if ($this->callableOnUnset)
             call_user_func($this->callableOnUnset, $offset, $this->id);
-        
+
         unset($this->data[$offset]);
-        
+
         if ($this->callableOnSet)
             call_user_func($this->callableOnSet, $this);
     }

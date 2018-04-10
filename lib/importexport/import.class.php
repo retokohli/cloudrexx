@@ -36,11 +36,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_LIBRARY_PATH."/importexport/lib/importexport.class.php";
-
-/**
  * Import Class
  * Class which handles the main import operations
  *
@@ -65,10 +60,24 @@ class Import extends ImportExport
 	{
 		$this->setType($_POST['importtype']);
 		$this->setFieldPairs($_POST['pairs_left_keys'], $_POST['pairs_right_keys']);
-		$this->parseFile($_POST['importfile']);
+
+        $uploaderId = isset($_POST['importUploaderId']) ? contrexx_input2raw($_POST['importUploaderId']) : '';
+        $file       = $this->getUploadedFileFromUploader($uploaderId);
+        if (!$file) {
+            return;
+        }
+
+		$this->parseFile($file);
 
 		$retval = array();
+
+        // init base data-set
+        $retStructure = array();
+        foreach (array_keys($fields) as $fieldKey) {
+            $retStructure[$fieldKey] = null;
+        }
 		foreach ($this->importedData as $datarow) {
+            $retfields = $retStructure;
 			foreach ($this->pairs as $key => $value) {
 				$retfields[$key] = $datarow[$value];
 				$retfields[$fields[$key]] = $datarow[$value];
@@ -93,6 +102,10 @@ class Import extends ImportExport
 		$rFields = explode(";", $right_fields);
 
 		foreach ($rFields as $key => $rField) {
+            // skip empty field associations
+            if ($key === '' || $rField === '') {
+                continue;
+            }
 			$this->pairs[$rField] = $lFields[$key];
 		}
 	}
@@ -110,42 +123,30 @@ class Import extends ImportExport
 	/**
 	 * Parses the file
 	 *
-	 * @param array $file
-	 * @param bool $delete Delete file after parsing or not
-	 * @return string $file
+	 * @param string    $file       Path to the csv file
+	 * @param boolean   $onlyHeader Parse only the header when true
 	 */
 	function parseFile($file, $onlyHeader = false) {
-		if ($onlyHeader) {
-			$path = ASCMS_TEMP_PATH . "/";
+            if ($onlyHeader) {
+                $data = $this->dataClass->parse($file, true, true, 1);
+            } else {
+                $data = $this->dataClass->parse($file, true, true);
+            }
+            if (!empty($data)) {
+                if (isset($data['fieldnames'])) {
+                    // Set the fieldnames
+                    $this->fieldNames = $data['fieldnames'];
+                } else {
+                    // Take the first data line as fieldnames
+                    foreach ($data['data'][0] as $value) {
+                            $this->fieldNames[] = $value;
+                    }
+                }
 
-			$newpath = $path . basename($file) . "." . time() . ".import";
-			move_uploaded_file($file, $newpath);
-			$file = $newpath;
-			$data = $this->dataClass->parse($file, true, true, 1);
-		} else {
-          $data = $this->dataClass->parse($file, true, true);
-		}
-		if (!empty($data)) {
-			if (isset($data['fieldnames'])) {
-				// Set the fieldnames
-				$this->fieldNames = $data['fieldnames'];
-			} else {
-				// Take the first data line as fieldnames
-				foreach ($data['data'][0] as $value) {
-					$this->fieldNames[] = $value;
-				}
-			}
-
-			if (isset($data['data'])) {
-				$this->importedData = $data['data'];
-			}
-		}
-
-		if (!$onlyHeader) {
-			unlink($file);
-		}
-
-		return $file;
+                if (isset($data['data'])) {
+                    $this->importedData = $data['data'];
+                }
+            }
 	}
 
 	/**
@@ -159,8 +160,24 @@ class Import extends ImportExport
 	{
 		global $_ARRAYLANG;
 
-		$template = file_get_contents(ASCMS_LIBRARY_PATH . "/importexport/template/import.fileselect.html");
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+		$template = file_get_contents($cx->getCodeBaseLibraryPath() . '/importexport/template/import.fileselect.html');
 		$tpl->setTemplate($template,true,true);
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        // init uploader to upload csv
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setCallback('importUploaderCallback');
+        $uploader->setOptions(array(
+            'id'                 => 'importCsvUploader',
+            'allowed-extensions' => array('csv'),
+            'data-upload-limit'  => 1,
+        ));
+        $uploader->setFinishedCallback(array(
+            $cx->getCodeBaseLibraryPath().'/importexport/import.class.php',
+            '\Import',
+            'uploadFinished'
+        ));
 
 		$tpl->setVariable(array(
 			"TXT_IMPORT"		=> $_ARRAYLANG['TXT_IMPORT'],
@@ -171,7 +188,9 @@ class Import extends ImportExport
 			"TXT_ENCLOSURE"		=> $_ARRAYLANG['TXT_ENCLOSURE'],
 			"TXT_DESC_DELIMITER"	=> $_ARRAYLANG['TXT_DESC_DELIMITER'],
 			"TXT_DESC_ENCLOSURE"	=> $_ARRAYLANG['TXT_DESC_ENCLOSURE'],
-			"TXT_HELP"           => $_ARRAYLANG['TXT_HELP']
+			"TXT_HELP"           => $_ARRAYLANG['TXT_HELP'],
+            'IMPORT_UPLOADER_BUTTON' => $uploader->getXHtml($_ARRAYLANG['TXT_BROWSE']),
+            'IMPORT_UPLOADER_ID'     => $uploader->getId(),
 		));
 	}
 
@@ -186,7 +205,8 @@ class Import extends ImportExport
 	{
 		global $_ARRAYLANG;
 
-		$template = file_get_contents(ASCMS_LIBRARY_PATH . "/importexport/template/import.fieldselect.html");
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+		$template = file_get_contents($cx->getCodeBaseLibraryPath() . '/importexport/template/import.fieldselect.html');
 		$tpl->setTemplate($template, true, true);
 
 		// Pass the options
@@ -198,31 +218,34 @@ class Import extends ImportExport
 		$tpl->setVariable($optionvars);
 
 		$this->setType($_POST['importtype']);
-		$file = $this->parseFile($_FILES['importfile']['tmp_name'], true);
+                $uploaderId = isset($_POST['importUploaderId']) ? contrexx_input2raw($_POST['importUploaderId']) : '';
+                $file       = $this->getUploadedFileFromUploader($uploaderId);
+                if (!$file) {
+                    return;
+                }
+		$this->parseFile($file, true);
 
 		$tpl->setVariable(array(
 			"TXT_REMOVE_PAIR"	=> $_ARRAYLANG['TXT_REMOVE_PAIR'],
 			"TXT_ADD_PAIR"		=> $_ARRAYLANG['TXT_ADD_PAIR'],
 			"TXT_IMPORT"		=> $_ARRAYLANG['TXT_IMPORT'],
 			"TXT_FIELDSELECT_SELECT_DESC"	=> $_ARRAYLANG['TXT_FIELDSELECT_SELECT_DESC'],
-			"TXT_FIELDSELECT_SHOW_DESC"		=> $_ARRAYLANG['TXT_FIELDSELECT_SHOW_DESC'],
-			"IMPORT_FILE"	=> $file,
-			"IMPORT_TYPE"	=> $_POST['importtype'],
-			"TXT_CANCEL"         => $_ARRAYLANG['TXT_CANCEL']
+			"TXT_FIELDSELECT_SHOW_DESC"		=> $_ARRAYLANG['TXT_FIELDSELECT_SHOW_DESC'],			
+			'IMPORT_UPLOADER_ID'     => contrexx_raw2xhtml($uploaderId),
+			"IMPORT_TYPE"	         => $_POST['importtype'],
+			"TXT_CANCEL"             => $_ARRAYLANG['TXT_CANCEL']
 		));
 
 		/*
 		 * Set the given fields
 		 */
 		foreach ($given_fields as $key => $field) {
-			if ($field['active']) {
-				$tpl->setVariable(array(
-					"IMPORT_FIELD_VALUE" => $key,
-					"IMPORT_FIELD_NAME"	=> $field
-				));
+            $tpl->setVariable(array(
+                "IMPORT_FIELD_VALUE" => $key,
+                "IMPORT_FIELD_NAME"	=> $field
+            ));
 
-				$tpl->parse("given_field_row");
-			}
+            $tpl->parse("given_field_row");
 		}
 
 		// Set the file fields
@@ -248,9 +271,73 @@ class Import extends ImportExport
             }
         $file = $_POST['importfile'];
 
-        $path = ASCMS_TEMP_PATH . "/";
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $path = $cx->getWebsiteTempPath() . '/';
         if (file_exists($path . $file)) {
             unlink($path);
         }
 	}
+
+        /**
+         * Uploader callback function
+         *
+         * @param string $tempPath    Temp path 
+         * @param string $tempWebPath Temp web path
+         * @param array  $data        Uploader data
+         * @param string $uploaderId  Uploader id
+         * @param array  $fileInfos   Info about the file
+         * @param object $response    \Cx\Core_Modules\Uploader\Controller\UploadResponse
+         *
+         * @return array temp path and temp web path
+         */
+        public static function uploadFinished(
+            $tempPath,
+            $tempWebPath,
+            $data,
+            $uploaderId,
+            $fileInfos,
+            \Cx\Core_Modules\Uploader\Controller\UploadResponse $response
+        )
+        {
+            // in case uploader has been restricted to only allow one single file to be
+            // uploaded, we'll have to clean up any previously uploaded files
+            if (count($fileInfos['name'])) {
+                // new files have been uploaded -> remove existing files
+                if (\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+                    foreach (glob($tempPath.'/*') as $file) {
+                        if (basename($file) == $fileInfos['name']) {
+                            continue;
+                        }
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($file);
+                    }
+                }
+            }
+
+            return array($tempPath, $tempWebPath);
+        }
+        
+        /**
+         * Get uploaded csv file by using uploader id
+         * 
+         * @param string $uploaderId Uploader id
+         * 
+         * @return boolean|string File path when file exists, false otherwise
+         */
+        public function getUploadedFileFromUploader($uploaderId)
+        {
+            if (empty($uploaderId)) {
+                return false;
+            }
+            
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
+            $uploaderFolder = $objSession->getTempPath() . '/' . $uploaderId;
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {
+                return false;
+            }
+            foreach (glob($uploaderFolder.'/*.csv') as $file) {
+                return $file;                
+            }
+            return false;
+        }
 }
