@@ -1992,8 +1992,11 @@ cx.cm.updatePageIcons = function(args) {
         page.removeClass("inexistent");
     }
 
-    // reload the editor values
-    if (args.page.id == cx.jQuery('input#pageId').val()) {
+    // reload the editor values, in case a page had been loaded into the editor
+    if (
+        args.page.id > 0 &&
+        args.page.id == cx.jQuery('input#pageId').val()
+    ) {
         cx.cm.loadPage(args.page.id, undefined, args.page.version, undefined, false);
     }
 }
