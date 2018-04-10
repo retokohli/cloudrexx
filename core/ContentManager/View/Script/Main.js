@@ -1929,6 +1929,12 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             break;
         case "show":
         case "hide":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
         case "publish":
             // nothing to do yet
             break;
