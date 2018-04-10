@@ -229,14 +229,16 @@ class Resolver {
             }
         }
 
-        // used for LinkGenerator
-        define('FRONTEND_LANG_ID', $this->lang);
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getDb()->getTranslationListener()->setTranslatableLocale(
-            \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
-        );
-        // used to load template file
-        \Env::get('init')->setFrontendLangId($this->lang);
+        if ($this->lang) {
+            // used for LinkGenerator
+            define('FRONTEND_LANG_ID', $this->lang);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getDb()->getTranslationListener()->setTranslatableLocale(
+                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+            );
+            // used to load template file
+            \Env::get('init')->setFrontendLangId($this->lang);
+        }
 
 
 
@@ -640,7 +642,7 @@ class Resolver {
 
             //(III) extend our url object with matched path / params
             $this->url->setTargetPath($result['matchedPath'].$result['unmatchedPath']);
-            $this->url->setParams($this->url->getSuggestedParams());
+            $this->url->setParams($this->url->getSuggestedParams() . $this->url->getSuggestedAnchor());
 
             $this->page = $result['page'];
         }
@@ -785,7 +787,7 @@ class Resolver {
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-            header('Location: ' . $target, true, 301);
+            header('Location: ' . $target . $this->url->getSuggestedAnchor(), true, 301);
             exit;
         }
 
