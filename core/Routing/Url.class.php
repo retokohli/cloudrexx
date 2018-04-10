@@ -300,23 +300,14 @@ class Url {
             return;
         }
         $matches = array();
-        $matchCount = preg_match('/([^\?#]+)([^#]*)(.*)/', $this->path, $matches);
-
-        if ($matchCount == 0) {//seemingly, no parameters are set.
-            $this->suggestedTargetPath = $this->path;
-            $this->suggestedParams = '';
-        } else {
-            $parts = preg_split('/\?#/', $this->path);
-            if ($parts[0] == '') { // we have no path or filename, just set parameters
-                $this->suggestedTargetPath = '';
-                $this->suggestedParams = $this->path;
-            } else {
-                $this->suggestedTargetPath = $matches[1];
-                $this->suggestedParams = $matches[2];
-                $this->suggestedAnchor = $matches[3];
-            }
+        $this->suggestedTargetPath = $this->path;
+        $this->suggestedParams = '';
+        $this->suggestedAnchor = '';
+        if (preg_match('/([^\?#]*)([^#]*)(.*)/', $this->path, $matches)) {
+            $this->suggestedTargetPath = $matches[1];
+            $this->suggestedParams = $matches[2];
+            $this->suggestedAnchor = $matches[3];
         }
-
 
         $this->state = self::SUGGESTED;
     }
