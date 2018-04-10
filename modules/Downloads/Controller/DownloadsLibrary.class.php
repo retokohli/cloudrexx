@@ -599,27 +599,25 @@ class DownloadsLibrary
         $langId = static::getOutputLocale()->getId();
         $page = null;
 
-        if ($categoryIds) {
-            while ($categoryId = array_shift($categoryIds)) {
-                // fetch category specific application page
-                // (i.e. section=Downloads&cmd=1337)
-                $page = $pageRepo->findOneByModuleCmdLang(
-                    'Downloads',
-                    $categoryId,
-                    $langId
-                );
+        while ($categoryId = array_shift($categoryIds)) {
+            // fetch category specific application page
+            // (i.e. section=Downloads&cmd=1337)
+            $page = $pageRepo->findOneByModuleCmdLang(
+                'Downloads',
+                $categoryId,
+                $langId
+            );
 
-                // verify that page is active
-                if ($page && $page->isActive()) {
-                    return $page;
-                }
+            // verify that page is active
+            if ($page && $page->isActive()) {
+                return $page;
+            }
 
-                // add parent category ID to the list of possible
-                // application pages
-                $category = Category::getCategory($categoryId);
-                if ($category->getParentId()) {
-                    $categoryIds[] = $category->getParentId();
-                }
+            // add parent category ID to the list of possible
+            // application pages
+            $category = Category::getCategory($categoryId);
+            if ($category->getParentId()) {
+                $categoryIds[] = $category->getParentId();
             }
         }
 
