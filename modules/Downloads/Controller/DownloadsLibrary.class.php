@@ -34,6 +34,17 @@
  * @version     1.0.0
  */
 namespace Cx\Modules\Downloads\Controller;
+
+/**
+ * Digital Asset Management Library Exception
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
+class DownloadsLibraryException extends \Exception {};
+
 /**
  * Digital Asset Management Library
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -202,7 +213,7 @@ class DownloadsLibrary
                 // language
                 $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
                 $locale = $localeRepo->findOneByCode($iso1Code);
-            } catch (\Exception $e) {}
+            } catch (DownloadsLibraryException $e) {}
         }
 
         if (!$locale) {
@@ -214,7 +225,7 @@ class DownloadsLibrary
         }
 
         if (!$locale) {
-            throw new \Exception('Unable to initialize frontend locale');
+            throw new DownloadsLibraryException('Unable to initialize frontend locale');
         }
 
         static::$outputLocale = $locale;
