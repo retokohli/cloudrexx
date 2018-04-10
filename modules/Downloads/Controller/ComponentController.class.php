@@ -171,6 +171,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param   string  $searchTerm The keyword to search by
      * @return  array   Two-dimensional array of Downloads found by keyword
      *                  $searchTerm.
+     *                  If integration into search component is disabled or
+     *                  no Download matched the giving keyword, then an
+     *                  empty array is retured.
      */
     public function getDownloadsForSearchComponent($searchTerm) {
         $result = array();
