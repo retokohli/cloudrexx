@@ -631,7 +631,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
         $newsCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($newsCategories));
         if (!empty($newsCategories)) {
-            $newsfilter .= ' AND (`nc`.`category_id` IN (' . implode(',', $newsCategories) . '))';
+            $newsfilter .= ' AND n.`id` IN (SELECT nc.`news_id` FROM `'.DBPREFIX.'module_news_rel_categories` AS nc WHERE nc.`category_id` IN (' . implode(',', $newsCategories) . '))';
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_CAT_DROPDOWNMENU')) {
@@ -747,7 +747,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_MORE_INFO'            => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
         ));
 
-        $query = '  SELECT      n.id                AS newsid,
+        $selectFields = ',
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
                                 n.teaser_image_path,
@@ -768,9 +768,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.text AS text,
                                 nl.teaser_text
+        ';
+        $query = '  SELECT      n.id                AS newsid
+                    %s
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
-                    INNER JOIN  '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id
                     WHERE       status = 1
                                 AND nl.is_active=1
                                 AND nl.lang_id='.FRONTEND_LANG_ID.'
@@ -781,12 +783,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                     ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                         " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
                                         :   " AND frontend_access_id=0 ")
-                                    :   '')
-                    .' GROUP BY newsid '
-                    .' ORDER BY newsdate DESC';
+                                    :   '');
 
         /***start paging ****/
-        $objResult = $objDatabase->Execute($query);
+        $objResult = $objDatabase->Execute(sprintf($query, ''));
         $count = $objResult->RecordCount();
 
         $category = '';
@@ -810,7 +810,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
         $expirationDate = $this->getExpirationDate();
-        $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+        $objResult = $objDatabase->SelectLimit(sprintf($query, $selectFields).' ORDER BY newsdate DESC', $_CONFIG['corePagingLimit'], $pos);
         /*** end paging ***/
         if (    $count>=1
             &&  $validToShowList
