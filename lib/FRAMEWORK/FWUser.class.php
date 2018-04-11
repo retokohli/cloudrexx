@@ -213,10 +213,7 @@ class FWUser extends User_Setting
             'clearEsiCache',
             array(
                 'Widget',
-                array(
-                    'access_currently_online_member_list',
-                    'access_last_active_member_list'
-                )
+                $cx->getComponent('Access')->getSessionBasedWidgetNames(),
             )
         );
 
@@ -270,10 +267,11 @@ class FWUser extends User_Setting
      */
     public static function hostFromUri($uri)
     {
+        $scheme = null;
+        $host = null;
+        $path = null;
         extract(parse_url($uri));
 
-// TODO: $scheme is not defined
-// TODO: $host is not defined
         return str_ireplace('www.', '', $scheme.'://'.$host);
     }
 
@@ -284,6 +282,10 @@ class FWUser extends User_Setting
      */
     public static function getRawUrL($url, $baseUrl)
     {
+        $scheme = null;
+        $host = null;
+        $path = null;
+
         /* return if already absolute URL */
         if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
 
@@ -301,7 +303,6 @@ class FWUser extends User_Setting
         if ($url[0] == '/') $path = '';
 
         /* dirty absolute URL // with port number if exists */
-// TODO: $host is not defined
         if (parse_url($baseUrl, PHP_URL_PORT) != ''){
             $abs = "$host:".parse_url($baseUrl, PHP_URL_PORT)."$path/$url";
         }else{
@@ -311,7 +312,6 @@ class FWUser extends User_Setting
         $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
         for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
 
-// TODO: $scheme is not defined
         /* absolute URL is ready! */
         return $scheme.'://'.$abs;
 
@@ -340,7 +340,8 @@ class FWUser extends User_Setting
         global $objDatabase;
 
         if (!isset($_SESSION['auth']['log'])) {
-            $remote_host = @gethostbyaddr($_SERVER['REMOTE_ADDR']);
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
+            $remoteHost = $net->getHostByAddr($_SERVER['REMOTE_ADDR']);
             $referer = isset($_SERVER['HTTP_REFERER']) ? contrexx_strip_tags(strtolower($_SERVER['HTTP_REFERER'])) : '';
             $httpUserAgent = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_USER_AGENT']) : addslashes(strip_tags($_SERVER['HTTP_USER_AGENT']));
             $httpAcceptLanguage = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']) : addslashes(strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']));
@@ -352,7 +353,7 @@ class FWUser extends User_Setting
                                             useragent = '".substr($httpUserAgent, 0, 250)."',
                                             userlanguage = '".substr($httpAcceptLanguage, 0, 250)."',
                                             remote_addr = '".substr(strip_tags($_SERVER['REMOTE_ADDR']), 0, 250)."',
-                                            remote_host = '".substr($remote_host, 0, 250)."',
+                                            remote_host = '" . substr($remoteHost, 0, 250) . "',
                                             http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? substr(strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']), 0, 250) : '')."',
                                             http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
                                             http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
@@ -562,12 +563,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     $objUser->getUsername(),
                     $restoreLink,
-                    $objUserMail->getSenderName()
+                    $objUserMail->getSenderName(),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyText()
             );
@@ -578,12 +581,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
                     $restoreLink,
-                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyHtml()
             );
@@ -856,6 +861,17 @@ class FWUser extends User_Setting
     {
         $arrSettings = User_Setting::getSettings();
         return $arrSettings['block_birthday_users']['status'];
+    }
+
+    /**
+     * Returns status of next birthday users from user setting
+     *
+     * @return  bool    returns true if function is active
+     */
+    public static function showNextBirthdayUsers()
+    {
+        $arrSettings = User_Setting::getSettings();
+        return (bool) $arrSettings['block_next_birthday_users']['status'];
     }
 
 

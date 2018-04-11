@@ -2378,7 +2378,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             $id = intval($_POST['newsId']);
             $userId = $objFWUser->objUser->getId();
-            $changelog = mktime();
+            $changelog = time();
 
             $date = $this->dateFromInput($_POST['newsDate']);
 
@@ -2862,9 +2862,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 if (!$catId = $this->objNestedSet->createSubNode($catParentId, array())) {
                     $status = false;
                 } else {
-                    if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'module_news_categories_locale` (`lang_id`, `category_id`, `name`)
-                                               SELECT `id`, "'.$catId.'", "'.$catName.'" FROM `'.DBPREFIX.'languages`') === false) {
-                        $status = false;
+                    $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+                    foreach($frontendLanguages as $language) {
+                        if ($objDatabase->Execute('INSERT INTO `' . DBPREFIX . 'module_news_categories_locale` (`lang_id`, `category_id`, `name`)
+                                               VALUES ("'.$language['id'].'", "' . $catId . '", "' . $catName . '")') === false
+                        ) {
+                            $status = false;
+                        }
                     }
                 }
 
@@ -3100,10 +3104,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $status = false;
                 } else {
                     $typeId = $objDatabase->Insert_ID();
-                    if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_types_locale
+                    $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+                    foreach($frontendLanguages as $language) {
+                        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_types_locale
                                                            (lang_id, type_id, name)
-                                                           SELECT id, '$typeId', '$typeName' FROM ".DBPREFIX."languages") === false) {
-                        $status = false;
+                                                           VALUES ('" . $language['id'] . "', '$typeId', '$typeName')") === false) {
+                            $status = false;
+                        }
                     }
                 }
                 if ($status) {
@@ -3204,178 +3211,199 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         // languages
         $arrLanguages = \FWLanguage::getLanguageArray();
+        if (!count($arrLanguages)) {
+            return;
+        }
 
-        if (intval($this->arrSettings['news_feed_status']) == 1) {
-
-            if (count($arrLanguages>0)) {
-                $categoryDetails = $this->getCategoryLocale(null, array_keys($arrLanguages));
-                foreach ($arrLanguages as $LangId => $arrLanguage) {
-                    if ($arrLanguage['frontend'] == 1) {
-                        $objRSSWriter = new \RSSWriter();
-
-                        $query = "
-                            SELECT      tblNews.id,
-                                        tblNews.date,
-                                        tblNews.redirect,
-                                        tblNews.source,
-                                        tblNews.teaser_frames AS teaser_frames,
-                                        tblLocale.lang_id,
-                                        tblLocale.title,
-                                        tblLocale.text,
-                                        tblLocale.teaser_text
-                            FROM        ".DBPREFIX."module_news AS tblNews
-                            INNER JOIN  ".DBPREFIX."module_news_locale AS tblLocale ON tblLocale.news_id = tblNews.id
-                            WHERE       tblNews.status=1
-                                AND     tblLocale.is_active = 1
-                                AND     tblLocale.lang_id = " . $LangId . "
-                                AND     (tblNews.startdate <= '".date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME)."' OR tblNews.startdate = '0000-00-00 00:00:00')
-                                AND     (tblNews.enddate >= '".date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME)."' OR tblNews.enddate = '0000-00-00 00:00:00')"
-                                .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
-                                        ." ORDER BY tblNews.date DESC";
-
-                        $arrNews = array();
-                        if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {
-                            while (!$objResult->EOF) {
-                                if (empty($objRSSWriter->channelLastBuildDate)) {
-                                    $objRSSWriter->channelLastBuildDate = date('r', $objResult->fields['date']);
-                                }
-                                $teaserText = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['teaser_text']);
-                                $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['text']);
-                                $redirect = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['redirect']);
-                                \LinkGenerator::parseTemplate($teaserText, true);
-                                \LinkGenerator::parseTemplate($text, true);
-                                \LinkGenerator::parseTemplate($redirect, true);
-                                $arrNews[$objResult->fields['id']] = array(
-                                    'date'          => $objResult->fields['date'],
-                                    'title'         => $objResult->fields['title'],
-                                    'text'          => empty($redirect) ? (!empty($teaserText) ? nl2br($teaserText).'<br /><br />' : '').$text : (!empty($teaserText) ? nl2br($teaserText) : ''),
-                                    'redirect'      => $redirect,
-                                    'source'        => $objResult->fields['source'],
-                                    'teaser_frames' => explode(';', $objResult->fields['teaser_frames']),
-                                    'categoryIds'    => $this->getNewsRelCategories($objResult->fields['id'])
-                                );
-                                $objResult->MoveNext();
-                            }
-                        } else {
-                            continue;
-                        }
-
-                        $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
-                        $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$LangId]);
-                        $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$LangId]);
-                        $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                            'News',
-                            '',
-                            $LangId
-                        )->toString();
-                        $objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($LangId, 'lang');
-                        $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
-
-                        if (!empty($this->arrSettings['news_feed_image'])) {
-                            $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
-                            $channelImageUrl->setMode('backend');
-                            $channelImageUrl->setPath(substr(
-                                $this->arrSettings['news_feed_image'],
-                                strlen(
-                                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
-                                ) + 1
-                            ));
-                            $objRSSWriter->channelImageUrl = $channelImageUrl;
-                            $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
-                            $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
-                        }
-                        $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
-
-                        // create rss feed
-                        $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
-                        foreach ($arrNews as $newsId => $arrNewsItem) {
-                            list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
-
-                            $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                'News',
-                                $cmdDetail,
-                                $LangId,
-                                array(
-                                    'newsid' => $newsId,
-                                )
-                            );
-                            if (isset($arrNewsItem['teaser_frames'][0])) {
-                                $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
-                            }
-                            $objRSSWriter->addItem(
-                                contrexx_raw2xml($arrNewsItem['title']),
-                                (empty($arrNewsItem['redirect'])) ?
-                                    contrexx_raw2xml($itemUrl->toString()) :
-                                    htmlspecialchars(
-                                        $arrNewsItem['redirect'],
-                                        ENT_QUOTES,
-                                        CONTREXX_CHARSET
-                                    ),
-                                contrexx_raw2xml($arrNewsItem['text']),
-                                '',
-                                $categories,
-                                '',
-                                '',
-                                '',
-                                $arrNewsItem['date'],
-                                array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2xml($arrNewsItem['title']))
-                            );
-                        }
-                        $objRSSWriter->write();
-
-                        // create headlines rss feed
-                        $objRSSWriter->removeItems();
-                        $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
-                        foreach ($arrNews as $newsId => $arrNewsItem) {
-                            list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
-
-                            $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                'News',
-                                $cmdDetail,
-                                $LangId,
-                                array(
-                                    'newsid' => $newsId,
-                                )
-                            );
-                            if (isset($arrNewsItem['teaser_frames'][0])) {
-                                $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
-                            }
-                            $objRSSWriter->addItem(
-                                contrexx_raw2xml($arrNewsItem['title']),
-                                contrexx_raw2xml($itemUrl->toString()),
-                                '',
-                                '',
-                                $categories,
-                                '',
-                                '',
-                                '',
-                                $arrNewsItem['date']
-                            );
-                        }
-                        $objRSSWriter->write();
-
-                        $objRSSWriter->feedType = 'js';
-                        $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js';
-                        $objRSSWriter->write();
-
-                        if (count($objRSSWriter->arrErrorMsg) > 0) {
-                            $this->strErrMessage .= implode('<br />', $objRSSWriter->arrErrorMsg);
-                        }
-                        if (count($objRSSWriter->arrWarningMsg) > 0) {
-                            $this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
-                        }
-                    }
+        if (!$this->arrSettings['news_feed_status']) {
+            foreach ($arrLanguages as $LangId => $arrLanguage) {
+                if ($arrLanguage['frontend'] == 1) {
+                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');
                 }
             }
-        } else {
-            if (count($arrLanguages>0)) {
-                foreach ($arrLanguages as $LangId => $arrLanguage) {
-                    if ($arrLanguage['frontend'] == 1) {
-                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');
+            return;
+        }
+
+        // TODO: setting the proper protocol should be done in Url::fromPage()
+        $protocol = '';
+        $config = \Env::get('config');
+        if ($config['forceProtocolFrontend'] != 'none') {
+            $protocol = $config['forceProtocolFrontend'];
+        }
+
+        $categoryDetails = $this->getCategoryLocale(null, array_keys($arrLanguages));
+        foreach ($arrLanguages as $LangId => $arrLanguage) {
+            $objRSSWriter = new \RSSWriter();
+
+            $query = "
+                SELECT      tblNews.id,
+                            tblNews.date,
+                            tblNews.redirect,
+                            tblNews.source,
+                            tblNews.teaser_frames AS teaser_frames,
+                            tblLocale.lang_id,
+                            tblLocale.title,
+                            tblLocale.text,
+                            tblLocale.teaser_text
+                FROM        ".DBPREFIX."module_news AS tblNews
+                INNER JOIN  ".DBPREFIX."module_news_locale AS tblLocale ON tblLocale.news_id = tblNews.id
+                WHERE       tblNews.status=1
+                    AND     tblLocale.is_active = 1
+                    AND     tblLocale.lang_id = " . $LangId . "
+                    AND     (tblNews.startdate <= '".date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME)."' OR tblNews.startdate = '0000-00-00 00:00:00')
+                    AND     (tblNews.enddate >= '".date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME)."' OR tblNews.enddate = '0000-00-00 00:00:00')"
+                    .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
+                            ." ORDER BY tblNews.date DESC";
+
+            $arrNews = array();
+            if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {
+                while (!$objResult->EOF) {
+                    if (empty($objRSSWriter->channelLastBuildDate)) {
+                        $objRSSWriter->channelLastBuildDate = date('r', $objResult->fields['date']);
                     }
+                    $teaserText = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['teaser_text']);
+                    $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['text']);
+                    $redirect = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['redirect']);
+                    \LinkGenerator::parseTemplate($teaserText, true);
+                    \LinkGenerator::parseTemplate($text, true);
+                    \LinkGenerator::parseTemplate($redirect, true);
+                    $arrNews[$objResult->fields['id']] = array(
+                        'date'          => $objResult->fields['date'],
+                        'title'         => $objResult->fields['title'],
+                        'text'          => empty($redirect) ? (!empty($teaserText) ? nl2br($teaserText).'<br /><br />' : '').$text : (!empty($teaserText) ? nl2br($teaserText) : ''),
+                        'redirect'      => $redirect,
+                        'source'        => $objResult->fields['source'],
+                        'teaser_frames' => explode(';', $objResult->fields['teaser_frames']),
+                        'categoryIds'    => $this->getNewsRelCategories($objResult->fields['id'])
+                    );
+                    $objResult->MoveNext();
                 }
+            } else {
+                continue;
+            }
+
+            $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
+            $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$LangId]);
+            $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$LangId]);
+            $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                'News',
+                '',
+                $LangId,
+                array(),
+                $protocol
+            )->toString();
+            $objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($LangId, 'lang');
+            $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
+
+            if (!empty($this->arrSettings['news_feed_image'])) {
+                $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot(
+                    array(),
+                    '',
+                    $protocol
+                );
+                $channelImageUrl->setMode('backend');
+                $channelImageUrl->setPath(substr(
+                    $this->arrSettings['news_feed_image'],
+                    strlen(
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
+                    ) + 1
+                ));
+                $objRSSWriter->channelImageUrl = $channelImageUrl->toString(true);
+                $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
+                $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
+            }
+
+            $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail']
+                . ' (' . $_CONFIG['coreAdminName'] . ')';
+            // create rss feed
+            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+            foreach ($arrNews as $newsId => $arrNewsItem) {
+                list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
+
+                $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'News',
+                    $cmdDetail,
+                    $LangId,
+                    array(
+                        'newsid' => $newsId,
+                    ),
+                    $protocol
+                );
+                if (isset($arrNewsItem['teaser_frames'][0])) {
+                    $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
+                }
+
+                if (empty($arrNewsItem['redirect'])) {
+                    $link = contrexx_raw2xml($itemUrl->toString());
+                } else {
+                    $link = contrexx_raw2xml($arrNewsItem['redirect']);
+                }
+
+                $objRSSWriter->addItem(
+                    contrexx_raw2xml($arrNewsItem['title']),
+                    $link,
+                    contrexx_raw2xml($arrNewsItem['text']),
+                    '',
+                    $categories,
+                    '',
+                    '',
+                    array('guid' => contrexx_raw2xml($itemUrl->toString())),
+                    $arrNewsItem['date'],
+                    array('url' => contrexx_raw2xml($arrNewsItem['source']), 'title' => contrexx_raw2xml($arrNewsItem['title']))
+                );
+            }
+            $objRSSWriter->write();
+
+            // create headlines rss feed
+            $objRSSWriter->removeItems();
+            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+            foreach ($arrNews as $newsId => $arrNewsItem) {
+                list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
+
+                $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'News',
+                    $cmdDetail,
+                    $LangId,
+                    array(
+                        'newsid' => $newsId,
+                    ),
+                    $protocol
+                );
+                if (isset($arrNewsItem['teaser_frames'][0])) {
+                    $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
+                }
+
+                if (empty($arrNewsItem['redirect'])) {
+                    $link = contrexx_raw2xml($itemUrl->toString());
+                } else {
+                    $link = contrexx_raw2xml($arrNewsItem['redirect']);
+                }
+
+                $objRSSWriter->addItem(
+                    contrexx_raw2xml($arrNewsItem['title']),
+                    $link,
+                    '',
+                    '',
+                    $categories,
+                    '',
+                    '',
+                    array('guid' => contrexx_raw2xml($itemUrl->toString())),
+                    $arrNewsItem['date']
+                );
+            }
+            $objRSSWriter->write();
+
+            $objRSSWriter->feedType = 'js';
+            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js';
+            $objRSSWriter->write();
+
+            if (count($objRSSWriter->arrErrorMsg) > 0) {
+                $this->strErrMessage .= implode('<br />', $objRSSWriter->arrErrorMsg);
+            }
+            if (count($objRSSWriter->arrWarningMsg) > 0) {
+                $this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
             }
         }
     }
@@ -3598,9 +3626,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $this->_objTpl->addBlockfile('NEWS_SETTINGS_CONTENT', 'settings_content', 'module_news_settings_general.html');
         // Show settings
-        $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE id='".$this->langId."'");
-        if ($objResult !== false) {
-            $newsFeedPath =  'http://'.$_SERVER['SERVER_NAME'].ASCMS_FEED_WEB_PATH.'/news_headlines_'.$objResult->fields['lang'].'.xml';
+        $langShort = \FWLanguage::getLanguageParameter($this->langId, 'lang');
+        if ($langShort) {
+            $newsFeedPath =  'http://'.$_SERVER['SERVER_NAME'].ASCMS_FEED_WEB_PATH.'/news_headlines_'.$langShort.'.xml';
         }
         if (intval($this->arrSettings['news_feed_status'])==1) {
             $status = 'checked="checked"';

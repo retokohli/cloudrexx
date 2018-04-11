@@ -975,6 +975,10 @@ div.date img{
     cursor: pointer;
 }
 
+#page .toggle.wysiwyg {
+    margin-bottom: 0;
+}
+
 #page .toggle .indicator {
     float: left;
     width: 22px;

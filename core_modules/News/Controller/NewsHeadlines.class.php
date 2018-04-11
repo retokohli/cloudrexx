@@ -79,12 +79,25 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
     }
 
 
-    function getHomeHeadlines($catId = 0, $langId = 0)
+    /**
+     * Parses the home headlines
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param integer $catId Category ID
+     * @param integer $langId Language ID
+     * @param boolean $includeSubCategories Whether to include subcategories or not, default false
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     * @return string Parsed HTML code
+     */
+    function getHomeHeadlines($catId = 0, $langId = 0, $includeSubCategories = false, &$nextUpdateDate = null)
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $i = 0;
         $catId= intval($catId);
+        $catIds = array();
 
         if (empty($langId)) {
             $langId = \Env::get('init')->getDefaultFrontendLangId();
@@ -107,6 +120,13 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
         if ($newsLimit<1) { //do not get any news if 0 was specified as the limit.
             $objResult=false;
         } else {//fetch news
+
+            if ($catId && $includeSubCategories) {
+                $catIds = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($catId));
+            } elseif ($catId) {
+                $catIds = array($catId);
+            }
+
             $objResult = $objDatabase->SelectLimit("
                 SELECT DISTINCT(tblN.id) AS newsid,
                        tblN.`date` AS newsdate,
@@ -124,6 +144,8 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.enable_tags,
                        tblN.url1,
                        tblN.url2,
+                       tblN.startdate,
+                       tblN.enddate,
                        tblL.text NOT REGEXP '^(<br type=\"_moz\" />)?\$' AS newscontent,
                        tblL.text AS text,
                        tblL.title AS newstitle,
@@ -132,7 +154,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
             INNER JOIN ".DBPREFIX."module_news_rel_categories AS tblC ON tblC.news_id=tblL.news_id
                   WHERE tblN.status=1".
-                   ($catId > 0 ? " AND tblC.category_id=$catId" : '')."
+                   ($catIds ? " AND tblC.category_id IN (" . join(',', $catIds) . ')' : '')."
                    AND tblN.teaser_only='0'
                    AND tblL.lang_id=".$langId."
                    AND tblL.is_active=1
@@ -148,8 +170,35 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    "ORDER BY date DESC", $newsLimit);
         }
 
+        $nextUpdateDate = null;
         if ($objResult !== false && $objResult->RecordCount() >= 0) {
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' ||
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->fields['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $newsid = $objResult->fields['newsid'];
                 $newsCategories = $this->getCategoriesByNewsId($newsid);
                 $newsUrl   = empty($objResult->fields['redirect'])

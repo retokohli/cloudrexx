@@ -163,7 +163,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $widgetController = $this->getComponent('Widget');
         // Get Headlines
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $id = '';
             if ($i > 1) {
                 $id = $i;
@@ -187,7 +187,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'TOP_NEWS_FILE'   => true,
             'NEWS_CATEGORIES' => false,
             'NEWS_ARCHIVES'   => true,
-            'NEWS_RECENT_COMMENTS_FILE' => false
+            'NEWS_RECENT_COMMENTS_FILE' => false,
+            'NEWS_TAG_CLOUD' => false,
         );
         foreach ($widgetNames as $widgetName => $esiVariable) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -231,6 +232,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Do something with a Response object
+     * You may do page alterations here (like changing the metatitle)
+     * You may do response alterations here (like set headers)
+     * PLEASE MAKE SURE THIS METHOD IS MOCKABLE. IT MAY ONLY INTERACT WITH
+     * resolve() HOOK.
+     *
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
+     */
+    public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
+        $params = $response->getRequest()->getUrl()->getParamArray();
+        unset($params['section']);
+        unset($params['cmd']);
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($response->getPage(), $params);
+        $response->setHeader(
+            'Link',
+            '<' . $canonicalUrl->toString() . '>; rel="canonical"'
+        );
+    }
+
+    /**
      * Do something for search the content
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -243,7 +264,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Register the Event listeners
      */
     public function registerEventListeners() {
-        $newsEventListener = new \Cx\Core_Modules\News\Model\Event\NewsEventListener();
-        $this->cx->getEvents()->addEventListener('languageStatusUpdate', $newsEventListener);
+        $evm = $this->cx->getEvents();
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core_Modules\News\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 }
