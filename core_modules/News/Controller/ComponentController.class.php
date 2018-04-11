@@ -188,7 +188,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'NEWS_CATEGORIES' => false,
             'NEWS_ARCHIVES'   => true,
             'NEWS_RECENT_COMMENTS_FILE' => false,
-            'NEWS_TAG_CLOUD' => false,
         );
         foreach ($widgetNames as $widgetName => $esiVariable) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -208,6 +207,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget
             );
         }
+
+        // Register tag-cloud widget
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'news_tag_cloud',
+            \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
+        );
+        $widget->setEsiVariable(
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+        );
+        $widgetController->registerWidget(
+            $widget
+        );
 
         // Set news teasers
         list($arrTeaserFrames, $arrTeaserFrameNames) = Teasers::getTeaserFrames();

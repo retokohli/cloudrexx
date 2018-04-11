@@ -78,9 +78,9 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             \Env::get('init')->getComponentSpecificLanguageData('News', true, $langId)
         );
 
-        if ($name == 'NEWS_TAG_CLOUD') {
+        if ($name == 'news_tag_cloud') {
             $newsLib = new NewsLibrary();
-            $template->setVariable($name, $newsLib->getTagCloudContent()->get());
+            $newsLib->parseTagCloud($template);
             return;
         }
 
