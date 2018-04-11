@@ -128,7 +128,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
      */
     protected function initializeTeasers(&$nextUpdateDate = null)
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase;
 
         $this->arrTeasers = array();
 
