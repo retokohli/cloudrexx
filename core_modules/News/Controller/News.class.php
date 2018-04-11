@@ -253,7 +253,13 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $this->newsTitle = $objResult->fields['title'];
         $newstitle = $this->newsTitle;
         $this->newsText = $text;
-        $this->newsThumbnail = $objResult->fields['newsThumbImg'];
+
+        // use main image as METAIMAGE
+        if (!empty($objResult->fields['newsimage'])) {
+            $this->newsThumbnail = $objResult->fields['newsimage'];
+        } else {
+            $this->newsThumbnail = $objResult->fields['newsThumbImg'];
+        }
         if ($this->arrSettings['news_use_teaser_text']) {
             $newsTeaser = nl2br($objResult->fields['teaser_text']);
             \LinkGenerator::parseTemplate($newsTeaser);
