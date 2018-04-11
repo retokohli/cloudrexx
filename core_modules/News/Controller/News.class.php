@@ -156,13 +156,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-
-        $newsid = intval($_GET['newsid']);
-
-        if (!$newsid) {
+        if (empty($_GET['newsid'])) {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
             exit;
         }
+
+        $newsid = intval($_GET['newsid']);
 
         $whereStatus    = '';
         $newsAccess     = \Permission::checkAccess(10, 'static', true);
