@@ -3098,6 +3098,7 @@ EOF;
                                                                                $newsUrl);
         if (!empty($image)) {
             $objTpl->setVariable(array(
+                'NEWS_IMAGE_ID'            => $newsid,
                 'NEWS_IMAGE'               => $image,
                 'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
                 'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),

@@ -265,6 +265,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $this->parseCategoryList($this->_objTpl, $newsCategories);
 
         $this->_objTpl->setVariable(array(
+           'NEWS_ID'             => $newsid,
            'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
            'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE,$objResult->fields['date']),
            'NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME,$objResult->fields['date']),
@@ -1060,6 +1061,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                 if (!empty($image)) {
                     $this->_objTpl->setVariable(array(
+                        'NEWS_IMAGE_ID'            => $newsid,
                         'NEWS_IMAGE'               => $image,
                         'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
                         'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
