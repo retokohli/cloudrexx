@@ -144,8 +144,10 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblN.startdate,
                    tblN.enddate,
                    tblN.allow_comments,
+                   tblN.author,
                    tblN.author_id,
                    tblN.publisher_id,
+                   tblN.publisher,
                    tblN.enable_tags,
                    tblN.source,
                    tblN.url1,
@@ -220,19 +222,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     $extUrl = "";
                 }
                 if ($this->administrate == false) {
-                    $objFWUser = \FWUser::getFWUserObject();
-                    $objUser = $objFWUser->objUser->getUser($objResult->fields['userid']);
-                    if ($objUser) {
-                        $firstname = $objUser->getProfileAttribute('firstname');
-                        $lastname = $objUser->getProfileAttribute('lastname');
-                        if (!empty($firstname) && !empty($lastname)) {
-                            $author = contrexx_raw2xhtml($firstname.' '.$lastname);
-                        } else {
-                            $author = contrexx_raw2xhtml($objUser->getUsername());
-                        }
-                    } else {
-                        $author = $_CORELANG['TXT_ANONYMOUS'];
-                    }
+                    $author = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
                 } else {
                     $author = '';
                 }
@@ -270,7 +260,8 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     'text'                          => $objResult->fields['teaser_full_text'],
                     'teaser_text'                   => $objResult->fields['teaser_text'],
                     'teaser_show_link'              => $objResult->fields['teaser_show_link'],
-                    'author'                        => $author,
+                    'author'                        => contrexx_raw2xhtml($author),
+                    'publisher'                     => $objResult->fields['publisher'],
                     'teaser_image_path'             => $image,
                     'teaser_image_thumbnail_path'   => $image,
                 );
