@@ -207,6 +207,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         'NEWS_IMAGE_SRC'     => contrexx_raw2xhtml($imageSource),
                         'NEWS_IMAGE_ALT'     => contrexx_raw2xhtml($newstitle),
                         'NEWS_IMAGE_LINK'    => $htmlLinkImage,
+                        'NEWS_IMAGE_LINK_URL'=> contrexx_raw2xhtml($newsUrl),
                     ));
 
                     if ($this->_objTemplate->blockExists('news_image')) {

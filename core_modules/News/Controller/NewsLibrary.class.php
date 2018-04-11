@@ -1567,7 +1567,8 @@ class NewsLibrary
                 'NEWS_' . $imgPlaceholder           => $image,
                 'NEWS_' . $imgPlaceholder . '_ALT'  => contrexx_raw2xhtml($altText),
                 'NEWS_' . $imgPlaceholder . '_LINK' => $imgLink,
-                'NEWS_' . $imgPlaceholder . '_SRC'  => contrexx_raw2xhtml($imagePath)
+                'NEWS_' . $imgPlaceholder . '_LINK_URL' => contrexx_raw2xhtml($newsUrl),
+                'NEWS_' . $imgPlaceholder . '_SRC'  => contrexx_raw2xhtml($imagePath),
             ));
             if ($objTpl->blockExists('news_' . $block)) {
                 $objTpl->parse('news_' . $block);
@@ -3106,6 +3107,7 @@ EOF;
                 'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
                 'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
                 'NEWS_IMAGE_LINK'          => $htmlLinkImage,
+                'NEWS_IMAGE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
 
                 // Backward compatibility for templates pre 3.0
                 'HEADLINE_IMAGE_PATH'     => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
