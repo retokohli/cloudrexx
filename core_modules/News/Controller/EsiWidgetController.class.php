@@ -187,7 +187,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             $nextUpdateDate = null;
             $teasers = new Teasers(false, $langId, $nextUpdateDate);
             $code    = '{' . $name . '}';
-            $teasers->setTeaserFrames(array($matches[1]), $code, false);
+            $teasers->setTeaserFrames(array($matches[1]), $code);
             if ($nextUpdateDate) {
                 $response->setExpirationDate($nextUpdateDate);
             }

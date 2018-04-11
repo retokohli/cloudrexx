@@ -70,7 +70,7 @@ class JsonNews implements JsonAdapter {
      */
     public function getAccessableMethods() {
         return array(
-            'getAllNews'
+            'getAllNews',
         );
     }
 
