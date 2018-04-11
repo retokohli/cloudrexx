@@ -1112,6 +1112,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     } else {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
                         $this->createRSS();
+                        try {
+                            \Cx\Core\Core\Controller\Cx::instanciate()
+                                ->getEvents()
+                                ->triggerEvent('newsClearSsiCache');
+                        } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                            // news application has not been installed
+                            // -> therefore the event newsClearSsiCache
+                            // hasn't been registered
+                        }
                         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                         $cx->getEvents()->triggerEvent(
                             'clearEsiCache',
@@ -1449,6 +1458,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             ) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 $this->createRSS();
+                try {
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getEvents()
+                        ->triggerEvent('newsClearSsiCache');
+                } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                    // news application has not been installed
+                    // -> therefore the event newsClearSsiCache
+                    // hasn't been registered
+                }
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 $cx->getEvents()->triggerEvent(
                     'clearEsiCache',
@@ -1487,6 +1505,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     ) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
+                        try {
+                            \Cx\Core\Core\Controller\Cx::instanciate()
+                                ->getEvents()
+                                ->triggerEvent('newsClearSsiCache');
+                        } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                            // news application has not been installed
+                            // -> therefore the event newsClearSsiCache
+                            // hasn't been registered
+                        }
                         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                         $cx->getEvents()->triggerEvent(
                             'clearEsiCache',
@@ -1525,6 +1552,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     ) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
+                        try {
+                            \Cx\Core\Core\Controller\Cx::instanciate()
+                                ->getEvents()
+                                ->triggerEvent('newsClearSsiCache');
+                        } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                            // news application has not been installed
+                            // -> therefore the event newsClearSsiCache
+                            // hasn't been registered
+                        }
                         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                         $cx->getEvents()->triggerEvent(
                             'clearEsiCache',
@@ -2639,6 +2675,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     ? $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
                     : implode('<br>', $this->errMsg);
            } else {
+                try {
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getEvents()
+                        ->triggerEvent('newsClearSsiCache');
+                } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                    // news application has not been installed
+                    // -> therefore the event newsClearSsiCache
+                    // hasn't been registered
+                }
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 $cx->getEvents()->triggerEvent(
                     'clearEsiCache',
@@ -2689,6 +2734,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                     } else {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+                        try {
+                            \Cx\Core\Core\Controller\Cx::instanciate()
+                                ->getEvents()
+                                ->triggerEvent('newsClearSsiCache');
+                        } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                            // news application has not been installed
+                            // -> therefore the event newsClearSsiCache
+                            // hasn't been registered
+                        }
                         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                         $cx->getEvents()->triggerEvent(
                             'clearEsiCache',
@@ -2707,6 +2761,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             foreach ($_POST['selectedUnvalidatedNewsId'] as $value) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."module_news SET status=1, validated='1' WHERE id=".intval($value));
                 $entryModified = true;
+            }
+            try {
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('newsClearSsiCache');
+            } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                // news application has not been installed
+                // -> therefore the event newsClearSsiCache
+                // hasn't been registered
             }
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getEvents()->triggerEvent(
@@ -2790,6 +2853,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                     ');
                 $this->createRSS();
 
+                try {
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getEvents()
+                        ->triggerEvent('newsClearSsiCache');
+                } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                    // news application has not been installed
+                    // -> therefore the event newsClearSsiCache
+                    // hasn't been registered
+                }
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 $cx->getEvents()->triggerEvent(
                     'clearEsiCache',
@@ -4460,6 +4532,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $result = $this->_objTeaser->deleteTeaserFrameTeamplte($templateId);
         if ($result !== false && $result !== true) {
             $this->strOkMessage .= $result;
+            try {
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('newsClearSsiCache');
+            } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                // news application has not been installed
+                // -> therefore the event newsClearSsiCache
+                // hasn't been registered
+            }
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getEvents()->triggerEvent(
                 'clearEsiCache',
@@ -4596,6 +4677,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTeaser->addTeaserFrameTemplate($templateDescription, $templateHtml, $sourceCodeMode);
             }
+            try {
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('newsClearSsiCache');
+            } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                // news application has not been installed
+                // -> therefore the event newsClearSsiCache
+                // hasn't been registered
+            }
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getEvents()->triggerEvent(
                 'clearEsiCache',
@@ -4620,6 +4710,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $frameId = intval($_GET['id']);
         if ($this->_objTeaser->deleteTeaserFrame($frameId)) {
+            try {
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('newsClearSsiCache');
+            } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                // news application has not been installed
+                // -> therefore the event newsClearSsiCache
+                // hasn't been registered
+            }
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getEvents()->triggerEvent(
                 'clearEsiCache',
@@ -4712,6 +4811,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTeaser->addTeaserFrame($id, $templateId, $name);
                 $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'];
+            }
+            try {
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('newsClearSsiCache');
+            } catch (\Cx\Core\Event\Controller\EventManagerException $e) {
+                // news application has not been installed
+                // -> therefore the event newsClearSsiCache
+                // hasn't been registered
             }
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getEvents()->triggerEvent(

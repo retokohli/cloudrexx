@@ -119,4 +119,120 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $result = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($search->getResultArray($query, 'News', '', $pageUrl, $search->getTerm()));
         $search->appendResult($result);
     }
+
+    /**
+     * Clear all Ssi cache
+     *
+     * @param array $eventArgs Event args
+     */
+    protected function newsClearSsiCache(array $eventArgs)
+    {
+        // clear ssi cache
+        $basicCacheAdaptors = array(
+            'getTopNews',
+            'getNewsCategories',
+            'getNewsArchiveList',
+            'getRecentComments',
+        );
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $langId  = $lang['id'];
+            $themeId = $lang['themesid'];
+            foreach ($basicCacheAdaptors as $adaptor) {
+                //do special cases for the adaptors
+                switch ($adaptor) {
+                    case 'getNewsCategories':
+                    case 'getNewsArchiveList':
+                        $this->clearSsiCache($adaptor, null, $langId);
+                        break;
+                    default:
+                        $this->clearSsiCache($adaptor, $themeId, $langId);
+                        break;
+                }
+            }
+            // clear headlines cache
+            $headlinesList = $this->getHeadlinesList($themeId);
+            foreach ($headlinesList as $headline) {
+                $params = array(
+                    'headline' => $headline,
+                );
+                $this->clearSsiCache('getHeadlines', null, $langId, $params);
+            }
+            // clear teaser cache
+            $teaser = new \Cx\Core_Modules\News\Controller\Teasers(false, $langId);
+            foreach ($teaser->arrTeaserFrames as $teaserFrame) {
+                // language MUST be added manually since langId is not the
+                // correct (auto-sorted) ESI param (correct would be lang).
+                // Therefore we need to ensure correct param order.
+                $params = array(
+                    'langId' => contrexx_input2int($langId),
+                    'teaserFrame' => strtoupper($teaserFrame['name']),
+                );
+                $this->clearSsiCache('getTeaserFrame', null, null, $params);
+            }
+        }
+    }
+
+    /**
+     * Get all headlines file list from the theme
+     *
+     * @staticvar array $themes Staic var to store loaded themes
+     *
+     * @param integer $themeId Template id
+     *
+     * @return array List of available headlines
+     */
+    protected function getHeadlinesList($themeId = null)
+    {
+        $headlineList = array();
+        if (null === $themeId) {
+            return $headlineList;
+        }
+
+        static $themes = array();
+        if (isset($themes[$themeId])) {
+            return $themes[$themeId];
+        }
+
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme     = $themeRepo->findById($themeId);
+        if (!$theme) {
+            $themes[$themeId] = $headlineList;
+            return $headlineList;
+        }
+        for ($i = 0; $i < 10; $i++) {
+            $headline = 'headlines'. (!empty($i) ? $i : '');
+            if ($theme->getFilePath($headline  .'.html')) {
+                $headlineList[] = $headline;
+            }
+        }
+        $themes[$themeId] = $headlineList;
+
+        return $headlineList;
+    }
+
+    /**
+     * Clears SSI cache page by given arguments
+     *
+     * @param string  $adaptor              Json adaptor name
+     * @param integer $themeId              Template id
+     * @param integer $langId               Language id
+     * @param array   $additionalParams     Additional parameter needed for json request
+     *
+     * @return null
+     */
+    protected function clearSsiCache($adaptor = '', $themeId = null, $langId = null, $additionalParams = array())
+    {
+        if (empty($adaptor)) {
+            return;
+        }
+
+        if (null !== $themeId) {
+            $additionalParams['theme'] = contrexx_input2int($themeId);
+        }
+        if (null !== $langId) {
+            $additionalParams['langId'] = contrexx_input2int($langId);
+        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->clearSsiCachePage('News', $adaptor, $additionalParams);
+    }
 }
