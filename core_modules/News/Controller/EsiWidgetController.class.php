@@ -176,19 +176,18 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         // Parse news teasers
-        $newsTeaserStatus = \Cx\Core\Setting\Controller\Setting::getValue(
+        if (!\Cx\Core\Setting\Controller\Setting::getValue(
             'newsTeasersStatus',
-            'Config'
-        );
-        if ($newsTeaserStatus) {
-            if (!preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
-                return;
-            }
+            'Config')
+        ) {
+            return;
+        }
 
+        if (preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
             $nextUpdateDate = null;
             $teasers = new Teasers(false, $langId, $nextUpdateDate);
             $code    = '{' . $name . '}';
-            $teasers->setTeaserFrames(array($matches[1]), $code);
+            $teasers->setTeaserFrames(array($matches[1]), $code, false);
             if ($nextUpdateDate) {
                 $response->setExpirationDate($nextUpdateDate);
             }

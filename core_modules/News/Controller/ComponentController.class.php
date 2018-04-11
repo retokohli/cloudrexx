@@ -210,15 +210,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // Set news teasers
-        $teaser      = new Teasers();
-        $teaserNames = array_flip($teaser->arrTeaserFrameNames);
-        if (empty($teaserNames)) {
+        list($arrTeaserFrames, $arrTeaserFrameNames) = Teasers::getTeaserFrames();
+        if (empty($arrTeaserFrames)) {
             return;
         }
-        foreach ($teaserNames as $teaserName) {
+        foreach ($arrTeaserFrames as $arrTeaser) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
-                'TEASERS_' . $teaserName
+                'TEASERS_' . strtoupper($arrTeaser['name'])
             );
             $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |

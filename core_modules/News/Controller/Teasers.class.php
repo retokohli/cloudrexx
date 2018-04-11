@@ -273,28 +273,35 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
     function initializeTeaserFrames($id = 0)
     {
-        global $objDatabase;
+        list($this->arrTeaserFrames, $this->arrTeaserFrameNames) = static::getTeaserFrames($id);
+    }
 
-        $this->arrTeaserFrames = array();
-        $this->arrTeaserFrameNames = array();
+    public static function getTeaserFrames($id = 0) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+
+        $arrTeaserFrames = array();
+        $arrTeaserFrameNames = array();
 
         if ($id != 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame WHERE id=".$id, 1);
+            $objResult = $db->SelectLimit("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame WHERE id=".$id, 1);
         } else {
-            $objResult = $objDatabase->Execute("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame ORDER BY name");
+            $objResult = $db->Execute("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame ORDER BY name");
         }
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $this->arrTeaserFrames[$objResult->fields['id']] = array(
+                $arrTeaserFrames[$objResult->fields['id']] = array(
                     'id'                => $objResult->fields['id'],
                     'frame_template_id' => $objResult->fields['frame_template_id'],
                     'name'              => $objResult->fields['name']
                 );
 
-                $this->arrTeaserFrameNames[$objResult->fields['name']] = $objResult->fields['id'];
+                $arrTeaserFrameNames[$objResult->fields['name']] = $objResult->fields['id'];
                 $objResult->MoveNext();
             }
         }
+
+        return array($arrTeaserFrames, $arrTeaserFrameNames);
     }
 
 
