@@ -80,7 +80,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         if ($name == 'news_tag_cloud') {
             $newsLib = new NewsLibrary();
-            $newsLib->parseTagCloud($template);
+            $newsLib->parseTagCloud($template, $langId);
             return;
         }
 

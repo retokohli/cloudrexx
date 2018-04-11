@@ -3261,8 +3261,59 @@ EOF;
         return $placeholders;
     }
 
-    public function parseTagCloud($template) {
+    public function parseTagCloud($template, $langId) {
         // STEP 1: Fetch base data
+
+        // filter by access level
+        $protection = '';
+        if (
+            $this->arrSettings['news_message_protection'] == '1' &&
+            !\Permission::hasAllAccess()
+        ) {
+            $objFWUser = \FWUser::getFWUserObject();
+            if (
+                $objFWUser &&
+                \FWUser::getFWUserObject()->objUser->login()
+            ) {
+                $protection = 'AND (`news`.frontend_access_id IN ('.
+                    implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).
+                    ') OR `news`.userid='.$objFWUser->objUser->getId().')';
+            } else {
+                $protection = 'AND `news`.frontend_access_id=0';
+            }
+        }
+
+        // filter by category
+        $category = '';
+        $categoryJoin = '';
+        $categoryId = null;
+        $includeSubCategories = false;
+        $catMatches = null;
+        $catIds = array();
+        if (
+            preg_match(
+                '/\{CATEGORY_([0-9]+)(_FULL)?\}/',
+                $template->_blocks['news_tag_cloud'],
+                $catMatches
+            )
+        ) {
+            $categoryId = $catMatches[1];
+            $includeSubCategories = !empty($catMatches[2]);
+        }
+        if ($categoryId && $includeSubCategories) {
+            $catIds = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($categoryId));
+        } elseif ($categoryId) {
+            $catIds = array($categoryId);
+        }
+        if ($catIds) {
+            $category = 'AND `category`.category_id IN (' . join(',', $catIds) . ')';
+            $categoryJoin = '
+                INNER JOIN
+                    `' . DBPREFIX . 'module_news_rel_categories` AS `category`
+                ON
+                    `category`.news_id = `locale`.news_id
+            ';
+        }
 
         $query = '
             SELECT
@@ -3272,10 +3323,29 @@ EOF;
                 COUNT(`newstags`.`news_id`) AS `usages`
             FROM
                 `' . DBPREFIX . 'module_news_tags` AS `tags`
-            JOIN
+            INNER JOIN
                 `' . DBPREFIX . 'module_news_rel_tags` AS `newstags`
             ON
                 `newstags`.`tag_id` = `tags`.`id`
+            INNER JOIN
+                `' . DBPREFIX . 'module_news` AS `news`
+            ON
+                `news`.`id` = `newstags`.`news_id`
+            INNER JOIN
+                `' . DBPREFIX . 'module_news_locale` AS `locale`
+            ON
+                `locale`.news_id = `news`.id
+            ' . $categoryJoin . '
+            WHERE
+                `news`.status = 1
+            ' . $category . '
+            AND
+                `locale`.lang_id=' . $langId . '
+            AND
+                `locale`.is_active = 1
+            AND (`news`.startdate<=\'' . date('Y-m-d H:i:s') . '\' OR `news`.startdate=\'0000-00-00 00:00:00\')
+            AND (`news`.enddate>=\'' . date('Y-m-d H:i:s') . '\' OR `news`.enddate=\'0000-00-00 00:00:00\')
+            ' . $protection . '
             GROUP BY
                 `tags`.`id`
             ORDER BY
@@ -3361,9 +3431,11 @@ EOF;
             }
             $template->setVariable(array(
                 'NEWS_TAG' => $tag,
+                'NEWS_TAG_URL_ENCODED' => urlencode($tag),
                 'NEWS_TAG_WEIGHT_CLASS' => $cssClasses[$cssClassIndex],
             ));
-            $template->parse('news_tag_cloud');
+            $template->parse('news_tag');
         }
+        $template->parse('news_tag_cloud');
     }
 }
