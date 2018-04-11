@@ -69,7 +69,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     /**
      * Initializes the news module by loading the configuration options
      * and initializing the template object with $pageContent.
-     * 
+     *
      * @param  string  News content page
      */
     public function __construct($pageContent)
@@ -95,9 +95,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $_REQUEST['cmd'] = '';
         }
 
+        $expirationDate = null;
         switch ($_REQUEST['cmd']) {
         case 'details':
-            return $this->getDetails();
+            // cache timeout: this article's end date
+            $details  = $this->getDetails($expirationDate);
+            $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+            $response->setExpirationDate($expirationDate);
+            return $details;
             break;
         case 'submit':
             return $this->_submit();
@@ -106,32 +111,50 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             return $this->_showFeed();
             break;
         case 'archive':
-            return $this->getArchive();
+            // cache timeout: next start or end date over all articles
+            $archive  = $this->getArchive($expirationDate);
+            $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+            $response->setExpirationDate($expirationDate);
+            return $archive;
             break;
         case 'topnews':
-             return $this->getTopNews();
+            // cache timeout: next start or end date over all articles
+            $topNews  = $this->getTopNews($expirationDate);
+            $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+            $response->setExpirationDate($expirationDate);
+            return $topNews;
             break;
         default:
             if (substr($_REQUEST['cmd'], 0, 7) == 'details') {
-                return $this->getDetails();
+                // cache timeout: this article's end date
+                $details  = $this->getDetails($expirationDate);
+                $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+                $response->setExpirationDate($expirationDate);
+                return $details;
             } elseif (substr($_REQUEST['cmd'], 0, 7) == 'archive') {
-                return $this->getArchive();
+                // cache timeout: next start or end date over all articles
+                $archives = $this->getArchive($expirationDate);
+                $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+                $response->setExpirationDate($expirationDate);
+                return $archives;
             } else {
-                return $this->getHeadlines();
+                // cache timeout: next start or end date over all articles
+                $headLines = $this->getHeadlines($expirationDate);
+                $response  = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+                $response->setExpirationDate($expirationDate);
+                return $headLines;
             }
             break;
         }
     }
 
     /**
-    * Gets the news details
-    *
-    * @global    array
-    * @global    ADONewConnection
-    * @global    array
-    * @return    string    parsed content
-    */
-    private function getDetails()
+     * Gets the news details
+     *
+     * @param  string $expirationDate Expiration date
+     * @return string parsed content
+     */
+    private function getDetails(&$expirationDate = null)
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
@@ -167,6 +190,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         news.date               AS date,
                                                         news.publisher          AS publisher,
                                                         news.publisher_id       AS publisherid,
+                                                        news.enddate            AS enddate,
                                                         news.author             AS author,
                                                         news.author_id          AS authorid,
                                                         news.changelog          AS changelog,
@@ -194,14 +218,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                                 :   " AND frontend_access_id=0 ")
                                                             :   '')
                                                 , 1);
-                                                
+
 
         if (!$objResult || $objResult->EOF) {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
             exit;
         }
 
-        $newsCommentActive  = $objResult->fields['commentactive'];        
+        $newsCommentActive  = $objResult->fields['commentactive'];
         $lastUpdate         = $objResult->fields['changelog'];
         $text               = $objResult->fields['text'];
         $newsTeaser         = '';
@@ -214,6 +238,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsLastUpdate     = !empty($lastUpdate)
                                ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT, $lastUpdate)
                                : '';
+
+        if ($objResult->fields['enddate'] != '0000-00-00 00:00:00') {
+            $expirationDate = new \DateTime($objResult->fields['enddate']);
+        }
 
         if (!empty($url1)) {
             $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
@@ -237,7 +265,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsCategories = $this->getCategoriesByNewsId($newsid);
         // Parse the Category list
         $this->parseCategoryList($this->_objTpl, $newsCategories);
-        
+
         $this->_objTpl->setVariable(array(
            'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
            'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE,$objResult->fields['date']),
@@ -286,7 +314,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             \JS::registerCss('core_modules/News/View/Style/Tags.css');
             $this->parseNewsTags($this->_objTpl, $newsid, 'news_tag_list', true);
         }
-        
+
         if (    !empty($this->arrSettings['use_related_news'])
             &&  !empty($objResult->fields['enableRelatedNews'])
         ) {
@@ -305,7 +333,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'NEWS_IMAGE_SRC'           => $objResult->fields['newsimage'],
                 'NEWS_IMAGE_ALT'           => $newstitle,
             ));
-            
+
             if ($this->_objTpl->blockExists('news_image')) {
                 $this->_objTpl->parse('news_image');
             }
@@ -314,10 +342,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl->hideBlock('news_image');
             }
         }
-        
+
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'image_thumbnail');
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'image_detail');
-        //previous next newslink 
+        //previous next newslink
         if (    !empty($this->arrSettings['use_previous_next_news_link']) 
             &&  $this->_objTpl->blockExists('news_details_previous_next_links')
         ) {
@@ -352,7 +380,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $objDatabase->Execute(' DELETE FROM `'.DBPREFIX.'module_news_stats_view`
                                 WHERE `time` < "'.date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' days')), 'Y-m-d H:i:s').'"');
-        
+
         $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
                             ->getDb()
                             ->getEntityManager()
@@ -366,7 +394,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $query = '
             SELECT 1
             FROM `'.DBPREFIX.'module_news_stats_view`
-            WHERE user_sid = "'.$uniqueUserId.'" 
+            WHERE user_sid = "'.$uniqueUserId.'"
               AND news_id  = '.$newsMessageId.'
               AND time     > "'.date_format(date_sub(date_create('now'), date_interval_create_from_date_string('1 day')), 'Y-m-d H:i:s').'"';
         $objResult = $objDatabase->SelectLimit($query);
@@ -374,7 +402,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             return;
         }
 
-        $query = "INSERT INTO ".DBPREFIX."module_news_stats_view 
+        $query = "INSERT INTO ".DBPREFIX."module_news_stats_view
                      SET user_sid = '$uniqueUserId',
                          news_id  = '$newsMessageId'";
         $objDatabase->Execute($query);
@@ -461,7 +489,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                     :   " AND frontend_access_id=0 ")
                                 :   '')
                 .'ORDER BY newsdate DESC';
-        
+
         $objResult = $objDatabase->Execute($query);
 
         // abort if no related messages were found or an error did occur
@@ -495,7 +523,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                                                    $newsUrl);
             $author = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
             $publisher = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
-            
+
             $this->_objTpl->setVariable(array(
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_ID'            => $newsid,
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_CSS'           => 'row'.($i % 2 + 1),
@@ -547,14 +575,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     }
 
     /**
-    * Gets the list with the headlines
-    *
-    * @global    array
-    * @global    ADONewConnection
-    * @global    array
-    * @return    string    parsed content
-    */
-    private function getHeadlines() {
+     * Gets the list with the headlines
+     *
+     * @param string $expirationDate Expiration date
+     * @return string parsed content
+     */
+    private function getHeadlines(&$expirationDate = null) {
         global $_CONFIG, $objDatabase, $_ARRAYLANG, $_LANGID;
 
         // load source code if cmd value is integer
@@ -563,12 +589,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $page->setVirtual(true);
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule('News');
-            // load source code 
+            // load source code
             $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
             \LinkGenerator::parseTemplate($applicationTemplate);
             $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
         }
-        
+
         $validToShowList = true;
         $newsCategories  = array();
         $menuCategories  = array();
@@ -585,17 +611,17 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (isset($_GET['pos'])) {
             $pos = intval($_GET['pos']);
         }
-        
+
         $catFromCmd = !empty($_REQUEST['cmd']) ? explode(',', $_REQUEST['cmd']) : array();
         $catFromReq = !empty($_REQUEST['category']) ? explode(',', $_REQUEST['category']) : array();
-        
-        if (!empty($catFromCmd)) {            
+
+        if (!empty($catFromCmd)) {
             $menuCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($catFromCmd));
             if ($this->_objTpl->placeholderExists('NEWS_CMD')) {
                 $this->_objTpl->setVariable('NEWS_CMD', $_REQUEST['cmd']);
             }
         }
-        
+
         $newsCategories = $categories = !empty($catFromReq) ? $catFromReq : (!empty($menuCategories) ? $menuCategories : array());
         if ((count($newsCategories) == 1) && $this->categoryExists($newsCategories[0])) {
             $selectedCat = intval($newsCategories[0]);
@@ -634,7 +660,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl->setVariable('NEWS_TYPE_DROPDOWNMENU', $typeMenu);
             }
         }
-        
+
         //Filter by publisher
         if (!empty($_REQUEST['publisher'])) {
             $parameters['filterPublisher'] = $publisher = contrexx_input2raw($_REQUEST['publisher']);
@@ -642,8 +668,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if (!empty($arrPublishers)) {
                 $newsfilter .= ' AND (`n`.`publisher_id` IN (' . implode(', ', contrexx_input2int($arrPublishers)) . '))';
             }
-            $selectedPublisher = current($arrPublishers);                
-            
+            $selectedPublisher = current($arrPublishers);
+
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_PUBLISHER_DROPDOWNMENU')) {
@@ -653,7 +679,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $publisherMenu   .= '</select>'."\n";
             $this->_objTpl->setVariable('NEWS_PUBLISHER_DROPDOWNMENU', $publisherMenu);
         }
-        
+
         //Filter by Author
         if (!empty($_REQUEST['author'])) {
             $parameters['filterAuthor'] = $author = contrexx_input2raw($_REQUEST['author']);
@@ -683,6 +709,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     : contrexx_input2raw(array($_REQUEST['tag']));
             $parameters['filterTag[]'] = implode('&filterTag[]=', $searchTag);
             $searchedTag   = $this->getNewsTags(null, $searchTag);
+            if ($searchedTag['tagList']) {
+                $requestedTagString = implode(' ', $searchedTag['tagList']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setMetaTitle($requestedTagString);
+            }
             if (!empty($searchedTag['newsIds'])) {
                 $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsfilter .= ' AND n.`id` IN ('
@@ -727,7 +757,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 n.publisher_id,
                                 n.author,
                                 n.author_id,
-                                n.allow_comments AS commentactive,
+                                n.allow_comments    AS commentactive,
                                 n.redirect_new_window AS redirectNewWindow,
                                 n.enable_tags,
                                 n.changelog,
@@ -779,9 +809,9 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $paging = getPaging($count, $pos, '&section=News'.$category.$type, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
+        $expirationDate = $this->getExpirationDate();
         $objResult = $objDatabase->SelectLimit(sprintf($query, $selectFields).' ORDER BY newsdate DESC', $_CONFIG['corePagingLimit'], $pos);
         /*** end paging ***/
-
         if (    $count>=1
             &&  $validToShowList
         ) {
@@ -792,7 +822,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
                                         : \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                                    'News', 
+                                                    'News',
                                                     $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories), $categories)),
                                                     FRONTEND_LANG_ID,
                                                     $parameters
@@ -802,7 +832,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                 // Parse all the news placeholders
                 $this->parseNewsPlaceholders($this->_objTpl, $objResult, $newsUrl);
-                
+
                 $this->_objTpl->setVariable(array(
                    'NEWS_CSS'            => 'row'.($i % 2 + 1),
                 ));
@@ -897,7 +927,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                             ON tblCategoryLocale.category_id = tblNews.catid
 
                     LEFT JOIN '.DBPREFIX.'module_news_types_locale AS tblTypeLocale
-                            ON tblTypeLocale.type_id = tblNews.typeid 
+                            ON tblTypeLocale.type_id = tblNews.typeid
 
                     WHERE       tblNews.status = 1
                                 AND tblNewsLocale.lang_id = '.FRONTEND_LANG_ID.'
@@ -918,12 +948,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     /**
     * Gets the list with the top news
     *
-    * @global    array
-    * @global    ADONewConnection
-    * @global    array
-    * @return    string    parsed content
+    * @param string $expirationDate Expiration date
+    * @return string parsed content
     */
-    private function getTopNews() {
+    private function getTopNews(&$expirationDate = null) {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $newsfilter = '';
@@ -934,7 +962,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (isset($_GET['pos'])) {
             $pos = intval($_GET['pos']);
         }
-        
+
         $this->_objTpl->setVariable(array(
             'TXT_DATE'              => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'             => $_ARRAYLANG['TXT_TITLE'],
@@ -945,7 +973,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_MORE'         => $_ARRAYLANG['TXT_NEWS_MORE'],
             'TXT_NEWS_MORE_INFO'    => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
         ));
-        
+
         $query = '  SELECT      n.id                AS newsid,
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
@@ -982,6 +1010,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $paging = getPaging($count, $pos, '&section=News&cmd=topnews', $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
+        $expirationDate = $this->getExpirationDate();
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
         /*** end paging ***/
 
@@ -1047,10 +1076,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $this->_objTpl->hideBlock('news_image');
                     }
                 }
-                
+
                 self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
                 self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
-                
+
                 $this->_objTpl->parse('newsrow');
                 $i++;
                 $objResult->MoveNext();
@@ -1148,7 +1177,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $line = $words[$idx];
             }
         }
-        
+
         $newsEditLink = \Cx\Core\Routing\Url::fromDocumentRoot(array(
             'cmd' => 'News',
             'act' => 'edit',
@@ -1159,11 +1188,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             substr(
                 \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName(),
                 1
-            ) .                 
+            ) .
             '/index.php'
         );
         $newsEditLink->setMode('backend');
-        
+
         $msg .= "$line\n";
         $msg .= ' ' . $newsEditLink->toString();
         $msg .= "\n\n";
@@ -1178,6 +1207,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $objMail->AddAddress($objUser->getEmail(), $name);
         $objMail->Send();
+
         return true;
     }
 
@@ -1194,7 +1224,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     private function _submit()
     {
         global $_ARRAYLANG;
-        
+
         // redirect to the news overview page in case the submit function has been disabled
         if (!$this->arrSettings['news_submit_news'] == '1') {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
@@ -1357,7 +1387,7 @@ JSCODE;
                 $this->_objTpl->hideBlock('news_tags_container');
             }
         }
-        
+
         \JS::activate('chosen');
         $jsCodeCategoryChosen = <<< EOF
 \$J(document).ready(function() {
@@ -1422,7 +1452,7 @@ EOF;
             'NEWS_REDIRECT'             => contrexx_raw2xhtml($data['newsRedirect']),
             'NEWS_TAG_ID'               => $newsTagId
         ));
-        
+
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
             $this->_objTpl->hideBlock('news_use_teaser_text');
         }
@@ -1655,13 +1685,13 @@ EOF;
 
         $documentRoot = \Cx\Core\Routing\Url::fromDocumentRoot();
         $documentRoot->setMode('backend');
-        
+
         $documentRoot->setPath('feed/news_headlines_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.xml');
         $rssFeedUrl = $documentRoot->toString();
-        
+
         $documentRoot->setPath('feed/news_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.js');
         $jsFeedUrl = $documentRoot->toString();
-        
+
         $hostname = addslashes(htmlspecialchars(\Env::get('config')['domainUrl'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
@@ -1708,10 +1738,10 @@ RSS2JSCODE;
     /**
      * Get a list of all news messages sorted by year and month.
      *
-     * @access  private
-     * @return  string      parsed content
+     * @param string $expirationDate Expiration date
+     * @return string parsed content
      */
-    private function getArchive()
+    private function getArchive(&$expirationDate = null)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1720,9 +1750,10 @@ RSS2JSCODE;
         if ($categories = substr($_REQUEST['cmd'], 7)) {
             $categories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories(explode(',', $categories)));
         }
-        
-        $monthlyStats = $this->getMonthlyNewsStats($categories);
-        
+
+        $monthlyStats   = $this->getMonthlyNewsStats($categories);
+        $expirationDate = $this->getExpirationDate();
+
         if (!empty($monthlyStats)) {
             foreach ($monthlyStats as $key => $value) {
                 $this->_objTpl->setVariable(array(
@@ -1754,7 +1785,7 @@ RSS2JSCODE;
                     $author = \FWUser::getParsedUserTitle($news['author_id'], $news['author']);
                     $publisher = \FWUser::getParsedUserTitle($news['publisher_id'], $news['publisher']);
                     $objResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
-                    
+
                     $this->_objTpl->setVariable(array(
                        'NEWS_ARCHIVE_ID'            => $newsid,
                        'NEWS_ARCHIVE_CSS'           => 'row'.($i % 2 + 1),
@@ -1772,13 +1803,13 @@ RSS2JSCODE;
                        'NEWS_ARCHIVE_PUBLISHER'     => contrexx_raw2xhtml($publisher),
                        'NEWS_ARCHIVE_COUNT_COMMENTS'=> contrexx_raw2xhtml($objResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),
                     ));
-                    
+
                     if (!$newsCommentActive || !$this->arrSettings['news_comments_activated']) {
                         if ($this->_objTpl->blockExists('news_archive_comments_count')) {
                             $this->_objTpl->hideBlock('news_archive_comments_count');
                         }
                     }
-                    
+
                     if (!empty($image)) {
                         $this->_objTpl->setVariable(array(
                             'NEWS_ARCHIVE_IMAGE'               => $image,
@@ -1792,10 +1823,10 @@ RSS2JSCODE;
                     } elseif ($this->_objTpl->blockExists('news_archive_image')) {
                         $this->_objTpl->hideBlock('news_archive_image');
                     }
-                    
+
                     self::parseImageBlock($this->_objTpl, $news['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'archive_image_thumbnail');
                     self::parseImageBlock($this->_objTpl, $news['teaser_image_path'], $newstitle, $newsUrl, 'archive_image_detail');
-                    
+
                     $this->_objTpl->parse('news_archive_link');
                     $i++;
                 }
@@ -1820,8 +1851,40 @@ RSS2JSCODE;
             $this->_objTpl->hideblock('news_archive_months_list');
             $this->_objTpl->hideBlock('news_archive_month_list');
         }
-        
+
 
         return $this->_objTpl->get();
+    }
+
+    /**
+     * Get a expiration date
+     *
+     * @return \DateTime \DateTime object for expiration date
+     */
+    protected function getExpirationDate()
+    {
+        $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $query       = 'SELECT startdate AS expirationdate
+            FROM ' . DBPREFIX . 'module_news as tblStart
+                WHERE (
+                    tblStart.startdate !="0000-00-00 00:00:00" AND
+                    tblStart.startdate >= "'. date('Y-m-d H:i:s') .'"
+                )
+            UNION
+                SELECT enddate AS expirationdate
+                    FROM ' . DBPREFIX . 'module_news as tblEnd
+                WHERE (
+                    tblEnd.enddate !="0000-00-00 00:00:00" AND
+                    tblEnd.enddate >= "'. date('Y-m-d H:i:s') .'"
+                )
+            ORDER BY expirationdate LIMIT 1';
+
+        $result = $objDatabase->Execute($query);
+
+        if (empty($result->fields['expirationdate'])) {
+            return;
+        }
+
+        return new \DateTime($result->fields['expirationdate']);
     }
 }

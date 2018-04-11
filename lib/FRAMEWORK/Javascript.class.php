@@ -215,17 +215,19 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'ckeditor'     => array(
+        'js-cookie' => array(
             'jsfiles'       => array(
-                'lib/ckeditor/ckeditor.js',
+                'lib/javascript/js-cookie.min.js',
             ),
-            'dependencies' => array('jquery'),
         ),
-        'jquery-cookie' => array(
-            'jsfiles'       => array(
-                'lib/javascript/jquery/cookie/jquery.cookie.js',
+        'jquery-nstslider' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/plugins/nstSlider/jquery.nstSlider.min.js',
             ),
-            'dependencies' => array('jquery'),
+            'cssfiles' => array(
+                'lib/javascript/jquery/plugins/nstSlider/jquery.nstSlider.min.css',
+            ),
+            'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*|1\.6\.[^0-3])$'), // jquery needs to be version 1.9.0 or higher
         ),
         // Required by HTML::getDatepicker() (modules/shop)!
         // (Though other versions will do just as well)
@@ -311,7 +313,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/jquery/jstree/jquery.jstree.js',
                 'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
             ),
-            'dependencies' => array('jquery', 'jquery-cookie'),
+            'dependencies' => array('jquery', 'js-cookie'),
         ),
         'ace' => array(
             'jsfiles'  => array(
@@ -337,6 +339,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                         });
                     }
                 });'
+        ),
+        // Extends standard "chosen" above.  Usage:
+        //  cx.jQuery([selector])
+        //    .chosen([options])
+        //    .chosenSortable([extra options]);
+        'chosen-sortable' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/chosen/chosen-sortable.min.js',
+                // Use the full version for debugging
+                //'lib/javascript/jquery/chosen/chosen-sortable.js',
+            ),
+            'dependencies' => array('jqueryui', 'chosen'),
         ),
         'backend' => array(
             'jsfiles' => array(
@@ -778,6 +792,20 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     }
 
     /**
+     * Register a JavaScript library that can later (after preContentLoad hook)
+     * be loaded by any component by calling \JS::activate($name).
+     * This method should only be used within the preContentLoad hook.
+     *
+     * @param   $name   string  Name of the library to register
+     * @param   $definition array   Meta information about the library.
+     *                              See static::$available for schema
+     *                              definition.
+     */
+    public static function registerJsLibrary($name, $definition = array()) {
+        static::$available[$name] = $definition;
+    }
+
+    /**
      * Register a custom css file
      *
      * Add a new, individual CSS file to the list.
@@ -1099,7 +1127,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function grabComments(&$content)
     {
+        // filter HTML-comments
         $content = preg_replace_callback('#<!--.*?-->#ms', array('JS', '_storeComment'), $content);
+
+        // filter esi-includes
+        $content = preg_replace_callback('#<esi:include src="([^"]+)" onerror="continue"/>#', array('JS', '_storeComment'), $content);
     }
 
 

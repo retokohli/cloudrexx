@@ -80,13 +80,16 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
     /**
      * Get top news
-     *
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
      * @param integer $catId    Category id
      * @param integer $langId   Language id
-     *
-     * @return string
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     * @return string Parsed HTML code
      */
-    function getHomeTopNews($catId = 0, $langId = null)
+    function getHomeTopNews($catId = 0, $langId = null, &$nextUpdateDate = null)
     {
         global $_CORELANG, $objDatabase;
 
@@ -122,6 +125,8 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
+                       tblN.startdate,
+                       tblN.enddate,
                        tblL.title AS title,
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
@@ -144,8 +149,35 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        (SELECT COUNT(*) FROM ".DBPREFIX."module_news_stats_view WHERE news_id=tblN.id AND time>'".date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' day')), 'Y-m-d H:i:s')."') DESC", $newsLimit);
         }
 
+        $nextUpdateDate = null;
         if ($objResult !== false && $objResult->RecordCount()) {
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->field['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $newsid     = $objResult->fields['id'];
                 $newstitle  = $objResult->fields['title'];
                 $author     = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);

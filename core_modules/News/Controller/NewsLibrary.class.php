@@ -78,6 +78,8 @@ class NewsLibrary
      */
     static $useThumbnails;
 
+    public $newsMetaKeys = '';
+
     /**
      * Initializes the NestedSet object
      * which is needed to manage the news categories.
@@ -150,14 +152,17 @@ class NewsLibrary
     /**
      * Generates the formated ul/li of Archive list
      * Used in the template's
-     *
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
      * @param integer $langId Language id
-     *
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
      * @return string Formated ul/li of Archive list
      */
-    public function getNewsArchiveList($langId = null)
+    public function getNewsArchiveList($langId = null, &$nextUpdateDate = null)
     {
-        $monthlyStats = $this->getMonthlyNewsStats(array(), $langId);
+        $monthlyStats = $this->getMonthlyNewsStats(array(), $langId, $nextUpdateDate);
 
         $html = '';
         if (!empty($monthlyStats)) {
@@ -203,6 +208,7 @@ class NewsLibrary
      */
     function _buildNewsCategories($catId, $categoriesLang, $langId = null)
     {
+        $html = '';
         if ($this->categoryExists($catId)) {
             if ($langId === null) {
                 $langId = FRONTEND_LANG_ID;
@@ -1188,19 +1194,16 @@ class NewsLibrary
             return false;
         }
         $status = true;
-        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."languages");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
+        $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+        foreach ($frontendLanguages as $language) {
+            if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
                     VALUES ("
-                        . intval($objResult->fields['id']) . ", "
-                        . intval($newsId) . ", '"
-                        . contrexx_input2db($title) . "', '"
-                        . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
-                        . contrexx_input2db($teaser_text) . "')")){
-                    $status = false;
-                }
-                $objResult->MoveNext();
+                . intval($language['id']) . ", "
+                . intval($newsId) . ", '"
+                . contrexx_input2db($title) . "', '"
+                . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
+                . contrexx_input2db($teaser_text) . "')")){
+                $status = false;
             }
         }
         return $status;
@@ -1356,14 +1359,17 @@ class NewsLibrary
 
     /**
      * Returns the news monthly stats by the given filters
-     *
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
      * @access protected
      * @param  array     $categories      category filter
      * @param  integer   $langId          Language id
-     *
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
      * @return array     $monthlyStats  Monthly status array
      */
-    protected function getMonthlyNewsStats($categories, $langId = null)
+    protected function getMonthlyNewsStats($categories, $langId = null, &$nextUpdateDate = null)
     {
         global $objDatabase, $_CORELANG;
 
@@ -1388,6 +1394,8 @@ class NewsLibrary
                                 n.author_id      AS author_id,
                                 n.allow_comments AS commentactive,
                                 n.redirect_new_window AS redirectNewWindow,
+                                n.startdate,
+                                n.enddate,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text
@@ -1410,9 +1418,36 @@ class NewsLibrary
 
         $objResult = $objDatabase->Execute($query);
 
+        $nextUpdateDate = null;
         if ($objResult !== false) {
             $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->field['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $filterDate = $objResult->fields['date'];
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);
@@ -3217,5 +3252,105 @@ EOF;
         }
 
         return $placeholders;
+    }
+
+    public function getTagCloudContent() {
+        // STEP 1: Fetch base data
+
+        $query = '
+            SELECT
+                `tags`.`id`,
+                `tags`.`tag`,
+                `tags`.`viewed_count`,
+                COUNT(`newstags`.`news_id`) AS `usages`
+            FROM
+                `' . DBPREFIX . 'module_news_tags` AS `tags`
+            JOIN
+                `' . DBPREFIX . 'module_news_rel_tags` AS `newstags`
+            ON
+                `newstags`.`tag_id` = `tags`.`id`
+            GROUP BY
+                `tags`.`id`
+            ORDER BY
+                `tags`.`tag`
+        ';
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $result = $cx->getDb()->getAdoDb()->query(
+            $query
+        );
+
+        if (!$result) {
+            return;
+        }
+
+        // STEP 2: Count sums
+
+        $tagData = array();
+        while (!$result->EOF) {
+            $tagData[] = array(
+                'name' => $result->fields['tag'],
+                'viewed_count' => $result->fields['viewed_count'],
+                'usages' => $result->fields['usages'],
+            );
+            $result->MoveNext();
+        }
+        // TODO: Check if those can be generated by query
+        $totalCount = array_sum(array_column($tagData, 'viewed_count'));
+        $totalUsages = array_sum(array_column($tagData, 'usages'));
+
+        // STEP 3: Calculate tag weight values
+
+        $viewCountFactor = 1;
+        if ($totalCount) {
+            $viewCountFactor = 100 / $totalCount;
+        }
+        $usagesFactor = 1;
+        if ($totalUsages) {
+            $usagesFactor = 10 / $totalUsages;
+        }
+        $tagValues = array();
+        // TODO: Check if those can be generated by query
+        foreach ($tagData as $tag) {
+            $tagValues[$tag['name']] = 1 +
+                $tag['viewed_count'] * $viewCountFactor +
+                $tag['usages'] * $usagesFactor;
+        }
+
+        // calculate meta infos to tag values
+        // TODO: This could be calculated in query
+        $lowestValue = min($tagValues);
+        $highestValue = max($tagValues);
+        $highestOffset = $highestValue - $lowestValue;
+
+        // STEP 4: Generate output
+
+        $cssClasses = array(
+            'newsTagCloudSmallest', // first quarter of tags
+            'newsTagCloudSmall', // second quarter of tags
+            'newsTagCloudMedium', // third quarter of tags
+            'newsTagCloudLarge', // fourth quarter of tags
+            'newsTagCloudLargest', // tag(s) with highest value
+        );
+        
+        $template = new \Cx\Core\Html\Sigma(
+            $cx->getCodeBaseCoreModulePath() . '/News/View/Template/Frontend'
+        );
+        $template->loadTemplateFile('TagCloud.html');
+        foreach ($tagValues as $tag => $value) {
+            // move tag values to start at 0
+            $value = $value - $lowestValue;
+            $cssClassIndex = 4;
+            if ($value < $highestOffset) {
+                $cssClassIndex = floor($value / 4);
+            }
+            $template->setVariable(array(
+                'TAG' => $tag,
+                'WEIGHT_CLASS' => $cssClasses[$cssClassIndex],
+            ));
+            $template->parse('tag');
+        }
+
+        return $template;
     }
 }

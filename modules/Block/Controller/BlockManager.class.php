@@ -259,6 +259,16 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             foreach ($_POST['displayorder'] as $blockId => $value){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET `order`='".intval($value)."' WHERE id='".intval($blockId)."'";
                 $objDatabase->Execute($query);
+                // I guess this does not work in this case, but since
+                // the current implementation of block cache will be replaced
+                // in CLX-1547 we just try:
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                    'Block',
+                    'getBlockContent',
+                    array(
+                        'block' => $blockId,
+                    )
+                );
             }
         }
 
@@ -939,7 +949,20 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $objJs->setVariable('categoryPagesUnselectedOptions', $jsonData->parse($blockCategoryPageSelects[1]), 'block');
         $objJs->setVariable('categoryPagesSelectedOptions', $jsonData->parse($blockCategoryPageSelects[0]), 'block');
 
-        $objJs->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'block');
+        $objJs->setVariable('ckeditorconfigpath', \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Wysiwyg')->getConfigPath(), 'block');
+
+        // manually set Wysiwyg variables as the Ckeditor will be
+        // loaded manually through JavaScript (and not properly through the
+        // component interface)
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager();
+        $mediaSource        = current($mediaSourceManager->getMediaTypes());
+        $mediaSourceDir     = $mediaSource->getDirectory();
+        $objJs->setVariable(array(
+            'ckeditorUploaderId'   => $uploader->getId(),
+            'ckeditorUploaderPath' => $mediaSourceDir[1] . '/'
+        ), 'wysiwyg');
 
         $arrActiveSystemFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
         $this->parseLanguageOptionsByPlaceholder($arrActiveSystemFrontendLanguages, 'global');
@@ -1210,17 +1233,29 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         global $_ARRAYLANG, $objDatabase;
 
         $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
-        if($arrStatusBlocks != null){
-            foreach ($arrStatusBlocks as $blockId){
+        if ($arrStatusBlocks != null) {
+            foreach ($arrStatusBlocks as $blockId) {
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='1' WHERE id=$blockId";
                 $objDatabase->Execute($query);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                    'Block',
+                    'getBlockContent',
+                    array(
+                        'block' => $blockId,
+                    )
+                );
             }
-        }else{
-            if(isset($_GET['blockId'])){
-                $blockId = $_GET['blockId'];
-                $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='1' WHERE id=$blockId";
-                $objDatabase->Execute($query);
-            }
+        } else if(isset($_GET['blockId'])) {
+            $blockId = $_GET['blockId'];
+            $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='1' WHERE id=$blockId";
+            $objDatabase->Execute($query);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                'Block',
+                'getBlockContent',
+                array(
+                    'block' => $blockId,
+                )
+            );
         }
 
         $categoryParam = isset($_GET['catId']) ? '&catId=' . contrexx_input2int($_GET['catId']) : '';
@@ -1241,17 +1276,29 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         global $objDatabase;
 
         $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
-        if($arrStatusBlocks != null){
+        if ($arrStatusBlocks != null) {
             foreach ($arrStatusBlocks as $blockId){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='0' WHERE id=$blockId";
                 $objDatabase->Execute($query);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                    'Block',
+                    'getBlockContent',
+                    array(
+                        'block' => $blockId,
+                    )
+                );
             }
-        }else{
-            if(isset($_GET['blockId'])){
-                $blockId = $_GET['blockId'];
-                $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='0' WHERE id=$blockId";
-                $objDatabase->Execute($query);
-            }
+        } else if (isset($_GET['blockId'])) {
+            $blockId = $_GET['blockId'];
+            $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='0' WHERE id=$blockId";
+            $objDatabase->Execute($query);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                'Block',
+                'getBlockContent',
+                array(
+                    'block' => $blockId,
+                )
+            );
         }
 
         $categoryParam = isset($_GET['catId']) ? '&catId=' . contrexx_input2int($_GET['catId']) : '';

@@ -84,17 +84,54 @@ class PageLogRepository extends LogEntryRepository
     }
 
     /**
-     * Loads all log entries for the
-     * given $entity
+     * Loads all log entries for the given $entity
      *
-     * @param object $entity
+     * @param object  $entity   Entity object
+     * @param boolean $useCache If true then take entries from cache otherwise from DB
+     * @param integer $offset   Offset value
+     * @param integer $limit    Entries count
+     *
      * @return array
      */
-    public function getLogEntries($entity, $useCache = true)
-    {
+    public function getLogEntries(
+        $entity,
+        $useCache = true,
+        $limit = 0,
+        $offset = 0
+    ) {
         $q = $this->getLogEntriesQuery($entity);
         $q->useResultCache($useCache);
+        if ($limit) {
+            $q->setFirstResult($offset);
+            $q->setMaxResults($limit);
+        }
         return $q->getResult();
+    }
+
+    /**
+     * Get Log entries count
+     *
+     * @param object $entity Entity object
+     *
+     * @return integer
+     */
+    public function getLogEntriesCount($entity)
+    {
+        $wrapped = new \Gedmo\Tool\Wrapper\EntityWrapper($entity, $this->_em);
+        $objectClass = $wrapped->getMetadata()->name;
+        $meta = $this->getClassMetadata();
+        $qb   = $this->em->createQueryBuilder();
+        $qb->select('log', 'count(log) AS logCount')
+            ->from($meta->name, 'log')
+            ->where('log.objectId = :objectId')
+            ->andWhere('log.objectClass = :objectClass');
+        $objectId = $wrapped->getIdentifier();
+        $qb->setParameters(array(
+            'objectId'    => $objectId,
+            'objectClass' => $objectClass
+        ));
+        $result = $qb->getQuery()->getResult();
+        return $result[0]['logCount'];
     }
 
     /**
@@ -206,8 +243,12 @@ class PageLogRepository extends LogEntryRepository
                     if (!in_array($page->getLang(), $activeLangs)) {
                         continue;
                     }
-
-                    $result[$page->getNodeIdShadowed()][$page->getLang()] = $log;
+                    if (!$page->getNodeIdShadowed()) {
+                        \DBG::msg('Page #' . $page->getId() . '\'s shadowed node ID is NULL<br />');
+                        $result[][$page->getLang()] = $log;
+                    } else {
+                        $result[$page->getNodeIdShadowed()][$page->getLang()] = $log;
+                    }
                 }
                 break;
             default: // create, update and unvalidated
