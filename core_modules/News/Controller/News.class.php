@@ -610,7 +610,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $pos = intval($_GET['pos']);
         }
 
-        $catFromCmd = !empty($_REQUEST['cmd']) ? explode(',', $_REQUEST['cmd']) : array();
+        $catFromCmd = !empty($_REQUEST['cmd']) ? explode('-', $_REQUEST['cmd']) : array();
         $catFromReq = !empty($_REQUEST['category']) ? explode(',', $_REQUEST['category']) : array();
 
         if (!empty($catFromCmd)) {
