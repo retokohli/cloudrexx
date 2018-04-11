@@ -119,6 +119,8 @@ class NewsLibrary
             }
             $this->nestedSetRootId = $this->objNestedSet->createRootNode(array(), false, false);
         }
+
+        $this->getSettings();
     }
 
     /**
@@ -1107,7 +1109,6 @@ class NewsLibrary
     {
         global $objDatabase;
 
-        $this->getSettings();
         $oldLangData = $this->arrSettings[$settingsName];
         if (count($oldLangData) == 0) {
             return false;

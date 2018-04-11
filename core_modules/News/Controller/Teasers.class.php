@@ -131,7 +131,6 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
         global $objDatabase, $_CORELANG;
 
         $this->arrTeasers = array();
-        $this->getSettings();
 
         $objResult = $objDatabase->Execute("
             SELECT tblN.id,

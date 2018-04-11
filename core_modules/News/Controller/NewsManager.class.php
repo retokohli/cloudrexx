@@ -191,7 +191,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $this->_saveSettings();
         $this->langId = $objInit->userFrontendLangId;
-        $this->getSettings();
 
         $this->pageTitle = $_ARRAYLANG['TXT_NEWS_MANAGER'];
     }

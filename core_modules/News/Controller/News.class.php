@@ -76,8 +76,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     {
         parent::__construct();
 
-        $this->getSettings();
-
         $this->_objTpl = new \Cx\Core\Html\Sigma();
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
