@@ -1621,9 +1621,6 @@ EOF;
             return array(false, $errorMessage . '<br /><br />');
         }
         if ($enable) {
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getEvents()->triggerEvent(
                 'clearEsiCache',

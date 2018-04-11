@@ -251,29 +251,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something for search the content
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
-    }
-
-    /**
-     * Register the events
-     */
-    public function registerEvents()
-    {
-        $this->cx->getEvents()->addEvent('newsClearSsiCache');
-    }
-
-    /**
      * Register the Event listeners
      */
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
-        $newsEventListener = new \Cx\Core_Modules\News\Model\Event\NewsEventListener();
-        $evm->addEventListener('newsClearSsiCache', $newsEventListener);
+        $evm->addEventListener(
+            'SearchFindContent',
+            new \Cx\Core_Modules\News\Model\Event\NewsEventListener()
+        );
 
         // locale event listener
         $localeLocaleEventListener = new \Cx\Core_Modules\News\Model\Event\LocaleLocaleEventListener($this->cx);
