@@ -1913,7 +1913,6 @@ namespace Cx\Core\Core\Controller {
                 $themeType
             );
 
-            // temporary work-around for go-live of Widget
             // Components should not call this method. Instead they should set
             // the correct template to the page directly. This requires the
             // page to have a Sigma template as content.
