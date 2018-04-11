@@ -2595,6 +2595,7 @@ EOF;
 
         // abort if comment deactivated for this news
         if (!$newsCommentActive) {
+            $objTpl->hideBlock('news_comments');
             return;
         }
 
@@ -2676,11 +2677,13 @@ EOF;
 
         // abort if comment system is deactivated
         if (!$this->arrSettings['news_comments_activated']) {
+            $objTpl->hideBlock('news_add_comment');
             return;
         }
 
         // abort if comment deactivated for this news
         if (!$newsCommentActive) {
+            $objTpl->hideBlock('news_add_comment');
             return;
         }
 
