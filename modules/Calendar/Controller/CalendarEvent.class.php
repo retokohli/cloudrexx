@@ -1229,6 +1229,25 @@ class CalendarEvent extends CalendarLibrary
         $placeMap                  = isset($data['placeMap']) ? contrexx_input2raw($data['placeMap']) : '';
         $update_invitation_sent    = ($send_invitation == 1);
 
+        $this->get($id);
+        if ($registrationForm != $this->registrationForm) {
+            // if we already have registrations: abort!
+            $query = '
+                SELECT
+                    `id`
+                FROM
+                    `' . DBPREFIX . 'module_calendar_registration`
+                WHERE
+                    `event_id` = ' . $this->id . '
+                LIMIT 1
+            ';
+            $result = $objDatabase->Execute($query);
+            if ($result && !$result->EOF) {
+                // Abort!
+                return false;
+            }
+        }
+
         if (!empty($placeWebsite)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeWebsite)) {
                 $placeWebsite = "http://".$placeWebsite;
