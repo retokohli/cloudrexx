@@ -1,10 +1,10 @@
-#related-news-list ul {
+#news-related-news-list ul {
     margin: 0;
     padding: 0;
     float: left;
     width: 308px;
 }
-#related-news-list ul li {
+#news-related-news-list ul li {
     list-style-type: none;
     border: 1px solid rgb(183, 188, 192);
     padding-left: 6px;
@@ -14,7 +14,7 @@
     float: left;
     line-height: 24px;
 }
-#related-news-list ul li span.news_list_close {
+#news-related-news-list ul li span.news_list_close {
     padding: 1px 5px;
     margin-bottom: 0px;
     cursor: pointer;
@@ -24,21 +24,14 @@
     position: relative;
     float: right;
 }
-#related-news-list ul li label {
+#news-related-news-list ul li label {
     margin: 1px;
     float: left;
 }
-.live-search-user-info {
+.news-related-search-info {
     font-style: italic;
 }
-.ui-autocomplete li span.no-results {
-    font-weight: normal;
-    margin: -1px;
-    padding: .2em 0.6em;
-    line-height: 1.9;
-    color: #222222;
-}
-input.live-search-news-input.ui-autocomplete-input.loading {
+.news-related-search-input.ui-autocomplete-input.loading {
     background-image: url('../Media/loading.gif');
     background-repeat: no-repeat;
     background-position: 98% center;
