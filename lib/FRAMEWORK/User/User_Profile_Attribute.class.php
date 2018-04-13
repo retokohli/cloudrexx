@@ -684,7 +684,11 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                 $this->arrAttributes[$objResult->fields['id']]['sort_type'] = $objResult->fields['sort_type'];
                 $this->arrAttributes[$objResult->fields['id']]['order_id'] = $objResult->fields['order_id'];
                 $this->arrAttributes[$objResult->fields['id']]['mandatory'] = $objResult->fields['mandatory'];
-                $this->arrAttributes[$objResult->fields['id']]['parent_id'] = $objResult->fields['parent_id'];
+                $parentId = $objResult->fields['parent_id'];
+                if ($parentId === null) {
+                    $parentId = 0;
+                }
+                $this->arrAttributes[$objResult->fields['id']]['parent_id'] = $parentId;
                 $this->arrAttributes[$objResult->fields['id']]['access_special'] = $objResult->fields['access_special'];
                 $this->arrAttributes[$objResult->fields['id']]['access_id'] = $objResult->fields['access_id'];
                 $this->arrAttributes[$objResult->fields['id']]['read_access_id'] = $objResult->fields['read_access_id'];

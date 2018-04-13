@@ -415,9 +415,9 @@ INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (1,NULL,'textarea','0','asc',0,'',56);
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (2,NULL,'text','0','asc',0,'',57);
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (3,NULL,'uri','0','asc',0,'',0);
-INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (17,0,'text','0','asc',0,'',0);
-INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (18,0,'text','0','asc',0,'',0);
-INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (19,0,'text','0','asc',0,'',0);
+INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (17,NULL,'text','0','asc',0,'',0);
+INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (18,NULL,'text','0','asc',0,'',0);
+INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (19,NULL,'text','0','asc',0,'',0);
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,1,'Notizen');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,2,'Notes');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (2,1,'Kundenrabattgruppe');
