@@ -2289,6 +2289,7 @@ CREATE TABLE `contrexx_module_knowledge_article_content` (
   PRIMARY KEY (`id`),
   KEY `module_knowledge_article_content_lang` (`lang`),
   KEY `module_knowledge_article_content_article` (`article`)
+  FULLTEXT KEY `content` (`question`,`answer`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_knowledge_articles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
