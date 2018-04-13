@@ -1189,7 +1189,7 @@ case "${COMMANDS[0]}" in
             dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'
             exit
         fi
-        tac tmp/log/dbg.log | grep -m1 "initialization failed"
+        tac tmp/log/dbg.log | grep -m1 -B1 "initialization failed" | tac
         ;;
     *)
         if [[ "${COMMANDS[0]}" == "" || "${COMMANDS[0]}" == "help" ]]; then
