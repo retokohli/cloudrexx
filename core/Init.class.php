@@ -1407,7 +1407,7 @@ class InitCMS
      */
     public function getCurrentThemeId()
     {
-        return $this->currentThemesId;
+        return $this->pageThemeId;
     }
 
     /**
