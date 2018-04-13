@@ -79,7 +79,7 @@ class SearchKnowledge extends SearchInterface  {
 
         $additionalSelectField = '';
         $joinLangContent = '';
-        $joinLangTagi = '';
+        $joinLangTag = '';
         if ($this->isAllLangsActive) {
             $additionalSelectField = ', content.lang';
         } else {
