@@ -972,15 +972,51 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                        `parent_id`= $parentId
                  WHERE `id`=$this->id");
         }
-        if (!$objDatabase->Execute("
-            INSERT INTO `".DBPREFIX."access_user_attribute` (
-              `type`, `sort_type`, `order_id`, `mandatory`, `parent_id`
+        $objDatabase->beginTrans();
+        $result = $objDatabase->Execute('
+            INSERT INTO
+                `' . DBPREFIX . 'access_user_attribute`
+            (
+                `type`,
+                `sort_type`,
+                `order_id`,
+                `mandatory`,
+                `parent_id`
             ) VALUES (
-              '$type', '$this->sort_type', $this->order_id, '$this->mandatory',
-              $parentId)")) {
+                "' . $type . '",
+                "' . $this->sort_type . '",
+                ' . $this->order_id . ',
+                "' . $this->mandatory . '",
+                ' . $parentId . '
+            )
+        ');
+        if (!$result) {
+            $objDatabase->rollbackTrans();
             return false;
         }
         $this->id = $objDatabase->Insert_ID();
+        $result = $objDatabase->Execute('
+            INSERT INTO
+                `' . DBPREFIX . 'access_user_attribute_value`
+            (
+                `attribute_id`,
+                `user_id`,
+                `history_id`,
+                `value`
+            )
+            SELECT DISTINCT
+                ' . $this->id . ',
+                `id`,
+                0,
+                ""
+            FROM
+                `' . DBPREFIX . 'access_users`
+        ');
+        if (!$result) {
+            $objDatabase->rollbackTrans();
+            return false;
+        }
+        $objDatabase->commitTrans();
         return true;
     }
 
