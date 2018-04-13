@@ -239,7 +239,6 @@ INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES 
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (194,6);
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (195,1);
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (204,1);
-INSERT INTO `contrexx_access_id` (`id`, `entity_class_name`, `entity_class_id`) VALUES (0,'','');
 INSERT INTO `contrexx_access_id` (`id`, `entity_class_name`, `entity_class_id`) VALUES (1,'','');
 INSERT INTO `contrexx_access_id` (`id`, `entity_class_name`, `entity_class_id`) VALUES (2,'','');
 INSERT INTO `contrexx_access_id` (`id`, `entity_class_name`, `entity_class_id`) VALUES (3,'','');

@@ -959,13 +959,17 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         $type =
             ($this->arrTypes[$this->type]['multiline'] && $this->multiline
               ? 'textarea' : $this->type);
+        $parentId = $this->parent_id;
+        if ($parentId == 0) {
+            $parentId = 'NULL';
+        }
         if ($this->id) {
             return (boolean)$objDatabase->Execute("
                 UPDATE `".DBPREFIX."access_user_attribute`
                    SET `type`='$type', `sort_type`='$this->sort_type',
                        `order_id`=$this->order_id,
                        `mandatory`='$this->mandatory',
-                       `parent_id`=$this->parent_id
+                       `parent_id`= $parentId
                  WHERE `id`=$this->id");
         }
         if (!$objDatabase->Execute("
@@ -973,7 +977,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
               `type`, `sort_type`, `order_id`, `mandatory`, `parent_id`
             ) VALUES (
               '$type', '$this->sort_type', $this->order_id, '$this->mandatory',
-              $this->parent_id)")) {
+              $parentId)")) {
             return false;
         }
         $this->id = $objDatabase->Insert_ID();
