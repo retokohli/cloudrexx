@@ -1180,7 +1180,8 @@ case "${COMMANDS[0]}" in
             dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
-            grep "$(tac tmp/log/dbg.log | grep -m1 -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
+            requestId=$(tac tmp/log/dbg.log | grep -m1 "initialization failed" | grep -m1 -o ' "([0-9a-z]\+)" ')
+            grep -Poz ".*\"\(${requestId:3:12}\)\"(.+)([\n] .*)*[\n]" tmp/log/dbg.log | tr -d '\000'
             exit
         elif [[ ${ARGUMENTS["follow"]} ]]; then
             tail -f -n0 tmp/log/dbg.log
