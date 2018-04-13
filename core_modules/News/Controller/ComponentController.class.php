@@ -46,16 +46,14 @@ namespace Cx\Core_Modules\News\Controller;
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array('EsiWidget');
+        return array('JsonNews', 'EsiWidget');
     }
 
      /**
      * {@inheritdoc}
      */
     public function getControllersAccessableByJson() {
-        return array('JsonNews', 'EsiWidgetController');
+        return array('JsonNewsController', 'EsiWidgetController');
     }
 
     /**

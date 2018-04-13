@@ -426,14 +426,12 @@ $_ARRAYLANG['TXT_NEWS_NO_TITLE'] = "You must specify a title";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "You must specify a title and category";
 $_ARRAYLANG['TXT_NEWS_ERR_SAVING_FORM'] = "Error saving the news message";
 
-$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Related News";
-$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Include News";
-$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Select the news to go to always related to this news";
-$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 character(s) of News title.";
-$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search News...";
-$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found...";
-$_ARRAYLANG['TXT_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Error occured while removing the related news!...";
-$_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Related articles";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Articles";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Select the articles to be related to this article";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 characters to start lookup";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search articles...";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "No article found...";
 
 $_ARRAYLANG['TXT_NEWS_TAGS'] = "Tags";
 $_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add tags";

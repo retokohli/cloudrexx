@@ -313,6 +313,7 @@ $_ARRAYLANG['TXT_NEWS_TYPE_DESCRIPTION'] = "Typ der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'] = "Name des zugehörigen Typen";
 $_ARRAYLANG['TXT_NEWS_TYPE_ADD_ERROR_EMPTY'] = "Typ konnte nicht hinzugefügt werden, es wurde kein Name angegeben.";
 $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'News Container Text verwenden';
+$_ARRAYLANG['TXT_USE_RELATED_NEWS'] = 'Funktion "Verwandte Artikel" verwenden';
 $_ARRAYLANG['TXT_NEWS_USE_TAGS'] = 'Tags verwenden';
 $_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
@@ -415,6 +416,13 @@ $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Titel des nächsten Artikels";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "URL zum vorangehenden Artikel";
 $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "URL zum nächsten Artikel";
 $_ARRAYLANG['TXT_NEWS_USE_PREVIOUS_NEXT_LINK'] = "Vorangehenden & nächsten Artikel verwenden";
+
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Verwandte Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Wählen Sie die Artikel aus, welche verknüpft werden sollen";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Geben Sie mindestens 3 Zeichen ein, um die Suche zu starten.";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Artikel suchen...";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "Keine Artikel gefunden";
 
 $_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
 $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'] = "Verwenden";

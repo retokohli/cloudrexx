@@ -319,16 +319,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->parseNewsTags($this->_objTpl, $newsid, 'news_tag_list', true);
         }
 
+        // parse related news
         if (    !empty($this->arrSettings['use_related_news'])
             &&  !empty($objResult->fields['enableRelatedNews'])
         ) {
-            $this->parseRelatedNews(
-                $this->_objTpl,
-                $newsid,
-                FRONTEND_LANG_ID,
-                'related_news',
-                3
-            );
+            $this->parseRelatedNews($this->_objTpl, $newsid);
         }
 
         if (!empty($objResult->fields['newsimage'])) {
@@ -1347,7 +1342,7 @@ JSCODE;
         $data['newsCat']  = !empty($_POST['newsCat']) ? contrexx_input2raw($_POST['newsCat']) : array();
         $data['newsType'] = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
         $data['newsTypeRedirect'] = !empty($_POST['newsTypeRedirect']) ? true : false;
-        $data['enableRelatedNews'] = !empty($this->arrSettings['use_related_news']) ? 1 : 0;
+        $data['enableRelatedNews'] = !empty($this->arrSettings['use_related_news']);
         $data['relatedNews'] = !empty($_POST['relatedNews'])
             ? contrexx_input2raw($_POST['relatedNews'])
             : array();
@@ -1401,30 +1396,52 @@ JSCODE;
 });
 EOF;
         \JS::registerCode($jsCodeCategoryChosen);
-        // TODO: this block must be renamed to news_related_container
-        if ($this->_objTpl->blockExists('relatedNewsBlock')) {
-            if (!empty($this->arrSettings['use_related_news'])) {
-                $objCx = \ContrexxJavascript::getInstance();
-                $objCx->setVariable(
+        if ($this->_objTpl->blockExists('news_details_related_news_container')) {
+            if (
+                !$this->arrSettings['use_related_news'] ||
+                $this->_objTpl->blockExists('news_details_related_news')
+            ) {
+                $this->_objTpl->hideBlock('news_details_related_news_container');
+            } else {
+                \ContrexxJavascript::getInstance()->setVariable(
                     array(
                         'noResultsMsg' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
                         'langId' => FRONTEND_LANG_ID,
                     ),
-                    'news/news-live-search'
+                    'News/RelatedSearch'
                 );
-                \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
-                if (!empty($data['relatedNews'])) {
-                    $this->parseRelatedNewsTags(
-                        $this->_objTpl,
-                        $data['relatedNews'],
-                        FRONTEND_LANG_ID
-                    );
+                \JS::registerJS('core_modules/News/View/Script/RelatedSearch.js');
+                if (!empty($data['enableRelatedNews'])) {
+                    try {
+                        $relatedNews = $this->getRelatedNews(0, $data['relatedNews'], false);
+                        // parse related news
+                        while (!$relatedNews->EOF) {
+                            $relatedNewsTitle = $relatedNews->fields['newstitle'];
+                            $relatedNewsTitleShort = strip_tags($relatedNewsTitle);
+                            if (strlen($relatedNewsTitleShort) > 35) {
+                                $relatedNewsTitleShort = substr($relatedNewsTitleShort, 0, 35) . '...';
+                            }
+                            $this->_objTpl->setVariable(
+                                array(
+                                    'NEWS_RELATED_NEWS_ID'          => $relatedNews->fields['newsid'],
+                                    'NEWS_RELATED_NEWS_TITLE'       => contrexx_raw2xhtml($relatedNewsTitle),
+                                    'NEWS_RELATED_NEWS_TITLE_SHORT' => contrexx_raw2xhtml($relatedNewsTitleShort),
+                                )
+                            );
+                            $relatedNews->MoveNext();
+                            $this->_objTpl->parse('news_details_related_news');
+                        }
+                    } catch (NewsLibraryException $e) {
+                        $this->_objTpl->hideBlock('news_details_related_new');
+                    }
+                } else {
+                    $this->_objTpl->hideBlock('news_details_related_new');
                 }
-                $this->_objTpl->touchBlock('relatedNewsBlock');
-            } else {
-                $this->_objTpl->hideBlock('relatedNewsBlock');
+
+                $this->_objTpl->touchBlock('news_details_related_news_container');
             }
         }
+
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
             'TXT_TITLE'                 => $_ARRAYLANG['TXT_TITLE'],
