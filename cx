@@ -627,7 +627,12 @@ function cmd_env {
             cmd_env up
             ;;
         status)
-            dockercomposeexec ps
+            if [[ ${ARGUMENTS["q"]} == true ]]; then
+                echo "" | dockercomposeexec ps -q > /dev/null
+                exit $?
+            else
+                dockercomposeexec ps
+            fi
             ;;
         info)
             cmd_env status
