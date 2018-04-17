@@ -1,3 +1,4 @@
+/* CSS for edit dialog */
 #news-related-news-list ul {
     margin: 0;
     padding: 0;
@@ -6,8 +7,9 @@
 }
 #news-related-news-list ul li {
     list-style-type: none;
+    background: none;
     border: 1px solid rgb(183, 188, 192);
-    padding-left: 6px;
+    padding: 0 0 0 6px;
     margin: 5px;
     margin-left: 0;
     width: auto;
@@ -27,6 +29,7 @@
 #news-related-news-list ul li label {
     margin: 1px;
     float: left;
+    width: auto;
 }
 .news-related-search-info {
     font-style: italic;
@@ -36,4 +39,25 @@
     background-repeat: no-repeat;
     background-position: 98% center;
     background-size: 16px;
+}
+
+/* CSS for listing (view) */
+#news-related-news {
+    width: 100%;
+    float: left;
+}
+#news-related-news h3 {
+    border-bottom: 1px solid #E3E4E5;
+    padding-bottom: 5px;
+}
+#news-related-news .rel-news-blocks {
+    width: 100%;
+    float: left;
+    height: auto;
+    border-bottom: 1px solid #E3E4E5;
+    padding-bottom: 12px;
+}
+#news-related-news .rel-news-blocks:last-child {
+    margin: 0;
+    border-bottom: 1px solid #D6D6D6;
 }

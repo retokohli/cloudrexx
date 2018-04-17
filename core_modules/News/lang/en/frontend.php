@@ -126,9 +126,6 @@ $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Select existing articles to
 $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 characters of the title of an article";
 $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search article";
 $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "No article found";
-$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Unable to remove the relation to the reated articles.";
-$_ARRAYLANG['TXT_NEWS_ERROR_SAVING_RELATED_NEWS_RELATION'] = " Unable to save the relation to the related articles.";
-
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Next article";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Previous article";
 

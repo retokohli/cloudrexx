@@ -107,6 +107,13 @@ $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Nächster Artikel";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Vorangehender Artikel";
 
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Verwandte Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Wählen Sie die Artikel aus, welche verknüpft werden sollen";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Geben Sie mindestens 3 Zeichen ein, um die Suche zu starten.";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Artikel suchen...";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "Keine Artikel gefunden";
+
 $_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
 $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Die angegebenen Tags konnten nicht gespeichert werden.";
 $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Die Zuweisung der Tags konnte nicht gespeichert werden.";
@@ -119,5 +126,3 @@ $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Wählen Sie bestehende Arti
 $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Geben Sie mindestens 3 Zeichen des Titels eines Artikels ein";
 $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Suche Artikel";
 $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "Kein Artikel gefunden";
-$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Die Verknüpfung zu verwandten Artikel konnte nicht entfernt werden.";
-$_ARRAYLANG['TXT_NEWS_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Die Verknüpfung zu verwandten Artikel konnte nicht gespeichert werden.";

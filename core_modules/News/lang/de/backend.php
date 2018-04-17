@@ -426,8 +426,6 @@ $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Wählen Sie bestehende Arti
 $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Geben Sie mindestens 3 Zeichen des Titels eines Artikels ein";
 $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Suche Artikel";
 $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "Kein Artikel gefunden";
-$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Die Verknüpfung zu verwandten Artikel konnte nicht entfernt werden.";
-$_ARRAYLANG['TXT_NEWS_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Die Verknüpfung zu verwandten Artikel konnte nicht gespeichert werden.";
 
 $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_BLOCK_DESCRITION'] = "Block zur Darstellung des Verwandte Artikel";
 $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_BLOCK_TITLE_DESCRITION'] = "Titel für verwandten Artikel Block";

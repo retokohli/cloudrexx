@@ -1007,8 +1007,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsBackendGroups      = $newsBackendAccess && isset($_POST['news_modify_access_associated_groups']) && is_array($_POST['news_modify_access_associated_groups']) ? array_map('intval', $_POST['news_modify_access_associated_groups']) : array();
         $newsCommentActive      = !empty($_POST['allowComment']) ? intval($_POST['allowComment']) : 0;
         $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
-        $relatedNewsIds         = !empty($_POST['relatedNews']) ? contrexx_input2int($_POST['relatedNews']) : array();
-        $enableRelatedNews      = !empty($_POST['enableRelatedNews']);
+        $relatedNewsIds         = !empty($_POST['newsRelatedNews']) ? contrexx_input2int($_POST['newsRelatedNews']) : array();
+        $enableRelatedNews      = intval(!empty($_POST['newsEnableRelatedNews']));
         $newsTags               = !empty($_POST['newsTags']) ? contrexx_input2raw($_POST['newsTags']) : array();
         $enableTags             = !empty($_POST['enableTags']) ? intval($_POST['enableTags']) : 0;
         $redirectNewWindow      = !empty($_POST['redirect_new_window']) ? intval($_POST['redirect_new_window']) : 0;
@@ -1101,7 +1101,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     // store locales
                     if (    !$this->insertLocales($ins_id, $locales)
                         ||  !$this->manipulateCategories($newsCategories, $ins_id)
-                        ||  !$this->manipulateRelatedNews($relatedNewsId, $ins_id)
+                        ||  !$this->manipulateRelatedNews($relatedNewsIds, $ins_id)
                         ||  !$this->manipulateTags($newsTags, $ins_id)
                     ) {
                         $this->strErrMessage = empty($this->errMsg)
@@ -2026,8 +2026,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             // fetch related news
             $relatedNewsIds = array();
-            if (isset($_POST['relatedNews'])) {
-                $relatedNewsIds = contrexx_input2raw($_POST['relatedNews']);
+            if (isset($_POST['newsRelatedNews'])) {
+                $relatedNewsIds = contrexx_input2raw($_POST['newsRelatedNews']);
             }
             try {
                 $relatedNews = $this->getRelatedNews($id, $relatedNewsIds, false);
@@ -2634,11 +2634,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $categoryManipulation = $this->manipulateCategories($newsCategories, $id);
 
             $relatedNewsIds = array();
-            if (!empty($_POST['relatedNews'])) {
-                $relatedNewsIds  = contrexx_input2int($_POST['relatedNews']);
+            if (!empty($_POST['newsRelatedNews'])) {
+                $relatedNewsIds  = contrexx_input2int($_POST['newsRelatedNews']);
             }
-            $enableRelatedNews = !empty($_POST['enableRelatedNews']);
-            $realtedNewsManipulation = $this->manipulateRelatedNews($relatedNewsIds, $id);
+            $enableRelatedNews = intval(!empty($_POST['newsEnableRelatedNews']));
+            $relatedNewsManipulation = $this->manipulateRelatedNews($relatedNewsIds, $id);
 
             $newsTags = !empty($_POST['newsTags'])
                 ? contrexx_input2raw($_POST['newsTags'])
@@ -2687,7 +2687,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            if (     $objResult === false
                ||   $localesSaving === false
                ||   $categoryManipulation === false
-               ||   $realtedNewsManipulation === false
+               ||   $relatedNewsManipulation === false
                ||   $tagManipulation === false
            ){
                 $this->strErrMessage = empty($this->errMsg)
@@ -4024,6 +4024,38 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_NO_TAGS_FOUND'                                    => $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'],
             'TXT_NEWS_PREVIOUS_SRC_DESCRITION'                          => $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'],
             'TXT_NEWS_NEXT_SRC_DESCRITION'                              => $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS'                                     => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS'],
+            'TXT_NEWS_RELATED_NEWS_BLOCK_DESCRITION'                    => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_BLOCK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_BLOCK_TITLE_DESCRITION'              => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_BLOCK_TITLE_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_DETAIL_BLOCK_DESCRITION'             => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_DETAIL_BLOCK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_ID_DESCRITION'                       => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_ID_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_URL_DESCRITION'                      => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_URL_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_LINK_DESCRITION'                     => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_LINK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TITLE_DESCRITION'                    => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TITLE_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TITLE_SHORT_DESCRITION'              => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TITLE_SHORT_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TITLE_LINK_DESCRITION'               => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TITLE_LINK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TEXT_DESCRITION'                     => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TEXT_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TEXT_SHORT_DESCRITION'               => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TEXT_SHORT_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_AUTHOR_DESCRITION'                   => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_AUTHOR_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_PUBLISHER_DESCRITION'                => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_PUBLISHER_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_CATEGORY_NAMES_DESCRITION'           => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_CATEGORY_NAMES_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_LONG_DATE_DESCRITION'                => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_LONG_DATE_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_DATE_DESCRITION'                     => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_DATE_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TIME_DESCRITION'                     => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TIME_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_COMMENTS_BLOCK_DESCRITION'           => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_COMMENTS_BLOCK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_COMMENTS_DESCRITION'                 => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_COMMENTS_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TEASER_TEXT_BLOCK_DESCRITION'        => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TEASER_TEXT_BLOCK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_TEASER_TEXT_DESCRITION'              => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_TEASER_TEXT_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_BLOCK_DESCRITION'              => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_BLOCK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_DESCRITION'                    => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_TITLE_DESCRITION'              => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_TITLE_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_LINK_DESCRITION'               => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_LINK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_SRC_DESCRITION'                => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_SRC_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_BLOCK_DESCRITION'        => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_BLOCK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_DESCRITION'              => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_TITLE_DESCRITION'        => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_TITLE_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_LINK_DESCRITION'         => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_LINK_DESCRITION'],
+            'TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_SRC_DESCRITION'          => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS_IMAGE_THUMB_SRC_DESCRITION'],
         ));
         $this->_objTpl->parse('settings_content');
     }
