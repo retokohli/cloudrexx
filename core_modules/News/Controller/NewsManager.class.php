@@ -942,8 +942,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         \JS::activate('cx');
 
         if (!empty($this->arrSettings['news_use_tags'])) {
-            \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
-            \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+            \JS::activate('tag-it');
         }
         $newsTagId = 'newsTags';
 
@@ -1580,8 +1579,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         \JS::activate('cx');
         if (!empty($this->arrSettings['news_use_tags'])) {
-            \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
-            \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+            \JS::activate('tag-it');
         }
         $newsTagId = 'newsTags';
 
