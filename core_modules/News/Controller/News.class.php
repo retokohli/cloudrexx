@@ -1369,8 +1369,7 @@ JSCODE;
         $newsTagId = 'newsTags';
         if ($this->_objTpl->blockExists('news_tags_container')) {
             if (!empty($this->arrSettings['news_use_tags'])) {
-                \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
-                \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+                \JS::activate('tag-it');
                 \JS::registerCss('core_modules/News/View/Style/Tags.css');
                 $this->registerTagJsCode();
                 if (    $this->_objTpl->blockExists('news_tags')
