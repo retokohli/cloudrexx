@@ -135,6 +135,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
         $objResult = $objDatabase->Execute("
             SELECT tblN.id,
                    tblN.date,
+                   tblN.typeid,
                    tblN.userid,
                    tblN.teaser_frames,
                    tblN.redirect,
@@ -240,6 +241,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     'id'                            => $objResult->fields['id'],
                     'newsid'                        => $objResult->fields['id'],
                     'date'                          => $objResult->fields['date'],
+                    'typeid'                        => $objResult->fields['typeid'],
                     'newsdate'                      => $objResult->fields['date'],
                     'title'                         => $objResult->fields['title'],
                     'newstitle'                     => $objResult->fields['title'],
