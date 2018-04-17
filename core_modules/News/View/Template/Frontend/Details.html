@@ -12,7 +12,7 @@
     {NEWS_DATE}&nbsp;{NEWS_TIME} | {NEWS_AUTHOR}<!-- BEGIN news_comments_count --> | {NEWS_COUNT_COMMENTS}<!-- END news_comments_count -->
     <!-- BEGIN news_tags_container --> 
     <span class="newsTags">
-        | 
+        |
         <span class="tagCont">
             <!-- BEGIN news_tag_list -->
             {NEWS_TAG_LINK}
@@ -30,20 +30,20 @@
     <!-- BEGIN news_text -->{NEWS_TEXT}<!-- END news_text -->
     <!-- BEGIN news_redirect -->{TXT_NEWS_REDIRECT_INSTRUCTION} <a href="{NEWS_REDIRECT_URL}" target="_blank">{NEWS_REDIRECT_URL}</a><!-- END news_redirect -->
 </div>
-<!-- BEGIN news_details_related_news_block -->
+<!-- BEGIN news_details_related_news_container -->
 <div id="related-news">
     <h3>{TXT_NEWS_RELATED_NEWS}</h3>
     <!-- BEGIN news_details_related_news -->
     <div class="rel-news-blocks">
-        <h6>{NEWS_RELATED_NEWS_TITLE_LINK}</h6>
+        <h6>{NEWS_RELATED_NEWS_LINK_TITLE}</h6>
         <div class="news-info">
             <p>{NEWS_RELATED_NEWS_DATE}&nbsp;{NEWS_RELATED_NEWS_TIME} </p>
         </div>
-        {NEWS_RELATED_NEWS_TEXT_SHORT}&nbsp;{NEWS_RELATED_NEWS_LINK}
+        {NEWS_RELATED_NEWS_TITLE}&nbsp;{NEWS_RELATED_NEWS_LINK}
     </div>
     <!-- END news_details_related_news -->
 </div>
-<!-- END news_details_related_news_block -->
+<!-- END news_details_related_news_container -->
 
 <!-- BEGIN news_details_previous_next_links -->
 <div id="news-link-blocks-cont">
@@ -52,7 +52,7 @@
         {NEWS_PREVIOUS_LINK}
     </div>
     <!-- END news_details_previous_link -->
-    
+
     <!-- BEGIN news_details_next_link -->
     <div id="news-next-link-block" class="link-blocks">
         {NEWS_NEXT_LINK}
@@ -77,9 +77,9 @@
 </ul>
 <!-- BEGIN news_comments -->
     <!-- BEGIN news_add_comment -->
-        <input class="btn btn-default" id="news-toggle" type="submit" value="Kommentar schreiben" />
+        <input class="btn btn-default" id="news-toggle" type="submit" value="{TXT_NEWS_WRITE_COMMENT}" />
         <form role="form" id="news-comment-form" method="post" action="index.php?section=News&amp;cmd=details&amp;newsid={NEWS_ID}">
-            <fieldset> 
+            <fieldset>
                 <legend>{TXT_NEWS_ADD_COMMENT}</legend>
                 <!-- BEGIN news_add_comment_error -->
                 <div class="news-error text-danger">{NEWS_ADD_COMMENT_ERROR}</div>

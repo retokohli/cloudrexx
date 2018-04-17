@@ -100,7 +100,7 @@ $_ARRAYLANG['TXT_FORUM_FILE_ATTACHMENT'] = "Attachment";
 $_ARRAYLANG['TXT_FORUM_RATING'] = "Rating";
 $_ARRAYLANG['TXT_FORUM_RATING_THANKS'] = "Thank you!";
 $_ARRAYLANG['TXT_FORUM_BANNED_WORD'] = "The following word is not allowed in the post: '%s'!";
-$_ARRAYLANG['TXT_FORUM_KEYWORDS'] = "Stichwörter";
+$_ARRAYLANG['TXT_FORUM_KEYWORDS'] = "Keywords";
 $_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'] = "Meaningful keywords, separated by comma";
 $_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG'] = "The uploaded file has exceeded the maximum allowed size.";
 $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL'] = "The file was uploaded only partially. Please try again. If the problem persists, please conact the webmaster.";
@@ -133,4 +133,5 @@ $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_CONFIRM_1'] = "Re-open this thread?";
 $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_0'] = "Make this thread sticky?";
 $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_1'] = "Revert sticky?";
 $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM'] = "Delete this thread?";
+$_ARRAYLANG['TXT_FORUM_CHOOSE_FILE'] = "Choose File";
 ?>

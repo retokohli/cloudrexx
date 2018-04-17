@@ -110,9 +110,7 @@ abstract class OAuth implements OAuthInterface
      * @throws OAuth_Exception
      */
     protected function getContrexxUser($oauth_id)
-    {        
-        global $sessionObj;
-        
+    {
         //\DBG::activate();
         $arrSettings = \User_Setting::getSettings();
 
@@ -144,7 +142,7 @@ abstract class OAuth implements OAuthInterface
             $registrationRedirectNeeded = $arrSettings['sociallogin_show_signup']['status'];
             // if user_account_verification is true (1), then we need to do checkMandatoryCompliance(), because
             // the required fields must be set.
-            if($registrationRedirectNeeded == false && $arrSettings['user_account_verification']['value'] === 1){
+            if(!$registrationRedirectNeeded && $arrSettings['user_account_verification']['value']){
                 $registrationRedirectNeeded = !$objUser->checkMandatoryCompliance();
             }
             $objUser->setActiveStatus(!$registrationRedirectNeeded);
@@ -174,8 +172,9 @@ abstract class OAuth implements OAuthInterface
             // check whether there are empty mandatory fields or the setting to show sign up everytime
             if ($registrationRedirectNeeded) {
                 // start session if no session is open
-                if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = \cmsSession::getInstance();
-                
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $sessionObj = $cx->getComponent('Session')->getSession();
+
                 // write the user id to session so we can pre-fill the sign up form
                 $_SESSION['user_id'] = $objUser->getId();
 

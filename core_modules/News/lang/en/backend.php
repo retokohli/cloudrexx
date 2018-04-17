@@ -63,6 +63,8 @@ $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "News messages";
 $_ARRAYLANG['TXT_NEWS_MESSAGE'] = "News Message";
 $_ARRAYLANG['TXT_EXTERNAL_SOURCE'] = "External sources";
 $_ARRAYLANG['TXT_LINK'] = "Link";
+$_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'] = "New window";
+$_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'] = "Check this option to open the link in a new window.";
 $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'] = "News content";
 $_ARRAYLANG['TXT_STORE'] = "Save";
 $_ARRAYLANG['TXT_PUBLISHING'] = "Publish";
@@ -351,6 +353,7 @@ $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'Use teaser text';
 $_ARRAYLANG['TXT_NEWS_SETTINGS_USE_RELATED_NEWS'] = 'Use related articles';
 $_ARRAYLANG['TXT_NEWS_USE_TAGS'] = 'Use tags';
 
+$_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
 $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'] = "In der Designvorlage <b>top_news.html</b>. Diese Seite kann mit dem Platzhalter [[TOP_NEWS_FILE]] im Design oder in einer Content Seite eingebunden werden.";
 $_ARRAYLANG['TXT_NEWS_TOP'] = "Top News";
@@ -431,8 +434,6 @@ $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Select existing articles to
 $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 characters of the title of an article";
 $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search article";
 $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "No article found";
-$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Unable to remove the relation to the reated articles.";
-$_ARRAYLANG['TXT_NEWS_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Unable to save the relation to the related articles.";
 
 $_ARRAYLANG['TXT_NEWS_TAGS'] = "Tags";
 $_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add tags";

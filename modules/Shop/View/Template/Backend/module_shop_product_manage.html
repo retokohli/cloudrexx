@@ -33,7 +33,7 @@ var setSelectedImage = function(data) {
       return;
     }
     var url = data.data[0].datainfo.filepath;
-    
+
     notDefined[fieldID] = true;
     var elInput = document.getElementById("hi_"+fieldID);
     elInput.setAttribute('name', 'productImage'+fieldID);
@@ -51,12 +51,12 @@ var setSelectedImage = function(data) {
     var img = document.getElementById("img"+fieldID);
     img.src = '/'+url;
     var fact = 1;
-    
+
     var newImg = new Image()
-    newImg.onload = function() {      
+    newImg.onload = function() {
       var height = newImg.height;
       var width  = newImg.width;
-      
+
       if (width > height) {
         fact = 80 / width;
       } else {
@@ -97,11 +97,14 @@ var setSelectedImage = function(data) {
       }
     }
     newImg.src = url;
-  }  
+  }
 }
 function toggleOptions(checkboxId) {
   if (document.getElementById('productOptions'+checkboxId).checked) {
     document.getElementById('subOptionsProductOptions'+checkboxId).style.display = 'block';
+    if (!!!cx.variables.get('activate_product_attribute_children', 'shop')) {
+        return;
+    }
     for (var i = 0; i < document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length; ++i) {
       objInput = document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input')[i];
       if (objInput.getAttribute('type') == "checkbox") {
@@ -212,6 +215,14 @@ function disableButtons(from, dest, add, remove) {
     remove.disabled = 1;
   }
 }
+!(function($jq) {
+    $jq(function(){
+        var locationHash = window.location.hash;
+        if (locationHash != '') {
+            selectTab(locationHash.substr(1));
+        }
+    });
+})(cx.jQuery);
 // ]]></script>
 <ul id="tabmenu">
   <li><a id="productManageTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_PRODUCT_INFORMATIONS}">{TXT_PRODUCT_INFORMATIONS}</a></li>
@@ -522,7 +533,7 @@ END shopFlags -->
               onclick="openBrowser('1');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
             <span id="img_1">
-              <img id="img1" style="width: {SHOP_IMG1_WIDTH}px; height: {SHOP_IMG1_HEIGHT}px; border: none;"
+              <img id="img1" style="max-width: 100%;  height: auto; border: none;"
                   src="{SHOP_PICTURE1_IMG_SRC}"
                   title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" />
             </span>
@@ -544,7 +555,7 @@ END shopFlags -->
               onclick="openBrowser('2');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
             <span id="img_2">
-              <img id="img2" style="width: {SHOP_IMG2_WIDTH}px; height: {SHOP_IMG2_HEIGHT}px; border: none;"
+              <img id="img2" style="max-width: 100%;  height: auto; border: none;"
                   src="{SHOP_PICTURE2_IMG_SRC}"
                   title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" />
             </span>
@@ -566,7 +577,7 @@ END shopFlags -->
               onclick="openBrowser('3');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
             <span id="img_3">
-              <img id="img3" style="width: {SHOP_IMG3_WIDTH}px; height: {SHOP_IMG3_HEIGHT}px; border: none;"
+              <img id="img3" style="max-width: 100%; height: auto; border: none;"
                   src="{SHOP_PICTURE3_IMG_SRC}"
                   title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" />
             </span>
