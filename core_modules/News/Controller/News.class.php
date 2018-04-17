@@ -76,8 +76,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     {
         parent::__construct();
 
-        $this->getSettings();
-
         $this->_objTpl = new \Cx\Core\Html\Sigma();
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -158,13 +156,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-
-        $newsid = intval($_GET['newsid']);
-
-        if (!$newsid) {
+        if (empty($_GET['newsid'])) {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
             exit;
         }
+
+        $newsid = intval($_GET['newsid']);
 
         $whereStatus    = '';
         $newsAccess     = \Permission::checkAccess(10, 'static', true);
@@ -256,7 +253,13 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $this->newsTitle = $objResult->fields['title'];
         $newstitle = $this->newsTitle;
         $this->newsText = $text;
-        $this->newsThumbnail = $objResult->fields['newsThumbImg'];
+
+        // use main image as METAIMAGE
+        if (!empty($objResult->fields['newsimage'])) {
+            $this->newsThumbnail = $objResult->fields['newsimage'];
+        } else {
+            $this->newsThumbnail = $objResult->fields['newsThumbImg'];
+        }
         if ($this->arrSettings['news_use_teaser_text']) {
             $newsTeaser = nl2br($objResult->fields['teaser_text']);
             \LinkGenerator::parseTemplate($newsTeaser);
@@ -267,6 +270,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $this->parseCategoryList($this->_objTpl, $newsCategories);
 
         $this->_objTpl->setVariable(array(
+           'NEWS_ID'             => $newsid,
            'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
            'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE,$objResult->fields['date']),
            'NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME,$objResult->fields['date']),
@@ -276,8 +280,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_SOURCE'         => $newsSource,
            'NEWS_URL'            => $newsUrl,
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
-// TODO: create a new methode from which we can fetch the name of the 'type' (do not fetch it from within the same SQL query of which we collect any other data!)
-           //'NEWS_TYPE_NAME' => ($this->arrSettings['news_use_types'] == 1 ? htmlentities($objResult->fields['typename'], ENT_QUOTES, CONTREXX_CHARSET) : '')
+           'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
 
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
@@ -315,16 +318,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->parseNewsTags($this->_objTpl, $newsid, 'news_tag_list', true);
         }
 
+        // parse related news
         if (    !empty($this->arrSettings['use_related_news'])
             &&  !empty($objResult->fields['enableRelatedNews'])
         ) {
-            $this->parseRelatedNews(
-                $this->_objTpl,
-                $newsid,
-                FRONTEND_LANG_ID,
-                'related_news',
-                3
-            );
+            $this->parseRelatedNews($this->_objTpl, $newsid);
+            \JS::registerCss('core_modules/News/View/Style/RelatedSearch.css');
         }
 
         if (!empty($objResult->fields['newsimage'])) {
@@ -612,7 +611,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $pos = intval($_GET['pos']);
         }
 
-        $catFromCmd = !empty($_REQUEST['cmd']) ? explode(',', $_REQUEST['cmd']) : array();
+        $catFromCmd = !empty($_REQUEST['cmd']) ? explode('-', $_REQUEST['cmd']) : array();
         $catFromReq = !empty($_REQUEST['category']) ? explode(',', $_REQUEST['category']) : array();
 
         if (!empty($catFromCmd)) {
@@ -631,7 +630,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
         $newsCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($newsCategories));
         if (!empty($newsCategories)) {
-            $newsfilter .= ' AND (`nc`.`category_id` IN (' . implode(',', $newsCategories) . '))';
+            $newsfilter .= ' AND n.`id` IN (SELECT nc.`news_id` FROM `'.DBPREFIX.'module_news_rel_categories` AS nc WHERE nc.`category_id` IN (' . implode(',', $newsCategories) . '))';
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_CAT_DROPDOWNMENU')) {
@@ -747,9 +746,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_MORE_INFO'            => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
         ));
 
-        $query = '  SELECT      n.id                AS newsid,
+        $selectFields = ',
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
+                                n.typeid,
                                 n.teaser_image_path,
                                 n.teaser_image_thumbnail_path,
                                 n.redirect,
@@ -768,9 +768,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.text AS text,
                                 nl.teaser_text
+        ';
+        $query = '  SELECT      n.id                AS newsid
+                    %s
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
-                    INNER JOIN  '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id
                     WHERE       status = 1
                                 AND nl.is_active=1
                                 AND nl.lang_id='.FRONTEND_LANG_ID.'
@@ -781,12 +783,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                     ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                         " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
                                         :   " AND frontend_access_id=0 ")
-                                    :   '')
-                    .' GROUP BY newsid '
-                    .' ORDER BY newsdate DESC';
+                                    :   '');
 
         /***start paging ****/
-        $objResult = $objDatabase->Execute($query);
+        $objResult = $objDatabase->Execute(sprintf($query, ''));
         $count = $objResult->RecordCount();
 
         $category = '';
@@ -810,7 +810,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
         $expirationDate = $this->getExpirationDate();
-        $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+        $objResult = $objDatabase->SelectLimit(sprintf($query, $selectFields).' ORDER BY newsdate DESC', $_CONFIG['corePagingLimit'], $pos);
         /*** end paging ***/
         if (    $count>=1
             &&  $validToShowList
@@ -1062,10 +1062,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                 if (!empty($image)) {
                     $this->_objTpl->setVariable(array(
+                        'NEWS_IMAGE_ID'            => $newsid,
                         'NEWS_IMAGE'               => $image,
                         'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
                         'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
                         'NEWS_IMAGE_LINK'          => $htmlLinkImage,
+                        'NEWS_IMAGE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -1341,9 +1343,9 @@ JSCODE;
         $data['newsCat']  = !empty($_POST['newsCat']) ? contrexx_input2raw($_POST['newsCat']) : array();
         $data['newsType'] = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
         $data['newsTypeRedirect'] = !empty($_POST['newsTypeRedirect']) ? true : false;
-        $data['enableRelatedNews'] = !empty($this->arrSettings['use_related_news']) ? 1 : 0;
-        $data['relatedNews'] = !empty($_POST['relatedNews'])
-            ? contrexx_input2raw($_POST['relatedNews'])
+        $data['newsEnableRelatedNews'] = intval(!empty($this->arrSettings['use_related_news']));
+        $data['newsRelatedNews'] = !empty($_POST['newsRelatedNews'])
+            ? contrexx_input2raw($_POST['newsRelatedNews'])
             : array();
         $data['enableTags'] = !empty($this->arrSettings['news_use_tags']) ? 1 : 0;
         $data['newsTags'] = !empty($_POST['newsTags'])
@@ -1368,8 +1370,7 @@ JSCODE;
         $newsTagId = 'newsTags';
         if ($this->_objTpl->blockExists('news_tags_container')) {
             if (!empty($this->arrSettings['news_use_tags'])) {
-                \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
-                \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+                \JS::activate('tag-it');
                 \JS::registerCss('core_modules/News/View/Style/Tags.css');
                 $this->registerTagJsCode();
                 if (    $this->_objTpl->blockExists('news_tags')
@@ -1395,30 +1396,53 @@ JSCODE;
 });
 EOF;
         \JS::registerCode($jsCodeCategoryChosen);
-        // TODO: this block must be renamed to news_related_container
-        if ($this->_objTpl->blockExists('relatedNewsBlock')) {
-            if (!empty($this->arrSettings['use_related_news'])) {
-                $objCx = \ContrexxJavascript::getInstance();
-                $objCx->setVariable(
+        if ($this->_objTpl->blockExists('news_related_news_container')) {
+            if (
+                !$this->arrSettings['use_related_news'] ||
+                !$this->_objTpl->blockExists('news_related_news')
+            ) {
+                $this->_objTpl->hideBlock('news_related_news_container');
+            } else {
+                \ContrexxJavascript::getInstance()->setVariable(
                     array(
                         'noResultsMsg' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
                         'langId' => FRONTEND_LANG_ID,
                     ),
-                    'news/news-live-search'
+                    'News/RelatedSearch'
                 );
-                \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
-                if (!empty($data['relatedNews'])) {
-                    $this->parseRelatedNewsTags(
-                        $this->_objTpl,
-                        $data['relatedNews'],
-                        FRONTEND_LANG_ID
-                    );
+                \JS::registerJS('core_modules/News/View/Script/RelatedSearch.js');
+                \JS::registerCss('core_modules/News/View/Style/RelatedSearch.css');
+                if (!empty($data['newsEnableRelatedNews'])) {
+                    try {
+                        $relatedNews = $this->getRelatedNews(0, $data['newsRelatedNews'], false);
+                        // parse related news
+                        while (!$relatedNews->EOF) {
+                            $relatedNewsTitle = $relatedNews->fields['newstitle'];
+                            $relatedNewsTitleShort = strip_tags($relatedNewsTitle);
+                            if (strlen($relatedNewsTitleShort) > 35) {
+                                $relatedNewsTitleShort = substr($relatedNewsTitleShort, 0, 35) . '...';
+                            }
+                            $this->_objTpl->setVariable(
+                                array(
+                                    'NEWS_RELATED_NEWS_ID'          => $relatedNews->fields['newsid'],
+                                    'NEWS_RELATED_NEWS_TITLE'       => contrexx_raw2xhtml($relatedNewsTitle),
+                                    'NEWS_RELATED_NEWS_TITLE_SHORT' => contrexx_raw2xhtml($relatedNewsTitleShort),
+                                )
+                            );
+                            $relatedNews->MoveNext();
+                            $this->_objTpl->parse('news_related_news');
+                        }
+                    } catch (NewsLibraryException $e) {
+                        $this->_objTpl->hideBlock('news_related_new');
+                    }
+                } else {
+                    $this->_objTpl->hideBlock('news_related_new');
                 }
-                $this->_objTpl->touchBlock('relatedNewsBlock');
-            } else {
-                $this->_objTpl->hideBlock('relatedNewsBlock');
+
+                $this->_objTpl->touchBlock('news_related_news_container');
             }
         }
+
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
             'TXT_TITLE'                 => $_ARRAYLANG['TXT_TITLE'],
@@ -1593,7 +1617,7 @@ EOF;
                 `author` = '" . contrexx_raw2db($userName) . "',
                 `changelog` = '$date',
                 `enable_tags`='" . contrexx_raw2db($data['enableTags']) . "',
-                `enable_related_news`=" . $data['enableRelatedNews'] . ",
+                `enable_related_news`=" . $data['newsEnableRelatedNews'] . ",
                 `redirect_new_window` = '" . $data['redirectNewWindow'] . "',
                 # the following are empty defaults for the text fields.
                 # text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
@@ -1612,7 +1636,7 @@ EOF;
 // TODO: add fail check
         if (    !$this->storeLocalesOfSubmittedNewsMessage($ins_id, $data['newsTitle'], $data['newsText'], $data['newsTeaserText'])
             ||  !$this->manipulateCategories($data['newsCat'], $ins_id)
-            ||  !$this->manipulateRelatedNews($data['relatedNews'], $ins_id)
+            ||  !$this->manipulateRelatedNews($data['newsRelatedNews'], $ins_id)
             ||  !$this->manipulateTags($data['newsTags'], $ins_id)
         ) {
             $errorMessage = empty($this->errMsg)
@@ -1798,7 +1822,7 @@ RSS2JSCODE;
                        'NEWS_ARCHIVE_LINK'          => $htmlLink,
                        'NEWS_ARCHIVE_LINK_TARGET'   => $linkTarget,
                        'NEWS_ARCHIVE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
-                       'NEWS_ARCHIVE_CATEGORY'      => stripslashes($news['name']),
+                       'NEWS_ARCHIVE_CATEGORY'      => implode(', ', contrexx_raw2xhtml($newsCategories)),
                        'NEWS_ARCHIVE_AUTHOR'        => contrexx_raw2xhtml($author),
                        'NEWS_ARCHIVE_PUBLISHER'     => contrexx_raw2xhtml($publisher),
                        'NEWS_ARCHIVE_COUNT_COMMENTS'=> contrexx_raw2xhtml($objResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),

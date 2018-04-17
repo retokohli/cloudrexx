@@ -627,7 +627,12 @@ function cmd_env {
             cmd_env up
             ;;
         status)
-            dockercomposeexec ps
+            if [[ ${ARGUMENTS["q"]} == true ]]; then
+                echo "" | dockercomposeexec ps -q > /dev/null
+                exit $?
+            else
+                dockercomposeexec ps
+            fi
             ;;
         info)
             cmd_env status
@@ -1175,7 +1180,8 @@ case "${COMMANDS[0]}" in
             dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
-            grep "$(tac tmp/log/dbg.log | grep -m1 -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
+            requestId=$(tac tmp/log/dbg.log | grep -m1 "initialization failed" | grep -m1 -o ' "([0-9a-z]\+)" ')
+            grep -Poz ".*\"\(${requestId:3:12}\)\"(.+)([\n] .*)*[\n]" tmp/log/dbg.log | tr -d '\000'
             exit
         elif [[ ${ARGUMENTS["follow"]} ]]; then
             tail -f -n0 tmp/log/dbg.log
@@ -1184,7 +1190,7 @@ case "${COMMANDS[0]}" in
             dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'
             exit
         fi
-        tac tmp/log/dbg.log | grep -m1 "initialization failed"
+        tac tmp/log/dbg.log | grep -m1 -B1 "initialization failed" | tac
         ;;
     *)
         if [[ "${COMMANDS[0]}" == "" || "${COMMANDS[0]}" == "help" ]]; then

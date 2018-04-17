@@ -717,6 +717,12 @@ class CalendarEvent extends CalendarLibrary
     public $registrationExternalFullyBooked;
 
     /**
+     * Contains the last error message until its fetch using getErrorMessage()
+     * @var string
+     */
+    protected $errorMessage = '';
+
+    /**
      * Constructor
      *
      * Loads the event object of given id
@@ -1228,6 +1234,27 @@ class CalendarEvent extends CalendarLibrary
         $placePhone                = isset($data['placePhone']) ? contrexx_input2raw($data['placePhone']) : '';
         $placeMap                  = isset($data['placeMap']) ? contrexx_input2raw($data['placeMap']) : '';
         $update_invitation_sent    = ($send_invitation == 1);
+
+        $this->get($id);
+        if ($registration_form != $this->registrationForm) {
+            // if we already have registrations: abort!
+            $query = '
+                SELECT
+                    `id`
+                FROM
+                    `' . DBPREFIX . 'module_calendar_registration`
+                WHERE
+                    `event_id` = ' . $this->id . '
+                LIMIT 1
+            ';
+            $result = $objDatabase->Execute($query);
+            if ($result && !$result->EOF) {
+                // Abort!
+                global $_ARRAYLANG;
+                $this->errorMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTER_FORM_EDITED'];
+                return false;
+            }
+        }
 
         if (!empty($placeWebsite)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeWebsite)) {
@@ -2648,5 +2675,23 @@ class CalendarEvent extends CalendarLibrary
         }
 
         return $eventField;
+    }
+
+    /**
+     * Tells whether there's an unread error message
+     * @return boolean True if there's an unread error message, false otherwise
+     */
+    public function hasErrorMessage() {
+        return !empty($this->errorMessage);
+    }
+
+    /**
+     * Returns the current error message or an empty string if there's none
+     * @return string Error message or empty string
+     */
+    public function getErrorMessage() {
+        $msg = $this->errorMessage;
+        $this->errorMessage = '';
+        return $msg;
     }
 }

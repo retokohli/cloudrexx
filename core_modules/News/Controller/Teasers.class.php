@@ -128,14 +128,14 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
      */
     protected function initializeTeasers(&$nextUpdateDate = null)
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase;
 
         $this->arrTeasers = array();
-        $this->getSettings();
 
         $objResult = $objDatabase->Execute("
             SELECT tblN.id,
                    tblN.date,
+                   tblN.typeid,
                    tblN.userid,
                    tblN.teaser_frames,
                    tblN.redirect,
@@ -145,8 +145,10 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblN.startdate,
                    tblN.enddate,
                    tblN.allow_comments,
+                   tblN.author,
                    tblN.author_id,
                    tblN.publisher_id,
+                   tblN.publisher,
                    tblN.enable_tags,
                    tblN.source,
                    tblN.url1,
@@ -218,35 +220,31 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     if (preg_match('/\[\[NODE_([a-zA-Z_0-9]*)\]\]/', $objResult->fields['redirect'])) {
                         $extUrl = '(' . $objResult->fields['redirect'] . ')';
                     } else {
-                        $extUrl = substr($objResult->fields['redirect'], 7);
-                        $tmp    = explode('/', $extUrl);
+                    $extUrl = substr($objResult->fields['redirect'], 7);
+                    $tmp    = explode('/', $extUrl);
                         $extUrl = '('.$tmp[0].')';
                     }
                 }
                 if ($this->administrate == false) {
-                    $objFWUser = \FWUser::getFWUserObject();
-                    $objUser = $objFWUser->objUser->getUser($objResult->fields['userid']);
-                    if ($objUser) {
-                        $firstname = $objUser->getProfileAttribute('firstname');
-                        $lastname = $objUser->getProfileAttribute('lastname');
-                        if (!empty($firstname) && !empty($lastname)) {
-                            $author = contrexx_raw2xhtml($firstname.' '.$lastname);
-                        } else {
-                            $author = contrexx_raw2xhtml($objUser->getUsername());
-                        }
-                    } else {
-                        $author = $_CORELANG['TXT_ANONYMOUS'];
-                    }
+                    $author = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
                 } else {
                     $author = '';
                 }
-
-                //Get the news categories, by news id
+                if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
+                    $image = $objResult->fields['teaser_image_thumbnail_path'];
+                } elseif (!empty($objResult->fields['teaser_image_path']) && $this->arrSettings['use_thumbnails'] && file_exists($cx->getWebsitePath() .'/' .\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
+                    $image = \ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']);
+                } elseif (!empty($objResult->fields['teaser_image_path'])) {
+                    $image = $objResult->fields['teaser_image_path'];
+                } else {
+                    $image = ASCMS_CORE_MODULE_WEB_PATH.'/News/View/Media/pixel.gif';
+                }
                 $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
                 $this->arrTeasers[$objResult->fields['id']] = array(
                     'id'                            => $objResult->fields['id'],
                     'newsid'                        => $objResult->fields['id'],
                     'date'                          => $objResult->fields['date'],
+                    'typeid'                        => $objResult->fields['typeid'],
                     'newsdate'                      => $objResult->fields['date'],
                     'title'                         => $objResult->fields['title'],
                     'newstitle'                     => $objResult->fields['title'],
@@ -267,9 +265,10 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     'text'                          => $objResult->fields['teaser_full_text'],
                     'teaser_text'                   => $objResult->fields['teaser_text'],
                     'teaser_show_link'              => $objResult->fields['teaser_show_link'],
-                    'author'                        => $author,
-                    'teaser_image_path'             => $objResult->fields['teaser_image_path'],
-                    'teaser_image_thumbnail_path'   => $objResult->fields['teaser_image_thumbnail_path'],
+                    'author'                        => contrexx_raw2xhtml($author),
+                    'publisher'                     => $objResult->fields['publisher'],
+                    'teaser_image_path'             => $image,
+                    'teaser_image_thumbnail_path'   => $image,
                 );
                 $objResult->MoveNext();
             }
@@ -279,28 +278,35 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
     function initializeTeaserFrames($id = 0)
     {
-        global $objDatabase;
+        list($this->arrTeaserFrames, $this->arrTeaserFrameNames) = static::getTeaserFrames($id);
+    }
 
-        $this->arrTeaserFrames = array();
-        $this->arrTeaserFrameNames = array();
+    public static function getTeaserFrames($id = 0) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+
+        $arrTeaserFrames = array();
+        $arrTeaserFrameNames = array();
 
         if ($id != 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame WHERE id=".$id, 1);
+            $objResult = $db->SelectLimit("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame WHERE id=".$id, 1);
         } else {
-            $objResult = $objDatabase->Execute("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame ORDER BY name");
+            $objResult = $db->Execute("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame ORDER BY name");
         }
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $this->arrTeaserFrames[$objResult->fields['id']] = array(
+                $arrTeaserFrames[$objResult->fields['id']] = array(
                     'id'                => $objResult->fields['id'],
                     'frame_template_id' => $objResult->fields['frame_template_id'],
                     'name'              => $objResult->fields['name']
                 );
 
-                $this->arrTeaserFrameNames[$objResult->fields['name']] = $objResult->fields['id'];
+                $arrTeaserFrameNames[$objResult->fields['name']] = $objResult->fields['id'];
                 $objResult->MoveNext();
             }
         }
+
+        return array($arrTeaserFrames, $arrTeaserFrameNames);
     }
 
 

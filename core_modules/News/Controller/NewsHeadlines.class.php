@@ -57,27 +57,10 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
     function __construct($pageContent)
     {
         parent::__construct();
-        $this->getSettings();
         $this->_pageContent = $pageContent;
         $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTemplate);
     }
-
-
-    function getSettings()
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT name, value FROM ".DBPREFIX."module_news_settings");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
-                $objResult->MoveNext();
-            }
-        }
-    }
-
 
     /**
      * Parses the home headlines
@@ -130,6 +113,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $objResult = $objDatabase->SelectLimit("
                 SELECT DISTINCT(tblN.id) AS newsid,
                        tblN.`date` AS newsdate,
+                       tblN.typeid,
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
                        tblN.redirect,

@@ -490,6 +490,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'cx',
             ),
         ),
+        'tag-it' => array(
+            'jsfiles' => array(
+                'lib/javascript/tag-it/js/tag-it.min.js',
+            ),
+            'cssfiles' => array(
+                'lib/javascript/tag-it/css/tag-it.css',
+            ),
+            'dependencies' => array(
+                'jqueryui',
+            ),
+        ),
     );
 
     /**

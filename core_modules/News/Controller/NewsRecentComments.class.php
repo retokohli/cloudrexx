@@ -55,7 +55,6 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
     function __construct($pageContent)
     {
         parent::__construct();
-        $this->getSettings();
         $this->_pageContent = $pageContent;
         $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTemplate);
@@ -86,6 +85,8 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $_ARRAYLANG = \Env::get('init')->loadLanguageData('News');
             $commentsCount = (int) $this->arrSettings['recent_news_message_limit'];
 
+            // TODO: add permission access check
+            // only comments of articles the user has access to should be listed
             $query = "SELECT  `nComment`.`title`,
                               `nComment`.`date`,
                               `nComment`.`poster_name`,

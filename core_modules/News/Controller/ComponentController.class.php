@@ -46,16 +46,14 @@ namespace Cx\Core_Modules\News\Controller;
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array('EsiWidget');
+        return array('JsonNews', 'EsiWidget');
     }
 
      /**
      * {@inheritdoc}
      */
     public function getControllersAccessableByJson() {
-        return array('JsonNews', 'EsiWidgetController');
+        return array('JsonNewsController', 'EsiWidgetController');
     }
 
     /**
@@ -121,9 +119,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // Set the meta page description to the teaser text if displaying news details
                     $teaser = $newsObj->getTeaser();
                     if ($teaser) {
-                        $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+                        $page->setMetadesc(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
                     } else {
-                        $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($newsObj->newsText, ENT_QUOTES, CONTREXX_CHARSET))));
+                        $page->setMetadesc(contrexx_strip_tags(html_entity_decode($newsObj->newsText, ENT_QUOTES, CONTREXX_CHARSET)));
                     }
 
                     // Set the meta page image to the thumbnail if displaying news details
@@ -188,7 +186,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'NEWS_CATEGORIES' => false,
             'NEWS_ARCHIVES'   => true,
             'NEWS_RECENT_COMMENTS_FILE' => false,
-            'NEWS_TAG_CLOUD' => false,
         );
         foreach ($widgetNames as $widgetName => $esiVariable) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -209,16 +206,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
 
+        // Register tag-cloud widget
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'news_tag_cloud',
+            \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
+        );
+        $widget->setEsiVariable(
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+        );
+        $widgetController->registerWidget(
+            $widget
+        );
+
         // Set news teasers
-        $teaser      = new Teasers();
-        $teaserNames = array_flip($teaser->arrTeaserFrameNames);
-        if (empty($teaserNames)) {
+        list($arrTeaserFrames, $arrTeaserFrameNames) = Teasers::getTeaserFrames();
+        if (empty($arrTeaserFrames)) {
             return;
         }
-        foreach ($teaserNames as $teaserName) {
+        foreach ($arrTeaserFrames as $arrTeaser) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
-                'TEASERS_' . $teaserName
+                'TEASERS_' . strtoupper($arrTeaser['name'])
             );
             $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |
@@ -240,11 +249,35 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
      */
-    public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
-        $params = $response->getRequest()->getUrl()->getParamArray();
-        unset($params['section']);
-        unset($params['cmd']);
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($response->getPage(), $params);
+    public function adjustResponse(
+        \Cx\Core\Routing\Model\Entity\Response $response
+    ) {
+        // TODO: migrate to use additional path arguments
+        // in case of an ESI request, the request URL will be set through Referer-header
+        $headers = $response->getRequest()->getHeaders();
+        if (isset($headers['Referer'])) {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
+        } else {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($response->getRequest()->getUrl()->toString());
+        }
+
+        if ($refUrl->hasParam('newsid')) {
+            $canonicalUrlArguments = array('newsid');
+        } else {
+            $canonicalUrlArguments = array('category', 'tag', 'pos');
+        }
+
+        $page   = $response->getPage();
+        $params = $refUrl->getParamArray();
+
+        // filter out all non-relevant URL arguments
+        $params = array_filter(
+            $refUrl->getParamArray(),
+            function($key) use ($canonicalUrlArguments) {return in_array($key, $canonicalUrlArguments);},
+            \ARRAY_FILTER_USE_KEY
+        );
+
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $params);
         $response->setHeader(
             'Link',
             '<' . $canonicalUrl->toString() . '>; rel="canonical"'
@@ -252,22 +285,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something for search the content
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
-    }
-
-    /**
      * Register the Event listeners
      */
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
+        $evm->addEventListener(
+            'SearchFindContent',
+            new \Cx\Core_Modules\News\Model\Event\NewsEventListener()
+        );
+
         // locale event listener
         $localeLocaleEventListener = new \Cx\Core_Modules\News\Model\Event\LocaleLocaleEventListener($this->cx);
-        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
-        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener(
+            'postPersist',
+            'Cx\\Core\\Locale\\Model\\Entity\\Locale',
+            $localeLocaleEventListener
+        );
+        $evm->addModelListener(
+            'preRemove',
+            'Cx\\Core\\Locale\\Model\\Entity\\Locale',
+            $localeLocaleEventListener
+        );
     }
 }

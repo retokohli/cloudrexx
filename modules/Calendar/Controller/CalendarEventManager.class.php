@@ -1230,8 +1230,8 @@ class CalendarEventManager extends CalendarLibrary
         $year  = !empty($_GET['yearID']) ? contrexx_input2int($_GET['yearID']) : 0;
         $month = !empty($_GET['monthID']) ? contrexx_input2int($_GET['monthID']) : 0;
 
+        $startdate = $this->getUserDateTimeFromIntern($event->startDate);
         if (empty($year) && empty($month)) {
-            $startdate = $this->getUserDateTimeFromIntern($event->startDate);
             $year      = $startdate->format('Y');
             $month     = $startdate->format('m');
         }
@@ -1239,7 +1239,13 @@ class CalendarEventManager extends CalendarLibrary
         $eventList = array($event);
         // If event series is enabled refresh the eventlist
         if ($event->seriesStatus == 1) {
-            $endDate = new \DateTime('1-'.$month.'-'.$year);
+            try {
+                $endDate = new \DateTime('1-'.$month.'-'.$year);
+            } catch (\Exception $e) {
+                $year = $startdate->format('Y');
+                $month = $startdate->format('m');
+                $endDate = new \DateTime('1-'.$month.'-'.$year);
+            }
             $endDate->modify('+1 month');
 
             $eventManager = new static(null, $endDate);

@@ -57,25 +57,9 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
     function __construct($pageContent)
     {
         parent::__construct();
-        $this->getSettings();
         $this->_pageContent = $pageContent;
         $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTemplate);
-    }
-
-
-    function getSettings()
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT name, value FROM ".DBPREFIX."module_news_settings");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
-                $objResult->MoveNext();
-            }
-        }
     }
 
     /**
@@ -218,10 +202,12 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
                 if (!empty($image)) {
                     $this->_objTemplate->setVariable(array(
+                        'NEWS_IMAGE_ID'      => $newsid,
                         'NEWS_IMAGE'         => $image,
                         'NEWS_IMAGE_SRC'     => contrexx_raw2xhtml($imageSource),
                         'NEWS_IMAGE_ALT'     => contrexx_raw2xhtml($newstitle),
                         'NEWS_IMAGE_LINK'    => $htmlLinkImage,
+                        'NEWS_IMAGE_LINK_URL'=> contrexx_raw2xhtml($newsUrl),
                     ));
 
                     if ($this->_objTemplate->blockExists('news_image')) {

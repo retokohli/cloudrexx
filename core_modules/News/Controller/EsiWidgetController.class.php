@@ -63,7 +63,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
     {
         global $_CORELANG, $_ARRAYLANG;
 
-        $langId = \FWLanguage::getLangIdByIso639_1($params['locale']);
+        $langId = $params['locale']->getId();
         $theme  = $params['theme'];
 
         //The globals $_CORELANG and $_ARRAYLANG are required in the following methods
@@ -78,9 +78,9 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             \Env::get('init')->getComponentSpecificLanguageData('News', true, $langId)
         );
 
-        if ($name == 'NEWS_TAG_CLOUD') {
+        if ($name == 'news_tag_cloud') {
             $newsLib = new NewsLibrary();
-            $template->setVariable($name, $newsLib->getTagCloudContent()->get());
+            $newsLib->parseTagCloud($template, $langId);
             return;
         }
 
@@ -176,15 +176,14 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         // Parse news teasers
-        $newsTeaserStatus = \Cx\Core\Setting\Controller\Setting::getValue(
+        if (!\Cx\Core\Setting\Controller\Setting::getValue(
             'newsTeasersStatus',
-            'Config'
-        );
-        if ($newsTeaserStatus) {
-            if (!preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
-                return;
-            }
+            'Config')
+        ) {
+            return;
+        }
 
+        if (preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
             $nextUpdateDate = null;
             $teasers = new Teasers(false, $langId, $nextUpdateDate);
             $code    = '{' . $name . '}';
