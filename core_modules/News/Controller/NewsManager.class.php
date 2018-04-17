@@ -3269,12 +3269,23 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             return;
         }
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $feedPath = $cx->getWebsiteFeedPath();
+
         if (!$this->arrSettings['news_feed_status']) {
             foreach ($arrLanguages as $LangId => $arrLanguage) {
                 if ($arrLanguage['frontend'] == 1) {
-                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');
+                    $rssFeedPaths = array(
+                        $feedPath . '/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml',
+                        $feedPath . '/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml',
+                        $feedPath . '/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js',
+                    );
+                    foreach ($rssFeedPaths as $rssFeedPath) {
+                        if (!file_exists($rssFeedPath)) {
+                            continue;
+                        }
+                        unlink($rssFeedPath);
+                    }
                 }
             }
             return;
@@ -3372,7 +3383,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail']
                 . ' (' . $_CONFIG['coreAdminName'] . ')';
             // create rss feed
-            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+            $objRSSWriter->xmlDocumentPath = $feedPath . '/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
 
@@ -3412,7 +3423,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             // create headlines rss feed
             $objRSSWriter->removeItems();
-            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+            $objRSSWriter->xmlDocumentPath = $feedPath . '/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
 
@@ -3450,7 +3461,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $objRSSWriter->write();
 
             $objRSSWriter->feedType = 'js';
-            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js';
+            $objRSSWriter->xmlDocumentPath = $feedPath . '/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js';
             $objRSSWriter->write();
 
             if (count($objRSSWriter->arrErrorMsg) > 0) {
