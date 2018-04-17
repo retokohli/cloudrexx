@@ -313,6 +313,8 @@ $_ARRAYLANG['TXT_NEWS_COMMENTS_STATUS'] = "De-/activate comments";
 $_ARRAYLANG['TXT_NEWS_COMMENT_ACTIVATE'] = "Activete";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DEACTIVATE'] = "Deactivete";
 $_ARRAYLANG['TXT_NEWS_COMMENTS'] = "Comments";
+$_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS'] = "Default news container";
+$_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS_HELP'] = "Select the news containers that shall be pre-selected when adding a new news article.";
 $_ARRAYLANG['TXT_NEWS_TEASERS_SETTINGS_TITLE'] = "Default teasers";
 $_ARRAYLANG['TXT_NEWS_EXTENDED'] = "Erweitert";
 $_ARRAYLANG['TXT_NEWS_MONTH_1'] = "January";
@@ -353,7 +355,6 @@ $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'Use teaser text';
 $_ARRAYLANG['TXT_NEWS_SETTINGS_USE_RELATED_NEWS'] = 'Use related articles';
 $_ARRAYLANG['TXT_NEWS_USE_TAGS'] = 'Use tags';
 
-$_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
 $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'] = "In der Designvorlage <b>top_news.html</b>. Diese Seite kann mit dem Platzhalter [[TOP_NEWS_FILE]] im Design oder in einer Content Seite eingebunden werden.";
 $_ARRAYLANG['TXT_NEWS_TOP'] = "Top News";
