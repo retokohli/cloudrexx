@@ -323,6 +323,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             &&  !empty($objResult->fields['enableRelatedNews'])
         ) {
             $this->parseRelatedNews($this->_objTpl, $newsid);
+            \JS::registerCss('core_modules/News/View/Style/RelatedSearch.css');
         }
 
         if (!empty($objResult->fields['newsimage'])) {
@@ -1342,9 +1343,9 @@ JSCODE;
         $data['newsCat']  = !empty($_POST['newsCat']) ? contrexx_input2raw($_POST['newsCat']) : array();
         $data['newsType'] = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
         $data['newsTypeRedirect'] = !empty($_POST['newsTypeRedirect']) ? true : false;
-        $data['enableRelatedNews'] = !empty($this->arrSettings['use_related_news']);
-        $data['relatedNews'] = !empty($_POST['relatedNews'])
-            ? contrexx_input2raw($_POST['relatedNews'])
+        $data['newsEnableRelatedNews'] = intval(!empty($this->arrSettings['use_related_news']));
+        $data['newsRelatedNews'] = !empty($_POST['newsRelatedNews'])
+            ? contrexx_input2raw($_POST['newsRelatedNews'])
             : array();
         $data['enableTags'] = !empty($this->arrSettings['news_use_tags']) ? 1 : 0;
         $data['newsTags'] = !empty($_POST['newsTags'])
@@ -1395,12 +1396,12 @@ JSCODE;
 });
 EOF;
         \JS::registerCode($jsCodeCategoryChosen);
-        if ($this->_objTpl->blockExists('news_details_related_news_container')) {
+        if ($this->_objTpl->blockExists('news_related_news_container')) {
             if (
                 !$this->arrSettings['use_related_news'] ||
-                $this->_objTpl->blockExists('news_details_related_news')
+                !$this->_objTpl->blockExists('news_related_news')
             ) {
-                $this->_objTpl->hideBlock('news_details_related_news_container');
+                $this->_objTpl->hideBlock('news_related_news_container');
             } else {
                 \ContrexxJavascript::getInstance()->setVariable(
                     array(
@@ -1410,9 +1411,10 @@ EOF;
                     'News/RelatedSearch'
                 );
                 \JS::registerJS('core_modules/News/View/Script/RelatedSearch.js');
-                if (!empty($data['enableRelatedNews'])) {
+                \JS::registerCss('core_modules/News/View/Style/RelatedSearch.css');
+                if (!empty($data['newsEnableRelatedNews'])) {
                     try {
-                        $relatedNews = $this->getRelatedNews(0, $data['relatedNews'], false);
+                        $relatedNews = $this->getRelatedNews(0, $data['newsRelatedNews'], false);
                         // parse related news
                         while (!$relatedNews->EOF) {
                             $relatedNewsTitle = $relatedNews->fields['newstitle'];
@@ -1428,16 +1430,16 @@ EOF;
                                 )
                             );
                             $relatedNews->MoveNext();
-                            $this->_objTpl->parse('news_details_related_news');
+                            $this->_objTpl->parse('news_related_news');
                         }
                     } catch (NewsLibraryException $e) {
-                        $this->_objTpl->hideBlock('news_details_related_new');
+                        $this->_objTpl->hideBlock('news_related_new');
                     }
                 } else {
-                    $this->_objTpl->hideBlock('news_details_related_new');
+                    $this->_objTpl->hideBlock('news_related_new');
                 }
 
-                $this->_objTpl->touchBlock('news_details_related_news_container');
+                $this->_objTpl->touchBlock('news_related_news_container');
             }
         }
 
@@ -1615,7 +1617,7 @@ EOF;
                 `author` = '" . contrexx_raw2db($userName) . "',
                 `changelog` = '$date',
                 `enable_tags`='" . contrexx_raw2db($data['enableTags']) . "',
-                `enable_related_news`=" . $data['enableRelatedNews'] . ",
+                `enable_related_news`=" . $data['newsEnableRelatedNews'] . ",
                 `redirect_new_window` = '" . $data['redirectNewWindow'] . "',
                 # the following are empty defaults for the text fields.
                 # text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
@@ -1634,7 +1636,7 @@ EOF;
 // TODO: add fail check
         if (    !$this->storeLocalesOfSubmittedNewsMessage($ins_id, $data['newsTitle'], $data['newsText'], $data['newsTeaserText'])
             ||  !$this->manipulateCategories($data['newsCat'], $ins_id)
-            ||  !$this->manipulateRelatedNews($data['relatedNews'], $ins_id)
+            ||  !$this->manipulateRelatedNews($data['newsRelatedNews'], $ins_id)
             ||  !$this->manipulateTags($data['newsTags'], $ins_id)
         ) {
             $errorMessage = empty($this->errMsg)

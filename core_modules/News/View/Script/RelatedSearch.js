@@ -107,7 +107,7 @@ cx.ready(function () {
                             cx.jQuery('<span class="news_list_close">X</span>')
                         )
                         .append(
-                            cx.jQuery('<input type="hidden" class="relationNewsId" name="relatedNews[]" value=' + ui.item.id + '>')
+                            cx.jQuery('<input type="hidden" class="relationNewsId" name="newsRelatedNews[]" value=' + ui.item.id + '>')
                         )
                     );
                     if (!cx.jQuery('#news-related-news-list').is(':visible')) {
