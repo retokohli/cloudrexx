@@ -92,6 +92,13 @@ class NewsLibrary
     public $newsMetaKeys = '';
 
     /**
+     * Holds localized data of available types
+     *
+     * @var array
+     */
+    protected $arrTypeData = array();
+
+    /**
      * Initializes the NestedSet object
      * which is needed to manage the news categories.
      *
@@ -933,6 +940,45 @@ class NewsLibrary
         return $arrLangData;
     }
 
+    /**
+     * Get name of a type
+     *
+     * @param   integer $id ID of type to get name from
+     * @return  string  Name of type identified by $id.
+     *                  If type identified by $id is unknown,
+     *                  then an empty string is returned.
+     */
+    protected function getTypeNameById($id) {
+        if (!$this->arrSettings['news_use_types']) {
+            return '';
+        }
+
+        if (!count($this->arrTypeData)) {
+            $this->initTypesLangData();
+        }
+
+        if (!isset($this->arrTypeData[$id])) {
+            return '';
+        }
+
+        if (!isset($this->arrTypeData[$id][FRONTEND_LANG_ID])) {   
+            return '';
+        }
+
+        return $this->arrTypeData[$id][FRONTEND_LANG_ID];
+    }
+
+    /**
+     * Fetch type localization and store them in a local member variable
+     */
+    protected function initTypesLangData() {
+        if (!$this->arrSettings['news_use_types']) {
+            return;
+        }
+
+        $this->arrTypeData = array();
+        $this->arrTypeData = $this->getTypesLangData();
+    }
 
     /**
      * Get types language data
@@ -1840,6 +1886,7 @@ class NewsLibrary
             $newsDataFields = '     ,
                                     n.userid            AS newsuid,
                                     n.date              AS newsdate,
+                                    n.typeid,
                                     n.teaser_image_path,
                                     n.teaser_image_thumbnail_path,
                                     n.redirect,
@@ -2925,8 +2972,7 @@ EOF;
            $templateVariablePrefix . 'NEWS_LINK_TARGET'    => $linkTarget,
            $templateVariablePrefix . 'NEWS_CATEGORY'       => implode(', ', contrexx_raw2xhtml($arrNewsCategories)),
            $templateVariablePrefix . 'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($arrNewsCategories)),
-    // TODO: fetch typename from a newly to be created separate methode
-           //'NEWS_TYPE'          => ($this->arrSettings['news_use_types'] == 1 ? stripslashes($objResult->fields['typename']) : ''),
+           $templateVariablePrefix . 'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
            $templateVariablePrefix . 'NEWS_PUBLISHER'      => contrexx_raw2xhtml($publisher),
            $templateVariablePrefix . 'NEWS_AUTHOR'         => contrexx_raw2xhtml($author),
 

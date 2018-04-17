@@ -280,8 +280,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_SOURCE'         => $newsSource,
            'NEWS_URL'            => $newsUrl,
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
-// TODO: create a new methode from which we can fetch the name of the 'type' (do not fetch it from within the same SQL query of which we collect any other data!)
-           //'NEWS_TYPE_NAME' => ($this->arrSettings['news_use_types'] == 1 ? htmlentities($objResult->fields['typename'], ENT_QUOTES, CONTREXX_CHARSET) : '')
+           'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
 
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
@@ -749,6 +748,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $selectFields = ',
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
+                                n.typeid,
                                 n.teaser_image_path,
                                 n.teaser_image_thumbnail_path,
                                 n.redirect,

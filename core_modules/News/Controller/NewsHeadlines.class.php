@@ -113,6 +113,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $objResult = $objDatabase->SelectLimit("
                 SELECT DISTINCT(tblN.id) AS newsid,
                        tblN.`date` AS newsdate,
+                       tblN.typeid,
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
                        tblN.redirect,
