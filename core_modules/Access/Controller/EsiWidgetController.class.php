@@ -208,8 +208,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             } else {
                 $template->hideBlock($name);
             }
-            $dateTime = new \DateTime();
-            $dateTime->setTime(23, 59, 59);
+            $dateTime = new \DateTime('tomorrow');
             $response->setExpirationDate($dateTime);
         }
 
@@ -237,6 +236,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             } else {
                 $template->hideBlock($name);
             }
+            $dateTime = new \DateTime('tomorrow');
+            $response->setExpirationDate($dateTime);
         }
     }
 }
