@@ -3527,7 +3527,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->storeFeedLocales('news_feed_title', $_POST['newsFeedTitle']);
             $this->storeFeedLocales('news_feed_description', $_POST['newsFeedDescription']);
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
-                              SET value='".intval($_POST['newsFeedStatus'])."'
+                              SET value='".intval(!empty($_POST['newsFeedStatus']))."'
                             WHERE name = 'news_feed_status'");
 
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
