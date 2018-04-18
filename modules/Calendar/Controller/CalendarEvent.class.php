@@ -1236,7 +1236,7 @@ class CalendarEvent extends CalendarLibrary
         $update_invitation_sent    = ($send_invitation == 1);
 
         $this->get($id);
-        if ($registrationForm != $this->registrationForm) {
+        if ($registration_form != $this->registrationForm) {
             // if we already have registrations: abort!
             $query = '
                 SELECT

@@ -2288,7 +2288,8 @@ CREATE TABLE `contrexx_module_knowledge_article_content` (
   `answer` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `module_knowledge_article_content_lang` (`lang`),
-  KEY `module_knowledge_article_content_article` (`article`)
+  KEY `module_knowledge_article_content_article` (`article`),
+  FULLTEXT KEY `content` (`question`,`answer`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_knowledge_articles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -2812,7 +2813,7 @@ CREATE TABLE `contrexx_module_news_rel_tags` (
 CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL DEFAULT '',
   `value` varchar(250) NOT NULL DEFAULT '',
-  KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`) USING BTREE
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_news_settings_locale` (
   `name` varchar(50) NOT NULL DEFAULT '',
