@@ -217,12 +217,19 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 }
                 $extUrl = '';
                 if (!empty($objResult->fields['redirect'])) {
-                    if (preg_match('/\[\[NODE_([a-zA-Z_0-9]*)\]\]/', $objResult->fields['redirect'])) {
-                        $extUrl = '(' . $objResult->fields['redirect'] . ')';
+                    if (
+                        preg_match(
+                            '/\[\['.\Cx\Core\Routing\NodePlaceholder::NODE_URL_PCRE.'\]\]/ix',
+                            $objResult->fields['redirect']
+                        )
+                    ) {
+                        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                        $extUrl = '(' . $domainRepo->getMainDomain()->getName() . ')';
                     } else {
-                    $extUrl = substr($objResult->fields['redirect'], 7);
-                    $tmp    = explode('/', $extUrl);
-                        $extUrl = '('.$tmp[0].')';
+                        try {
+                            $url = \Cx\Core\Routing\Url::fromMagic($objResult->fields['redirect']);
+                            $extUrl = '('.$url->getDomain().')';
+                        } catch (\Cx\Core\Routing\UrlException $e) {}
                     }
                 }
                 if ($this->administrate == false) {
