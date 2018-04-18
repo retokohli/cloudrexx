@@ -233,11 +233,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 if ($template->blockExists('access_next_birthday_members')) {
                     $objAccessBlocks->setNextBirthdayUsers();
                 }
+
+                $dateTime = new \DateTime('tomorrow');
+                $response->setExpirationDate($dateTime);
             } else {
                 $template->hideBlock($name);
             }
-            $dateTime = new \DateTime('tomorrow');
-            $response->setExpirationDate($dateTime);
         }
     }
 }
