@@ -514,8 +514,6 @@ class CalendarForm extends CalendarLibrary
             //  trigger postFlush
             $this->triggerEvent('model/postFlush');
         } catch (TransactionFailedException $e) {
-            echo $e->getLine();
-            echo $e->getMessage();
             $objDatabase->failTrans();
             return false;
         } catch (\Throwable $e) {
