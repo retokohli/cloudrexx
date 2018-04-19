@@ -476,7 +476,8 @@ class CalendarForm extends CalendarLibrary
         $data,
         &$hasChange = false
     ) {
-        global $objDatabase;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objDatabase = $cx->getDb()->getAdoDb();
 
         $formFields = $form->getRegistrationFormFields();
         // STEP 1: Create diff between db and $data fields
@@ -650,7 +651,8 @@ class CalendarForm extends CalendarLibrary
         $fieldQueryCallback,
         $fieldNameQueryCallback
     ) {
-        global $objDatabase;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objDatabase = $cx->getDb()->getAdoDb();
 
         // update fields
         foreach ($fieldData as $fieldId => $fieldValues) {
@@ -846,7 +848,8 @@ class CalendarForm extends CalendarLibrary
      * @throws TransactionFailedException If SQL generated an error
      */
     protected function executeLegacySqlWithDoctrineEvents($entities, $eventName, $sql) {
-        global $objDatabase;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objDatabase = $cx->getDb()->getAdoDb();
 
         //  trigger pre... event
         foreach ($entities as $entity) {
