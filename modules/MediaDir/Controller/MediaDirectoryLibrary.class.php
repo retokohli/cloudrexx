@@ -1479,7 +1479,10 @@ EOF;
      * Slugifies the given string
      * @param $string The string to slugify
      */
-    protected function slugify(&$string) {
+    protected function slugify(&$string, $key, $titleData = array()) {
+        if (empty($string) && isset($titleData[$key])) {
+            $string = $titleData[$key];
+        }
         $string = $this->cx->getComponent('Model')->slugify($string);
     }
 
