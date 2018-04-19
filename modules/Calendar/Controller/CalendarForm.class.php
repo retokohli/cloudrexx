@@ -754,7 +754,7 @@ class CalendarForm extends CalendarLibrary
                 $originalFormField,
                 $formField,
                 array('type', 'required', 'order', 'affiliation')
-            ) || $hasChange = $this->hasChangeInEntityFields(
+            ) || $this->hasChangeInEntityFields(
                 $data[$formField->getId()]['formFieldNames'],
                 function($index, $fieldData) use ($fieldNameRepo) {
                     return $fieldNameRepo->findOneBy(array(
