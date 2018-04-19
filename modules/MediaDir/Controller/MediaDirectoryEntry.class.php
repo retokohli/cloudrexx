@@ -1147,41 +1147,49 @@ JSCODE;
     /**
      * Update the entries while activating the new language.
      *
-     * @return null
+     * @param   array
      */
-    public function updateEntries()
-    {
-        global $objDatabase;
+    public function updateEntries($usedLocaleIds = array()) {
+        $db = $this->cx->getDb()->getAdoDb();
+        foreach ($this->arrFrontendLanguages as $arrLocale) {
+            $sourceLocaleId = static::getSourceLocaleIdForTargetLocale($arrLocale['id'], $usedLocaleIds);
+            $objEntries = $db->Execute('
+                SELECT t1.* 
+                FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1
+                WHERE
+                    `lang_id` = ' . $sourceLocaleId . '
+                 OR `lang_id` =  "
+                        SELECT
+                            first_rel_inputfield.`lang_id` AS `id`
+                        FROM
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
+                        LEFT JOIN
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
+                        ON
+                            first_rel_inputfield.`field_id` = inputfield.`id`
+                        WHERE
+                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
+                        AND
+                            (first_rel_inputfield.`form_id` = t1.`form_id`)
+                        AND
+                            (first_rel_inputfield.`value` != "")
+                        LIMIT 1"
+                GROUP BY `field_id`, `entry_id`, `form_id`
+                ORDER BY `entry_id`'
+            );
 
-        $objEntries = $objDatabase->Execute('SELECT t1.* FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1 WHERE `lang_id` = '.FRONTEND_LANG_ID.' OR `lang_id` =  "SELECT
-                                            first_rel_inputfield.`lang_id` AS `id`
-                                        FROM
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
-                                        LEFT JOIN
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
-                                        ON
-                                            first_rel_inputfield.`field_id` = inputfield.`id`
-                                        WHERE
-                                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
-                                        AND
-                                            (first_rel_inputfield.`form_id` = t1.`form_id`)
-                                        AND
-                                            (first_rel_inputfield.`value` != "")
-                                        LIMIT 1" GROUP BY `field_id`, `entry_id`, `form_id`  ORDER BY `entry_id`'
-                        );
-
-        if ($objEntries !== false) {
+            if ($objEntries === false) {
+                continue;
+            }
             while (!$objEntries->EOF) {
-                foreach ($this->arrFrontendLanguages as $lang) {
-                    $objDatabase->Execute('
-                        INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
-                            SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
-                                `lang_id`="' . contrexx_raw2db($lang['id']) . '",
-                                `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
-                                `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
-                                `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
-                    );
-                }
+                $db->Execute('
+                    INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
+                        SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
+                            `lang_id`="' . contrexx_raw2db($arrLocale['id']) . '",
+                            `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
+                            `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
+                            `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
+                );
                 $objEntries->MoveNext();
             }
         }
