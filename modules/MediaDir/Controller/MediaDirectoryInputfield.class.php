@@ -237,7 +237,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
 
 
-    function listInputfields($objTpl, $intView, $intEntryId = null)
+    public function listInputfields($objTpl, $intView, $intEntryId = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 

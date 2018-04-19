@@ -1692,7 +1692,7 @@ EOF;
             static::initOutputLocale();
 
             // reload locales
-            self::getFrontendLanguages();
+            $this->getFrontendLanguages();
             $this->updateFormLocales($existingLocaleIds);
             $this->updateEntryLocales($existingLocaleIds);
             $this->updateCategoryLocales($existingLocaleIds);
