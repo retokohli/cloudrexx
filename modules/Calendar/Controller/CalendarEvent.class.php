@@ -2367,7 +2367,14 @@ class CalendarEvent extends CalendarLibrary
             return array('', '');
         }
 
-        $url = $objMediadirEntry->getDetailUrl();
+        try {
+            $url = $objMediadirEntry->getDetailUrl();
+        } catch (\Cx\Modules\MediaDir\Controller\MediaDirectoryEntryException $e) {
+            return array('', '');
+        }
+
+        // MediaDir might throw an exception if it doesn't find a detail URL,
+        // however it might also return NULL
         if (!$url) {
             return array('', '');
         }
