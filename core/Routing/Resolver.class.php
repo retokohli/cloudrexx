@@ -782,12 +782,12 @@ class Resolver {
             $params = $this->url->getSuggestedParams();
             $target = $this->page->getURL($this->pathOffset, array());
             $target->setParams($params);
-            $this->headers['Location'] = $target;
+            $this->headers['Location'] = $target->toString() . $this->url->getSuggestedAnchor();
             $emptyString = '';
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-            header('Location: ' . $target . $this->url->getSuggestedAnchor(), true, 301);
+            header('Location: ' . $target->toString() . $this->url->getSuggestedAnchor(), true, 301);
             exit;
         }
 
