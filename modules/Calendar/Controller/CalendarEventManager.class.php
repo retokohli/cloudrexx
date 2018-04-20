@@ -946,7 +946,21 @@ class CalendarEventManager extends CalendarLibrary
                     $googleMap = $objGoogleMap->getMap();
                 } else {*/
                 //}
-                $googleMapLink = '<a href="http://maps.google.ch/maps?q='.$objEvent->place_street.'+'.$objEvent->place_zip.'+'.$objEvent->place_city.'&z=15" target="_blank">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>';
+                $lookupData = array();
+                if (!empty($objEvent->place)) {
+                    $lookupData[] = html_entity_decode($objEvent->place, ENT_QUOTES, CONTREXX_CHARSET);
+                }
+                if (!empty($objEvent->place_street)) {
+                    $lookupData[] = html_entity_decode($objEvent->place_street, ENT_QUOTES, CONTREXX_CHARSET);
+                }
+                if (!empty($objEvent->place_zip)) {
+                    $lookupData[] = html_entity_decode($objEvent->place_zip, ENT_QUOTES, CONTREXX_CHARSET);
+                }
+                if (!empty($objEvent->place_city)) {
+                    $lookupData[] = html_entity_decode($objEvent->place_city, ENT_QUOTES, CONTREXX_CHARSET);
+                }
+                $lookupString = join('+', contrexx_raw2encodedUrl($lookupData, true));
+                $googleMapLink = '<a href="http://maps.google.ch/maps?q=' . $lookupString . '&z=15" target="_blank">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>';
             } else {
                 $googleMapLink = '';
             }
