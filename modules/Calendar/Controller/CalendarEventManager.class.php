@@ -903,6 +903,19 @@ class CalendarEventManager extends CalendarLibrary
             }
         }
 
+        if ((
+                $this->arrSettings['placeData'] > 1 &&
+                $objEvent->locationType == 2
+            ) || (
+                $this->arrSettings['placeDataHost'] > 1 &&
+                $objEvent->hostType == 2
+        )) {
+            $_ARRAYLANG = array_merge(
+                $_ARRAYLANG,
+                \Env::get('init')->getComponentSpecificLanguageData('MediaDir')
+            );
+        }
+
         if (($this->arrSettings['placeData'] == 1) && $objEvent->place == '' && $objEvent->place_street == '' && $objEvent->place_zip == '' && $objEvent->place_city == '' && $objEvent->place_country == '' && $objEvent->place_website == '' && $objEvent->place_phone == '') {
             $objTpl->hideBlock('calendarEventAddress');
         } else {
@@ -1329,6 +1342,15 @@ class CalendarEventManager extends CalendarLibrary
 
         $this->getFrontendLanguages();
 
+        if (
+            $this->arrSettings['placeData'] > 1 ||
+            $this->arrSettings['placeDataHost'] > 1
+        ) {
+            $_ARRAYLANG = array_merge(
+                $_ARRAYLANG,
+                \Env::get('init')->getComponentSpecificLanguageData('MediaDir')
+            );
+        }
         //if($objInit->mode == 'backend') {
             $i=0;
             foreach ($this->eventList as $objEvent) {
