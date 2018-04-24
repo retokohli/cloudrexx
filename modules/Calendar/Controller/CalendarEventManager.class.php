@@ -903,13 +903,15 @@ class CalendarEventManager extends CalendarLibrary
             }
         }
 
-        if ((
+        if (
+            (
                 $this->arrSettings['placeData'] > 1 &&
                 $objEvent->locationType == 2
             ) || (
                 $this->arrSettings['placeDataHost'] > 1 &&
                 $objEvent->hostType == 2
-        )) {
+            )
+        ) {
             $_ARRAYLANG = array_merge(
                 $_ARRAYLANG,
                 \Env::get('init')->getComponentSpecificLanguageData('MediaDir')
