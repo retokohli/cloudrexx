@@ -556,7 +556,7 @@ class Gallery
                         $arrCategoryImages[$objResult->fields['id']];
                     $imageThumbnailSrc =
                         $this->strThumbnailWebPath .
-                        $arrCategoryThumbnailImages[$objResult->fields['id']];
+                        $arrCategoryImages[$objResult->fields['id']];
                     $imageCount =
                         $arrCategoryImageCounter[$objResult->fields['id']];
                     $size = $arrCategorySizes[$objResult->fields['id']];
