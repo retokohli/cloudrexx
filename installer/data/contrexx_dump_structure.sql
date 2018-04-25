@@ -445,6 +445,7 @@ CREATE TABLE `contrexx_core_module_sync_host` (
   `api_version` int(11) NOT NULL,
   `url_template` varchar(255) NOT NULL,
   `state` int(1) NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `host_UNIQUE` (`host`)
 ) ENGINE=InnoDB;
