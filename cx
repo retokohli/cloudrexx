@@ -277,6 +277,15 @@ Synopsis
 Available options are:
     --wrapper       Opens an interactive shell of the  Windows wrapper container instead (Windows only)"
                     ;;
+                exec)
+                    echo "Allows to execute code (Bash/SQL) on containers of this environment.
+
+Synopsis
+    ./cx env exec [<options>] <code>
+
+Available options are:
+    --sql           Execute SQL on database container instead of Bash on web container."
+                    ;;
                 *)
                     echo "This command manages a Cloudrexx installation and its environment.
 
@@ -805,6 +814,29 @@ SET FOREIGN_KEY_CHECKS = 1;"
             ;;
         shell)
             dockerexec exec -ti --user www-data "<web-container>" bash
+            ;;
+        exec)
+            shift
+            if read -r -t 0; then
+                input=$(cat -)
+            fi
+            if [[ ${ARGUMENTS["sql"]} ]]; then
+                get_config_array
+                mysql_create_tempfile
+                if read -r -t 0; then
+                    mysql_exec "$input"
+                else
+                    mysql_exec "$@"
+                fi
+                mysql_drop_tempfile
+            else
+                if read -r -t 0; then
+                    get_config_array
+                    echo "$input" | internal_dockerexec exec -i --user www-data "<web-container>" bash -c "$@"
+                else
+                    dockerexec exec -ti --user www-data "<web-container>" bash -c "$@"
+                fi
+            fi
             ;;
         *)
             (>&2 echo "No such subcommand")
