@@ -1173,7 +1173,11 @@ case "${COMMANDS[0]}" in
         ;;
     env)
         COMMANDS=("${COMMANDS[@]:1}")
-        cmd_env "${COMMANDS[@]/#/}"
+        if read -r -t 0; then
+            cat /dev/stdin | cmd_env "${COMMANDS[@]/#/}"
+        else
+            cmd_env "${COMMANDS[@]/#/}"
+        fi
         ;;
     debug)
         if [[ ${ARGUMENTS["web"]} == true ]]; then
