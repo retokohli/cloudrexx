@@ -1604,6 +1604,9 @@ namespace Cx\Core\Core\Controller {
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
                 } catch (\Exception $e) {
+                    if (php_sapi_name() != 'cli') {
+                        throw $e;
+                    }
                     fwrite(STDERR, 'ERROR: ' . $e->getMessage() . PHP_EOL);
                     return;
                 }
