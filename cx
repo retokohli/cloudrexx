@@ -275,6 +275,7 @@ Synopsis
     ./cx env shell [<options>]
 
 Available options are:
+    --root          Opens an interactive root shell on the web container
     --wrapper       Opens an interactive shell of the  Windows wrapper container instead (Windows only)"
                     ;;
                 exec)
@@ -814,7 +815,11 @@ SET FOREIGN_KEY_CHECKS = 1;"
             set_config_array
             ;;
         shell)
-            dockerexec exec -ti --user www-data "<web-container>" bash
+            if [[ ${ARGUMENTS["root"]} ]]; then
+                dockerexec exec -ti "<web-container>" bash
+            else
+                dockerexec exec -ti --user www-data "<web-container>" bash
+            fi
             ;;
         exec)
             shift
