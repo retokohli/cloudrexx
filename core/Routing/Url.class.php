@@ -203,10 +203,12 @@ class Url {
             );
             if ($forcedProtocol != 'none') {
                 $this->protocol = $forcedProtocol;
-                $this->port = static::getSystemPortByServiceName(
-                    $this->protocol,
-                    'tcp'
-                );
+                if (!$replacePorts) {
+                    $this->port = static::getSystemPortByServiceName(
+                        $this->protocol,
+                        'tcp'
+                    );
+                }
             }
         }
 
