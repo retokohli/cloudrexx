@@ -42,6 +42,7 @@ DEFAULT_CONFIG=(
 )
 ARGUMENTS=(
     ["port"]=80
+    ["ssl-port"]=443
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
     ["db-image"]="mariadb:10.1"
     ["source-repo"]="https://github.com/Cloudrexx/cloudrexx.git"
@@ -82,7 +83,9 @@ Synopsis:
     ./cx envs up [<options>]
 
 Available options are:
-    --port=<port>   Port on which the vhosts are available."
+    --certs-dir=<dir>   Directory to get SSL certificates from.
+    --ssl-port=<port>   Port for HTTPS connections. Defaults to 443.
+    --port=<port>       Port on which the vhosts are available."
                     ;;
                 down)
                     echo "Stops the multi-vhost environment.
@@ -391,7 +394,11 @@ function cmd_envs {
                 fi
             fi
             dockerexec network create "<proxy-network>"
-            dockerexec run --rm --name "<proxy-container>" -e "HTTPS_METHOD=nohttps" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+            if [[ "${ARGUMENTS["certs-dir"]}" != "" ]]; then
+                dockerexec run --rm --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -p "${ARGUMENTS["ssl-port"]}":443 -v "${ARGUMENTS["certs-dir"]}":/etc/nginx/certs:ro -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+            else
+                dockerexec run --rm --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+            fi
             for env_dir in "${env_dirs[@]}"; do
                 (
                     cd "$env_dir"
