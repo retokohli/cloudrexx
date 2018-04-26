@@ -193,6 +193,21 @@ class Url {
         // do not add virtual language dir in backend
         if (strpos($this->realPath, \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName()) === 0) {
             $this->setMode('backend');
+        } else if (
+            $this->isInternal() && $this->getMode() == 'frontend' &&
+            in_array($this->protocol, array('http', 'https'))
+        ) {
+            $forcedProtocol = \Cx\Core\Setting\Controller\Setting::getValue(
+                'forceProtocolFrontend',
+                'Config'
+            );
+            if ($forcedProtocol != 'none') {
+                $this->protocol = $forcedProtocol;
+                $this->port = static::getSystemPortByServiceName(
+                    $this->protocol,
+                    'tcp'
+                );
+            }
         }
 
         if(!empty($data['query'])) {
