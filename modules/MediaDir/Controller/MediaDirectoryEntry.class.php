@@ -1222,7 +1222,10 @@ JSCODE;
         $strCreateDate = time();
         $strUpdateDate = time();
         $intUserId = intval($objFWUser->objUser->getId());
-        $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strLastIp = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
         $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
 
 
@@ -1646,7 +1649,10 @@ JSCODE;
         $strPopularDate = $this->arrEntries[intval($intEntryId)]['entryPopularDate'];
         $intPopularDays = intval($this->arrSettings['settingsPopularNumRestore']);
         $strLastIp      = $this->arrEntries[intval($intEntryId)]['entryLastIp'];
-        $strNewIp       = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strNewIp       = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
 
         $strToday  = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $tempDays  = date("d",$strPopularDate);
