@@ -208,6 +208,8 @@ class Url {
                         $this->protocol,
                         'tcp'
                     );
+                } else {
+                    $this->port = $this->getDefaultPort();
                 }
             }
         }
