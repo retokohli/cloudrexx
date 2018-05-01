@@ -2109,7 +2109,6 @@ CREATE TABLE `contrexx_module_guestbook` (
   `url` tinytext NOT NULL,
   `email` tinytext NOT NULL,
   `comment` text NOT NULL,
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `location` tinytext NOT NULL,
   `lang_id` tinyint(2) NOT NULL DEFAULT '1',
   `datetime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
