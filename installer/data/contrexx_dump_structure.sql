@@ -2463,7 +2463,6 @@ CREATE TABLE `contrexx_module_mediadir_comments` (
   `entry_id` int(7) NOT NULL,
   `added_by` varchar(255) NOT NULL,
   `date` varchar(100) NOT NULL,
-  `ip` varchar(100) NOT NULL,
   `name` varchar(255) NOT NULL,
   `mail` varchar(255) NOT NULL,
   `url` varchar(255) NOT NULL,
