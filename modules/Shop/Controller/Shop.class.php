@@ -3901,7 +3901,6 @@ die("Shop::processRedirect(): This method is obsolete!");
         // No more confirmation
         self::$objTemplate->hideBlock('shopConfirm');
         // Store the customer, register the order
-        $customer_ip = $_SERVER['REMOTE_ADDR'];
         $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
         $customerHost = substr($net->getHostByAddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
@@ -4057,7 +4056,10 @@ die("Shop::processRedirect(): This method is obsolete!");
         $objOrder->shipment_id($shipper_id);
         $objOrder->payment_id($payment_id);
         $objOrder->payment_amount($_SESSION['shop']['payment_price']);
-        $objOrder->ip($customer_ip);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objOrder->ip(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
         $objOrder->host($customerHost);
         $objOrder->lang_id(FRONTEND_LANG_ID);
         $objOrder->browser($customer_browser);
