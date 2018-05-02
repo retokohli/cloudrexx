@@ -1035,8 +1035,6 @@ $this->arrRows[2] = '';
                 $arrFeedContent['relatedlinks'] = $objResult->fields['relatedlinks'];
                 $arrFeedContent['status'] = $objResult->fields['status'];
                 $arrFeedContent['addedby'] = $objResult->fields['addedby'];
-                $arrFeedContent['provider'] = $objResult->fields['provider'];
-                $arrFeedContent['ip'] = $objResult->fields['ip'];
                 $arrFeedContent['validatedate'] = $objResult->fields['validatedate'];
                 $arrFeedContent['link'] = $objResult->fields['link'];
                 $arrFeedContent['rss_link'] = $objResult->fields['rss_link'];
@@ -1728,8 +1726,6 @@ $this->arrRows[2] = '';
 //                'DIRECTORY_OS' => $platforms,
 // TODO: Not defined
 //                'DIRECTORY_IP' => $dirIp,
-// TODO: Not defined
-//                'DIRECTORY_HOST' => $dirProvider,
                 'DIRECTORY_ID' => $id,
 // TODO: Not defined
 //                'DIRECTORY_EDIT_FILE' => $filename,

@@ -2131,7 +2131,6 @@ EOF;
             'LEVEL_DESELECTED'          => $levelDe,
             'LEVEL_SELECTED'            => $levelSe,
             'OS'                        => $platforms,
-            'IP'                        => $dirIp,
             'HOST'                      => $dirProvider,
             'ID'                        => $id,
             'TXT_DIRECTORY_SPEZ_SORT'   => $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'],
