@@ -138,7 +138,8 @@ class DirectoryLibrary
 
         $hits++;
         $popular_hits++;
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $ip = $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId();
 
         //update hits
         if (!checkForSpider() && $lastip != $ip) {
