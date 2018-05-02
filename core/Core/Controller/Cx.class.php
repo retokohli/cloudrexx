@@ -841,17 +841,25 @@ namespace Cx\Core\Core\Controller {
              *
              * Enable \DBG to see what happened
              */
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 if (file_exists($this->websiteDocumentRootPath . '/offline.html')) {
                     $offlinePath = $this->websiteDocumentRootPath;
                 } else {
                     $offlinePath = $this->codeBaseDocumentRootPath;
                 }
+                // remove CSRF token
+                output_reset_rewrite_vars();
                 echo file_get_contents($offlinePath . '/offline.html');
                 \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
                 \DBG::dump($e->getTrace());
+                \DBG::msg('GET:');
+                \DBG::dump($_GET);
+                \DBG::msg('POST:');
+                \DBG::dump($_POST);
+                \DBG::msg('COOKIE:');
+                \DBG::dump($_COOKIE);
                 die();
             }
         }
@@ -991,6 +999,10 @@ namespace Cx\Core\Core\Controller {
 
             if (!isset($_CONFIG)) {
                 die('System halted: Unable to load basic configuration!');
+            }
+
+            if (empty($_SERVER['SERVER_NAME'])) {
+                $_SERVER['SERVER_NAME'] = $_CONFIG['domainUrl'];
             }
         }
 
@@ -1538,6 +1550,9 @@ namespace Cx\Core\Core\Controller {
                             if (!defined('LANG_ID')) {
                                 define('LANG_ID', $langId);
                             }
+                            $this->getDb()->getTranslationListener()->setTranslatableLocale(
+                                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+                            );
                         }
                     }
                     if (!\Env::get('Resolver')) {
@@ -1589,7 +1604,11 @@ namespace Cx\Core\Core\Controller {
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
                 } catch (\Exception $e) {
-                    throw new \Exception($e);
+                    if (php_sapi_name() != 'cli') {
+                        throw $e;
+                    }
+                    fwrite(STDERR, 'ERROR: ' . $e->getMessage() . PHP_EOL);
+                    return;
                 }
 
             }
@@ -1601,8 +1620,8 @@ namespace Cx\Core\Core\Controller {
 
             // resolve
             $this->preResolve();                        // Call pre resolve hook scripts
-            $this->adjustRequest();                     // Adjust the protocol and the domain
             $this->resolve();                           // Resolving, Language
+            $this->adjustRequest();                     // Adjust the protocol and the domain
 
             // @TODO: remove this
             $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
@@ -1891,6 +1910,37 @@ namespace Cx\Core\Core\Controller {
          * @return String The content of the application template
          */
         public static function getContentTemplateOfPage($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
+            $content = static::getContentTemplateOfPageWithoutWidget(
+                $page,
+                $component,
+                $themeType
+            );
+
+            // Components should not call this method. Instead they should set
+            // the correct template to the page directly. This requires the
+            // page to have a Sigma template as content.
+            if (static::instanciate()->getComponent('Widget')) {
+                $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
+                $template->setTemplate($content);
+                static::instanciate()->getComponent('Widget')->parseWidgets(
+                    $template,
+                    'ContentManager',
+                    'Page',
+                    static::instanciate()->getPage()->getId()
+                );
+                $content = $template->get();
+            }
+            return $content;
+        }
+
+        /**
+         * Fetch the application template of a content page.
+         * @param \Cx\Core\ContentManager\Model\Entity\Page $page The page object of which to fetch the application template from
+         * @param String $component Optional argument to specify the component to load the template from, instead of using the page's module-attribute
+         * @param String $themeType Optional argument to specify the output channel
+         * @return String The content of the application template
+         */
+        protected static function getContentTemplateOfPageWithoutWidget($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
             try {
                 $component        = empty($component) ? $page->getModule() : $component;
                 $cmd              = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
@@ -2022,8 +2072,6 @@ namespace Cx\Core\Core\Controller {
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $this->template->setVariable(array(
-                'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
-                'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'LOGOUT_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
@@ -2046,7 +2094,6 @@ namespace Cx\Core\Core\Controller {
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
-                'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
                                                         (function(d, s, id) {
@@ -2146,7 +2193,13 @@ namespace Cx\Core\Core\Controller {
                     $extenstion = empty($pageTitle) ? null : '.pdf';
                     $objPDF     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
                     $objPDF->SetTitle($pageTitle . $extenstion);
-                    $objPDF->setContent($this->template->get());
+                    $endcode = $this->template->get();
+                    $endcode = $this->getComponent(
+                        'Cache'
+                    )->internalEsiParsing(
+                        $endcode
+                    );
+                    $objPDF->setContent($endcode);
                     $objPDF->Create();
                     exit;
                 }
@@ -2287,7 +2340,10 @@ namespace Cx\Core\Core\Controller {
             $cx = $this;
             register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
                 $parsingTime = $cx->stopTimer();
-                \DBG::log("(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\"");
+                \DBG::log(
+                    "(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\" \"" .
+                    memory_get_peak_usage(true) . "\""
+                );
             });
         }
 
@@ -2489,6 +2545,31 @@ namespace Cx\Core\Core\Controller {
          */
         public function getThemesFolderName() {
             return self::FOLDER_NAME_THEMES;
+        }
+
+        /**
+         * Returns a list of system folders
+         * Contains all folders that are re-routed to Cloudrexx by .htaccess
+         * @return array List of folders relative to website offset path
+         */
+        public function getSystemFolders() {
+            return array(
+                $this->getBackendFolderName(),
+                $this->getConfigFolderName(),
+                $this->getCoreFolderName(),
+                $this->getCoreModuleFolderName(),
+                static::FOLDER_NAME_CUSTOMIZING,
+                static::FOLDER_NAME_FEED,
+                static::FOLDER_NAME_IMAGES,
+                '/installer',
+                '/lang',
+                $this->getLibraryFolderName(),
+                static::FOLDER_NAME_MEDIA,
+                $this->getModelFolderName(),
+                $this->getModuleFolderName(),
+                $this->getThemesFolderName(),
+                static::FOLDER_NAME_TEMP,
+            );
         }
 
         /**

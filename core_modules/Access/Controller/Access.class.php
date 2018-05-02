@@ -207,7 +207,25 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         // filter out special placeholders that identify allowed filter attributes
         $attributeFilterPlaceholders = preg_grep('/^' . $filterAttributePlaceholderPrefix . '/', $placeholders);
         $allowedFilterAttributes = preg_filter('/^' . $filterAttributePlaceholderPrefix . '/', '', $attributeFilterPlaceholders);
-        
+
+        // verify that attributes are valid
+        $objFWUser = \FWUser::getFWUserObject();
+        foreach ($allowedFilterAttributes as $idx => $attributeId) {
+            $objAttribute = $objFWUser->objUser->objAttribute->getById(strtolower($attributeId));
+
+            // unkown attribute -> drop it from filter
+            if ($objAttribute->EOF) {
+                unset($allowedFilterAttributes[$idx]);
+                continue;
+            }
+
+            // user does not have read access to attribute -> drop it from filter
+            if (!$objAttribute->checkReadPermission()) {
+                unset($allowedFilterAttributes[$idx]);
+                continue;
+            }
+        }
+
         // add filter join methods (OR and AND) to allowed filter attributes
         $allowedFilterAttributes = array_merge($allowedFilterAttributes, array('AND', 'OR', '=', '<', '>', '!=', '<', '>', 'REGEXP', 'LIKE'));
 
@@ -842,7 +860,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 '[[ACTIVATION_LINK]]',
                 '[[HOST_LINK]]',
                 '[[SENDER]]',
-                '[[LINK]]'
+                '[[LINK]]',
+                '[[YEAR]]',
             );
             $replaceTextTerms = array(
                 $_CONFIG['domainUrl'],
@@ -850,7 +869,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 $objUserMail->getSenderName(),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             $replaceHtmlTerms = array(
                 $_CONFIG['domainUrl'],
@@ -858,7 +878,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 contrexx_raw2xhtml($objUserMail->getSenderName()),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             if ($mail2load == 'reg_confirm') {
                 $imagePath = 'http://'.$_CONFIG['domainUrl']

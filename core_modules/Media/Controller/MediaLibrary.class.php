@@ -1116,7 +1116,7 @@ END;
                                         ');
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $arrReturn[$objResult->fields['name']] = stripslashes(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+                $arrReturn[$objResult->fields['name']] = $objResult->fields['value'];
                 $objResult->MoveNext();
             }
         }

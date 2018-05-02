@@ -215,12 +215,6 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'ckeditor'     => array(
-            'jsfiles'       => array(
-                'lib/ckeditor/ckeditor.js',
-            ),
-            'dependencies' => array('jquery'),
-        ),
         'js-cookie' => array(
             'jsfiles'       => array(
                 'lib/javascript/js-cookie.min.js',
@@ -345,6 +339,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                         });
                     }
                 });'
+        ),
+        // Extends standard "chosen" above.  Usage:
+        //  cx.jQuery([selector])
+        //    .chosen([options])
+        //    .chosenSortable([extra options]);
+        'chosen-sortable' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/chosen/chosen-sortable.min.js',
+                // Use the full version for debugging
+                //'lib/javascript/jquery/chosen/chosen-sortable.js',
+            ),
+            'dependencies' => array('jqueryui', 'chosen'),
         ),
         'backend' => array(
             'jsfiles' => array(
@@ -484,6 +490,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'cx',
             ),
         ),
+        'tag-it' => array(
+            'jsfiles' => array(
+                'lib/javascript/tag-it/js/tag-it.min.js',
+            ),
+            'cssfiles' => array(
+                'lib/javascript/tag-it/css/tag-it.css',
+            ),
+            'dependencies' => array(
+                'jqueryui',
+            ),
+        ),
     );
 
     /**
@@ -493,6 +510,24 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @var array
      */
     private static $customJS = array();
+
+    /**
+     * Holds data for each JS file that was located before the src attribute
+     * of the script tag
+     *
+     * @static
+     * @var array
+     */
+    protected static $scriptTagPreSrcData = array();
+
+    /**
+     * Holds data for each JS file that was located after the src attribute
+     * of the script tag
+     *
+     * @static
+     * @var array
+     */
+    protected static $scriptTagPostSrcData = array();
 
     /**
      * Holds the template JS files
@@ -742,11 +777,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @param string $file The path of $file must be specified relative to the document root of the website.
      *     I.e. modules/foo/bar.js
      * @param bool $template is a javascript file which has been included from template
+     * @param   string  $preSrcData Optional string of attributes that shall
+     *                              be added to the HTML script tag before the
+     *                              src-attribute.
+     * @param   string  $preSrcData Optional string of attributes that shall
+     *                              be added to the HTML script tag after the
+     *                              src-attribute.
      *
      * External files are also suppored by providing a valid HTTP(S) URI as $file.
      * @return bool Returns TRUE if the file will be loaded, otherwiese FALSE.
      */
-    public static function registerJS($file, $template = false)
+    public static function registerJS($file, $template = false, $preSrcData = '', $postSrcData = '')
     {
         // check whether the script has a query string and remove it
         // this is necessary to check whether the file exists in the filesystem or not
@@ -777,12 +818,32 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         if (array_search($file, self::$customJS) !== false || array_search($file, self::$templateJS) !== false) {
             return true;
         }
+
+        // register optional attributes for the HTML script tag
+        $scriptHash = md5($file . $template);
+        static::$scriptTagPreSrcData[$scriptHash] = $preSrcData;
+        static::$scriptTagPostSrcData[$scriptHash] = $postSrcData;
+
         if ($template) {
             self::$templateJS[] = $file;
         } else {
             self::$customJS[] = $file;
         }
         return true;
+    }
+
+    /**
+     * Register a JavaScript library that can later (after preContentLoad hook)
+     * be loaded by any component by calling \JS::activate($name).
+     * This method should only be used within the preContentLoad hook.
+     *
+     * @param   $name   string  Name of the library to register
+     * @param   $definition array   Meta information about the library.
+     *                              See static::$available for schema
+     *                              definition.
+     */
+    public static function registerJsLibrary($name, $definition = array()) {
+        static::$available[$name] = $definition;
     }
 
     /**
@@ -906,7 +967,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         if (array_search('jquery', self::$active) !== false) {
             $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         }
-        $jsScripts[] = self::makeJSFiles(self::$templateJS);
+        $jsScripts[] = self::makeJSFiles(self::$templateJS, true);
 
         // no conflict for normal jquery version which has been included in template or by theme dependency
         $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
@@ -947,11 +1008,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     /**
      * Make the code for the Javascript files
      * @param array $files
+     * @param   bool    $template   Whether the file has been included from
+     *                              the webdesign template or not
      * @return string
      * @static
-     * @access private
      */
-    private static function makeJSFiles($files)
+    private static function makeJSFiles($files, $template = false)
     {
         global $_CONFIG;
         $code = "";
@@ -971,7 +1033,28 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             }
 
             $path .= $file;
-            $code .= "<script type=\"text/javascript\" src=\"".$path."\"></script>\n\t";
+
+            // check for additional script tag attributes
+            $scriptHash = md5($file . $template);
+            $preSrcData = '';
+            if (isset(static::$scriptTagPreSrcData[$scriptHash])) {
+                $preSrcData = static::$scriptTagPreSrcData[$scriptHash];
+            }
+            $postSrcData = '';
+            if (isset(static::$scriptTagPostSrcData[$scriptHash])) {
+                $postSrcData = static::$scriptTagPostSrcData[$scriptHash];
+            }
+
+            // add script tag attribute 'type' in case its missing in the
+            // additional script tag attributes
+            $typeRegex = '/type\s?=\s?["\']text\/javascript["\']/i';
+            if (!preg_match($typeRegex, $preSrcData) ||
+                !preg_match($typeRegex, $preSrcData)
+            ) {
+                $preSrcData .= 'type="text/javascript" ';
+            }
+
+            $code .= "<script " . $preSrcData . "src=\"".$path."\"" . $postSrcData . "></script>\n\t";
         }
         return $code;
     }
@@ -1026,7 +1109,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
     public static function registerFromRegex($matchinfo)
     {
-        $script = $matchinfo[1];
+        $preSrcData = $matchinfo[1];
+        $script = $matchinfo[2];
+        $postSrcData = $matchinfo[3];
         $alternativeFound = false;
         //make sure we include the alternative if provided
         foreach(self::$alternatives as $pattern => $alternative) {
@@ -1040,7 +1125,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
         //only register the js if we didn't activate the alternative
         if(!$alternativeFound)
-            self::registerJS($script, true);
+            self::registerJS($script, true, $preSrcData, $postSrcData);
     }
 
 
@@ -1054,7 +1139,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     public static function findJavascripts(&$content)
     {
         JS::grabComments($content);
-        $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
+        $content = preg_replace_callback('/<script (.*?)src=(?:"|\')([^"\']*)(?:"|\')(.*?)\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
         JS::restoreComments($content);
     }
 
@@ -1107,7 +1192,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function grabComments(&$content)
     {
+        // filter HTML-comments
         $content = preg_replace_callback('#<!--.*?-->#ms', array('JS', '_storeComment'), $content);
+
+        // filter esi-includes
+        $content = preg_replace_callback('#<esi:include src="([^"]+)" onerror="continue"/>#', array('JS', '_storeComment'), $content);
     }
 
 

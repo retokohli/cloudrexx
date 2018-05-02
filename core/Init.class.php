@@ -37,6 +37,16 @@
  */
 
 /**
+ * InitCMSException
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
+ * @package     cloudrexx
+ * @version     5.0.0
+ */
+class InitCMSException extends \Exception {}
+
+/**
  * Initialize the CMS
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -159,6 +169,11 @@ class InitCMS
         if (!empty($_REQUEST['setLang'])) {
             $backendLangId = intval($_REQUEST['setLang']);
             $setUserLanguage = true;
+        } elseif (!empty($_COOKIE['backendLangId'])) {
+            // the language already has changed for the backend, but he hasn't been logged in at this time
+            // (perhaps on login page)
+            $setUserLanguage = true;
+            $backendLangId = intval($_COOKIE['backendLangId']);
         }
 
         // the language is activated for the backend
@@ -170,10 +185,21 @@ class InitCMS
         if ($setUserLanguage && $objFWUser->objUser->login(true) && $objFWUser->objUser->getBackendLanguage() != $backendLangId) {
             $objFWUser->objUser->setBackendLanguage($backendLangId);
             $objFWUser->objUser->store();
+
+            // delete cookie for authenticated users
+            setcookie('backendLangId', '', time() - 3600, ASCMS_PATH_OFFSET.'/');
         }
 
         $this->backendLangId = $this->arrBackendLang[$backendLangId]['id'];
-        $this->currentThemesId = $this->arrBackendLang[$backendLangId]['themesid'];
+        // TODO: this is obsolete, isn't it?
+        //$this->currentThemesId = $this->arrBackendLang[$backendLangId]['themesid'];
+
+        // Set a COOKIE to remember the selected backend language.
+        // But do this only for non-authenticated users, as authenticated
+        // users have the selected backend language being stored in their profile.
+        if (!$objFWUser->objUser->login(true)) {
+            setcookie('backendLangId', $backendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+        }
     }
 
 
@@ -814,6 +840,8 @@ class InitCMS
     {
         global $objDatabase;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
         // generate "module paths" array
         $query = "SELECT name, is_core FROM ".DBPREFIX."modules";
         $objResult = $objDatabase->Execute($query);
@@ -822,7 +850,8 @@ class InitCMS
                 if (strlen($objResult->fields['name'])>0){
                     switch ($objResult->fields['name']){
                         case 'core':
-                            $this->arrModulePath[$objResult->fields['name']] = ASCMS_DOCUMENT_ROOT.'/lang/';
+                            $this->arrModulePath[$objResult->fields['name']] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
+                            $this->arrModulePath['Core'] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
                             break;
                         case 'DatabaseManager':
                         case 'SystemInfo':
@@ -839,26 +868,29 @@ class InitCMS
                         case 'Locale':
                         case 'Country':
                         case 'View':
-                            $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
+                            $this->arrModulePath[$objResult->fields['name']] = $cx->getCodeBaseCorePath() . '/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
-                        $this->arrModulePath[$objResult->fields['name']] = ($objResult->fields['is_core'] == 1 ? ASCMS_CORE_MODULE_PATH : ASCMS_MODULE_PATH).'/'.$objResult->fields['name'].'/lang/';
+                        $this->arrModulePath[$objResult->fields['name']] = ($objResult->fields['is_core'] == 1 ? $cx->getCodeBaseCoreModulePath() : $cx->getCodeBaseModulePath()).'/'.$objResult->fields['name'].'/lang/';
                     }
                 }
                 $objResult->MoveNext();
             }
             // add special modules
-            $this->arrModulePath['Media'] = ASCMS_CORE_MODULE_PATH.'/Media/lang/';
+            $this->arrModulePath['Media'] = $cx->getCodeBaseCoreModulePath() . '/Media/lang/';
         }
     }
 
 
     /**
      * Initializes the language array
+     *
+     * @param string $module The component to load the language data from
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
      * @return    array         The language array, either local $_ARRAYLANG or
      *                          the global $_CORELANG
      */
-    function loadLanguageData($module='')
+    function loadLanguageData($module='', $loadFromYaml=true)
     {
 // NOTE: This method is called on the (global) Init object, so
 // there's no need to "global" that!
@@ -870,7 +902,6 @@ class InitCMS
 
         if(!isset($_CORELANG))
             $_CORELANG = array();
-
         if ($this->mode == 'backend') {
             if (isset($this->arrBackendLang[$this->backendLangId])) {
                 $langCode = $this->arrBackendLang[$this->backendLangId]['lang'];
@@ -910,7 +941,7 @@ class InitCMS
             if($langCode && $langCode != 'en') { //don't do it for english, already loaded.
                 $path = $this->getLangFilePathByCode($module, $langCode);
                 if (!empty($path)) {
-                    $this->loadLangFile($path);
+                    $this->loadLangFile($path, $loadFromYaml, $module);
                 }
             }
             return $_ARRAYLANG;
@@ -931,9 +962,10 @@ class InitCMS
      * @param string $componentName Name of the desired component
      * @param bool|true $frontend true if desired mode is frontend false otherwise
      * @param integer $languageId Id of the desired language i.e. 1 for german
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
      * @return array The language data which has been loaded
      */
-    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId = 0) {
+    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId = 0, $loadFromYaml=true) {
         global $_ARRAYLANG;
 
         $mode = $frontend ? 'frontend' : 'backend';
@@ -969,11 +1001,12 @@ class InitCMS
 
         // set custom init state
         $this->mode = $mode;
+        $_ARRAYLANG = array();
         $this->frontendLangId = $languageId;
         $this->backendLangId = $languageId;
 
         // load language data
-        $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName] = $this->loadLanguageData($componentName);
+        $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName] = $this->loadLanguageData($componentName, $loadFromYaml);
 
         // restore init state
         $_ARRAYLANG = $langBackup;
@@ -984,10 +1017,55 @@ class InitCMS
         return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
     }
 
+    /**
+     * Get component specific language data directly by language code
+     * State of arraylang will be backedup and restored while loading the language
+     * data
+     *
+     * @param string $componentName Name of the desired component
+     * @param bool|true $frontend true if desired mode is frontend false otherwise
+     * @param string $languageCode iso1 code  of the desired language i.e. 'de' for german
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
+     * @return array The language data which has been loaded
+     */
+    public function getComponentSpecificLanguageDataByCode($componentName, $frontend = true, $langCode, $loadFromYaml = true) {
+        global $_ARRAYLANG;
+
+        $arrayLangBackup = $_ARRAYLANG;
+        $_ARRAYLANG = array();
+
+        $mode = $frontend ? 'frontend' : 'backend';
+
+        if ($componentName == 'Core') {
+            $componentName = lcfirst($componentName);
+        }
+
+        // build path from component name, mode and code directly
+        $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$componentName].$langCode.'/'.$mode.'.php');
+
+        if (!$path) {
+            // restore $_ARRAYLANG
+            $_ARRAYLANG = $arrayLangBackup;
+            throw new \InitCMSException($arrayLangBackup['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND']);
+        }
+
+        $componentSpecificLanguageData = $this->loadLangFile($path, $loadFromYaml, $componentName);
+
+        // restore $_ARRAYLANG
+        $_ARRAYLANG = $arrayLangBackup;
+
+        return $componentSpecificLanguageData;
+    }
+
     protected function getLangFilePathByCode($module, $langCode) {
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
-        $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$langCode.'/'.$mode.'.php');
+
+        if ($mode == 'backend') {
+            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$langCode.'/'.$mode.'.php');
+        } else {
+            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$langCode.'/'.$mode.'.php');
+        }
 
         if ($path) {
             return $path;
@@ -995,7 +1073,7 @@ class InitCMS
         
         // file path of default language (if not yet requested)
         if ($this->mode == 'backend') {
-            $defaultLangCode = $this->arrBackendLang[\FWLanguage::getDefaultBackendLangId()]['iso1'];
+            $defaultLangCode = $this->arrBackendLang[\FWLanguage::getDefaultBackendLangId()]['lang'];
         } else {
             $defaultLangCode = $this->arrLang[\FWLanguage::getDefaultLangId()]['iso1'];
         }
@@ -1010,19 +1088,70 @@ class InitCMS
      *
      * Note that no replacements are made to the entries' contents.
      * If your strings don't work as expected, fix *them*.
+     *
+     * @param string $path The path of the language file
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
+     * @param string $componentName The name of the language file's component
      */
-    protected function loadLangFile($path)
+    protected function loadLangFile($path, $loadFromYaml=true, $componentName='Core')
     {
         global $_ARRAYLANG;
 
         $isCustomized = false;
         $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
         if (file_exists($path) || !file_exists($customizedPath)) {
-            require_once $path;
+            require $path;
         }
         if ($isCustomized) {
-            require_once $customizedPath;
+            require $customizedPath;
         }
+
+        // if we don't want to load from yaml return language data already
+        if (!$loadFromYaml) {
+            return $_ARRAYLANG;
+        }
+
+        // load customized language placeholders from yaml
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $frontend = $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+        try {
+            if ($frontend) {
+                // get language by frontend locale
+                // TODO: we must load the language specified by $path
+                $locale = $cx->getDb()->getEntityManager()->find(
+                    'Cx\Core\Locale\Model\Entity\Locale',
+                    $this->frontendLangId
+                );
+                $language = $locale->getSourceLanguage();
+            } elseif ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+                // TODO: we must load the language specified by $path
+                $backendLangId = !empty($this->backendLangId) ? $this->backendLangId : $this->defaultBackendLangId;
+                $backend = $em->find(
+                    'Cx\Core\Locale\Model\Entity\Backend',
+                    $backendLangId
+                );
+                $language = $backend->getIso1();
+            } else {
+                return $_ARRAYLANG;
+            }
+        } catch (\Throwable $e) {
+            \DBg::msg($e->getMessage());
+            return $_ARRAYLANG;
+        }
+
+        try {
+            // get the language file of the locale
+            $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile(
+                $language, $componentName, $frontend
+            );
+
+        } catch (\Cx\Core\Locale\Model\Entity\LanguageFileException $e) {
+            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+        }
+
+        // merge customized placeholders into $_ARRAYLANG
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $languageFile->getData());
 
         return $_ARRAYLANG;
     }
@@ -1078,9 +1207,10 @@ class InitCMS
      *  See {@see getJavascript_activetab()} for details, and
      *  {@see \Cx\Core\Setting\Controller\Setting::show()} and {@see \Cx\Core\Setting\Controller\Setting::show_external()}
      *  for implementations.
+     * @param boolean $force (optional) Wheter to force a non-empty return value, default false
      * @return  string            The HTML language dropdown menu code
      */
-    function getUserFrontendLangMenu()
+    function getUserFrontendLangMenu($force = false)
     {
         global $_ARRAYLANG;
 
@@ -1091,27 +1221,15 @@ class InitCMS
         }
 
         $action = CONTREXX_DIRECTORY_INDEX;
-        $command = isset($_REQUEST['cmd']) ? contrexx_input2raw($_REQUEST['cmd']) : '';
+        if ($force) {
+            $command = 'force';
+        } else {
+            $command = isset($_REQUEST['cmd']) ? contrexx_input2raw($_REQUEST['cmd']) : '';
+        }
         switch ($command) {
-            /*case 'xyzzy':
-                // Variant 1:  Use selected GET parameters only
-                // Currently unused, but this could be extended by a few required
-                // parameters and might prove useful for some modules.
-                $query_string = '';
-                // Add more as needed
-                $arrParameter = array('cmd', 'act', 'tpl', 'key', );
-                foreach ($arrParameter as $parameter) {
-                    $value = (isset($_GET[$parameter])
-                      ? $_GET[$parameter] : null);
-                    if (isset($value)) {
-                        $query_string .= "&$parameter=".contrexx_input2raw($value);
-                    }
-                }
-                Html::replaceUriParameter($action, $query_string);
-                // The dropdown is built below
-                break;*/
             case 'Shop':
             case 'country':
+            case 'force':
                 // Variant 2:  Use any (GET) request parameters
                 // Note that this is generally unsafe, as most modules/methods do
                 // not rely on posted data only!

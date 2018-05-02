@@ -121,7 +121,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function isDirectory(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
-        return is_dir($this->getFullPath($file));
+        return is_dir($this->getFullPath($file) . $file->getFullName());
     }
 
     /**
@@ -133,7 +133,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function isFile(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
-        return is_file($this->getFullPath($file));
+        return is_file($this->getFullPath($file) . $file->getFullName());
     }
 
     /**
@@ -145,7 +145,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function fileExists(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
-        return file_exists($this->getFullPath($file));
+        return file_exists($this->getFullPath($file) . $file->getFullName());
     }
 
     /**
@@ -159,7 +159,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
     public function readFile(
         \Cx\Core\MediaSource\Model\Entity\File $file
     ) {
-        return file_get_contents($this->getFullPath($file));
+        return file_get_contents($this->getFullPath($file) . $file->getFullName());
     }
 
     /**
@@ -189,7 +189,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
         } elseif ($path = $this->locateFileInAdditionalFileSystem($file->__toString())) {
             $basePath = $path;
         }
-        return $basePath . $file->__toString();
+        return $basePath . ltrim($file->getPath(), '.') . '/';
     }
 
     /**

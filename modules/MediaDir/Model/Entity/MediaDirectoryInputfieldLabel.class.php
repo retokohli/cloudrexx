@@ -58,11 +58,13 @@ class MediaDirectoryInputfieldLabel implements Inputfield
     {
         global $objDatabase, $objInit;
 
+        $langId = static::getOutputLocale()->getId();
+
         switch ($intView) {
             default:
             case 1:
                 //modify (add/edit) View
-                $strValue = empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID];
+                $strValue = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
 
                 return $strValue;
 
