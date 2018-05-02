@@ -420,11 +420,6 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
             // Set values for special field types
             $this->setSpecialFieldValue($arrField, $fieldId);
 
-            $fieldValue = preg_replace(
-                '/\[\[([A-Z0-9_]+)\]\]/',
-                '{$1}',
-                $arrField['lang'][$this->langId]['value']
-            );
             $fieldLabel = '&nbsp;';
             if (!empty($arrField['lang'][$this->langId]['name'])) {
                 $fieldLabel = $arrField['lang'][$this->langId]['name'];
