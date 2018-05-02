@@ -292,8 +292,6 @@ EOF;
     function saveComment($intEntryId, $arrCommentData) {
         global $_ARRAYLANG, $objDatabase;
 
-        $strRemoteAddress = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
-
         $objFWUser  = \FWUser::getFWUserObject();
         $objUser    = $objFWUser->objUser;
 
