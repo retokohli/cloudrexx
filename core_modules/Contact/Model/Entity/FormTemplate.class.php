@@ -772,7 +772,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $template,
                     $fieldId,
                     $fieldValue,
-                    $parseLegacyPlaceholder
+                    $parseLegacyPlaceholder,
+                    $fieldType
                 );
                 break;
         }
@@ -1027,13 +1028,32 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         \Cx\Core\Html\Sigma $template,
         $fieldId,
         $fieldValue,
-        $parseLegacyPlaceholder
+        $parseLegacyPlaceholder,
+        $fieldType
     ) {
+        global $_ARRAYLANG;
+
         if ($parseLegacyPlaceholder) {
             $valuePlaceholder = $fieldId . '_VALUE';
         } else {
             $valuePlaceholder = 'CONTACT_FORM_FIELD_VALUE';
         }
+
+        $fieldPlaceholder = $fieldValue;
+        if (strpos($fieldType, 'access_') === 0) {
+            $objUserAttribute = \FWUser::getFWUserObject()->objUser->objAttribute;
+            $attributeId = str_replace('access_', '', $fieldType);
+            if ($attributeId == 'email') {
+                $fieldPlaceholder = $_ARRAYLANG['TXT_CONTACT_EMAIL'];
+            } else {
+                $fieldPlaceholder = $objUserAttribute->getById($attributeId)->getName();
+            }
+        }
+
+        $template->setVariable(
+            'CONTACT_FORM_FIELD_PLACEHOLDER',
+            contrexx_raw2xhtml($fieldPlaceholder)
+        );
 
         // Set default field value through User profile attribute
         if (preg_match(static::USER_PROFILE_REGEXP, $fieldValue)) {
@@ -1052,7 +1072,10 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
             $fieldValue = $_POST['contactFormField_' . $fieldId];
         } elseif (!empty($_GET[$fieldId])) {
             $fieldValue = $_GET[$fieldId];
+        } elseif ($template->placeholderExists('CONTACT_FORM_FIELD_PLACEHOLDER')) {
+            return;
         }
+
         $template->setVariable(
             $valuePlaceholder,
             contrexx_raw2xhtml($fieldValue)
