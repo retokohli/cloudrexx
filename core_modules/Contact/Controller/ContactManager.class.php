@@ -1514,6 +1514,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 }
             }
             $this->em->flush();
+
+            // The following line is a hacky work-around for translation
+            // caching problem
+            // See http://atlantic18.github.io/DoctrineExtensions/doc/translatable.html
+            // 2017-06-19, MRi
+            $this->em->getConfiguration()->getResultCacheImpl()->deleteAll();
         } catch(\Exception $e) {}
     }
 
@@ -2276,6 +2282,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         }
 
         $this->em->flush();
+
+        // The following line is a hacky work-around for translation
+        // caching problem
+        // See http://atlantic18.github.io/DoctrineExtensions/doc/translatable.html
+        // 2017-06-19, MRi
+        $this->em->getConfiguration()->getResultCacheImpl()->deleteAll();
     }
 
 
