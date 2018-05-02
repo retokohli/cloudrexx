@@ -1471,11 +1471,16 @@ class ContactLib
         if ($this->arrForms[$id]['useCaptcha']) {
             $captchaValidationCode = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getJSValidationFn();
         }
-        $captchaErrorMsg = addslashes($_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']);
+
+        // sets js variable for current component
+        \ContrexxJavascript::getInstance()->setVariable(
+            'txtCaptchaError',
+            $_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR'],
+            'Contact'
+        );
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
     var isOk = true, isCaptchaOk = true;
-    var captchaError = '$captchaErrorMsg';
 
     for (var field in fields) {
         var type = fields[field][3];
@@ -1540,7 +1545,7 @@ function checkAllFields() {
         \$J('<div />')
         .addClass('text-danger')
         .attr('id', 'contactFormCaptchaError')
-        .text(captchaError)
+        .text(cx.variables.get('txtCaptchaError', 'Contact'))
         .prependTo('#captcha');
         return false;
     }
