@@ -1384,48 +1384,52 @@ class ContactLib
             WHERE `id` = '.$entryId
         , 1);
 
-        if ($objEntry !== false) {
-            $formId = $objEntry->fields['id'];
-
-            $objResult = $objDatabase->SelectLimit('
-                SELECT `id_field`, `formlabel`, `formvalue`
-                FROM `'.DBPREFIX.'module_contact_form_submit_data`
-                WHERE `id_entry` = '.$objEntry->fields['id'].'
-                ORDER BY `id`
-            ');
-
-            $fileFieldId = 0;
-// TODO: what is with legacyMode uploads??
-            if (!$this->legacyMode) {
-                $rs = $objDatabase->SelectLimit('
-                    SELECT `id`
-                    FROM `'.DBPREFIX.'module_contact_form_field`
-                    WHERE (`type` = "file") AND (`id_form` = '.$formId.')'
-                , 1);
-                if (($rs !== false) && (!$rs->EOF)) {
-                    $fileFieldId = $rs->fields['id'];
-                }
-            }
-
-            $arrData = array();
-            while (!$objResult->EOF){
-                $fieldId = $objResult->fields['id_field'];
-
-                $arrData[$fieldId]['label'] = $objResult->fields['formlabel'];
-                $arrData[$fieldId]['value'] = $objResult->fields['formvalue'];
-
-                $objResult->MoveNext();
-            }
-
-            $arrEntry = array(
-                'langId'    => $objEntry->fields['id_lang'],
-                'time'      => $objEntry->fields['time'],
-                'host'      => $objEntry->fields['host'],
-                'lang'      => $objEntry->fields['lang'],
-                'ipaddress' => $objEntry->fields['ipaddress'],
-                'data'      => $arrData
-            );
+        if ($objEntry === false ||
+            !$objEntry->RecordCount()
+        ) {
+            return null;
         }
+
+        $formId = $objEntry->fields['id'];
+
+        $objResult = $objDatabase->SelectLimit('
+            SELECT `id_field`, `formlabel`, `formvalue`
+            FROM `'.DBPREFIX.'module_contact_form_submit_data`
+            WHERE `id_entry` = '.$objEntry->fields['id'].'
+            ORDER BY `id`
+        ');
+
+        $fileFieldId = 0;
+// TODO: what is with legacyMode uploads??
+        if (!$this->legacyMode) {
+            $rs = $objDatabase->SelectLimit('
+                SELECT `id`
+                FROM `'.DBPREFIX.'module_contact_form_field`
+                WHERE (`type` = "file") AND (`id_form` = '.$formId.')'
+            , 1);
+            if (($rs !== false) && (!$rs->EOF)) {
+                $fileFieldId = $rs->fields['id'];
+            }
+        }
+
+        $arrData = array();
+        while (!$objResult->EOF){
+            $fieldId = $objResult->fields['id_field'];
+
+            $arrData[$fieldId]['label'] = $objResult->fields['formlabel'];
+            $arrData[$fieldId]['value'] = $objResult->fields['formvalue'];
+
+            $objResult->MoveNext();
+        }
+
+        $arrEntry = array(
+            'langId'    => $objEntry->fields['id_lang'],
+            'time'      => $objEntry->fields['time'],
+            'host'      => $objEntry->fields['host'],
+            'lang'      => $objEntry->fields['lang'],
+            'ipaddress' => $objEntry->fields['ipaddress'],
+            'data'      => $arrData
+        );
 
         return $arrEntry;
     }
