@@ -891,6 +891,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         $profileData,
         $fieldValue = ''
     ) {
+        global $_ARRAYLANG;
+
         if (empty($options)) {
             return;
         }
@@ -948,6 +950,15 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
             if ($template->placeholderExists('SELECTED_' . $fieldId . '_' . $index)) {
                 $selectPlaceholder = 'SELECTED_' . $fieldId . '_' . $index;
             }
+
+            // set value key to empty for the 'please select'-option
+            $optionKey = $option;
+            if ($index === 0 &&
+                $optionKey === $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']
+            ) {
+                $optionKey = '';
+            }
+
             // Parse form field value
             if (preg_match(static::USER_PROFILE_REGEXP, $option)) {
                 // Set form field value through User profile attribute
@@ -969,6 +980,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $template->setVariable(array(
                     'CONTACT_FORM_FIELD_OPTION_KEY'      => $index,
                     'CONTACT_FORM_FIELD_OPTION_FIELD_ID' => $fieldId,
+                    'CONTACT_FORM_FIELD_VALUE_KEY'       => $optionKey,
                 ));
             }
             // Set selected or checked attribute to the form field based on
