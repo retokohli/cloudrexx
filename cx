@@ -3,6 +3,19 @@
 #!/bin/bash
 # vim: syn=sh
 
+# Wrapper for bash 3
+if [[ $BASH_VERSION != 4.* ]]; then
+    command="cd /root && ./cx --proxy-host-dir='$(pwd -P)' $@"
+    # Special case: user wants to start interactive shell to wrapper container
+    if [[ "$@" == "env shell --wrapper" ]]; then
+        command="cd /root && bash"
+    fi
+
+    # Pass everything through our wrapper
+    docker run --rm -ti --name clx-win-wrapper -v "$(pwd -P)/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "$command"
+    exit 0
+fi
+
 # current command, sub-command, sub-sub-command, etc.:
 COMMANDS=()
 # list of arguments, including default values
