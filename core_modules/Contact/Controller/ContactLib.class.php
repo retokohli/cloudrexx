@@ -1379,7 +1379,7 @@ class ContactLib
 
         $arrEntry = null;
         $objEntry = $objDatabase->SelectLimit('
-            SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`, `id_form`
+            SELECT `id`, `id_lang`, `time`, `host`, `lang`, `browser`, `ipaddress`, `id_form`
             FROM `'.DBPREFIX.'module_contact_form_data`
             WHERE `id` = '.$entryId
         , 1);
@@ -1427,6 +1427,7 @@ class ContactLib
             'time'      => $objEntry->fields['time'],
             'host'      => $objEntry->fields['host'],
             'lang'      => $objEntry->fields['lang'],
+            'browser'   => $objEntry->fields['browser'],
             'ipaddress' => $objEntry->fields['ipaddress'],
             'data'      => $arrData
         );

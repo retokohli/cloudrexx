@@ -196,6 +196,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         global $_ARRAYLANG, $_CONFIG, $_LANGID;
 
         if (isset($_POST) && !empty($_POST)) {
+            $arrSettings = $this->getSettings();
             $arrFormData = array();
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
             if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'], $arrFormData['saveDataInCRM'], $arrFormData['crmCustomerGroups'], $arrFormData['sendMultipleReply'])) {
@@ -231,18 +232,38 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             }
 
             if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]) && !empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
-                $arrFormData['meta']['ipaddress'] = contrexx_input2raw($_SERVER["HTTP_X_FORWARDED_FOR"]);
+                $ipAddress = contrexx_input2raw($_SERVER["HTTP_X_FORWARDED_FOR"]);
             } else {
-                $arrFormData['meta']['ipaddress'] = contrexx_input2raw($_SERVER["REMOTE_ADDR"]);
+                $ipAddress = contrexx_input2raw($_SERVER["REMOTE_ADDR"]);
             }
 
-            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
-            $arrFormData['meta']['time'] = time();
-            $arrFormData['meta']['host'] = contrexx_input2raw(
-                $net->getHostByAddr($arrFormData['meta']['ipaddress'])
+            $arrFormData['meta'] = array(
+                'time'      => time(),
+                'host'      => '',
+                'lang'      => '',
+                'ipaddress' => '',
+                'browser'   => '',
             );
-            $arrFormData['meta']['lang'] = contrexx_input2raw($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-            $arrFormData['meta']['browser'] = contrexx_input2raw($_SERVER["HTTP_USER_AGENT"]);
+
+            if ($arrSettings['fieldMetaHost']) {
+                $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
+                $arrFormData['meta']['host'] = contrexx_input2raw(
+                    $net->getHostByAddr($ipAddress)
+                );
+            }
+
+            if ($arrSettings['fieldMetaLang']) {
+                $arrFormData['meta']['lang'] = contrexx_input2raw($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+            }
+
+            if ($arrSettings['fieldMetaIP']) {
+                $arrFormData['meta']['ipaddress'] = $ipAddress;
+            }
+
+            // TODO: implement browser option
+            if ($arrSettings['fieldMetaBrowser']) {
+                $arrFormData['meta']['browser'] = contrexx_input2raw($_SERVER["HTTP_USER_AGENT"]);
+            }
 
             return $arrFormData;
         }
@@ -896,7 +917,9 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         if ($arrSettings['fieldMetaLang']) {
             $message .= $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE']." : ".contrexx_raw2xhtml($arrFormData['meta']['lang'])."\n";
         }
-        $message .= $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION']." : ".contrexx_raw2xhtml($arrFormData['meta']['browser'])."\n";
+        if ($arrSettings['fieldMetaBrowser']) {
+            $message .= $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION']." : ".contrexx_raw2xhtml($arrFormData['meta']['browser'])."\n";
+        }
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
