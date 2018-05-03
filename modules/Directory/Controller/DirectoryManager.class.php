@@ -2130,8 +2130,6 @@ EOF;
             'CATEGORY_SELECTED'         => $categorieSe,
             'LEVEL_DESELECTED'          => $levelDe,
             'LEVEL_SELECTED'            => $levelSe,
-            'OS'                        => $platforms,
-            'HOST'                      => $dirProvider,
             'ID'                        => $id,
             'TXT_DIRECTORY_SPEZ_SORT'   => $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'],
             'TXT_DIRECTORY_SORT'        => $_ARRAYLANG['TXT_DIRECTORY_SORT'],

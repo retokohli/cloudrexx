@@ -1722,10 +1722,6 @@ $this->arrRows[2] = '';
                 'DIRECTORY_CATEGORY_SELECTED' => $categorieSe,
                 'DIRECTORY_LEVELS_DESELECTED' => $levelsDe,
                 'DIRECTORY_LEVELS_SELECTED' => $levelsSe,
-// TODO: Not defined
-//                'DIRECTORY_OS' => $platforms,
-// TODO: Not defined
-//                'DIRECTORY_IP' => $dirIp,
                 'DIRECTORY_ID' => $id,
 // TODO: Not defined
 //                'DIRECTORY_EDIT_FILE' => $filename,

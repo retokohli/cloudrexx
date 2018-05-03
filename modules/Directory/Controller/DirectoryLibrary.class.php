@@ -894,7 +894,6 @@ class DirectoryLibrary
                 }
             }
 
-            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
             $query .=
                 "rss_file='".(empty($rss_file) ? '' : $rss_file)."', ".
                 "date='".mktime(
