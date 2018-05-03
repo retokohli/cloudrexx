@@ -3308,7 +3308,6 @@ CREATE TABLE `contrexx_module_shop_orders` (
   `payment_id` int(10) unsigned NOT NULL DEFAULT '0',
   `payment_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
   `ip` varchar(50) NOT NULL DEFAULT '',
-  `host` varchar(100) NOT NULL DEFAULT '',
   `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
   `browser` varchar(255) NOT NULL DEFAULT '',
   `note` text NOT NULL,

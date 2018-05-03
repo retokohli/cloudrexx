@@ -72,7 +72,6 @@ $_ARRAYLANG['TXT_CATEGORY'] = "Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Die Rubrik konnte nicht gelöscht werden! Bitte löschen Sie zuerst alle Untergruppen.";
 $_ARRAYLANG['TXT_CITY'] = "Ort";
 $_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Bestehende Produkte und Rubriken vor dem Importieren löschen";
-$_ARRAYLANG['TXT_CLIENT_HOST'] = "Client Host:";
 $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'] = "Soll der Status wirklich geändert werden?";

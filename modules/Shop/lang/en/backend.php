@@ -72,7 +72,6 @@ $_ARRAYLANG['TXT_CATEGORY'] = "Category";
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "The category couldn't be deleted! Please delete all subcategories first.";
 $_ARRAYLANG['TXT_CITY'] = "City";
 $_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Delete existing products and categories before importing";
-$_ARRAYLANG['TXT_CLIENT_HOST'] = "Client host:";
 $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_COMPANY'] = "Company";
 $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'] = "Do you want to change the status?";

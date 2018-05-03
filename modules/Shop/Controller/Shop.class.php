@@ -3902,7 +3902,6 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objTemplate->hideBlock('shopConfirm');
         // Store the customer, register the order
         $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
-        $customerHost = substr($net->getHostByAddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
         $new_customer = false;
 //\DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
@@ -4060,7 +4059,6 @@ die("Shop::processRedirect(): This method is obsolete!");
         $objOrder->ip(
             $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
         );
-        $objOrder->host($customerHost);
         $objOrder->lang_id(FRONTEND_LANG_ID);
         $objOrder->browser($customer_browser);
         $objOrder->note($_SESSION['shop']['note']);
