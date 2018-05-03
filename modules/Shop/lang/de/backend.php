@@ -62,7 +62,6 @@ $_ARRAYLANG['TXT_BEST_MONTH'] = "Bester Monat";
 $_ARRAYLANG['TXT_BILL'] = "Rechnung";
 $_ARRAYLANG['TXT_BILLING_ADDRESS'] = "Rechnungsadresse";
 $_ARRAYLANG['TXT_BROWSER_LANGUAGE'] = "Browser Sprache";
-$_ARRAYLANG['TXT_BROWSER_VERSION'] = "Browser Version";
 $_ARRAYLANG['TXT_CANCELLED'] = "Gelöscht";
 $_ARRAYLANG['TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE'] = "Die ausgewählte Sprache der aktuellen Vorlage kann nicht gelöscht werden, da sie noch nicht gespeichert wurde.";
 $_ARRAYLANG['TXT_CARD_NUMBER'] = "Kreditkartennummer";

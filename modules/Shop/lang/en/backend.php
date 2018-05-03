@@ -62,7 +62,6 @@ $_ARRAYLANG['TXT_BEST_MONTH'] = "Best month";
 $_ARRAYLANG['TXT_BILL'] = "Invoice";
 $_ARRAYLANG['TXT_BILLING_ADDRESS'] = "Invoice address";
 $_ARRAYLANG['TXT_BROWSER_LANGUAGE'] = "Browser language";
-$_ARRAYLANG['TXT_BROWSER_VERSION'] = "Browser version";
 $_ARRAYLANG['TXT_CANCELLED'] = "Deleted";
 $_ARRAYLANG['TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE'] = "The selected language of the current template can't be deleted, as it hasn't been stored yet.";
 $_ARRAYLANG['TXT_CARD_NUMBER'] = "Credit card number";
