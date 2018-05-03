@@ -746,6 +746,8 @@ class Resolver {
                     $emptyString = '';
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
+                    // need to set this before Cache::postFinalize()
+                    http_response_code(301);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
                     header('Location: ' . $target, true, 301);
                     header('Connection: close');
@@ -770,6 +772,8 @@ class Resolver {
                     $emptyString = '';
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
+                    // need to set this before Cache::postFinalize()
+                    http_response_code(301);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
                     header('Location: ' . $target, true, 301);
                     exit;
@@ -786,6 +790,8 @@ class Resolver {
             $emptyString = '';
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
+            // need to set this before Cache::postFinalize()
+            http_response_code(301);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
             header('Location: ' . $target->toString() . $this->url->getSuggestedAnchor(), true, 301);
             exit;
