@@ -579,7 +579,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 'TXT_CONTACT_DOWNLOAD'                      => $_ARRAYLANG['TXT_CONTACT_DOWNLOAD']
         ));
 
-        $this->initContactForms($objSorting->getOrder());
+        $this->initContactForms(0, $objSorting->getOrder());
 
         $rowNr = 0;
         if (is_array($this->arrForms)) {
@@ -1514,6 +1514,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 }
             }
             $this->em->flush();
+
+            // The following line is a hacky work-around for translation
+            // caching problem
+            // See http://atlantic18.github.io/DoctrineExtensions/doc/translatable.html
+            // 2017-06-19, MRi
+            $this->em->getConfiguration()->getResultCacheImpl()->deleteAll();
         } catch(\Exception $e) {}
     }
 
@@ -1800,13 +1806,23 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             ));
             $contentSiteExists = $page !== null;
 
+            $formRepo = $this->em->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form');
+            $form     = $formRepo->find($formId);
+            $formTemplate = new \Cx\Core_Modules\Contact\Model\Entity\FormTemplate(
+                $form,
+                $page,
+                null
+            );
+            $sourceCode = $formTemplate->getHtml(true);
+            $formTemplate->parseFormTemplate();
+
             $this->_objTpl->setVariable(array(
                 'CONTACT_CONTENT_SITE_ACTION_TXT'   => $contentSiteExists > 0 ? $_ARRAYLANG['TXT_CONTACT_UPDATE_CONTENT_SITE'] : $_ARRAYLANG['TXT_CONTACT_NEW_PAGE'],
                 'CONTACT_CONTENT_SITE_ACTION'       => $contentSiteExists > 0 ? 'updateContent' : 'newContent',
                 'CONTACT_SOURCECODE_OF'             => str_replace('%NAME%', contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$selectedInterfaceLanguage]['name']), $_ARRAYLANG['TXT_CONTACT_SOURCECODE_OF_NAME']),
                 'CONTACT_PREVIEW_OF'                => str_replace('%NAME%', contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$selectedInterfaceLanguage]['name']), $_ARRAYLANG['TXT_CONTACT_PREVIEW_OF_NAME']),
-                'CONTACT_FORM_SOURCECODE'           => contrexx_raw2xhtml($this->getSourceCode($formId, FRONTEND_LANG_ID, false, true)),
-                'CONTACT_FORM_PREVIEW'              => $this->getSourceCode($formId, FRONTEND_LANG_ID, true),
+                'CONTACT_FORM_SOURCECODE'           => contrexx_raw2xhtml($sourceCode),
+                'CONTACT_FORM_PREVIEW'              => $formTemplate->getHtml(),
                 'FORM_ID'                           => $formId
             ));
         } else {
@@ -2266,6 +2282,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         }
 
         $this->em->flush();
+
+        // The following line is a hacky work-around for translation
+        // caching problem
+        // See http://atlantic18.github.io/DoctrineExtensions/doc/translatable.html
+        // 2017-06-19, MRi
+        $this->em->getConfiguration()->getResultCacheImpl()->deleteAll();
     }
 
 
