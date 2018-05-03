@@ -428,7 +428,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // write header cache file
         $resolver = \Env::get('Resolver');
         $headers = $resolver->getHeaders();
-        $headers[static::HTTP_STATUS_CODE_HEADER] = http_response_code();
+        $httpStatusCode = http_response_code();
+        if ($httpStatusCode != 200) {
+            $headers[static::HTTP_STATUS_CODE_HEADER] = $httpStatusCode;
+        }
         $this->writeCacheFileForRequest(
             $page,
             $headers,
