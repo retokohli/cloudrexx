@@ -1477,8 +1477,6 @@ CREATE TABLE `contrexx_module_directory_dir` (
   `hits` int(9) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `addedby` varchar(50) NOT NULL DEFAULT '',
-  `provider` varchar(255) NOT NULL DEFAULT '',
-  `ip` varchar(255) NOT NULL DEFAULT '',
   `validatedate` varchar(14) NOT NULL DEFAULT '',
   `lastip` varchar(50) NOT NULL DEFAULT '',
   `popular_date` varchar(30) NOT NULL DEFAULT '',
