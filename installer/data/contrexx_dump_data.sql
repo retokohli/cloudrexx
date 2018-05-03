@@ -3494,10 +3494,10 @@ INSERT INTO `contrexx_module_contact_form_lang` (`id`, `formID`, `langID`, `is_a
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (1,'fileUploadDepositionPath','/images/attach',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (2,'spamProtectionWordList','poker,casino,viagra,sex,porn',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (3,'fieldMetaDate','1',1);
-INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (4,'fieldMetaHost','0',0);
-INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (5,'fieldMetaLang','0',0);
-INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (6,'fieldMetaIP','0',0);
-INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (7,'fieldMetaBrowser','0',0);
+INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (4,'fieldMetaHost','0',1);
+INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (5,'fieldMetaLang','0',1);
+INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (6,'fieldMetaIP','0',1);
+INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (7,'fieldMetaBrowser','0',1);
 INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (1,'1',1,1);
 INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (2,'2 - 9',2,1);
 INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (3,'10 - 19',3,1);
