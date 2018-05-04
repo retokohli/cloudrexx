@@ -832,6 +832,9 @@ class DBG
         $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
         $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
         $cachedStr = $cached ? 'cached' : 'uncached';
+        $userHash = $cx->getComponent(
+            'Stats'
+        )->getCounterInstance()->getUniqueUserId();
         $outputModuleStr = empty($outputModule) ? '' : ' "' . $outputModule . '"';
 
         register_shutdown_function(
@@ -842,6 +845,7 @@ class DBG
                 $requestHost,
                 $requestUserAgent,
                 $cachedStr,
+                $userHash,
                 $outputModuleStr
             ) {
                 $parsingTime = $cx->stopTimer();
@@ -851,7 +855,7 @@ class DBG
                     ' "' . $cachedStr . '" "' . $requestInfo . '" "' .
                     $requestIp . '" "' . $requestHost . '" "' .
                     $requestUserAgent . '" "' . memory_get_peak_usage(true) .
-                    '" ' . $outputModuleStr
+                    '" "' . $userHash . '"' . $outputModuleStr
                 );
             }
         );
