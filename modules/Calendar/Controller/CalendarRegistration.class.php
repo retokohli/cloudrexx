@@ -106,14 +106,6 @@ class CalendarRegistration extends CalendarLibrary
     public $type; 
     
     /**
-     * Host name
-     *
-     * @access public
-     * @var string
-     */
-    public $hostName; 
-    
-    /**
      * First Export time
      *
      * @access public
@@ -225,7 +217,6 @@ class CalendarRegistration extends CalendarLibrary
                          registration.`event_id` AS `event_id`,
                          registration.`submission_date` AS `submission_date`,
                          registration.`date` AS `date`,
-                         registration.`host_name` AS `host_name`,
                          registration.`type` AS `type`,
                          registration.`invite_id` AS `invite_id`,
                          registration.`user_id` AS `user_id`,
@@ -246,7 +237,6 @@ class CalendarRegistration extends CalendarLibrary
             $this->userId= intval($objResult->fields['user_id']);        
             $this->langId= intval($objResult->fields['lang_id']);        
             $this->type = intval($objResult->fields['type']);        
-            $this->hostName = htmlentities($objResult->fields['host_name'], ENT_QUOTES, CONTREXX_CHARSET);      
             $this->firstExport = intval($objResult->fields['first_export']);
             $this->paymentMethod = intval($objResult->fields['payment_method']);
             $this->paid = intval($objResult->fields['paid']);
@@ -401,7 +391,6 @@ class CalendarRegistration extends CalendarLibrary
 
         $paymentMethod = empty($data['paymentMethod']) ? 0 : intval($data['paymentMethod']);
         $paid = empty($data['paid']) ? 0 : intval($data['paid']);
-        $hostName = 0;
 
         if (!$this->invite) {
             $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
@@ -425,7 +414,6 @@ class CalendarRegistration extends CalendarLibrary
         $formData = array(
             'fields' => array(
                 'date'          => $eventDate,
-                'hostName'      => $hostName,
                 'type'          => $type,
                 'userId'        => $userId,
                 'langId'        => $this->langId ? $this->langId : FRONTEND_LANG_ID,
@@ -466,7 +454,6 @@ class CalendarRegistration extends CalendarLibrary
                         SET `event_id`         = ' . $eventId . ',
                             `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
                             `date`             = ' . $eventDate . ',
-                            `host_name`        = "' . $hostName . '",
                             `type`             = ' . $type . ',
                             `invite_id`        = ' . $this->invite->getId(). ',
                             `user_id`          = ' . $userId . ',
@@ -505,7 +492,6 @@ class CalendarRegistration extends CalendarLibrary
             $query = 'UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
                          SET `event_id` = '.$eventId.',
                              `date` = '.$eventDate.',
-                             `host_name` = '.$hostName.',
                              `invite_id` = '.$this->invite->getId().',
                              `user_id` = '.$userId.',
                              `type`    = '.$type.',

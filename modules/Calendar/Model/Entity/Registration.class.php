@@ -60,11 +60,6 @@ class Registration extends \Cx\Model\Base\EntityBase {
     protected $submissionDate;
 
     /**
-     * @var string $hostName
-     */
-    protected $hostName;
-
-    /**
      * @var integer $type
      */
     protected $type;
@@ -162,26 +157,6 @@ class Registration extends \Cx\Model\Base\EntityBase {
     public function getSubmissionDate()
     {
         return $this->submissionDate;
-    }
-
-    /**
-     * Set hostName
-     *
-     * @param string $hostName
-     */
-    public function setHostName($hostName)
-    {
-        $this->hostName = $hostName;
-    }
-
-    /**
-     * Get hostName
-     *
-     * @return string $hostName
-     */
-    public function getHostName()
-    {
-        return $this->hostName;
     }
 
     /**
