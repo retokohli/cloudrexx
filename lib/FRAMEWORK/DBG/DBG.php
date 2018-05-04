@@ -812,6 +812,46 @@ class DBG
         }
     }
 
+    /**
+     * Writes the last line of a request to the log
+     * @param \Cx\Core\Core\Controlller\Cx $cx Cx instance of the request
+     * @param bool $cached Whether this request is answered from cache
+     * @param string $outputModule (optional) Name of the output module
+     */
+    public static function writeFinishLine(
+        \Cx\Core\Core\Controller\Cx $cx,
+        bool $cached,
+        string $outputModule = ''
+    ) {
+        $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+        $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
+        $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        $cachedStr = $cached ? 'cached' : 'uncached';
+        $outputModuleStr = empty($outputModule) ? '' : ' "' . $outputModule . '"';
+
+        register_shutdown_function(
+            function() use (
+                $cx,
+                $requestInfo,
+                $requestIp,
+                $requestHost,
+                $requestUserAgent,
+                $cachedStr,
+                $outputModuleStr
+            ) {
+                $parsingTime = $cx->stopTimer();
+                \DBG::log(
+                    '(Cx: ' . $cx->getId() .
+                    ') Request parsing completed after ' . $parsingTime  .
+                    ' "' . $cachedStr . '" "' . $requestInfo . '" "' .
+                    $requestIp . '" "' . $requestHost . '" "' .
+                    $requestUserAgent . '" "' . memory_get_peak_usage(true) .
+                    '" ' . $outputModuleStr
+                );
+            }
+        );
+    }
 
     static function log($text, $firephp_action='log', $additional_args=null)
     {
