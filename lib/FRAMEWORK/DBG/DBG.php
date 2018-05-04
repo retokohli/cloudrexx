@@ -825,6 +825,10 @@ class DBG
     ) {
         $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+        $requestIpParts = explode('.', $requestIp);
+        end($requestIpParts);
+        $requestIpParts[key($requestIpParts)] = '[...]';
+        $requestIp = implode('.', $requestIpParts);
         $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
         $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
         $cachedStr = $cached ? 'cached' : 'uncached';
