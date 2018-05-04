@@ -22,10 +22,6 @@ Cx\Modules\Calendar\Model\Entity\Registration:
       type: string
       length: 255
       column: host_name
-    ipAddress:
-      type: string
-      length: 15
-      column: ip_address
     type:
       type: integer
     userId:

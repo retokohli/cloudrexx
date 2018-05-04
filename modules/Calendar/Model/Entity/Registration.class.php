@@ -65,11 +65,6 @@ class Registration extends \Cx\Model\Base\EntityBase {
     protected $hostName;
 
     /**
-     * @var string $ipAddress
-     */
-    protected $ipAddress;
-
-    /**
      * @var integer $type
      */
     protected $type;
@@ -187,26 +182,6 @@ class Registration extends \Cx\Model\Base\EntityBase {
     public function getHostName()
     {
         return $this->hostName;
-    }
-
-    /**
-     * Set ipAddress
-     *
-     * @param string $ipAddress
-     */
-    public function setIpAddress($ipAddress)
-    {
-        $this->ipAddress = $ipAddress;
-    }
-
-    /**
-     * Get ipAddress
-     *
-     * @return string $ipAddress
-     */
-    public function getIpAddress()
-    {
-        return $this->ipAddress;
     }
 
     /**

@@ -895,7 +895,6 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `date` int(15) NOT NULL,
   `submission_date` timestamp DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
-  `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
   `invite_id` int NULL DEFAULT NULL,
   `user_id` int(7) NOT NULL,
