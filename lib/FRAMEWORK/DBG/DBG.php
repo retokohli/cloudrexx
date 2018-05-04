@@ -677,7 +677,7 @@ class DBG
         if ($val === null) {
             $out = 'NULL';
         } else {
-            $out = var_export($val, true);
+            $out = stripslashes(var_export($val, true));
         }
         $out = str_replace("\n", "\n        ", $out);
         if (!self::$log_file && !self::$log_memory && php_sapi_name() != 'cli') {

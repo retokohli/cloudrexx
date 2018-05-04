@@ -471,6 +471,25 @@ class Download {
         return isset($this->descriptions[$langId]) ? $this->descriptions[$langId] : '';
     }
 
+    /**
+     * Returns the description trimmed to maximum length of 100 characters.
+     *
+     * @param   integer $langId ID of the locale the trimmed description
+     *                          shall be returned in
+     * @return  string  The trimmed description of locale $langId
+     */
+    public function getTrimmedDescription($langId = LANG_ID)
+    {
+        $description = $this->getDescription($langId);
+        if (strlen($description) > 100) {
+            $shortDescription = substr($description, 0, 97).'...';
+        } else {
+            $shortDescription = $description;
+        }
+
+        return $shortDescription;
+    }
+
     public function getMetakeys($langId = 0)
     {
         if (!$langId) {

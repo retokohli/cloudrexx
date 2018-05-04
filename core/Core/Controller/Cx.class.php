@@ -1604,6 +1604,9 @@ namespace Cx\Core\Core\Controller {
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
                 } catch (\Exception $e) {
+                    if (php_sapi_name() != 'cli') {
+                        throw $e;
+                    }
                     fwrite(STDERR, 'ERROR: ' . $e->getMessage() . PHP_EOL);
                     return;
                 }
@@ -1617,8 +1620,8 @@ namespace Cx\Core\Core\Controller {
 
             // resolve
             $this->preResolve();                        // Call pre resolve hook scripts
-            $this->adjustRequest();                     // Adjust the protocol and the domain
             $this->resolve();                           // Resolving, Language
+            $this->adjustRequest();                     // Adjust the protocol and the domain
 
             // @TODO: remove this
             $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
@@ -1907,6 +1910,37 @@ namespace Cx\Core\Core\Controller {
          * @return String The content of the application template
          */
         public static function getContentTemplateOfPage($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
+            $content = static::getContentTemplateOfPageWithoutWidget(
+                $page,
+                $component,
+                $themeType
+            );
+
+            // Components should not call this method. Instead they should set
+            // the correct template to the page directly. This requires the
+            // page to have a Sigma template as content.
+            if (static::instanciate()->getComponent('Widget')) {
+                $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
+                $template->setTemplate($content);
+                static::instanciate()->getComponent('Widget')->parseWidgets(
+                    $template,
+                    'ContentManager',
+                    'Page',
+                    static::instanciate()->getPage()->getId()
+                );
+                $content = $template->get();
+            }
+            return $content;
+        }
+
+        /**
+         * Fetch the application template of a content page.
+         * @param \Cx\Core\ContentManager\Model\Entity\Page $page The page object of which to fetch the application template from
+         * @param String $component Optional argument to specify the component to load the template from, instead of using the page's module-attribute
+         * @param String $themeType Optional argument to specify the output channel
+         * @return String The content of the application template
+         */
+        protected static function getContentTemplateOfPageWithoutWidget($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
             try {
                 $component        = empty($component) ? $page->getModule() : $component;
                 $cmd              = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
@@ -2093,17 +2127,13 @@ namespace Cx\Core\Core\Controller {
                                                             s.parentNode.insertBefore(x, s);
                                                         })(document, "script");
                                                     </script>',
-                'GOOGLE_ANALYTICS'               => '<script type="text/javascript">
-                                                        var _gaq = _gaq || [];
-                                                        _gaq.push([\'_setAccount\', \''.(isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '').'\']);
-                                                        _gaq.push([\'_trackPageview\']);
-
-                                                        (function() {
-                                                            var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;
-                                                            ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';
-                                                            var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(ga, s);
-                                                        })();
-                                                    </script>',
+                'GOOGLE_ANALYTICS'               => '<script>
+                                                        window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+                                                        ga(\'create\', \'' . (isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '') . '\', \'auto\');
+                                                        ' . ($objCounter->arrConfig['exclude_identifying_info']['status'] ? 'ga(\'set\', \'anonymizeIp\', true);' : '') . '
+                                                        ga(\'send\', \'pageview\');
+                                                    </script>
+                                                    <script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
             ));
         }
 

@@ -99,7 +99,7 @@ CREATE TABLE `contrexx_access_user_network` (
 CREATE TABLE `contrexx_access_user_profile` (
   `user_id` int NOT NULL,
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL DEFAULT 'gender_undefined',
-  `title` int NOT NULL,
+  `title` int DEFAULT NULL,
   `designation` varchar(255) NOT NULL DEFAULT '',
   `firstname` varchar(255) NOT NULL DEFAULT '',
   `lastname` varchar(255) NOT NULL DEFAULT '',
@@ -445,6 +445,7 @@ CREATE TABLE `contrexx_core_module_sync_host` (
   `api_version` int(11) NOT NULL,
   `url_template` varchar(255) NOT NULL,
   `state` int(1) NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `host_UNIQUE` (`host`)
 ) ENGINE=InnoDB;
@@ -1476,8 +1477,6 @@ CREATE TABLE `contrexx_module_directory_dir` (
   `hits` int(9) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `addedby` varchar(50) NOT NULL DEFAULT '',
-  `provider` varchar(255) NOT NULL DEFAULT '',
-  `ip` varchar(255) NOT NULL DEFAULT '',
   `validatedate` varchar(14) NOT NULL DEFAULT '',
   `lastip` varchar(50) NOT NULL DEFAULT '',
   `popular_date` varchar(30) NOT NULL DEFAULT '',
@@ -2108,7 +2107,6 @@ CREATE TABLE `contrexx_module_guestbook` (
   `url` tinytext NOT NULL,
   `email` tinytext NOT NULL,
   `comment` text NOT NULL,
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `location` tinytext NOT NULL,
   `lang_id` tinyint(2) NOT NULL DEFAULT '1',
   `datetime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -2288,7 +2286,8 @@ CREATE TABLE `contrexx_module_knowledge_article_content` (
   `answer` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `module_knowledge_article_content_lang` (`lang`),
-  KEY `module_knowledge_article_content_article` (`article`)
+  KEY `module_knowledge_article_content_article` (`article`),
+  FULLTEXT KEY `content` (`question`,`answer`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_knowledge_articles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -2461,7 +2460,6 @@ CREATE TABLE `contrexx_module_mediadir_comments` (
   `entry_id` int(7) NOT NULL,
   `added_by` varchar(255) NOT NULL,
   `date` varchar(100) NOT NULL,
-  `ip` varchar(100) NOT NULL,
   `name` varchar(255) NOT NULL,
   `mail` varchar(255) NOT NULL,
   `url` varchar(255) NOT NULL,
@@ -2812,7 +2810,7 @@ CREATE TABLE `contrexx_module_news_rel_tags` (
 CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL DEFAULT '',
   `value` varchar(250) NOT NULL DEFAULT '',
-  KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`) USING BTREE
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_news_settings_locale` (
   `name` varchar(50) NOT NULL DEFAULT '',
@@ -3233,6 +3231,7 @@ CREATE TABLE `contrexx_module_shop_discount_coupon` (
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `cumulative` int(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
@@ -3309,9 +3308,7 @@ CREATE TABLE `contrexx_module_shop_orders` (
   `payment_id` int(10) unsigned NOT NULL DEFAULT '0',
   `payment_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
   `ip` varchar(50) NOT NULL DEFAULT '',
-  `host` varchar(100) NOT NULL DEFAULT '',
   `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `browser` varchar(255) NOT NULL DEFAULT '',
   `note` text NOT NULL,
   `modified_on` timestamp NULL DEFAULT NULL,
   `modified_by` varchar(50) DEFAULT NULL,

@@ -229,14 +229,16 @@ class Resolver {
             }
         }
 
-        // used for LinkGenerator
-        define('FRONTEND_LANG_ID', $this->lang);
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getDb()->getTranslationListener()->setTranslatableLocale(
-            \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
-        );
-        // used to load template file
-        \Env::get('init')->setFrontendLangId($this->lang);
+        if ($this->lang) {
+            // used for LinkGenerator
+            define('FRONTEND_LANG_ID', $this->lang);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getDb()->getTranslationListener()->setTranslatableLocale(
+                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+            );
+            // used to load template file
+            \Env::get('init')->setFrontendLangId($this->lang);
+        }
 
 
 
@@ -640,7 +642,7 @@ class Resolver {
 
             //(III) extend our url object with matched path / params
             $this->url->setTargetPath($result['matchedPath'].$result['unmatchedPath']);
-            $this->url->setParams($this->url->getSuggestedParams());
+            $this->url->setParams($this->url->getSuggestedParams() . $this->url->getSuggestedAnchor());
 
             $this->page = $result['page'];
         }
@@ -744,6 +746,8 @@ class Resolver {
                     $emptyString = '';
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
+                    // need to set this before Cache::postFinalize()
+                    http_response_code(301);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
                     header('Location: ' . $target, true, 301);
                     header('Connection: close');
@@ -768,6 +772,8 @@ class Resolver {
                     $emptyString = '';
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
+                    // need to set this before Cache::postFinalize()
+                    http_response_code(301);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
                     header('Location: ' . $target, true, 301);
                     exit;
@@ -780,12 +786,14 @@ class Resolver {
             $params = $this->url->getSuggestedParams();
             $target = $this->page->getURL($this->pathOffset, array());
             $target->setParams($params);
-            $this->headers['Location'] = $target;
+            $this->headers['Location'] = $target->toString() . $this->url->getSuggestedAnchor();
             $emptyString = '';
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
+            // need to set this before Cache::postFinalize()
+            http_response_code(301);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-            header('Location: ' . $target, true, 301);
+            header('Location: ' . $target->toString() . $this->url->getSuggestedAnchor(), true, 301);
             exit;
         }
 
