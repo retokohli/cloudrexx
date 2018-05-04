@@ -2778,7 +2778,7 @@ CREATE TABLE `contrexx_module_news_comments` (
   `date` int(14) DEFAULT NULL,
   `poster_name` varchar(255) NOT NULL DEFAULT '',
   `userid` int(5) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `ip_address` varchar(32) NOT NULL DEFAULT '',
   `is_active` enum('0','1') NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;

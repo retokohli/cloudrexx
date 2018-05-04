@@ -2761,7 +2761,10 @@ EOF;
         }
 
         $isActive  = $this->arrSettings['news_comments_autoactivate'];
-        $ipAddress = contrexx_input2raw($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $ipAddress = $cx->getComponent(
+            'Stats'
+        )->getCounterInstance()->getUniqueUserId();
 
         $objResult = $objDatabase->Execute("
             INSERT INTO `".DBPREFIX."module_news_comments`
