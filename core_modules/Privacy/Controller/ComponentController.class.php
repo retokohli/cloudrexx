@@ -48,10 +48,29 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('EsiWidget');
     }
 
-     /**
+    /**
+     * {@inheritdoc}
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        // TODO:
+        // Only add the widget if option to show note is on OR
+        // only parse the widget once
+        $widgetController = $this->getComponent('Widget');
+        $widgetController->registerWidget(
+            new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                'cookie_note',
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_BLOCK
+            )
+        );
+        \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
+    }
+
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page

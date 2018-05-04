@@ -1,0 +1,11 @@
+div#cookie-note {
+    /** TODO: this is just a draft */
+    background: red;
+    display: block;
+    right: 20px;
+    bottom: 20px;
+    position: fixed;
+    height: 100px;
+    width: 250px;
+    z-index: 1337;
+}
