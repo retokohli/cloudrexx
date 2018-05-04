@@ -272,8 +272,10 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 'TXT_CONTACT_DATE'                              => $_ARRAYLANG['TXT_CONTACT_DATE'],
                 'TXT_CONTACT_HOSTNAME'                          => $_ARRAYLANG['TXT_CONTACT_HOSTNAME'],
                 'TXT_CONTACT_BROWSER_LANGUAGE'                  => $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'],
+                'TXT_CONTACT_BROWSER'                           => $_ARRAYLANG['TXT_CONTACT_BROWSER'],
                 'TXT_CONTACT_IP_ADDRESS'                        => $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'],
-                'TXT_CONTACT_META_DATE_BY_EXPORT'               => $_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT']
+                'TXT_CONTACT_META_DATE_BY_EXPORT'               => $_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT'],
+                'TXT_CONTACT_PERSONAL_DATA_NOTE'                => $_ARRAYLANG['TXT_CONTACT_PERSONAL_DATA_NOTE'],
         ));
 
         $this->_objTpl->setVariable(array(
@@ -282,6 +284,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 'CONTACT_FIELD_META_DATE'               => $arrSettings['fieldMetaDate'] == '1' ? 'checked="checked"' : '',
                 'CONTACT_FIELD_META_LANG'               => $arrSettings['fieldMetaLang'] == '1' ? 'checked="checked"' : '',
                 'CONTACT_FIELD_META_HOST'               => $arrSettings['fieldMetaHost'] == '1' ? 'checked="checked"' : '',
+                'CONTACT_FIELD_META_BROWSER'            => $arrSettings['fieldMetaBrowser'] == '1' ? 'checked="checked"' : '',
                 'CONTACT_FIELD_META_IP'                 => $arrSettings['fieldMetaIP'] == '1' ? 'checked="checked"' : '',
         ));
     }
@@ -300,6 +303,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     'spamProtectionWordList'    => isset($_POST['contactSpamProtectionWordList']) ? explode(',', $_POST['contactSpamProtectionWordList']) : '',
                     'fieldMetaDate'             => isset($_POST['contactFieldMetaDate']) ? intval($_POST['contactFieldMetaDate']) : 0,
                     'fieldMetaHost'             => isset($_POST['contactFieldMetaHost']) ? intval($_POST['contactFieldMetaHost']) : 0,
+                    'fieldMetaBrowser'          => isset($_POST['contactFieldMetaBrowser']) ? intval($_POST['contactFieldMetaBrowser']) : 0,
                     'fieldMetaLang'             => isset($_POST['contactFieldMetaLang']) ? intval($_POST['contactFieldMetaLang']) : 0,
                     'fieldMetaIP'               => isset($_POST['contactFieldMetaIP']) ? intval($_POST['contactFieldMetaIP']) : 0
             );
@@ -2001,6 +2005,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_DATE']).$this->_csvSeparator : '')
                 .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_HOSTNAME']).$this->_csvSeparator : '')
                 .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE']).$this->_csvSeparator : '')
+                .($arrSettings['fieldMetaBrowser'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_BROWSER']).$this->_csvSeparator : '')
                 .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_IP_ADDRESS']) : '')
                 .$this->_csvLFB;
 
@@ -2043,6 +2048,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT, $formEntriesValues['time'])).$this->_csvSeparator : '')
                         .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($formEntriesValues['host']).$this->_csvSeparator : '')
                         .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($formEntriesValues['langId']).$this->_csvSeparator : '')
+                        .($arrSettings['fieldMetaBrowser'] == '1' ? $this->_escapeCsvValue($formEntriesValues['browser']).$this->_csvSeparator : '')
                     .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($formEntriesValues['ipaddress']) : '')
                     .$this->_csvLFB;
 
