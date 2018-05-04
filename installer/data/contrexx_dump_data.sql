@@ -5652,7 +5652,7 @@ INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (11
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (12,'count_screen_resolution','',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (13,'count_colour_depth','',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (14,'count_javascript','',1);
-INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (15,'count_referer','',1);
+INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (15,'count_referer','',0);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (16,'count_hostname','',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (17,'count_country','',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (18,'paging_limit_visitor_details','100',1);
