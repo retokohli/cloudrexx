@@ -413,7 +413,13 @@ class Calendar extends CalendarLibrary
         if ($cmd == 'boxes' || $cmd == 'category') {
             $this->startPos = 0;
             $this->numEvents = 'n';
-        } else if(!isset($_GET['search']) && ($cmd != 'list' && $cmd != 'eventlist' && $cmd != 'archive')) {
+        } else if(
+            !isset($_GET['search']) &&
+            $cmd != 'list' &&
+            $cmd != 'eventlist' &&
+            $cmd != 'archive' &&
+            $cmd != 'my_events'
+        ) {
             $this->startPos = 0;
             $this->numEvents = $this->arrSettings['numEntrance'];
         } else {
@@ -746,6 +752,20 @@ UPLOADER;
         $eventStartDate = $this->format2userDateTime($startDate);
         $eventEndDate   = $this->format2userDateTime($endDate);
 
+        $attachLink = '';
+        if ($objEvent->attach) {
+            $attachName = contrexx_raw2xhtml(pathinfo($objEvent->attach, PATHINFO_FILENAME));
+            // TODO: create element using Html library
+            $attachLink = '<a href="'.$objEvent->attach.'" alt="'.$attachName.'" title="'.$attachName.'" target="_blank">'.$attachName.'</a>';
+        }
+
+        $placeMapLink = '';
+        if ($objEvent->place_map) {
+            $placeMapName = contrexx_raw2xhtml(pathinfo($objEvent->place_map, PATHINFO_FILENAME));
+            // TODO: create element using Html library
+            $placeMapLink= '<a href="'.$objEvent->place_map.'" alt="'.$placeMapName.'" title="'.$placeMapName.'" target="_blank">'.$placeMapName.'</a>';
+        }
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
@@ -778,6 +798,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_EVENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_DETAIL_VIEW'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_DETAIL_VIEW_LABEL'  => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_DEFAULT'       => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'],
@@ -789,11 +811,13 @@ UPLOADER;
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
+            $this->moduleLangVar.'_EVENT_SHOW_DETAIL_VIEW'          => !$eventId || $objEvent->showDetailView ? 'checked="checked"' : '',
             $this->moduleLangVar.'_EVENT_START_DATE'                => $eventStartDate,
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
+            $this->moduleLangVar.'_EVENT_ATTACHMENT_LINK'           => $attachLink,
             $this->moduleLangVar . '_EVENT_CATEGORIES' =>
                 $objCategoryManager->getCategoryDropdown(
                     array_flip($objEvent->category_ids),
@@ -806,6 +830,7 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->place_country,
             $this->moduleLangVar.'_EVENT_PLACE_WEBSITE'             => $objEvent->place_website,
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->place_map,
+            $this->moduleLangVar.'_EVENT_PLACE_MAP_LINK'            => $placeMapLink,
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                => $objEvent->place_link,
             $this->moduleLangVar.'_EVENT_PLACE_PHONE'               => $objEvent->place_phone,
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->google == 1 ? 'checked="checked"' : '',

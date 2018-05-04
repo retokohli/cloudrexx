@@ -138,7 +138,8 @@ class DirectoryLibrary
 
         $hits++;
         $popular_hits++;
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $ip = $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId();
 
         //update hits
         if (!checkForSpider() && $lastip != $ip) {
@@ -899,8 +900,6 @@ class DirectoryLibrary
                     date("H"), date("i"), date("s"),
                     date("m"), date("d"), date("Y")).
                 "', status='".intval($entryStatus).
-                "', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR']).
-                "', ip='".$_SERVER['REMOTE_ADDR'].
                 "', validatedate='".mktime(
                     date("H"), date("i"), date("s"),
                     date("m"), date("d"), date("Y")).
@@ -1340,8 +1339,6 @@ class DirectoryLibrary
                     $arrInputfieldsValue['relatedlinks'] = $objResult->fields['relatedlinks'];
                     $arrInputfieldsValue['status'] = $objResult->fields['status'];
                     $arrInputfieldsValue['addedby'] = $objResult->fields['addedby'];
-                    $arrInputfieldsValue['provider'] = $objResult->fields['provider'];
-                    $arrInputfieldsValue['ip'] = $objResult->fields['ip'];
                     $arrInputfieldsValue['validatedate'] = $objResult->fields['validatedate'];
                     $arrInputfieldsValue['platform'] = $objResult->fields['platform'];
                     $arrInputfieldsValue['language'] = $objResult->fields['language'];

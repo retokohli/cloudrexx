@@ -133,8 +133,10 @@ class StatsLibrary
             //JS::activate('jquery');
             $searchTerm = '';
             $searchTermPlain = '';
+            $searchTermNoScript = '';
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "Search") {
                 $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
+                $searchTermNoScript = "&amp;searchTerm=".urlencode($_REQUEST['term']);
                 $searchTermPlain = contrexx_addslashes($_REQUEST['term']);
             }
 
@@ -144,6 +146,7 @@ class StatsLibrary
                 '[CORE_MODULE_URL]' => $ascms_core_module_web_path,
                 '[PAGEID]'          => $pageId,
                 '[SEARCHTERM]'      => $searchTerm,
+                '[SEARCHTERM_NOSCRIPT]'=> $searchTermNoScript,
                 '[SEARCHTERM_PLAIN]'=> $searchTermPlain,
                 '[REFERER]'         => '$(HTTP_REFERER)',
             );
@@ -205,7 +208,8 @@ class StatsLibrary
             $spiderIp = $_SERVER['REMOTE_ADDR'];
         }
 
-        $spiderHost = @gethostbyaddr($spiderIp);
+        $net = $this->cx->getComponent('Net');
+        $spiderHost = $net->getHostByAddr($spiderIp);
         if ($spiderHost == $spiderIp) {
            $spiderHost = '';
         }
@@ -707,6 +711,8 @@ class StatsLibrary
     /**
      * Get the HTTP client's IP address
      *
+     * IMPORTANT: Do not store the return value of this method in order to
+     * comply with the data privacy act GDPR!
      * In case the client is connecting through a proxy,
      * this method will try the fetch the client's original
      * IP address and will return that one instead of the
@@ -754,7 +760,8 @@ class StatsLibrary
     function _getProxyInformations() {
         if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
             $this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
-            $this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
+            $net = $this->cx->getComponent('Net');
+            $this->arrProxy['host'] = $net->getHostByAddr($this->arrProxy['ip']);
             $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent,"(");
             $this->arrProxy['useragent'] = substr($proxyUseragent,$startPos+1);

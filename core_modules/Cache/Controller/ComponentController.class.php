@@ -211,11 +211,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *     <adapterMethod>,
      *     <params>,
      * )
-     * @param array $esiContentInfos
-     * @return string ESI random include tag
+     * @param array $esiContentInfos List of ESI content info arrays
+     * @param int $count (optional) Number of unique random entries to parse
+     * @return string ESI randomized include code
      */
-    public function getRandomizedEsiContent($esiContentInfos) {
-        return $this->cache->getRandomizedEsiContent($esiContentInfos);
+    public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
+        return $this->cache->getRandomizedEsiContent($esiContentInfos, $count);
     }
 
     /**
@@ -411,10 +412,17 @@ Cache clear all';
                             CacheLib::CACHE_ENGINE_MEMCACHE,
                             CacheLib::CACHE_ENGINE_MEMCACHED,
                             CacheLib::CACHE_ENGINE_XCACHE,
-                            CacheLib::CACHE_ENGINE_FILESYSTEM,
                         )
                     )) {
                         echo 'Unknown cache engine' . "\n";
+                        return;
+                    }
+                    if ($options == CacheLib::CACHE_ENGINE_MEMCACHED) {
+                        if (!extension_loaded('memcached')) {
+                            dl('memcached');
+                        }
+                        $droppedKeys = $this->cache->clearMemcached();
+                        echo $droppedKeys . ' keys dropped from Memcached' . "\n";
                         return;
                     }
                     $this->cache->_deleteAllFiles($options);
@@ -424,7 +432,7 @@ Cache clear all';
                 break;
             case 'page':
                 if (!empty($options)) {
-                    $this->cache>_deleteSingleFile($options);
+                    $this->cache->deleteSingleFile($options);
                     break;
                 }
                 // @TODO: this will drop ESI cache too

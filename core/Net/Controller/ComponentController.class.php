@@ -99,4 +99,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         return $name;
     }
+
+    /**
+     * Get Host by IP address
+     *
+     * @param string $ip IP address
+     *
+     * @return string
+     */
+    public function getHostByAddr($ip)
+    {
+        $dnsHostnameLookup = \Cx\Core\Setting\Controller\Setting::getValue(
+            'dnsHostnameLookup',
+            'Config'
+        );
+        if ($dnsHostnameLookup != 'on') {
+            return $ip;
+        }
+
+        return gethostbyaddr($ip);
+    }
 }

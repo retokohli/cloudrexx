@@ -31,7 +31,7 @@
  * values for backend ACT template by SystemComponentBackendController
 // TODO: Fix these tags:
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Tobias Schmoker <michael.ritter@comvation.com>
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */

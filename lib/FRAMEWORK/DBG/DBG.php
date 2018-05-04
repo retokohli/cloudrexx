@@ -295,7 +295,7 @@ class DBG
 // DO NOT OVERRIDE DEFAULT BEHAVIOR FROM INSIDE THE CLASS!
 // Call a method to do this from the outside.
 //        self::setup('dbg.log', 'w');
-        if (self::setup('dbg.log')) {
+        if (self::setup(dirname(__FILE__, 4) . '/tmp/log/dbg.log')) {
             self::$log_file = true;
         }
     }
@@ -677,7 +677,7 @@ class DBG
         if ($val === null) {
             $out = 'NULL';
         } else {
-            $out = var_export($val, true);
+            $out = stripslashes(var_export($val, true));
         }
         $out = str_replace("\n", "\n        ", $out);
         if (!self::$log_file && !self::$log_memory && php_sapi_name() != 'cli') {

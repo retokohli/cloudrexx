@@ -74,9 +74,9 @@ class BackendController extends SystemComponentBackendController
      *
      * Note that this view does not exist in production, and is never called.
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
-     * @param array               $cmd      CMD separated by slashes
+     * @param array $cmd CMD separated by slashes
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false)
     {
         $uploader = new Uploader();
         $uploader->setFinishedCallback(
@@ -127,7 +127,7 @@ class BackendController extends SystemComponentBackendController
             )
         );
 
-        foreach ($configurations as $configuration){
+        foreach ($configurations as $configuration) {
             $mediaBrowser = new MediaBrowser();
             $mediaBrowser->setOptions($configuration);
             $mediaBrowser->setCallback('gallery.fancyCallback');
@@ -135,7 +135,7 @@ class BackendController extends SystemComponentBackendController
                 'MEDIABROWSER_CODE', $mediaBrowser->getXHtml('MediaBrowser')
             );
             $template->setVariable(
-                'MEDIABROWSER_OPTIONS', var_export($configuration,true)
+                'MEDIABROWSER_OPTIONS', var_export($configuration, true)
             );
             $template->setVariable(
                 'MEDIABROWSER_CODE_RAW',
@@ -144,7 +144,6 @@ class BackendController extends SystemComponentBackendController
 
             $template->parse('mediabrowser_demo');
         }
-
 
 
         $template->setVariable(

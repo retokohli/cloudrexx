@@ -3,3 +3,6 @@ config
 images/Access/profile
 tmp
 sitemap_*
+docker-compose.yml
+_meta
+cx.bat

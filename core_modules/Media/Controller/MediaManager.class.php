@@ -184,7 +184,7 @@ class MediaManager extends MediaLibrary
 
         switch ($this->archive) {
             case 'themes':
-                \Permission::checkAccess(21, 'static');
+                \Permission::checkAccess(\Cx\Core\ViewManager\Controller\ViewManager::VIEW_MANAGER_ACCESS_ID, 'static');
                 $objTemplate->setVariable("CONTENT_NAVIGATION",
                    "<a href='index.php?cmd=Media&amp;archive=content'>". $_ARRAYLANG['TXT_IMAGE_CONTENT'] ."</a>
                     <a href='index.php?cmd=Media&amp;archive=attach'>". $_ARRAYLANG['TXT_MODULE'] ."</a>
@@ -1016,7 +1016,7 @@ class MediaManager extends MediaLibrary
                 'TXT_MEDIA_SAVE'                  => $_ARRAYLANG['TXT_MEDIA_SAVE'],
                 'TXT_MEDIA_RESET'                 => $_ARRAYLANG['TXT_MEDIA_RESET'],
                 'TXT_MEDIA_SET_IMAGE_NAME'        => $_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'],
-                'TXT_MEDIA_CONFIRM_REPLACE_IMAGE' => $_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'],
+                'TXT_MEDIA_CONFIRM_REPLACE_IMAGE' => addslashes($_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE']),
                 'TXT_MEDIA_REPLACE'               => $_ARRAYLANG['TXT_MEDIA_REPLACE'],
                 'TXT_MEDIA_OR'                    => $_ARRAYLANG['TXT_MEDIA_OR'],
                 'TXT_MEDIA_SAVE_NEW_COPY'         => $_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'],
@@ -1117,6 +1117,11 @@ class MediaManager extends MediaLibrary
             'TXT_BUTTON_SAVE'                       => $_ARRAYLANG['TXT_MEDIA_SAVE'],
             'TXT_CORE_MODULE_MEDIA_SEARCH_FUNCTION' => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_SEARCH_FUNCTION'],
             'TXT_CORE_MODULE_MEDIA_ENABLE_SEARCH_FUNCTIONALITY' => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_ENABLE_SEARCH_FUNCTIONALITY'],
+            'TXT_CORE_MODULE_MEDIA_PRETTY_FORMAT_FUNCTION' => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_PRETTY_FORMAT_FUNCTION'],
+            'TXT_CORE_MODULE_MEDIA_ENABLE_PRETTY_FORMAT_FUNCTIONALITY' => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_ENABLE_PRETTY_FORMAT_FUNCTIONALITY'],
+            'TXT_CORE_MODULE_MEDIA_SEARCH'          => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_SEARCH'],
+            'TXT_CORE_MODULE_MEDIA_REPLACE'         => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_REPLACE'],
+            'TXT_CORE_MODULE_MEDIA_PRETTY_FORMAT_FUNCTION_TOOLTIP'=> $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_PRETTY_FORMAT_FUNCTION_TOOLTIP'],
             'TXT_CORE_MODULE_MEDIA_DISABLED'        => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_DISABLED'],
         ));
 
@@ -1198,6 +1203,10 @@ class MediaManager extends MediaLibrary
                     'MEDIA_MANAGE_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupManageOptions),
                     'MEDIA_ALLOW_USER_SEARCH_ON'            => ($this->_arrSettings['media' . $k . '_frontend_search'] == 'on') ? 'checked="checked"' : '',
                     'MEDIA_ALLOW_USER_SEARCH_OFF'           => ($this->_arrSettings['media' . $k . '_frontend_search'] == 'off') ? 'checked="checked"' : '',
+                    'MEDIA_PRETTY_FORMAT_ON'                => ($this->_arrSettings['media' . $k . '_pretty_file_names'] == 'on') ? 'checked="checked"' : '',
+                    'MEDIA_PRETTY_FORMAT_OFF'               => ($this->_arrSettings['media' . $k . '_pretty_file_names'] == 'off') ? 'checked="checked"' : '',
+                    'MEDIA_PRETTY_FORMAT_REGEX'             => contrexx_raw2xhtml($this->_arrSettings['media' . $k . '_pretty_file_name_regexp']),
+                    'MEDIA_PRETTY_FORMAT_DISPLAY'           => ($this->_arrSettings['media' . $k . '_pretty_file_names'] == 'on') ? 'block' : 'none',
             ));
             if ($this->_objTpl->blockExists("mediaAccessSection")) {
                 $this->_objTpl->parse("mediaAccessSection");
@@ -1215,7 +1224,7 @@ class MediaManager extends MediaLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $this->_arrSettings = $this->createSettingsArray();
-        for ($i = 0; $i <=4; $i++)
+        for ($i = 1; $i <=4; $i++)
         {
             $frontendSearchkey     = 'mediaSettings_Media'. $i .'FrontendSearch';
             $settingFrontendSearch = !empty($_POST[$frontendSearchkey]) && $_POST[$frontendSearchkey] == 'on'
@@ -1229,6 +1238,30 @@ class MediaManager extends MediaLibrary
                 WHERE
                     `name` = "media' . $i . '_frontend_search"
             ');
+
+            $prettyFormatKey     = 'mediaSettings_Media'. $i .'PrettyFormat';
+            $settingPrettyFormat = !empty($_POST[$prettyFormatKey]) && $_POST[$prettyFormatKey] == 'on'
+                                      ? 'on' : 'off';
+            $objDatabase->Execute('
+                UPDATE
+                    `'.DBPREFIX.'module_media_settings`
+                SET
+                    `value` = "' . $settingPrettyFormat . '"
+                WHERE
+                    `name` = "media' . $i . '_pretty_file_names"
+            ');
+
+            $prettyFormatRegexpKey     = 'mediaSettings_Media'. $i .'PrettyFormatRegexp';
+            $settingPrettyFormatRegexp = isset($_POST[$prettyFormatRegexpKey]) ? contrexx_input2raw($_POST[$prettyFormatRegexpKey]) : '';
+            $objDatabase->Execute('
+                UPDATE
+                    `'.DBPREFIX.'module_media_settings`
+                SET
+                    `value` = "' . contrexx_raw2db($settingPrettyFormatRegexp) . '"
+                WHERE
+                    `name` = "media' . $i . '_pretty_file_name_regexp"
+            ');
+
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
             $newMediaSetting = '';
             if (isset($_POST['mediaSettings_Media' . $i . 'FrontendChangable'])) {

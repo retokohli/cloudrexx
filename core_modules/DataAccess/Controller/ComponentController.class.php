@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('JsonOutput', 'RawOutput');
+        return array('JsonOutput', 'CliOutput');
     }
     
     /**
@@ -134,8 +134,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         // handle CLI
         if (php_sapi_name() == 'cli') {
-            // we force usage of output module "raw" in CLI
-            array_unshift($arguments, 'raw');
+            try {
+                $this->getOutputModule(current($arguments));
+            } catch (\Exception $e) {
+                // we default to output module "cli" in CLI
+                array_unshift($arguments, 'cli');
+            }
             
             // method will not be set in CLI, there for we educate-guess it
             $method = 'get';
@@ -280,7 +284,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             $response->send($outputModule);
         } catch (\Exception $e) {
-            global $_ARRAYLANG;
+            $lang = \Env::get('init')->getComponentSpecificLanguageData(
+                $this->getName(),
+                false
+            );
             
             $response->setStatus(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_ERROR
@@ -288,7 +295,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $response->addMessage(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::MESSAGE_TYPE_ERROR,
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'],
+                    $lang['TXT_CORE_MODULE_DATA_ACCESS_ERROR'],
                     get_class($e),
                     $e->getMessage()
                 )

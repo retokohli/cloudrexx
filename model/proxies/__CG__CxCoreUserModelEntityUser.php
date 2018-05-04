@@ -750,6 +750,17 @@ class User extends \Cx\Core\User\Model\Entity\User implements \Doctrine\ORM\Prox
     /**
      * {@inheritDoc}
      */
+    public function isBackendGroupUser()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'isBackendGroupUser', array());
+
+        return parent::isBackendGroupUser();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getComponentController()
     {
 

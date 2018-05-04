@@ -36,6 +36,14 @@
 namespace Cx\Core_Modules\Widget\Controller;
 
 /**
+ * Exception for wrong usage of ESI widget
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage coremodules_widget
+ */
+class EsiWidgetControllerException extends \Exception {}
+
+/**
  * JsonAdapter Controller to handle EsiWidgets
  * Usage:
  * - Create a subclass that implements parseWidget()
@@ -108,7 +116,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         );
         // TODO: We should check at least all ESI params of this widget
         $requiredParams = array();
-        if ($widget->hasContent()) {
+        if ($widget->getType() == \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK) {
             $requiredParams = $requiredParamsForWidgetsWithContent;
         }
         foreach ($requiredParams as $requiredParam) {
@@ -116,6 +124,19 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 throw new \InvalidArgumentException('Param "' . $requiredParam . '" not set');
             }
         }
+
+        // resolve widget template
+        return $this->internalParseWidget($widget, $params);
+    }
+
+    /**
+     * Parses a widget
+     * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget The Widget
+     * @param array $params Params passed by ESI (/API) request
+     * @return array Content in an associative array
+     */
+    protected function internalParseWidget($widget, $params) {
+        $widgetContent = '';
 
         // ensure that the params can be fetched during internal parsing
         $backupGetParams = $_GET;
@@ -126,9 +147,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $_REQUEST += $params['post'];
         }
 
-        // resolve widget template
-        $widgetContent = '';
-        if (!$widget->hasContent()) {
+        if ($widget->getType() != \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK) {
             $widgetContent = '{' . $params['get']['name'] . '}';
         } else {
             $widgetTemplate = $this->getComponent('Widget')->getWidgetContent(
@@ -232,8 +251,14 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 );
                 return $locale;
             },
-            'user' => function($userId) {
-                return \FWUser::getFWUserObject()->objUser->getUser($userId);
+            'user' => function($sessionId) {
+                $currentSessionId = session_id();
+                if (empty($currentSessionId)) {
+                    session_id($sessionId);
+                } else if ($currentSessionId != $sessionId) {
+                    throw new EsiWidgetControllerException();
+                }
+                return $sessionId;
             },
             'theme' => function($themeId) {
                 $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();

@@ -225,10 +225,13 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('.page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('#page_target_text_wrapper_redirect').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery(".page_target_backup").val(), cx.jQuery(".page_target_text").text());
+        cx.cm.setPageTarget(
+            cx.jQuery(".page_target_backup").val(),
+            cx.jQuery(this).parent().next(".page_target_text_wrapper").find(".page_target_text").text()
+        );
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();
@@ -1047,6 +1050,15 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
             }
 
             var page = cx.cm.page;
+            // in case we are creating a new page, then cx.cm.page is not yet defined
+            if (typeof(page) == 'undefined') {
+                page = {
+                    customContent:"",
+                    useCustomContentForAllChannels:0,
+                    applicationTemplate:"",
+                    useCustomApplicationTemplateForAllChannels:0
+                }
+            }
             cx.jQuery('span.area').text(response.data.area);
             cx.jQuery('span.folderPath').text(response.data.path);
             cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
@@ -1917,6 +1929,12 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             break;
         case "show":
         case "hide":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
         case "publish":
             // nothing to do yet
             break;
@@ -1989,8 +2007,11 @@ cx.cm.updatePageIcons = function(args) {
         page.removeClass("inexistent");
     }
 
-    // reload the editor values
-    if (args.page.id == cx.jQuery('input#pageId').val()) {
+    // reload the editor values, in case a page had been loaded into the editor
+    if (
+        args.page.id > 0 &&
+        args.page.id == cx.jQuery('input#pageId').val()
+    ) {
         cx.cm.loadPage(args.page.id, undefined, args.page.version, undefined, false);
     }
 }
@@ -2586,9 +2607,9 @@ cx.cm.createEditor = function() {
             return base + sep + key + '=' + value;
         }
         var config = {
-            customConfig: buildUrl(cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
+            customConfig: buildUrl(cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
             toolbar: 'Full',
-            skin: 'moono'
+            removePlugins: 'bbcode'
         };
         CKEDITOR.replace('page[content]', config);
 

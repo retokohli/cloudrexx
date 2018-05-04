@@ -96,6 +96,7 @@ class Setting{
     const TYPE_DATE = 'date';
     const TYPE_DATETIME = 'datetime';
     const TYPE_IMAGE  = 'image';
+    const TYPE_FILECONTENT = 'file';
     // Not implemented
     //const TYPE_SUBMIT = 'submit';
     /**
@@ -501,7 +502,8 @@ class Setting{
         \Html::replaceUriParameter($uriBase, 'active_tab=' . self::$tab_index);
         // Default headings and elements
         $objTemplateLocal->setGlobalVariable(
-            $_CORELANG + array('URI_BASE' => $uriBase));
+            $_CORELANG + array('URI_BASE' => $uriBase)
+        );
         if ($objTemplateLocal->blockExists('core_setting_row')) {
             $objTemplateLocal->setCurrentBlock('core_setting_row');
         }
@@ -784,6 +786,19 @@ class Setting{
                         });
                     ');
                     break;
+              case self::TYPE_FILECONTENT:
+                  $disable  = '';
+                  if ($readOnly) {
+                      $disable = \Html::ATTRIBUTE_DISABLED;
+                  }
+                  $element = \Html::getTextarea(
+                      $name,
+                      $value,
+                      80,
+                      8,
+                      $disable
+                  );
+                  break;
                 // Default to text input fields
               case self::TYPE_TEXT:
               case self::TYPE_EMAIL:
@@ -993,16 +1008,43 @@ class Setting{
                     case self::TYPE_RADIO:
                         break;
                   case self::TYPE_IMAGE:
-                      $cx      = \Cx\Core\Core\Controller\Cx::instanciate();
-                      $options = json_decode($arrSettings[$name]['values'], true);
-                      if ($options['type'] && $options['type'] == 'copy') {
-                          \Cx\Lib\FileSystem\FileSystem::copy_file(
-                              $cx->getWebsitePath() . $value,
-                              $cx->getWebsitePath() . '/' . $arrSettings[$name]['value'],
-                              true
-                          );
-                          $value = $arrSettings[$name]['value'];
-                      }
+                        $cx      = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $filePath = $cx->getWebsiteDocumentRootPath() . '/' . $value;
+                        $options = json_decode($arrSettings[$name]['values'], true);
+                        if ($options['type'] && $options['type'] == 'copy' &&
+                            $value != $arrSettings[$name]['value']
+                        ) {
+                            try {
+                                $objFile  = new \Cx\Lib\FileSystem\File($filePath);
+                                $objFile->copy($cx->getWebsiteDocumentRootPath() . '/' . $arrSettings[$name]['value'], true);
+                            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                                \Message::error(
+                                    sprintf(
+                                        $_CORELANG['TXT_CORE_SETTING_ERROR_STORING_IMAGE'],
+                                        $name
+                                    )
+                                );
+                            }
+
+                            $value = $arrSettings[$name]['value'];
+                        }
+                        break;
+                    case self::TYPE_FILECONTENT:
+                        $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $filePath = $cx->getWebsiteDocumentRootPath() . '/' .
+                            $arrSettings[$name]['values'];
+                        try {
+                            $objFile  = new \Cx\Lib\FileSystem\File($filePath);
+                            $objFile->write($value);
+                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                            \Message::error(
+                                sprintf(
+                                    $_CORELANG['TXT_CORE_SETTING_ERROR_STORING_FILECONTENT'],
+                                    $name
+                                )
+                             );
+                        }
+                        $value = '';
                       break;
                     default:
                         // Regular value of any other type

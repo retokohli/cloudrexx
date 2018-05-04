@@ -752,8 +752,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 WHERE `group_id` = ' . intval($objGroup->getId()) . '
                 LIMIT 1');
             // Fetch the data
-            $toolbarId = $toolbarIdRes->fields;
-            $toolbarId = $toolbarId['toolbar'];
+            $toolbarId = $toolbarIdRes->fields['toolbar'];
             $newToolbarId = $toolbarController->store($newButtons, $toolbarId);
             // Check if a new toolbar has been created or an existing one updated
             if ($newToolbarId !== 0) {
@@ -1443,13 +1442,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         'clearEsiCache',
                         array(
                             'Widget',
-                            array(
-                                'access_currently_online_member_list',
-                                'access_last_active_member_list',
-                                'access_latest_registered_member_list',
-                                'access_birthday_member_list',
-                                'access_next_birthday_member_list',
-                            )
+                            $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                         )
                     );
                 } else {
@@ -1516,13 +1509,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array(
-                        'access_currently_online_member_list',
-                        'access_last_active_member_list',
-                        'access_latest_registered_member_list',
-                        'access_birthday_member_list',
-                        'access_next_birthday_member_list',
-                    )
+                    $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                 )
             );
         }
@@ -1995,7 +1982,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (
             (
-                $objUserMail->load($mail2load, $_LANGID) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getFrontendLanguage()
+                ) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getBackendLanguage()
+                ) ||
                 $objUserMail->load($mail2load)
             ) &&
             ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
@@ -2010,12 +2004,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     array(
                         '[[HOST]]',
                         '[[USERNAME]]',
-                        '[[SENDER]]'
+                        '[[SENDER]]',
+                        '[[YEAR]]',
                     ),
                     array(
                         $_CONFIG['domainUrl'],
                         $objUser->getUsername(),
-                        $objUserMail->getSenderName()
+                        $objUserMail->getSenderName(),
+                        date('Y'),
                     ),
                     $objUserMail->getBodyText()
                 );
@@ -2026,12 +2022,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     array(
                         '[[HOST]]',
                         '[[USERNAME]]',
-                        '[[SENDER]]'
+                        '[[SENDER]]',
+                        '[[YEAR]]',
                     ),
                     array(
                         $_CONFIG['domainUrl'],
                         htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                        date('Y'),
                     ),
                     $objUserMail->getBodyHtml()
                 );
@@ -2415,6 +2413,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'        => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'],
             'TXT_ACCESS_USER_ACCOUNT_VERIFICATION'              => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION'],
             'TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'         => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'],
+            'TXT_ACCESS_RANDOM_USERS'                           => $_ARRAYLANG['TXT_ACCESS_RANDOM_USERS']
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.cloudrexx.com/wiki/de/index.php?title=Social_Login"),
@@ -2472,6 +2471,19 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $arrSettings['block_next_birthday_users_pic']['status'] = !empty($_POST['access_blocks_next_birthday_users_pic']) && intval($_POST['access_blocks_next_birthday_users_pic']);
             } else {
                 $arrSettings['block_next_birthday_users']['status'] = 0;
+            }
+
+            if (!empty($_POST['access_blocks_random_access_users'])) {
+                $arrSettings['block_random_access_users']['status'] = 1;
+                $arrSettings['block_random_access_users']['value'] = 0;
+                if(!empty($_POST['access_blocks_random_access_users_count'])) {
+                    $arrSettings['block_random_access_users']['value'] =
+                        contrexx_input2int(
+                            $_POST['access_blocks_random_access_users_count']
+                        );
+                }
+            } else {
+                $arrSettings['block_random_access_users']['status'] = 0;
             }
 
             if (!empty($_POST['accessMaxProfilePicWidth'])) {
@@ -2567,13 +2579,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         'clearEsiCache',
                         array(
                             'Widget',
-                            array(
-                                'access_currently_online_member_list',
-                                'access_last_active_member_list',
-                                'access_latest_registered_member_list',
-                                'access_birthday_member_list',
-                                'access_next_birthday_member_list',
-                            )
+                            $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                         )
                     );
                 } else {
@@ -2714,6 +2720,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY_NOT_ENABLED'=> $arrSettings['sociallogin_active_automatically']['status'] ? '' : 'checked="checked"',
             'ACCESS_SOCIALLOGIN_ACTIVATION_TIMEOUT'                 => intval($arrSettings['sociallogin_activation_timeout']['value']),
             'ACCESS_USSER_ACCOUNT_VERIFICATION_CHECKED'             => $arrSettings['user_account_verification']['value'] == 1 ? 'checked' : '',
+            'ACCESS_BLOCKS_RANDOM_ACCESS_USERS'                     => $arrSettings['block_random_access_users']['status'] ? 'checked="checked"' : '',
+            'ACCESS_BLOCKS_RANDOM_ACCESS_USERS_DISPLAY'             => $arrSettings['block_random_access_users']['status'] ? '' : 'none',
+            'ACCESS_BLOCKS_RANDOM_ACCESS_USERS_USER_COUNT'          => $arrSettings['block_random_access_users']['value'],
         ));
         $this->_objTpl->parse('module_access_config_general');
     }
@@ -2872,12 +2881,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array(
-                            'access_currently_online_member_list',
-                            'access_last_active_member_list',
-                            'access_latest_registered_member_list',
-                            'access_birthday_member_list'
-                        )
+                        $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
             } else {
@@ -3160,12 +3164,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array(
-                            'access_currently_online_member_list',
-                            'access_last_active_member_list',
-                            'access_latest_registered_member_list',
-                            'access_birthday_member_list'
-                        )
+                        $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
             } else {
@@ -3353,7 +3352,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_MAIL_SENDER_ADDRESS'   => htmlentities($objUserMail->getSenderMail(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_SENDER_NAME'      => htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_BODY_TEXT'        => htmlentities($objUserMail->getBodyText(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', $objUserMail->getBodyHtml(), 'fullpage') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', contrexx_raw2xhtml($objUserMail->getBodyHtml()), 'fullpage') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
             'ACCESS_MAIL_HTML_BODY_STAUTS' => $objUserMail->getFormat() != 'text' ? 'block' : 'none',
             'ACCESS_MAIL_TEXT_BODY_STAUTS' => $objUserMail->getFormat() == 'text' ? 'block' : 'none',
             'ACCESS_MAIL_HTML_BODY_CLASS'  => $objUserMail->getFormat() != 'text' ? 'active' : '',
