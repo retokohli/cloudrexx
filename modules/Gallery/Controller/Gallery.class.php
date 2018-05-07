@@ -1022,7 +1022,7 @@ END;
         {
             $objDatabase->Execute(
                 'INSERT INTO '.DBPREFIX.'module_gallery_comments '.
-                'SET picid='.$intPicId.', date='.time().', ip="'.$_SERVER['REMOTE_ADDR'].'", '.
+                'SET picid='.$intPicId.', date='.time().', '.
                 'name="'.$strName.'", email="'.$strEmail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
             \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteAllFiles();
         }
@@ -1060,7 +1060,7 @@ END;
 
         $objResult = $objDatabase->Execute(
             "SELECT id FROM ".DBPREFIX."module_gallery_votes ".
-            "WHERE ip='".$_SERVER['REMOTE_ADDR']."' AND md5='".$strMd5.
+            "WHERE md5='".$strMd5.
             "' AND date > $intVotingCheckTime AND picid=$intPicId LIMIT 1");
         if ($objResult->RecordCount() == 1) {
             $boolIpCheck = false;
@@ -1076,7 +1076,7 @@ END;
             !isset($_COOKIE['Gallery_Voting_'.$intPicId])) {
             $objDatabase->Execute(
                 "INSERT INTO ".DBPREFIX."module_gallery_votes ".
-                "SET picid=$intPicId, date=".time().", ip='".$_SERVER['REMOTE_ADDR']."', ".
+                "SET picid=$intPicId, date=".time().", ".
                 "md5='".$strMd5."', mark=$intMark");
             setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime, ASCMS_PATH_OFFSET.'/');
             $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();

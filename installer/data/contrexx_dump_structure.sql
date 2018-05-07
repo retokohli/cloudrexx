@@ -2041,7 +2041,6 @@ CREATE TABLE `contrexx_module_gallery_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `picid` int(10) unsigned NOT NULL DEFAULT '0',
   `date` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `name` varchar(50) NOT NULL DEFAULT '',
   `email` varchar(250) NOT NULL DEFAULT '',
   `www` varchar(250) NOT NULL DEFAULT '',
@@ -2093,7 +2092,6 @@ CREATE TABLE `contrexx_module_gallery_votes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `picid` int(10) unsigned NOT NULL DEFAULT '0',
   `date` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `md5` varchar(32) NOT NULL DEFAULT '',
   `mark` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
