@@ -65,9 +65,12 @@ $_ARRAYLANG['TXT_MODULE_TOPICS_CATEGORY_STORED_SUCCESSFULLY'] = 'Die Kategorie w
 // Settings
 $_ARRAYLANG['TXT_MODULE_TOPICS_SETTINGS_CONFIG'] = 'Grundeinstellungen';
 $_ARRAYLANG['TXT_MODULE_TOPICS_SETTINGS_CONFIG_FRONTEND_FULLTEXT_ENABLE'] = 'Volltextsuche im Frontend';
-
 // MediaBrowser
 $_ARRAYLANG['TXT_MODULE_TOPICS_FILEBROWSER'] = 'Lexikon';
 $_ARRAYLANG['TXT_MODULE_TOPICS_FILEBROWSER_ENTRY_NAME'] = 'Eintrag';
 $_ARRAYLANG['TXT_MODULE_TOPICS_FILEBROWSER_ENTRIES_NONE'] = 'Kein Eintrag vorhanden';
 $_ARRAYLANG['TXT_MODULE_TOPICS_FILEBROWSER_ENTRY_ACCEPT'] = 'Eintrag wählen';
+$_ARRAYLANG['TXT_MODULE_TOPICS_ACT_EXPORT'] = 'Export';
+$_ARRAYLANG['TXT_MODULE_TOPICS_EXPORT_ENTRIES'] = 'Einträge exportieren';
+$_ARRAYLANG['TXT_MODULE_TOPICS_ACT_EXPORT_ERROR_FAILED'] = 'Der Export konnte nicht durchgeführt werden. Bitte wenden Sie sich an den Support.';
+$_ARRAYLANG['TXT_MODULE_TOPICS_ACT_EXPORT_ERROR_NO_DATA'] = 'Für den Export konnten keine Daten geladen werden. Bitte wenden Sie sich an den Support.';

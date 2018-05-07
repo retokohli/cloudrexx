@@ -218,7 +218,7 @@ class FrontendParameter
         }
         $em = $cx->getDb()->getEntityManager();
         $translationRepo = $em->getRepository(
-            'Cx\\Core\\ContentManager\\Model\\Entity\\Translation');
+            'Cx\\Core\\Locale\\Model\\Entity\\Translation');
         // As shown and selected in the controls
         $translation = $translationRepo->findOneBy(array(
             // Note that the system language may change independently
@@ -262,8 +262,7 @@ class FrontendParameter
         }
         $em = $cx->getDb()->getEntityManager();
         $translationRepo = $em->getRepository(
-            'Cx\\Core\\ContentManager\\Model\\Entity\\Translation'
-        );
+            'Cx\\Core\\Locale\\Model\\Entity\\Translation');
         // As shown and selected in the list
         $translation = $translationRepo->findOneBy(array(
             // May be any previously active list locale

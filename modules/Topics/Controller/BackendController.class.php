@@ -27,7 +27,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands()
     {
         // Don't add 'Default', it's included by default.
-        return array('Entry', 'Category', 'Settings',
+        return array('Entry', 'Category', 'Export', 'Settings',
         // Disable/hide custom "Import" for production!
         //'Import',
         );
@@ -37,9 +37,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * Parse the backend view
      * @param   \Cx\Core\Html\Sigma     $template
      * @param   array                   $cmd
+     * @param   boolean                 $isSingle
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd,
+        &$isSingle = false)
     {
         if (!isset($cmd[0])) {
             $cmd[0] = '';
@@ -50,12 +52,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             case 'Category':
                 $id = null;
                 if (isset($_GET['add'])) {
-                    call_user_func(array($this, 'show' . $cmd[0]), $template);
+                    call_user_func(array($this, 'show' . $cmd[0]), $template,
+                        null, $isSingle);
                     break;
                 }
                 if (isset($_GET['editid'])) {
                     $id = intval(preg_replace('/.+,(\d+)/', '$1', $_GET['editid']));
-                    call_user_func(array($this, 'show' . $cmd[0]), $template, $id);
+                    call_user_func(array($this, 'show' . $cmd[0]), $template,
+                        $id, $isSingle);
                     break;
                 }
                 $locale = \FWLanguage::getLocaleByFrontendId(LANG_ID);
@@ -73,6 +77,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
             case 'Import':
                 $controller = $this->getController('Import');
+                break;
+            case 'Export':
+                $controller = $this->getController('Export');
                 break;
         }
         if ($controller) {
@@ -96,10 +103,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * Stores the Entry if present in the POST.
      * @param   \Cx\Core\Html\Sigma     $template
      * @param   integer                 $id
+     * @param   boolean                 $isSingle
      * @return  boolean                     True on success, false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected function showEntry(\Cx\Core\Html\Sigma $template, $id=null)
+    protected function showEntry(\Cx\Core\Html\Sigma $template, $id=null,
+        &$isSingle = false)
     {
         global $_ARRAYLANG;
         $entry = null;
@@ -120,6 +129,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if ($this->storeEntryFromPost($entry)) {
             \Cx\Core\Csrf\Controller\Csrf::redirect('Entry');
         }
+        $isSingle = true;
         return $this->parseEntry($template, $entry);
     }
 
@@ -348,10 +358,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * Stores the Category if present in the POST.
      * @param   \Cx\Core\Html\Sigma     $template
      * @param   integer                 $id
+     * @param   boolean                 $isSingle
      * @return  boolean                     True on success, false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected function showCategory(\Cx\Core\Html\Sigma $template, $id=null)
+    protected function showCategory(\Cx\Core\Html\Sigma $template, $id=null,
+        &$isSingle = false)
     {
         global $_ARRAYLANG;
         $category = null;
@@ -372,6 +384,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if ($this->storeCategoryFromPost($category)) {
             \Cx\Core\Csrf\Controller\Csrf::redirect('Category');
         }
+        $isSingle = true;
         return $this->parseCategory($template, $category);
     }
 
@@ -754,7 +767,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'delete' => true,
                     'sorting' => true,
                     'paging' => true,
-// TODO: Implement search/filtering (doesn't appear to work with translatable):
+// TODO: Implement filter and search
                     'filtering' => false,
                     'searching' => false,
                 ),
@@ -767,7 +780,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'delete' => true,
                     'sorting' => true,
                     'paging' => true,
-// TODO: Implement search/filtering (doesn't appear to work with translatable):
+// TODO: Implement filter and search
                     'filtering' => false,
                     'searching' => false,
                 ),
@@ -776,15 +789,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'showOverview' => false,
                     ),
                 ),
-// Note: To fix the encoding of fields in list view:
-// The Category description is htmlentities()d, and looks like e.g.
-//    neue &lt;kategorie&gt; mit <a href="http://example.com/">link</a> de
-// instead of
-//    neue <kategorie> mit _link_ de
-// Use a function as with "custom formatting in list view" above,
-// And return the value unchanged.
-// Applying htmlentities() should then be omitted:
-//  'table' => array('parse' => *callable*: *mixed*($value, $rowData), ),
             ),
         );
     }

@@ -21,7 +21,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses()
     {
         return array(
-            'Frontend', 'Backend', 'Json', 'Settings',
+            'Frontend', 'Backend', 'Json', 'Export', 'Settings',
             // Enable custom "Import" when available and required.
             //'Import',
         );
