@@ -2328,19 +2328,7 @@ namespace Cx\Core\Core\Controller {
                 $this->getResponse()->setParsedContent($ls->replace());
             }
 
-            $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-            $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
-            $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
-            $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-            
-            $cx = $this;
-            register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
-                $parsingTime = $cx->stopTimer();
-                \DBG::log(
-                    "(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\" \"" .
-                    memory_get_peak_usage(true) . "\""
-                );
-            });
+            \DBG::writeFinishLine($this, false);
         }
 
         /**
