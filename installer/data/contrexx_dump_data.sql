@@ -3498,6 +3498,7 @@ INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, 
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (5,'fieldMetaLang','0',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (6,'fieldMetaIP','0',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (7,'fieldMetaBrowser','0',1);
+INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (8,'storeFormSubmissions','0',1);
 INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (1,'1',1,1);
 INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (2,'2 - 9',2,1);
 INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (3,'10 - 19',3,1);

@@ -233,4 +233,7 @@ $_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Datum & Zeit";
 $_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS']  = "Kundengruppe wählen";
 $_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP']  = "Zuordnung zu CRM Kundengruppe";
 $_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'] = "Wählen Sie die Kundengruppen, zu welchen der neue CRM Kontakt hinzugefügt werden soll.";
+$_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS'] = "Kontaktanfragen speichern";
+$_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSION_DATA_IN_DB'] = "Kontaktanfragen in der Datenbank speichern";
+$_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS_NOTE'] = "Aktivieren Sie diese Option, um die Kontaktanfragen in der Datenbank zu speichern. Wichtig: In den meisten Ländern muss der Website-Besucher zur Speicherung (und allfällige Weiterverarbeitung) von personenbezogenen Daten um Erlaubnis gefragt werden. Bitte prüfen Sie zutreffendes Recht, bevor Sie die Speicherung der Kontaktanfragen aktivieren.";
 ?>

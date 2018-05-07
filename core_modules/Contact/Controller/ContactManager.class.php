@@ -276,6 +276,9 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 'TXT_CONTACT_IP_ADDRESS'                        => $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'],
                 'TXT_CONTACT_META_DATE_BY_EXPORT'               => $_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT'],
                 'TXT_CONTACT_PERSONAL_DATA_NOTE'                => $_ARRAYLANG['TXT_CONTACT_PERSONAL_DATA_NOTE'],
+                'TXT_CONTACT_STORE_SUBMISSIONS'                 => $_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS'],
+                'TXT_CONTACT_STORE_SUBMISSION_DATA_IN_DB'       => $_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSION_DATA_IN_DB'],
+                'TXT_CONTACT_STORE_SUBMISSIONS_NOTE'            => $_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS_NOTE'],
         ));
 
         $this->_objTpl->setVariable(array(
@@ -286,6 +289,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 'CONTACT_FIELD_META_HOST'               => $arrSettings['fieldMetaHost'] == '1' ? 'checked="checked"' : '',
                 'CONTACT_FIELD_META_BROWSER'            => $arrSettings['fieldMetaBrowser'] == '1' ? 'checked="checked"' : '',
                 'CONTACT_FIELD_META_IP'                 => $arrSettings['fieldMetaIP'] == '1' ? 'checked="checked"' : '',
+                'CONTACT_STORE_SUBMISSIONS'             => $arrSettings['storeFormSubmissions'] == '1' ? 'checked="checked"' : '',
         ));
     }
 
@@ -305,7 +309,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     'fieldMetaHost'             => isset($_POST['contactFieldMetaHost']) ? intval($_POST['contactFieldMetaHost']) : 0,
                     'fieldMetaBrowser'          => isset($_POST['contactFieldMetaBrowser']) ? intval($_POST['contactFieldMetaBrowser']) : 0,
                     'fieldMetaLang'             => isset($_POST['contactFieldMetaLang']) ? intval($_POST['contactFieldMetaLang']) : 0,
-                    'fieldMetaIP'               => isset($_POST['contactFieldMetaIP']) ? intval($_POST['contactFieldMetaIP']) : 0
+                    'fieldMetaIP'               => isset($_POST['contactFieldMetaIP']) ? intval($_POST['contactFieldMetaIP']) : 0,
+                    'storeFormSubmissions'      => isset($_POST['contactStoreSubmissions']) ? intval($_POST['contactStoreSubmissions']) : 0,
             );
 
             if (strpos($arrNewSettings['fileUploadDepositionPath'], '..') || empty($arrNewSettings['fileUploadDepositionPath'])) {
