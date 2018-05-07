@@ -50,17 +50,23 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         switch ($cmd[0]) {
             case 'Entry':
             case 'Category':
-                $id = null;
+                $add = $id = null;
                 if (isset($_GET['add'])) {
-                    call_user_func(array($this, 'show' . $cmd[0]), $template,
-                        null, $isSingle);
-                    break;
+                    $add = true;
                 }
                 if (isset($_GET['editid'])) {
-                    $id = intval(preg_replace('/.+,(\d+)/', '$1', $_GET['editid']));
-                    call_user_func(array($this, 'show' . $cmd[0]), $template,
-                        $id, $isSingle);
-                    break;
+                    $id = intval(preg_replace('/.+,(\d+)/', '$1',
+                        $_GET['editid']));
+                }
+                if ($add || $id) {
+                    switch ($cmd[0]) {
+                        case 'Entry':
+                            $this->showEntry($template, $id, $isSingle);
+                            return;
+                        case 'Category':
+                            $this->showCategory($template, $id, $isSingle);
+                            return;
+                    }
                 }
                 $locale = \FWLanguage::getLocaleByFrontendId(LANG_ID);
                 $this->cx->getDb()->getTranslationListener()
