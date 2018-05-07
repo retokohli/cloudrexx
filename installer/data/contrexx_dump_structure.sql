@@ -678,7 +678,7 @@ CREATE TABLE `contrexx_module_blog_comments` (
   `lang_id` int(2) unsigned NOT NULL DEFAULT '0',
   `is_active` enum('0','1') NOT NULL DEFAULT '1',
   `time_created` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `ip_address` varchar(32) NOT NULL DEFAULT '',
   `user_id` int(5) unsigned NOT NULL DEFAULT '0',
   `user_name` varchar(50) DEFAULT NULL,
   `user_mail` varchar(250) DEFAULT NULL,
@@ -735,7 +735,7 @@ CREATE TABLE `contrexx_module_blog_votes` (
   `vote_id` int(8) unsigned NOT NULL AUTO_INCREMENT,
   `message_id` int(6) unsigned NOT NULL DEFAULT '0',
   `time_voted` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `ip_address` varchar(32) NOT NULL DEFAULT '',
   `vote` enum('1','2','3','4','5','6','7','8','9','10') NOT NULL DEFAULT '1',
   PRIMARY KEY (`vote_id`),
   KEY `message_id` (`message_id`)
@@ -2041,7 +2041,6 @@ CREATE TABLE `contrexx_module_gallery_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `picid` int(10) unsigned NOT NULL DEFAULT '0',
   `date` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `name` varchar(50) NOT NULL DEFAULT '',
   `email` varchar(250) NOT NULL DEFAULT '',
   `www` varchar(250) NOT NULL DEFAULT '',
@@ -2093,7 +2092,6 @@ CREATE TABLE `contrexx_module_gallery_votes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `picid` int(10) unsigned NOT NULL DEFAULT '0',
   `date` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `md5` varchar(32) NOT NULL DEFAULT '',
   `mark` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
