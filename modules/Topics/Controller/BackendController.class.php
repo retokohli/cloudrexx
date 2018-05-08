@@ -30,6 +30,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return array('Entry', 'Category', 'Export', 'Settings',
         // Disable/hide custom "Import" for production!
         //'Import',
+        // Note: To support the default language menu, add e.g.:
+        //'Entry' => array('translatable' => true)
         );
     }
 
