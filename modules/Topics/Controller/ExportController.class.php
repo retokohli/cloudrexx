@@ -57,15 +57,28 @@ class ExportController extends \Cx\Core\Core\Model\Entity\Controller
      *
      * if $_POST['exportEntriesCsv'] is set, the export is run and the
      * generated file is sent as a download.
+     * Catches and handles errors that occur during the export.
      * Otherwise, the page is parsed.
+     * @global  array               $_ARRAYLANG
      * @param   \Cx\Core\Html\Sigma $template
      * @param   string              $cmd
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
+        global $_ARRAYLANG;
         if (isset($_POST['exportEntriesCsv'])) {
-            $this->export(); // Exits on success
+            try {
+                $this->export(); // Exits on success
+            } catch (\Error $e) {
+                \Message::error(
+                    $_ARRAYLANG['TXT_MODULE_TOPICS_ACT_EXPORT_ERROR_FAILED']);
+                return;
+            }
+            // Did not exit, thus there was nothing to be downloaded
+            \Message::error(
+                $_ARRAYLANG['TXT_MODULE_TOPICS_ACT_EXPORT_ERROR_NO_DATA']);
+            return;
         }
         // Intentionally unused
         $template->getCurrentBlock();
@@ -79,23 +92,14 @@ class ExportController extends \Cx\Core\Core\Model\Entity\Controller
      */
     protected function export()
     {
-        global $_ARRAYLANG;
         $data = $this->getData();
-        if ($data) {
-            $download = new \HTTP_Download();
-            $download->setData($data);
-            $download->setContentDisposition(
-                HTTP_DOWNLOAD_ATTACHMENT, static::getFileName());
-            $download->setContentType();
-            $download->send('application/force-download');
-            exit;
-        }
-        if ($data === '') {
-            return \Message::error(
-                $_ARRAYLANG['TXT_MODULE_TOPICS_ACT_EXPORT_ERROR_NO_DATA']);
-        }
-        return \Message::error(
-            $_ARRAYLANG['TXT_MODULE_TOPICS_ACT_EXPORT_ERROR_FAILED']);
+        $download = new \HTTP_Download();
+        $download->setData($data);
+        $download->setContentDisposition(
+            HTTP_DOWNLOAD_ATTACHMENT, static::getFileName());
+        $download->setContentType();
+        $download->send('application/force-download');
+        exit;
     }
 
     /**
@@ -114,13 +118,21 @@ class ExportController extends \Cx\Core\Core\Model\Entity\Controller
      * Returns the empty string if no Entries are found.
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @throws  \Error  on failure to open the temporary file for writing
      */
     protected function getData()
     {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entryRepo = $em->getRepository(
+            $this->getNamespace() . '\\Model\\Entity\\Entry');
+        $entries = $entryRepo->findAll();
+        if (count($entries) === 0) {
+            return '';
+        }
         $pathTemp = tempnam(sys_get_temp_dir(), 'csv');
         $handle = fopen($pathTemp, 'w');
         if (!$handle) {
-            return false;
+            throw new \Error('Failed to open temp file for output');
         }
         fwrite($handle, static::$bom);
         fputcsv($handle, [
@@ -135,23 +147,16 @@ class ExportController extends \Cx\Core\Core\Model\Entity\Controller
             'Href',
             'Slug',
         ], static::$delimiter, static::$enclosure, static::$escape_char);
-        $em = $this->cx->getDb()->getEntityManager();
-        $entryRepo = $em->getRepository(
-            $this->getNamespace() . '\\Model\\Entity\\Entry');
         $translationRepo = $em->getRepository(
             '\\Cx\\Core\\Locale\\Model\\Entity\\Translation');
-        $entries = $entryRepo->findAll();
-        if (count($entries) === 0) {
-            return '';
-        }
         foreach ($entries as $entry) { //$entry = new \Cx\Modules\Topics\Model\Entity\Entry();
-              $translationsEntry = $translationRepo->findTranslations($entry);
+            $translationsEntry = $translationRepo->findTranslations($entry);
             foreach ($translationsEntry as $locale => $translation) {
                 $categoryNames = [];
                 foreach ($entry->getCategories()->toArray() as $category) {
-              $translationsCategory = $translationRepo->findTranslations($category);
-                $categoryNames[] =
-                    $translationsCategory[$locale]['name'];
+                    $translationsCategory =
+                        $translationRepo->findTranslations($category);
+                    $categoryNames[] = $translationsCategory[$locale]['name'];
                 }
                 $fields = [
                     $entry->getId(),
@@ -165,8 +170,8 @@ class ExportController extends \Cx\Core\Core\Model\Entity\Controller
                     $translation['href'],
                     $translation['slug'],
                 ];
-                fputcsv($handle, $fields,
-                    static::$delimiter, static::$enclosure, static::$escape_char);
+                fputcsv($handle, $fields, static::$delimiter,
+                    static::$enclosure, static::$escape_char);
             }
         }
         fclose($handle);
