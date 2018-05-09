@@ -152,6 +152,10 @@ class Config
                     'value' => \FWLanguage::getDefaultLangId(),
                     'values' => '{src:\\' . __CLASS__ . '::getLocales()}',
                 ),
+                'cookieNote' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
             ),
             'administrationArea' => array(
                 'dashboardNews' => array(
