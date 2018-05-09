@@ -67,9 +67,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
-        // TODO:
-        // Only add the widget if option to show note is on OR
-        // only parse the widget once
         $widgetController = $this->getComponent('Widget');
         $widgetController->registerWidget(
             new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -77,8 +74,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'COOKIE_NOTE'
             )
         );
+        // TODO: Set correct ESI variables
         \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
         \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        if (
+            \Cx\Core\Setting\Controller\Setting::getValue(
+                'cookieNote',
+                'Config'
+            ) != 'on'
+        ) {
+            return;
+        }
+        $template->_blocks['__global__'] = preg_replace(
+            '#</body[^>]*>#',
+            '{COOKIE_NOTE}\\0',
+            $template->_blocks['__global__']
+        );
     }
 
     /**
