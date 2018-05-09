@@ -60,10 +60,14 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * @param array $params Array of params
      */
     public function parseWidget($name, $template, $response, $params) {
-        if ($name === 'cookie_note') {
-            // TODO: Parse lang vars
-            // TODO: Add logic (only show the first time)
-            die('here');
+        if ($name === 'COOKIE_NOTE') {
+            $template->setRoot($this->getDirectory(false) . '/View/Template/Frontend');
+            $template->loadTemplateFile('CookieNote.html');
+            $template->setVariable(
+                \Env::get('init')->getComponentSpecificLanguageData(
+                    $this->getSystemComponentController()->getName()
+                )
+            );
             return;
         }
     }

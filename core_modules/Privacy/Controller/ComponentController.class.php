@@ -45,10 +45,21 @@ namespace Cx\Core_Modules\Privacy\Controller;
  * @subpackage  coremodule_privacy
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+
+    /**
+     * {@inheritdoc}
+     */
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
         return array('EsiWidget');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson() {
+        return array('EsiWidgetController');
     }
 
     /**
@@ -63,11 +74,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $widgetController->registerWidget(
             new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
-                'cookie_note',
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_BLOCK
+                'COOKIE_NOTE'
             )
         );
         \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
+        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
     }
 
     /**
