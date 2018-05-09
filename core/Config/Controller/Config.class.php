@@ -95,7 +95,7 @@ class Config
      * Load base configuration options into member variable $this->configlist
      */
     protected function initConfigList() {
-        $this->configlist = array(
+        static::$configlist = array(
             'site' => array(
                 'systemStatus' => array(
                     'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
