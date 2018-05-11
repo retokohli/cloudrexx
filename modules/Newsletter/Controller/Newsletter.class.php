@@ -1263,12 +1263,6 @@ class Newsletter extends NewsletterLib
      */
     public static function trackLink()
     {
-        $arrSettings = $this->_getSettings();
-        if (!$arrSettings['statistics']['setvalue']) {
-            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$url);
-            exit;
-        }
-
         global $objDatabase;
 
         $recipientId = 0;
@@ -1317,6 +1311,12 @@ class Newsletter extends NewsletterLib
         $url = $objLink->fields['url'];
 
         \LinkGenerator::parseTemplate($url);
+
+        $arrSettings = $this->_getSettings();
+        if (!$arrSettings['statistics']['setvalue']) {
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$url);
+            exit;
+        }
 
         if (!empty($recipientId)) {
             // save feedback for valid user
