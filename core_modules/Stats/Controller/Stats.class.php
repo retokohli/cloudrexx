@@ -1178,7 +1178,7 @@ class Stats extends StatsLibrary
             'TXT_MARKED'                        => $_ARRAYLANG['TXT_MARKED'],
             'TXT_SELECT_ALL'                    => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_REMOVE_SELECTION'                => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-            'TXT_BDSG'                          => $_ARRAYLANG['TXT_BDSG'],
+            'TXT_STATS_BDSG'                          => $_ARRAYLANG['TXT_STATS_BDSG'],
         ));
 
         $this->_objTpl->setVariable(array(
