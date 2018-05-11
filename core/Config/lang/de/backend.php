@@ -203,4 +203,4 @@ $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_MAINDOMAIN'] = 'Hauptdomain kann nicht auf
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'] = 'Das Protokoll kann nicht umgestellt werden, da die Website über %s nicht erreichbar ist.';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_FORCE_MAINDOMAIN'] = 'Die Hauptdomain kann nicht erzwungen werden, da die Website über diese Domain nicht erreichbar ist.';
 $_ARRAYLANG['TXT_CORE_CONFIG_COOKIENOTE'] = 'Cookie-Hinweis anzeigen';
-$_ARRAYLANG['TXT_CORE_CONFIG_COOKIENOTE_TOOLTIP_HELP'] = 'Zeigt jedem neuen Benutzer einen Cookie-Hinweis an.';
+$_ARRAYLANG['TXT_CORE_CONFIG_COOKIENOTE_TOOLTIP_HELP'] = 'Zeigt jedem neuen Besucher einen Cookie-Hinweis an.';
