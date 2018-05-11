@@ -1944,8 +1944,9 @@ class NewsletterManager extends NewsletterLib
                                  WHEN "defUnsubscribe" THEN "'. contrexx_input2int($_POST['def_unsubscribe']) .'"
                                  WHEN "notificationSubscribe" THEN "'. contrexx_input2int($_POST["mailSendSubscribe"]) .'"
                                  WHEN "notificationUnsubscribe" THEN "'. contrexx_input2int($_POST["mailSendUnsubscribe"]) .'"
+                                 WHEN "statistics" THEN "'. contrexx_input2int($_POST["statistics"]) .'"
                                  END
-                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe")';
+                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe", "statistics")';
             $objDatabase->Execute($queryUpdateSetting);
         }
 
@@ -2009,6 +2010,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_NOTIFICATION_DEACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'],
             'TXT_NEWSLETTER_SEND_BY_SUBSCRIBE'       => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_SUBSCRIBE'],
             'TXT_NEWSLETTER_SEND_BY_UNSUBSCRIBE'     => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE'],
+            'TXT_NEWSLETTER_STATISTICS' => $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'],
 
             'SENDERMAIL_VALUE' => htmlentities(
                 $arrSettings['sender_mail'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -2054,8 +2056,13 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_SEND_BY_UNSUBSCRIBE_OFF' =>
                 ($arrSettings['notificationUnsubscribe'] != 1
                     ? 'checked="checked"' : ''),
+            'NEWSLETTER_STATISTICS_ON' =>
+                ($arrSettings['statistics'] != 0
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_STATISTICS_OFF' =>
+                ($arrSettings['statistics'] == 0
+                    ? 'checked="checked"' : ''),
         ));
-
     }
 
 
@@ -4232,10 +4239,14 @@ $WhereStatement = '';
                 'zip'       => empty($user['zip']) ? '-' : $user['zip'],
                 'city'      => empty($user['city']) ? '-' : $user['city'],
                 'country'   => $country,
-                'feedback'  => $feedbackdata,
                 'emaildate' => date(ASCMS_DATE_FORMAT, $user['emaildate']),
                 'type'      => $type
             );
+            $arrSettings = $this->_getSettings();
+            if ($arrSettings['statistics']['setvalue']) {
+                $currentKey = key($output['user']);
+                $output['user'][$currentKey]['feedback']  = $feedbackdata;
+            }
         }
         die(json_encode($output));
     }
@@ -4773,6 +4784,13 @@ $WhereStatement = '';
         ));
 
         if (!isset($_REQUEST['tpl'])) {
+            $_REQUEST['tpl'] = '';
+        }
+        $arrSettings = $this->_getSettings();
+        if (
+            $_REQUEST['tpl'] == 'feedback' &&
+            !$arrSettings['statistics']['setvalue']
+        ) {
             $_REQUEST['tpl'] = '';
         }
         switch ($_REQUEST['tpl']) {
@@ -5432,6 +5450,12 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_DELETE_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_DELETE_RECIPIENT'],
         ));
 
+        $arrSettings = $this->_getSettings();
+        if ($arrSettings['statistics']['setvalue']) {
+            $this->_objTpl->touchBlock('statistics');
+        } else {
+            $this->_objTpl->hideBlock('statistics');
+        }
         $this->_objTpl->parse('module_newsletter_user_overview');
     }
 

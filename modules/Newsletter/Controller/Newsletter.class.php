@@ -1263,6 +1263,12 @@ class Newsletter extends NewsletterLib
      */
     public static function trackLink()
     {
+        $arrSettings = $this->_getSettings();
+        if (!$arrSettings['statistics']['setvalue']) {
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$url);
+            exit;
+        }
+
         global $objDatabase;
 
         $recipientId = 0;
@@ -1299,10 +1305,10 @@ class Newsletter extends NewsletterLib
         }
 
         /*
-        * Request must be redirected to the newsletter $linkId URL. If the $linkId
-        * can't be looked up in the database (by what reason  so ever), then the request shall be
-        * redirected to the URL provided by the url-modificator s of the request
-        */
+         * Request must be redirected to the newsletter $linkId URL. If the $linkId
+         * can't be looked up in the database (by what reason  so ever), then the request shall be
+         * redirected to the URL provided by the url-modificator s of the request
+         */
         $objLink = $objDatabase->SelectLimit("SELECT `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE id=".contrexx_raw2db($linkId)." AND email_id=".contrexx_raw2db($emailId), 1);
         if ($objLink === false || $objLink->RecordCount() != 1) {
             return false;
@@ -1323,5 +1329,4 @@ class Newsletter extends NewsletterLib
         \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$url);
         exit;
     }
-
 }

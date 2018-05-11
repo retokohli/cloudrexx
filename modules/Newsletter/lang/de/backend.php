@@ -506,3 +506,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'] = 'Falls Sie Ihre E-
 $_ARRAYLANG['TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'] = 'Kundengruppen wählen';
 $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'] = 'Versand nur an Mitglieder ausgewählter Kundengruppen:';
 $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'] = 'Kein Versand an Mitglieder ausgewählter Kundengruppen:';
+$_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'] = 'Statistik aktivieren';
