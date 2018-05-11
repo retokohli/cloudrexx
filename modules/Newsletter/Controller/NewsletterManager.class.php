@@ -1279,6 +1279,7 @@ class NewsletterManager extends NewsletterLib
                 $objFeedback->MoveNext();
             }
         }
+        $arrSettings = $this->_getSettings();
         $objResult = $objDatabase->SelectLimit("SELECT
             tblMail.id,
             tblMail.subject,
@@ -1315,12 +1316,16 @@ class NewsletterManager extends NewsletterLib
 
                 $this->_objTpl->setGlobalVariable('NEWSLETTER_MAIL_ID', $objResult->fields['id']);
 
-                if ($objResult->fields['count'] > 0 && $feedbackCount > 0) {
-                    $this->_objTpl->touchBlock('newsletter_mail_feedback_link');
-                    $this->_objTpl->hideBlock('newsletter_mail_feedback_empty');
+                if ($arrSettings['statistics']['setvalue']) {
+                    if ($objResult->fields['count'] > 0 && $feedbackCount > 0) {
+                        $this->_objTpl->touchBlock('newsletter_mail_feedback_link');
+                        $this->_objTpl->hideBlock('newsletter_mail_feedback_empty');
+                    } else {
+                        $this->_objTpl->touchBlock('newsletter_mail_feedback_empty');
+                        $this->_objTpl->hideBlock('newsletter_mail_feedback_link');
+                    }
                 } else {
-                    $this->_objTpl->touchBlock('newsletter_mail_feedback_empty');
-                    $this->_objTpl->hideBlock('newsletter_mail_feedback_link');
+                    $this->_objTpl->hideBlock('newsletter_stats_entry');
                 }
 
                 $this->_objTpl->parse("newsletter_list");
@@ -1336,6 +1341,11 @@ class NewsletterManager extends NewsletterLib
                 $this->_objTpl->setVariable('NEWSLETTER_MAILS_PAGING', "<br />".$paging."<br />");
             } else {
                 $this->_objTpl->hideBlock("newsletter_list_multiAction");
+            }
+            if ($arrSettings['statistics']['setvalue']) {
+                $this->_objTpl->touchBlock('newsletter_stats');
+            } else {
+                $this->_objTpl->hideBlock('newsletter_stats');
             }
         }
     }
