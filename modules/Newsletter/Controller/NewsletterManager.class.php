@@ -1958,6 +1958,15 @@ class NewsletterManager extends NewsletterLib
                                  END
                 WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe", "statistics")';
             $objDatabase->Execute($queryUpdateSetting);
+            if (
+                isset($_POST['statistics_drop']) &&
+                $_POST['statistics_drop'] == 1
+            ) {
+                $objDatabase->Execute('
+                    DELETE FROM
+                        `'. DBPREFIX .'module_newsletter_email_link_feedback`
+                ');
+            }
         }
 
         // Load Values
@@ -2022,6 +2031,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_SEND_BY_UNSUBSCRIBE'     => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE'],
             'TXT_NEWSLETTER_STATISTICS' => $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'],
             'TXT_NEWSLETTER_STATISTICS_TOOLTIP' => $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'],
+            'TXT_NEWSLETTER_STATISTICS_DROP' => $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'],
 
             'SENDERMAIL_VALUE' => htmlentities(
                 $arrSettings['sender_mail'], ENT_QUOTES, CONTREXX_CHARSET),

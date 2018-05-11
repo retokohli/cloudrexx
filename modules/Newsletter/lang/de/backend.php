@@ -508,3 +508,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'] = 'Versand nur an Mitgl
 $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'] = 'Kein Versand an Mitglieder ausgewählter Kundengruppen:';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'] = 'Statistik aktivieren';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'] = 'Bitte beachten Sie, dass mit der Aktivierung dieser Option u.U. personenbezogene Daten erfasst werden, was in den meisten Ländern ohne ausdrückliche Einwilligung der betroffenen Person rechtlich untersagt ist.';
+$_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'] = 'Möchten Sie die bisher erfassten Statistik-Daten löschen?';
