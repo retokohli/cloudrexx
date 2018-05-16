@@ -1312,7 +1312,7 @@ class Newsletter extends NewsletterLib
 
         \LinkGenerator::parseTemplate($url);
 
-        $arrSettings = $this->_getSettings();
+        $arrSettings = static::_getSettings();
         if (!$arrSettings['statistics']['setvalue']) {
             \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$url);
             exit;
