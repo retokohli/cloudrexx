@@ -82,7 +82,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * {@inheritdoc}
      */
-    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
@@ -94,10 +94,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         ) {
             return;
         }
-        $template->_blocks['__global__'] = preg_replace(
+        $this->cx->getTemplate()->_blocks['__global__'] = preg_replace(
             '#</body[^>]*>#',
             '{COOKIE_NOTE}\\0',
-            $template->_blocks['__global__']
+            $this->cx->getTemplate()->_blocks['__global__']
         );
     }
 
