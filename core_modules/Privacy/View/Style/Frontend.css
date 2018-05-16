@@ -6,7 +6,7 @@ div#cookie-note {
     right: 20px;
     bottom: 20px;
     position: fixed;
-    height: 17em;
+    height: auto;
     width: 25em;
     z-index: 1337;
     padding: 10px;
