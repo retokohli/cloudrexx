@@ -72,14 +72,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function getCommandsForCommandMode() {
+        $cliOnlyPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            array(),
+            array('cli'),
+            false
+        );
         return array(
             'help',
-            'status',
-            'diff',
+            'status' => $cliOnlyPermission,
+            'diff' => $cliOnlyPermission,
             'version',
-            'install',
-            'activate',
-            'deactivate',
+            'install' => $cliOnlyPermission,
+            'activate' => $cliOnlyPermission,
+            'deactivate' => $cliOnlyPermission,
         );
     }
 
@@ -236,7 +241,7 @@ Available commands:
             case 'install':
                 echo "BETA!!\r\n";
                 try {
-                    $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1]);
+                    $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[0]);
                     $component->install();
                 } catch (\BadMethodCallException $e) {
                     echo 'Error: ' . $e->getMessage();

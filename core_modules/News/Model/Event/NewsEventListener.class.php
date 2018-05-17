@@ -68,7 +68,6 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $search = current($eventArgs);
         $term_db = contrexx_raw2db($search->getTerm());
         $newsLib = new \Cx\Core_Modules\News\Controller\NewsLibrary();
-        $newsLib->getSettings();
         $query = '
             SELECT
                 `id`,

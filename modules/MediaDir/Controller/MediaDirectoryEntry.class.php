@@ -148,7 +148,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strSlugField = '';
         $strJoinSlug = '';
 
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && !empty($strSearchTerm)) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
@@ -238,8 +238,15 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if($objInit->mode == 'frontend') {
-            if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
-                $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
+            // only list entries in their primary (or translated) locale
+            if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
+                if ($this->arrSettings['settingsTranslationStatus']) {
+                    // only list entries in their translated locale
+                    $strWhereLangId = 'AND entry.`translation_status` REGEXP "(^|,)' . $langId . '(,|$)"';
+                } else {
+                    // only list entries in their primary locale
+                    $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
+                }
             }
         }
 
@@ -408,8 +415,15 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         	$strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
         }
 
+        // only find entry by its primary (or translated) locale
         if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
-            $strWhereLangId = "AND (entry.`lang_id` = ".FRONTEND_LANG_ID.") ";
+            if ($this->arrSettings['settingsTranslationStatus']) {
+                // only find entry by its translated locale
+                $strWhereLangId = 'AND entry.`translation_status` REGEXP "(^|,)' . static::getOutputLocale()->getId() . '(,|$)"';
+            } else {
+                // only find entry by its primary locale
+                $strWhereLangId = "AND (entry.`lang_id` = ". static::getOutputLocale()->getId() .") ";
+            }
         }
 
         $query = "
@@ -1147,41 +1161,49 @@ JSCODE;
     /**
      * Update the entries while activating the new language.
      *
-     * @return null
+     * @param   array
      */
-    public function updateEntries()
-    {
-        global $objDatabase;
+    public function updateEntries($usedLocaleIds = array()) {
+        $db = $this->cx->getDb()->getAdoDb();
+        foreach ($this->arrFrontendLanguages as $arrLocale) {
+            $sourceLocaleId = static::getSourceLocaleIdForTargetLocale($arrLocale['id'], $usedLocaleIds);
+            $objEntries = $db->Execute('
+                SELECT t1.* 
+                FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1
+                WHERE
+                    `lang_id` = ' . $sourceLocaleId . '
+                 OR `lang_id` =  "
+                        SELECT
+                            first_rel_inputfield.`lang_id` AS `id`
+                        FROM
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
+                        LEFT JOIN
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
+                        ON
+                            first_rel_inputfield.`field_id` = inputfield.`id`
+                        WHERE
+                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
+                        AND
+                            (first_rel_inputfield.`form_id` = t1.`form_id`)
+                        AND
+                            (first_rel_inputfield.`value` != "")
+                        LIMIT 1"
+                GROUP BY `field_id`, `entry_id`, `form_id`
+                ORDER BY `entry_id`'
+            );
 
-        $objEntries = $objDatabase->Execute('SELECT t1.* FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1 WHERE `lang_id` = '.FRONTEND_LANG_ID.' OR `lang_id` =  "SELECT
-                                            first_rel_inputfield.`lang_id` AS `id`
-                                        FROM
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
-                                        LEFT JOIN
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
-                                        ON
-                                            first_rel_inputfield.`field_id` = inputfield.`id`
-                                        WHERE
-                                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
-                                        AND
-                                            (first_rel_inputfield.`form_id` = t1.`form_id`)
-                                        AND
-                                            (first_rel_inputfield.`value` != "")
-                                        LIMIT 1" GROUP BY `field_id`, `entry_id`, `form_id`  ORDER BY `entry_id`'
-                        );
-
-        if ($objEntries !== false) {
+            if ($objEntries === false) {
+                continue;
+            }
             while (!$objEntries->EOF) {
-                foreach ($this->arrFrontendLanguages as $lang) {
-                    $objDatabase->Execute('
-                        INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
-                            SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
-                                `lang_id`="' . contrexx_raw2db($lang['id']) . '",
-                                `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
-                                `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
-                                `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
-                    );
-                }
+                $db->Execute('
+                    INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
+                        SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
+                            `lang_id`="' . contrexx_raw2db($arrLocale['id']) . '",
+                            `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
+                            `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
+                            `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
+                );
                 $objEntries->MoveNext();
             }
         }
@@ -1200,7 +1222,10 @@ JSCODE;
         $strCreateDate = time();
         $strUpdateDate = time();
         $intUserId = intval($objFWUser->objUser->getId());
-        $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strLastIp = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
         $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
 
 
@@ -1263,7 +1288,7 @@ JSCODE;
                        `validate_date`='".$strValidateDate."',
                        `update_date`='".$strValidateDate."',
                        `added_by`='".$intUserId."',
-                       `lang_id`='".FRONTEND_LANG_ID."',
+                       `lang_id`='" . static::getOutputLocale()->getId() . "',
                        `hits`='0',
                        `last_ip`='".$strLastIp."',
                        `confirmed`='".$intConfirmed."',
@@ -1337,6 +1362,8 @@ JSCODE;
         $error = false;
         $titleData = array();
 
+        $outputLocaleId = static::getOutputLocale()->getId();
+
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
             if ($arrInputfield['id'] == 1) {
@@ -1404,7 +1431,7 @@ JSCODE;
 
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (   empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
-                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][FRONTEND_LANG_ID]
+                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$outputLocaleId]
             ) {
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id='".intval($arrInputfield['id'])."'");
                 if (!$objResult) {
@@ -1458,11 +1485,11 @@ JSCODE;
                     if ($arrInputfield['type_dynamic'] == 1) {
                         $arrDefault = array();
                         foreach ($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0] as $intKey => $arrValues) {
-                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID][$intKey];
+                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId][$intKey];
                             $arrOldDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]['old'][$intKey];
                             $arrNewValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
                             foreach ($arrValues as $strKey => $strMasterValue) {
-                                if ($intLangId == FRONTEND_LANG_ID) {
+                                if ($intLangId == $outputLocaleId) {
                                     if ($arrNewDefault[$strKey] != $strMasterValue) {
                                         if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
                                             $arrDefault[$intKey][$strKey] = $strMasterValue;
@@ -1487,14 +1514,14 @@ JSCODE;
                         // attribute's VALUE of certain frontend language ($intLangId) is empty
                         empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
                         // or the process is parsing the user's current interface language
-                        || $intLangId == FRONTEND_LANG_ID
+                        || $intLangId == $outputLocaleId
                     ) {
                         $strMaster =
                             (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
                               ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
                               : null);
-                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID])
-                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID]
+                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId]
                                             : '';
                         if ($strNewDefault != $strMaster) {
                             $strDefault = $strMaster;
@@ -1622,7 +1649,10 @@ JSCODE;
         $strPopularDate = $this->arrEntries[intval($intEntryId)]['entryPopularDate'];
         $intPopularDays = intval($this->arrSettings['settingsPopularNumRestore']);
         $strLastIp      = $this->arrEntries[intval($intEntryId)]['entryLastIp'];
-        $strNewIp       = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strNewIp       = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
 
         $strToday  = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $tempDays  = date("d",$strPopularDate);
@@ -1799,7 +1829,7 @@ JSCODE;
           ORDER BY
             ". $sortOrder;
 
-        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
@@ -1839,7 +1869,7 @@ JSCODE;
           ORDER BY
             ". $sortOrder;
 
-        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
