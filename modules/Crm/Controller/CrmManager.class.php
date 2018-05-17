@@ -1104,7 +1104,6 @@ class CrmManager extends CrmLibrary
                         'TXT_CRM_CUSTOMERTYPE'        => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                         'TXT_CRM_CUSTOMERID'          => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
                         'TXT_CRM_CUSTOMER_CURRENCY'   => $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
-                        'TXT_TITLE_CUSTOMER_ADDEDBY'  => $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY'],
                 ));
                 $objTpl->parse("customerGeneral");
                 $objTpl->hideBlock("contactGeneral");
@@ -1157,7 +1156,7 @@ class CrmManager extends CrmLibrary
                 } else {
                     $objTpl->setVariable(array(
                             'TXT_CRM_CONTACT_NAME'  => $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
-                            'TXT_CRM_CUSTOMERTYPE'  => $_ARRAYLANG['TXT_CRM_CUSTOMERTYPE'],
+                            'TXT_CRM_CUSTOMERTYPE'  => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                             'TXT_CRM_TITLE_TELEPHONE'   => $_ARRAYLANG['TXT_CRM_TITLE_TELEPHONE'],
                             'TXT_CUSTOMER_ADDEDDATE' => $_ARRAYLANG['TXT_CRM_TITLE_ADDEDDATE'],
                             'TXT_CRM_CONTACT_STATUS' => $_ARRAYLANG['TXT_CRM_CONTACT_STATUS'],
@@ -1638,7 +1637,6 @@ END;
             'TXT_STATUS'                => $_ARRAYLANG['TXT_STATUS'],
             'TXT_CRM_LABEL'             => $_ARRAYLANG['TXT_CRM_LABEL'],
             'TXT_CRM_ADD_RATE'          => $_ARRAYLANG['TXT_CRM_ADD_RATE'],
-            'TXT_CRM_VALUE'             => $_ARRAYLANG['TXT_CRM_VALUE'],
             'TXT_CRM_SAVE'              => $_ARRAYLANG['TXT_CRM_SAVE'],
             'TXT_CRM_SUCCESS_RATES'     => $_ARRAYLANG['TXT_CRM_SUCCESS_RATES'],
             'TXT_CRM_SORTING'           => $_ARRAYLANG['TXT_CRM_SORTING'],
@@ -1795,7 +1793,7 @@ END;
 
         $objTpl->setGlobalVariable(array(
             'TXT_CRM_IMAGE_EDIT'         => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
-            'TXT_IMAGE_SAVE'         => $_ARRAYLANG['TXT_IMAGE_SAVE'],
+            'TXT_IMAGE_SAVE'             => $_ARRAYLANG['TXT_CRM_SAVE'],
             'TXT_CRM_IMAGE_DELETE'       => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
         ));
 
@@ -1803,7 +1801,6 @@ END;
                 'TXT_STATUS'                        => $_ARRAYLANG['TXT_STATUS'],
                 'TXT_CRM_LABEL'                     => $_ARRAYLANG['TXT_CRM_LABEL'],
                 'TXT_CRM_ADD_STAGE'                 => $_ARRAYLANG['TXT_CRM_ADD_STAGE'],
-                'TXT_CRM_VALUE'                     => $_ARRAYLANG['TXT_CRM_VALUE'],
                 'TXT_CRM_SAVE'                      => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_DEALS_STAGES'              => $_ARRAYLANG['TXT_CRM_DEALS_STAGES'],
                 'TXT_CRM_DEALS_STAGE'               => $_ARRAYLANG['TXT_CRM_DEALS_STAGE'],

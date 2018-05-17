@@ -3108,7 +3108,7 @@ class CrmLibrary
             $uploader->setData($data);
 
             if (empty($buttonText)) {
-                $buttonText = $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'];
+                $buttonText = $_ARRAYLANG['TXT_CRM_UPLOAD_FILES'];
             }
             return $uploader->getXHtml($buttonText);
         } catch (Exception $e) {

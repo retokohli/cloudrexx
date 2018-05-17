@@ -622,3 +622,8 @@ $_ARRAYLANG['TXT_CRM_EMAIL_DELIVERY'] = 'Email delivery';
 $_ARRAYLANG['TXT_CRM_FILTER_STATUS'] = 'Filter status';
 $_ARRAYLANG['TXT_CRM_TASK_STATUS_OPEN'] = 'Open';
 $_ARRAYLANG['TXT_CRM_TASK_STATUS_COMPLETED'] = 'Completed';
+
+// Settings
+$_ARRAYLANG['TXT_ENTER_SORTING']   = 'Enter a sort value';
+$_ARRAYLANG['TXT_SORTING_NUMERIC'] = 'Sort value should be in numeric [0-9]';
+$_ARRAYLANG['TXT_ENTRIES_MARKED']  = 'Up arrow';
