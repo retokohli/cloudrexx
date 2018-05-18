@@ -95,7 +95,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereLevelId = null;
         }
 
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $whereActive = "AND (level.active='1') ";
         } else {
@@ -678,6 +678,28 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         $arrDescription = $arrData['levelDescription'];
         $arrMetaDesc = $arrData['levelMetaDesc'];
 
+        if (empty($arrName[0])) {
+            $arrName[0] = '[[' . $_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL'] . ']]';
+        }
+        if (
+            empty($arrDescription[0]) &&
+            isset($arrDescription[static::getOutputLocale()->getId()])
+        ) {
+            $arrDescription[0] = $arrDescription[static::getOutputLocale()->getId()];
+        }
+        if (empty($arrDescription[0])) {
+            $arrDescription[0] = '';
+        }
+        if (
+            empty($arrMetaDesc[0]) &&
+            isset($arrMetaDesc[static::getOutputLocale()->getId()])
+        ) {
+            $arrMetaDesc[0] = $arrMetaDesc[static::getOutputLocale()->getId()];
+        }
+        if (empty($arrMetaDesc[0])) {
+            $arrMetaDesc[0] = '';
+        }
+
         if(empty($intId)) {
             //insert new category
             $objInsertAttributes = $objDatabase->Execute("
@@ -697,10 +719,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $intId = $objDatabase->Insert_ID();
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
-
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
                     $metaDesc = $arrMetaDesc[$arrLang['id']];
@@ -756,10 +774,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
-
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
                     $metaDesc = $arrMetaDesc[$arrLang['id']];

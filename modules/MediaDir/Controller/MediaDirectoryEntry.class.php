@@ -148,7 +148,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strSlugField = '';
         $strJoinSlug = '';
 
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && !empty($strSearchTerm)) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
@@ -237,8 +237,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $this->strBlockName = $this->moduleNameLC."EntryList";
         }
 
-        if($objInit->mode == 'frontend') {
-            if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
+        if ($objInit->mode == 'frontend') {
+            if (intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
                 $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
             }
         }
@@ -409,7 +409,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
-            $strWhereLangId = "AND (entry.`lang_id` = ".FRONTEND_LANG_ID.") ";
+            $strWhereLangId = "AND (entry.`lang_id` = ". static::getOutputLocale()->getId() .") ";
         }
 
         $query = "
@@ -1263,7 +1263,7 @@ JSCODE;
                        `validate_date`='".$strValidateDate."',
                        `update_date`='".$strValidateDate."',
                        `added_by`='".$intUserId."',
-                       `lang_id`='".FRONTEND_LANG_ID."',
+                       `lang_id`='" . static::getOutputLocale()->getId() . "',
                        `hits`='0',
                        `last_ip`='".$strLastIp."',
                        `confirmed`='".$intConfirmed."',
@@ -1337,6 +1337,8 @@ JSCODE;
         $error = false;
         $titleData = array();
 
+        $outputLocaleId = static::getOutputLocale()->getId();
+
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
             if ($arrInputfield['id'] == 1) {
@@ -1404,7 +1406,7 @@ JSCODE;
 
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (   empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
-                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][FRONTEND_LANG_ID]
+                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$outputLocaleId]
             ) {
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id='".intval($arrInputfield['id'])."'");
                 if (!$objResult) {
@@ -1458,11 +1460,11 @@ JSCODE;
                     if ($arrInputfield['type_dynamic'] == 1) {
                         $arrDefault = array();
                         foreach ($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0] as $intKey => $arrValues) {
-                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID][$intKey];
+                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId][$intKey];
                             $arrOldDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]['old'][$intKey];
                             $arrNewValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
                             foreach ($arrValues as $strKey => $strMasterValue) {
-                                if ($intLangId == FRONTEND_LANG_ID) {
+                                if ($intLangId == $outputLocaleId) {
                                     if ($arrNewDefault[$strKey] != $strMasterValue) {
                                         if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
                                             $arrDefault[$intKey][$strKey] = $strMasterValue;
@@ -1487,14 +1489,14 @@ JSCODE;
                         // attribute's VALUE of certain frontend language ($intLangId) is empty
                         empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
                         // or the process is parsing the user's current interface language
-                        || $intLangId == FRONTEND_LANG_ID
+                        || $intLangId == $outputLocaleId
                     ) {
                         $strMaster =
                             (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
                               ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
                               : null);
-                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID])
-                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID]
+                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId]
                                             : '';
                         if ($strNewDefault != $strMaster) {
                             $strDefault = $strMaster;
@@ -1799,7 +1801,7 @@ JSCODE;
           ORDER BY
             ". $sortOrder;
 
-        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
@@ -1839,7 +1841,7 @@ JSCODE;
           ORDER BY
             ". $sortOrder;
 
-        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
