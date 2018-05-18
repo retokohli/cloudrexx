@@ -116,6 +116,9 @@ CKEDITOR.editorConfig = function( config )
 
     config.toolbar_FrontendEditingTitle = <?php echo $wysiwyg->getToolbar('frontendEditingTitle') ?>;
 
+    // Allow div's within a's
+    CKEDITOR.dtd['a']['div'] = 1;
+
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');

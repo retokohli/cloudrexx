@@ -45,13 +45,63 @@ namespace Cx\Core_Modules\Privacy\Controller;
  * @subpackage  coremodule_privacy
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+
+    /**
+     * {@inheritdoc}
+     */
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('EsiWidget');
     }
 
-     /**
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson() {
+        return array('EsiWidgetController');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        $widgetController = $this->getComponent('Widget');
+        $widgetController->registerWidget(
+            new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                'COOKIE_NOTE'
+            )
+        );
+        // TODO: Set correct ESI variables
+        \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
+        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        if (
+            \Cx\Core\Setting\Controller\Setting::getValue(
+                'cookieNote',
+                'Config'
+            ) != 'on'
+        ) {
+            return;
+        }
+        $this->cx->getTemplate()->_blocks['__global__'] = preg_replace(
+            '#</body[^>]*>#',
+            '{COOKIE_NOTE}\\0',
+            $this->cx->getTemplate()->_blocks['__global__']
+        );
+    }
+
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page

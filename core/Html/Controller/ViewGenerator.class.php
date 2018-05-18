@@ -605,7 +605,9 @@ class ViewGenerator {
                     $relationClass = $associationMapping['targetEntity'];
                     $relationRepo = $em->getRepository($relationClass);
                     $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
-                    $searchCriteria[$relationField] = $relationEntity;
+                    if ($relationEntity) {
+                        $searchCriteria[$relationField] = $relationEntity;
+                    }
                 }
             }
 
@@ -774,6 +776,8 @@ class ViewGenerator {
                     }
                     $renderArray[$field] = '';
                 }
+                // This is necessary to load default values set by constructor
+                $this->object = new $entityClassWithNS(); 
                 $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
@@ -957,6 +961,7 @@ class ViewGenerator {
         // this array is used to store all oneToMany associated entities, because we need to persist them for doctrine,
         // but we can not persist them before the main entity, so we need to buffer them
         $associatedEntityToPersist = array ();
+        $deletedEntities = array();
         foreach ($associationMappings as $name => $value) {
 
             /* if we can not find the class name or the function to save the association we skip the entry, because there
@@ -993,6 +998,7 @@ class ViewGenerator {
                     // if there are any entries which the user wants to delete, we delete them here
                     if (isset($entityData['delete']) && $entityData['delete'] == 1) {
                         $em->remove($associatedEntity);
+                        $deletedEntities[] = $associatedEntity;
                     }
 
                     // save the "n" associated class data to its class
@@ -1056,6 +1062,9 @@ class ViewGenerator {
                 // now we can persist the associated entities. We need to do this, because otherwise it will fail,
                 // if yaml does not contain a cascade option
                 foreach ($associatedEntityToPersist as $associatedEntity) {
+                    if (in_array($associatedEntity, $deletedEntities)) {
+                        continue;
+                    }
                     $em->persist($associatedEntity);
                 }
                 $em->flush();
