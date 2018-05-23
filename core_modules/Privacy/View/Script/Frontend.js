@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
     cookieOk.addEventListener(
         "click",
         function () {
-            document.cookie = "ClxCookieNote=accepted;"
+            document.cookie = "ClxCookieNote=accepted; path=/;"
             cookieNote.style.display = "none";
         }
     );
