@@ -69,14 +69,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $widgetController = $this->getComponent('Widget');
         $widgetController->registerWidget(
+            // TODO: Set correct ESI variables
             new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 'COOKIE_NOTE'
             )
         );
-        // TODO: Set correct ESI variables
-        \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
-        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
     }
 
     /**
@@ -94,6 +92,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         ) {
             return;
         }
+        \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
+        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
         $this->cx->getTemplate()->_blocks['__global__'] = preg_replace(
             '#</body[^>]*>#',
             '{COOKIE_NOTE}\\0',
