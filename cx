@@ -1032,15 +1032,11 @@ function set_config_array {
     if [[ "${CONFIG["is-vhost"]}" == true ]]; then
         FILE_CONTENTS=${FILE_CONTENTS//"<vhost>"/""}
         FILE_CONTENTS=${FILE_CONTENTS//"</vhost>"/""}
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
+        FILE_CONTENTS=$(regex_replace_all "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
     else
         FILE_CONTENTS=${FILE_CONTENTS//"<novhost>"/""}
         FILE_CONTENTS=${FILE_CONTENTS//"</novhost>"/""}
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
+        FILE_CONTENTS=$(regex_replace_all "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
     fi
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
@@ -1187,6 +1183,23 @@ function regex_replace {
     [[ "$HAYSTACK" =~ $REGEX ]]
     REPLACE="${BASH_REMATCH[2]}${REPLACEMENT}${BASH_REMATCH[3]}"
     HAYSTACK="${HAYSTACK//"${BASH_REMATCH[0]}"/"$REPLACE"}"
+    echo "$HAYSTACK"
+}
+
+# regex_replace <haystack> <regex> <replacement>
+# Matches multi-line and recursively replaces all occurences (/global)
+# regex match 1 needs to be whole match
+# regex match 2 needs to be everything before replaced part
+# regex match 3 needs to be everything after replaced part
+# TODO: Does not work for regex matching empty string
+function regex_replace_all {
+    local HAYSTACK="$1"
+    local OLDHAYSTACK=""
+
+    while [[ "$HAYSTACK" != "$OLDHAYSTACK" ]]; do
+        OLDHAYSTACK="$HAYSTACK"
+        HAYSTACK="$(regex_replace "$HAYSTACK" "$2" "$3")"
+    done
     echo "$HAYSTACK"
 }
 
