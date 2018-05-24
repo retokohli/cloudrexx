@@ -11,12 +11,18 @@ document.addEventListener("DOMContentLoaded", function() {
         parts.pop().split(";").shift() == "accepted"
     ) {
         cookieNote.style.display = "none";
+        if (typeof cxCookieNoteAccepted === 'function') {
+            cxCookieNoteAccepted(false);
+        }
     }
     cookieOk.addEventListener(
         "click",
         function () {
             document.cookie = "ClxCookieNote=accepted; path=/;"
             cookieNote.style.display = "none";
+            if (typeof cxCookieNoteAccepted === 'function') {
+                cxCookieNoteAccepted(true);
+            }
         }
     );
 });
