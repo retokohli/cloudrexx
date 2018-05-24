@@ -2074,7 +2074,12 @@ namespace Cx\Core\Core\Controller {
             $googleAnalyticsCode = 'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
                 ga(\'create\', \'' . (isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '') . '\', \'auto\');
                 ' . ($objCounter->arrConfig['exclude_identifying_info']['status'] ? 'ga(\'set\', \'anonymizeIp\', true);' : '') . '
-                ga(\'send\', \'pageview\');';
+                ga(\'send\', \'pageview\');
+                function gaOptout(successMsg) { 
+                    document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/'; 
+                    window[disableStr] = true; 
+                    alert(successMsg);
+                }';
             if (
                 \Cx\Core\Setting\Controller\Setting::getValue(
                     'cookieNote',
