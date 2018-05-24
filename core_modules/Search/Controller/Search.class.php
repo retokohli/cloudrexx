@@ -152,48 +152,7 @@ class Search
         if (strlen($term) >= 3) {
             $term = trim(contrexx_input2raw($_REQUEST['term']));
 
-            $this->setTerm($term);
-            $eventHandlerInstance = \Env::get('cx')->getEvents();
-            $eventHandlerInstance->triggerEvent('SearchFindContent', array($this));
-            if ($this->result->size() == 1) {
-                $arraySearchResults[] = $this->result->toArray();
-            } else {
-                $arraySearchResults = $this->result->toArray();
-            }
-            usort($arraySearchResults,
-                /**
-                 * Compares scores (and dates, if available) of two result array elements
-                 *
-                 * Compares the scores first; when equal, compares the dates, if available.
-                 * Returns
-                 *  -1 if $a  > $b
-                 *   0 if $a == $b
-                 *  +1 if $a  < $b
-                 * Used for ordering search results.
-                 * @author  Christian Wehrli <christian.wehrli@astalavista.ch>
-                 * @param      string  $a      The first element
-                 * @param      string  $b      The second element
-                 * @return     integer         The comparison result
-                 */
-                function($a, $b) {
-                    if ($a['Score'] == $b['Score']) {
-                        if (isset($a['Date'])) {
-                            if ($a['Date'] == $b['Date']) {
-                                return 0;
-                            }
-                            if ($a['Date'] > $b['Date']) {
-                                return -1;
-                            }
-                            return 1;
-                        }
-                        return 0;
-                    }
-                    if ($a['Score'] > $b['Score']) {
-                        return -1;
-                    }
-                    return 1;
-                }
-            );
+            $arraySearchResults = $this->getSearchResult($term);
             $countResults = sizeof($arraySearchResults);
             if (!is_numeric($pos)) {
                 $pos = 0;
@@ -419,5 +378,60 @@ class Search
             $content = join(' ', $arrayContent).' ...';
         }
         return $content;
+    }
+
+    /**
+     * Get a result for search term
+     *
+     * @param string $term Search value
+     * @return array Return a array of result
+     */
+    public function getSearchResult($term)
+    {
+        $this->setTerm($term);
+        $eventHandlerInstance = \Env::get('cx')->getEvents();
+        $eventHandlerInstance->triggerEvent('SearchFindContent', array($this));
+        if ($this->result->size() == 1) {
+            $arraySearchResults[] = $this->result->toArray();
+        } else {
+            $arraySearchResults = $this->result->toArray();
+        }
+
+        usort($arraySearchResults,
+            /**
+             * Compares scores (and dates, if available) of two result array elements
+             *
+             * Compares the scores first; when equal, compares the dates, if available.
+             * Returns
+             *  -1 if $a  > $b
+             *   0 if $a == $b
+             *  +1 if $a  < $b
+             * Used for ordering search results.
+             * @author  Christian Wehrli <christian.wehrli@astalavista.ch>
+             * @param      string  $a      The first element
+             * @param      string  $b      The second element
+             * @return     integer         The comparison result
+             */
+            function($a, $b) {
+                if ($a['Score'] == $b['Score']) {
+                    if (isset($a['Date'])) {
+                        if ($a['Date'] == $b['Date']) {
+                            return 0;
+                        }
+                        if ($a['Date'] > $b['Date']) {
+                            return -1;
+                        }
+                        return 1;
+                    }
+                    return 0;
+                }
+                if ($a['Score'] > $b['Score']) {
+                    return -1;
+                }
+                return 1;
+            }
+        );
+
+        return $arraySearchResults;
     }
 }

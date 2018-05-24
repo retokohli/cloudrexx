@@ -53,6 +53,29 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getCommandsForCommandMode()
+    {
+        return array('Search');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function executeCommand($command, $arguments, $dataArguments = array())
+    {
+        // define frontend language
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', 1);
+        }
+
+        if ($command == 'Search') {
+            $this->executeCommandSearch();
+        }
+    }
+
+    /**
      * Register your events here
      *
      * Do not do anything else here than list statements like
@@ -91,5 +114,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             default:
                 break;
         }
+    }
+
+    /**
+     * Api command for search
+     */
+    public function executeCommandSearch()
+    {
+        $page               = new \Cx\Core\ContentManager\Model\Entity\Page();
+        $term               = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $arraySearchResults = array();
+        if (strlen($term) >= 3) {
+            $search = new \Cx\Core_Modules\Search\Controller\Search($page);
+            $arraySearchResults = $search->getSearchResult($term);
+        }
+
+        echo json_encode($arraySearchResults);
+        exit();
     }
 }
