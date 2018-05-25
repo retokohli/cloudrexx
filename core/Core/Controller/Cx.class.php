@@ -2071,12 +2071,23 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
+            $googleAnalyticsId = '';
+            if (isset($_CONFIG['googleAnalyticsTrackingId'])) {
+                $googleAnalyticsId = contrexx_raw2xhtml(
+                    $_CONFIG['googleAnalyticsTrackingId']
+                );
+            }
             $googleAnalyticsCode = 'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-                ga(\'create\', \'' . (isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '') . '\', \'auto\');
+                var gaProperty = \'' . $googleAnalyticsId . '\';
+                var disableStr = \'ga-disable-\' + gaProperty; 
+                if (document.cookie.indexOf(disableStr + \'=true\') > -1) { 
+                    window[disableStr] = true;
+                } 
+                ga(\'create\', \'' . $googleAnalyticsId . '\', \'auto\');
                 ' . ($objCounter->arrConfig['exclude_identifying_info']['status'] ? 'ga(\'set\', \'anonymizeIp\', true);' : '') . '
                 ga(\'send\', \'pageview\');
                 function gaOptout(successMsg) { 
-                    document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/'; 
+                    document.cookie = disableStr + \'=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/\'; 
                     window[disableStr] = true; 
                     alert(successMsg);
                 }';
@@ -2086,7 +2097,7 @@ namespace Cx\Core\Core\Controller {
                     'Config'
                 ) == 'on'
             ) {
-                $googleAnalyticsCode = ' function cxCookieNoteAccepted() {'
+                $googleAnalyticsCode = ' function cxCookieNoteAccepted() {' .
                     $googleAnalyticsCode . '}';
             }
 
