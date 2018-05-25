@@ -981,12 +981,16 @@ die("Failed to update the Cart!");
                 $id = $objCategory->id();
                 $catName = contrexx_raw2xhtml($objCategory->name());
                 $imageName = $objCategory->picture();
+                $shortDescription = $objCategory->shortDescription();
+                $shortDescription = nl2br(contrexx_raw2xhtml($shortDescription));
+                $shortDescription = preg_replace('/[\n\r]/', '', $shortDescription);
                 $description = $objCategory->description();
                 $description = nl2br(contrexx_raw2xhtml($description));
                 $description = preg_replace('/[\n\r]/', '', $description);
                 self::$objTemplate->setVariable(array(
                     'SHOP_CATEGORY_CURRENT_ID'          => $id,
                     'SHOP_CATEGORY_CURRENT_NAME'        => $catName,
+                    'SHOP_CATEGORY_CURRENT_SHORT_DESCRIPTION' => $shortDescription,
                     'SHOP_CATEGORY_CURRENT_DESCRIPTION' => $description,
                 ));
                 if ($imageName) {
@@ -1040,6 +1044,9 @@ die("Failed to update the Cart!");
             $catName = $objCategory->name();
             $imageName = $objCategory->picture();
             $thumbnailPath = self::$defaultImage;
+            $shortDescription = $objCategory->shortDescription();
+            $shortDescription = nl2br(htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET));
+            $shortDescription = preg_replace('/[\n\r]/', '', $shortDescription);
             $description = $objCategory->description();
             $description = nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET));
             $description = preg_replace('/[\n\r]/', '', $description);
@@ -1079,6 +1086,7 @@ die("Failed to update the Cart!");
                 'SHOP_CATEGORY_THUMBNAIL' => contrexx_raw2encodedUrl(
                     $thumbnailPath),
                 'SHOP_CATEGORY_THUMBNAIL_SIZE' => $arrSize[3],
+                'SHOP_CATEGORY_SHORT_DESCRIPTION' => $shortDescription,
                 'SHOP_CATEGORY_DESCRIPTION' => $description,
 // OBSOLETE since V3.0.0, as are any placeholders for Categories
 // containing "PRODUCT"!

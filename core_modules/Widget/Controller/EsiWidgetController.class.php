@@ -165,7 +165,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 );
             }
         }
-        $widgetTemplate = new \Cx\Core\Html\Sigma();
+        $widgetTemplate = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
         \LinkGenerator::parseTemplate($widgetContent);
         $this->cx->parseGlobalPlaceholders($widgetContent);
         $widgetTemplate->setTemplate($widgetContent);
@@ -194,8 +194,11 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $this->cx->getWebsiteOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
             $content
         );
+        // We need to remove leftover Sigma blocks to avoid duplicates
+        $cleanupTemplate = new \Cx\Core\Html\Sigma();
+        $cleanupTemplate->setTemplate($ls->replace());
         return array(
-            'content' => $ls->replace(),
+            'content' => $cleanupTemplate->get(),
         );
     }
 

@@ -885,14 +885,14 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     if ($objTemplate->blockExists('field_'.$fieldId)) {
                         // parse field specific template block
                         $objTemplate->setVariable(array(
-                            'FIELD_'.$fieldId.'_LABEL' => contrexx_raw2xhtml($fieldLabel),
+                            'FIELD_'.$fieldId.'_LABEL' => strip_tags($fieldLabel),
                             'FIELD_'.$fieldId.'_VALUE' => $htmlValue,
                         ));
                         $objTemplate->parse('field_'.$fieldId);
                     } elseif ($objTemplate->blockExists('form_field')) {
                         // parse regular field template block
                         $objTemplate->setVariable(array(
-                            'FIELD_LABEL'   => contrexx_raw2xhtml($fieldLabel),
+                            'FIELD_LABEL'   => strip_tags($fieldLabel),
                             'FIELD_VALUE'   => $htmlValue,
                         ));
                         $objTemplate->parse('form_field');
