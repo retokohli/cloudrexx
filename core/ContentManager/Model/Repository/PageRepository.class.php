@@ -954,11 +954,13 @@ class PageRepository extends EntityRepository {
             }
 // TODO: Add proper score with MATCH () AGAINST () or similar
             $results[] = array(
-                'Score' => 100,
-                'Title' => $page->getTitle(),
-                'Content' => \Cx\Core_Modules\Search\Controller\Search::shortenSearchContent(
-                    $page->getContent(), $config['searchDescriptionLength']),
-                'Link' => $this->getPath($page)
+                'Score'     => 100,
+                'Title'     => $page->getTitle(),
+                'Content'   => \Cx\Core_Modules\Search\Controller\Search::shortenSearchContent(
+                    $page->getContent(), $config['searchDescriptionLength']
+                ),
+                'Link'      => $this->getPath($page),
+                'Component' => 'ContentManager',
             );
         }
         return $results;
