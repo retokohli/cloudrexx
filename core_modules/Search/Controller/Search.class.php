@@ -178,6 +178,9 @@ class Search
                 function($a, $b) {
                     if ($a['Score'] == $b['Score']) {
                         if (isset($a['Date'])) {
+                            if (!isset($b['Date'])) {
+                                return -1;
+                            }
                             if ($a['Date'] == $b['Date']) {
                                 return 0;
                             }
