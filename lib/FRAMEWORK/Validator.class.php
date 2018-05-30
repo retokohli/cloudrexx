@@ -201,7 +201,7 @@ class FWValidator
     {
         $arrMatches = array();
         preg_match_all(
-            '/\s('.VALIDATOR_REGEX_EMAIL.')\.?\s/', $string, $arrMatches);
+            '/(?:^|\s)('.VALIDATOR_REGEX_EMAIL.')\.?(?:\s|$)/i', $string, $arrMatches);
         return $arrMatches[0]; // include spaces
         // return $arrMatches[1]; // exclude spaces
     }
