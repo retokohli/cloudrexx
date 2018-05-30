@@ -194,27 +194,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *                                  component is published
      */
     protected function getSearchApplicationPage() {
+        // fetch data about existing application pages of this component
+        $cmds = array('');
         $em = $this->cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $page = $pageRepo->findOneByModuleCmdLang($this->getName(), '', FRONTEND_LANG_ID);
-
-        // check if regular application page is published
-        if (
-            $page &&
-            $page->isActive()
-        ) {
-            return $page;
-        }
-
-        // check if an application page is published that has set a
-        // branch restriction
-        $cmds = array();
         $pages = $pageRepo->getAllFromModuleCmdByLang($this->getName());
         foreach ($pages as $pagesOfLang) {
             foreach ($pagesOfLang as $page) {
                 $cmds[] = $page->getCmd();
             }
         }
+
+        // check if an application page is published
         $cmds = array_unique($cmds);
         foreach ($cmds as $cmd) {
             $page = $pageRepo->findOneByModuleCmdLang($this->getName(), $cmd, FRONTEND_LANG_ID);
