@@ -219,7 +219,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'Title'     => $downloadAsset->getName($langId),
                 'Content'   => $downloadAsset->getTrimmedDescription($langId),
                 'Link'      => $url->toString(),
-                'Component' => 'Downloads',
+                'Component' => $this->getName(),
             );
             $downloadAsset->next();
         }

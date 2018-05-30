@@ -2063,7 +2063,7 @@ JSCODE;
                 ),
                 'Content'   => $content,
                 'Link'      => $pageUrlResult->toString(),
-                'Component' => 'MediaDir'
+                'Component' => $this->moduleName,
             );
         }
         return $results;

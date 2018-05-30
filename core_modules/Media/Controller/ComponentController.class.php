@@ -148,7 +148,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'Title'     => $name,
                     'Content'   => '',
                     'Link'      => $url->toString(),
-                    'Component' => 'Media',
+                    'Component' => $this->getName(),
                 );
             }
         }

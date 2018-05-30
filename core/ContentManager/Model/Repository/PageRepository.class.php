@@ -960,7 +960,7 @@ class PageRepository extends EntityRepository {
                     $page->getContent(), $config['searchDescriptionLength']
                 ),
                 'Link'      => $this->getPath($page),
-                'Component' => 'ContentManager',
+                'Component' => $page->getComponentController()->getName(),
             );
         }
         return $results;
