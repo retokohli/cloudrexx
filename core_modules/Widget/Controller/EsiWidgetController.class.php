@@ -165,7 +165,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 );
             }
         }
-        $widgetTemplate = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
+        $widgetTemplate = new \Cx\Core\Html\Sigma();
         \LinkGenerator::parseTemplate($widgetContent);
         $this->cx->parseGlobalPlaceholders($widgetContent);
         $widgetTemplate->setTemplate($widgetContent);
