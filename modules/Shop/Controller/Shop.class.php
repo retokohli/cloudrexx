@@ -111,9 +111,15 @@ class Shop extends ShopLibrary
     /**
      * The current page's title
      * If the user is on the detail page, show the product name
-     * @var null|string
+     * @var string
      */
-    protected static $pageTitle = null;
+    protected static $pageTitle = '';
+
+    /**
+     * Short description of current product or category.
+     * @var string
+     */
+    protected static $pageMetaDesc = '';
 
     /**
      * The current page's meta image
@@ -122,6 +128,12 @@ class Shop extends ShopLibrary
      * @var string
      */
     protected static $pageMetaImage = '';
+
+    /**
+     * Keywords of current product, separated by comma
+     * @var string
+     */
+    protected static $pageMetaKeys = '';
 
     /**
      * Whether or not a session has been initialized
@@ -397,23 +409,44 @@ die("Failed to get Customer for ID $customer_id");
     }
 
     /**
-     * Returns the product name if the user is on the product details page
-     * @return string|null the page title to show
+     * Returns the name of the current product
+     *
+     * @return string Name of current product
      */
     public static function getPageTitle() {
-        if (isset(self::$pageTitle)) {
-            return self::$pageTitle;
-        }
-        return null;
+        return static::$pageTitle;
+    }
+
+    /**
+     * Returns the short description of the current product or the short
+     * description of the current category
+     *
+     * @return string   Short description of product or category. If no
+     *                  product/category is selected, then an empty string is
+     *                  retured.
+     */
+    public static function getPageMetaDesc() {
+        return static::$pageMetaDesc;
     }
 
     /**
      * Returns the category or product image if the use is on
      * a product's or category's page
+     *
      * @return string Relative image URL
      */
     public static function getPageMetaImage() {
         return static::$pageMetaImage;
+    }
+
+    /**
+     * Returns the keywords of the current product
+     *
+     * @return string   Keywords of current product. If no product
+     *                  is selected, then an empty string is retured.
+     */
+    public static function getPageMetaKeys() {
+        return static::$pageMetaKeys;
     }
 
     /**
@@ -993,6 +1026,8 @@ die("Failed to update the Cart!");
                     'SHOP_CATEGORY_CURRENT_SHORT_DESCRIPTION' => $shortDescription,
                     'SHOP_CATEGORY_CURRENT_DESCRIPTION' => $description,
                 ));
+                static::$pageTitle = $objCategory->name();
+                static::$pageMetaDesc = $objCategory->shortDescription();
                 if ($imageName) {
                     self::$objTemplate->setVariable(array(
                         'SHOP_CATEGORY_CURRENT_IMAGE'       => $cx->getWebsiteImagesShopWebPath() . '/' . $imageName,
@@ -1471,7 +1506,9 @@ die("Failed to update the Cart!");
                 $havePicture = true;
             }
             if (!empty($product_id)) {
-                self::$pageTitle = $objProduct->name();
+                static::$pageTitle = $objProduct->name();
+                static::$pageMetaDesc = contrexx_html2plaintext($objProduct->short());
+                static::$pageMetaKeys = $objProduct->keywords();
                 if (count($arrProductImages)) {
                     static::$pageMetaImage = current($arrProductImages)['IMAGE_PATH'];
                 }

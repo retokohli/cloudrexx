@@ -180,14 +180,21 @@ class Search
                     }
                     $link .= 'searchTerm='.urlencode($term);
 
+                    // fix relativ URIs not starting with a slash-character (/)
+                    if (substr($details['Link'], 0, 1) != '/' && !\FWValidator::isUri($details['Link'])) {
+                        $details['Link'] = '/' . $details['Link'];
+                    }
+                    $linkSrc = \Cx\Core\Routing\Url::fromMagic($details['Link']);
+
                     // parse result into template
                     $objTpl->setVariable(array(
-                        'COUNT_MATCH'             =>
-                            $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%',
-                        'LINK'                    => '<b><a href="'.$link.
-                            '" title="'.contrexx_raw2xhtml($details['Title']).'">'.
-                            contrexx_raw2xhtml($details['Title']).'</a></b>',
-                        'SHORT_CONTENT'           => contrexx_raw2xhtml($details['Content']),
+                        'COUNT_MATCH' =>
+                        $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%',
+                        'LINK' => '<b><a href="'.$link.
+                        '" title="'.contrexx_raw2xhtml($details['Title']).'">'.
+                        contrexx_raw2xhtml($details['Title']).'</a></b>',
+                        'TARGET_PATH' => contrexx_raw2xhtml($linkSrc),
+                        'SHORT_CONTENT' => contrexx_raw2xhtml($details['Content']),
                         'SEARCH_RESULT_SRC'       => $link,
                         'SEARCH_RESULT_TITLE'     => $details['Title'],
                         'SEARCH_RESULT_COMPONENT' => $details['Component'],
@@ -343,11 +350,11 @@ class Search
             $searchtitle = empty($objResult->fields['title'])
                 ? $_ARRAYLANG['TXT_UNTITLED'] : $objResult->fields['title'];
             $arraySearchResults[] = array(
-                'Score'     => $scorePercent,
-                'Title'     => $searchtitle,
-                'Content'   => $content,
-                'Link'      => $temp_pagelink,
-                'Date'      => $date,
+                'Score' => $scorePercent,
+                'Title' => $searchtitle,
+                'Content' => $content,
+                'Link' => $temp_pagelink,
+                'Date' => $date,
                 'Component' => $module
             );
             $objResult->MoveNext();
@@ -419,6 +426,9 @@ class Search
             function($a, $b) {
                 if ($a['Score'] == $b['Score']) {
                     if (isset($a['Date'])) {
+                        if (!isset($b['Date'])) {
+                            return -1;
+                        }
                         if ($a['Date'] == $b['Date']) {
                             return 0;
                         }

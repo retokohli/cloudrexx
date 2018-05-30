@@ -295,7 +295,7 @@ class ViewGenerator {
                     $entityData[$name] = $storecallback($postedValue);
                 }
             }
-            if (isset($entityData[$name]) && !in_array($name, $primaryKeyName)) {
+            if (isset($entityData[$name]) && !in_array($name, $primaryKeyNames)) {
                 $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
                 if ($fieldDefinition['type'] == 'datetime') {
                     $newValue = new \DateTime($entityData[$name]);
