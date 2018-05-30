@@ -37,6 +37,16 @@
 namespace Cx\Core_Modules\Search\Controller;
 
 /**
+ * Internal Search Exception
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Thomas Wirz <thomas.wirz@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  coremodule_search
+ */
+class SearchInternalException extends \Exception {}
+
+/**
  * Main controller for Search
  *
  * @copyright   Cloudrexx AG
@@ -121,15 +131,87 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommandSearch()
     {
-        $page               = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $term               = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
-        $arraySearchResults = array();
-        if (strlen($term) >= 3) {
-            $search = new \Cx\Core_Modules\Search\Controller\Search($page);
-            $arraySearchResults = $search->getSearchResult($term);
+        // fetch the published application page
+        try {
+            $page = $this->getSearchApplicationPage();
+        } catch (SearchInternalException $e) {
+            // Component is not published in ContentManager.
+            // Let's abort
+            echo json_encode(array());
+            exit;
         }
 
+        // limit the result to a content branch,
+        // but only in case no restriction has already been set for the actual
+        // application
+        if (
+            empty($page->getCmd()) &&
+            !empty($_GET['nodeId'])
+        ) {
+            // set type and module in case pagae is a fallback-page
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule($this->getName());
+
+            // restrict search result to specific branch 
+            $page->setCmd('[[NODE_' . intval($_GET['nodeId']) . ']]');
+        }
+
+        $term               = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $arraySearchResults = array();
+        if (strlen($term) < 3) {
+            echo json_encode(array());
+            exit;
+        }
+
+        $search = new \Cx\Core_Modules\Search\Controller\Search($page);
+        $arraySearchResults = $search->getSearchResult($term);
+
         echo json_encode($arraySearchResults);
-        exit();
+        exit;
+    }
+
+    /**
+     * Get published application page of this component
+     *
+     * @return  \Cx\Core\ContentManager\Model\Entity\Page   The published
+     *                                                      application page of
+     *                                                      this component
+     * @throws  SearchInternalException In case no application page of this
+     *                                  component is published
+     */
+    protected function getSearchApplicationPage() {
+        $em = $this->cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $page = $pageRepo->findOneByModuleCmdLang($this->getName(), '', FRONTEND_LANG_ID);
+
+        // check if regular application page is published
+        if (
+            $page &&
+            $page->isActive()
+        ) {
+            return $page;
+        }
+
+        // check if an application page is published that has set a
+        // branch restriction
+        $cmds = array();
+        $pages = $pageRepo->getAllFromModuleCmdByLang($this->getName());
+        foreach ($pages as $pagesOfLang) {
+            foreach ($pagesOfLang as $page) {
+                $cmds[] = $page->getCmd();
+            }
+        }
+        $cmds = array_unique($cmds);
+        foreach ($cmds as $cmd) {
+            $page = $pageRepo->findOneByModuleCmdLang($this->getName(), $cmd, FRONTEND_LANG_ID);
+            if (
+                $page &&
+                $page->isActive()
+            ) {
+                return $page;
+            }
+        }
+
+        throw new SearchInternalException('Application is not published');
     }
 }
