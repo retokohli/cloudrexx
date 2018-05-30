@@ -73,6 +73,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * {@inheritDoc}
      */
+    public function getCommandDescription($command, $short = false) {
+        if ($short) {
+            return 'Lookup data by keyword';
+        }
+        return 'Search term=<keyword> [nodeId=<node-id>]';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function executeCommand($command, $arguments, $dataArguments = array())
     {
         // define frontend language
@@ -81,7 +91,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if ($command == 'Search') {
-            $this->executeCommandSearch();
+            $this->executeCommandSearch($arguments);
         }
     }
 
@@ -127,9 +137,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Api command for search
+     * Execute search
+     *
+     * Lookup system for data matching a specific keyword.
+     * Specify the keyword as array-key 'term' to param
+     * $arguments.
+     * Filter the result by a specific branch of the content tree
+     * by setting the ID of a content node as array-key 'nodeId'
+     * to param $arguments.
+     *
+     * @param $arguments array  Array of commend arguments
      */
-    public function executeCommandSearch()
+    public function executeCommandSearch($arguments)
     {
         // fetch the published application page
         try {
@@ -146,17 +165,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // application
         if (
             empty($page->getCmd()) &&
-            !empty($_GET['nodeId'])
+            !empty($arguments['nodeId'])
         ) {
             // set type and module in case pagae is a fallback-page
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule($this->getName());
 
             // restrict search result to specific branch 
-            $page->setCmd('[[NODE_' . intval($_GET['nodeId']) . ']]');
+            $page->setCmd('[[NODE_' . intval($arguments['nodeId']) . ']]');
         }
 
-        $term               = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $term               = isset($arguments['term']) ? contrexx_input2raw($arguments['term']) : '';
         $arraySearchResults = array();
         if (strlen($term) < 3) {
             echo json_encode(array());
