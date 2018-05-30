@@ -857,16 +857,37 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     public static function registerCSS($file)
     {
-        if (   !file_exists(\Env::get('ClassLoader')->getFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().'/'.$file))
-            && !file_exists(\Env::get('ClassLoader')->getFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$file))
-        ) {
-            self::$error = "The file ".$file." doesn't exist\n";
-            return false;
+        // check whether the script has a query string and remove it
+        // this is necessary to check whether the file exists in the filesystem or not
+        $fileName = $file;
+        $queryStringBegin = strpos($fileName, '?');
+        if ($queryStringBegin) {
+            $fileName = substr($fileName, 0, $queryStringBegin);
         }
 
-        if (array_search($file, self::$customCSS) === false) {
-            self::$customCSS[] = $file;
+        // if it is an local css file
+        if (!preg_match('#^https?://#', $fileName)) {
+            if ($fileName[0] == '/') {
+                $codeBasePath = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBasePath();
+                $websitePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath();
+            } else {
+                $codeBasePath = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath();
+                $websitePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath();
+            }
+            if (   !file_exists(\Env::get('ClassLoader')->getFilePath(($codeBasePath.'/').$fileName))
+                && !file_exists(\Env::get('ClassLoader')->getFilePath(($websitePath.'/').$fileName))
+            ) {
+                self::$error .= "The file ".$fileName." doesn't exist\n";
+                return false;
+            }
         }
+
+        // add original file name with query string to custom javascripts array
+        if (array_search($file, self::$customCSS) !== false) {
+            return true;
+        }
+
+        self::$customCSS[] = $file;
         return true;
     }
 
