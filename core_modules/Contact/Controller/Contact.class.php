@@ -1064,12 +1064,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
      */
     function _getEmailAdressOfString($string)
     {
-        $arrMatch = array();
-        if (preg_match('/'.\FWValidator::REGEX_EMAIL.'/', $string, $arrMatch)) {
-            return $arrMatch[0];
-        } else {
-            return false;
-        }
+        return current(\FWValidator::getEmailAsArray($string));
     }
 
     /**
