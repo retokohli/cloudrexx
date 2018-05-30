@@ -577,6 +577,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @var array
      */
     private static $registeredJsFiles = array();
+    protected static $registeredCssFiles = array();
 
     private static $re_name_postfix = 1;
     private static $comment_dict = array();
@@ -1093,10 +1094,19 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         global $_CONFIG;
         $code = "";
         foreach ($files as $file) {
-            $path = self::$offset;
-            if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
-                $path .= preg_replace('#'.\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+            // The file has already been added to the js list
+            if (array_search($file, self::$registeredCssFiles) !== false)
+                continue;
+            self::$registeredCssFiles[] = $file;
+            $path = '';
+
+            if (!preg_match('#^https?://#', $file)) {
+                $path = self::$offset;
+                if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
+                    $path .= preg_replace('#'.\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+                }
             }
+
             $path .= $file;
             $code .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$path."\" />\n\t";
         }
