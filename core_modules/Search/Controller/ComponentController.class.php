@@ -85,11 +85,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommand($command, $arguments, $dataArguments = array())
     {
-        // define frontend language
-        if (!defined('FRONTEND_LANG_ID')) {
-            define('FRONTEND_LANG_ID', 1);
-        }
-
         if ($command == 'Search') {
             $this->executeCommandSearch($arguments);
         }
@@ -167,7 +162,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             empty($page->getCmd()) &&
             !empty($arguments['nodeId'])
         ) {
-            // set type and module in case pagae is a fallback-page
+            // set type and module in case page is a fallback-page
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule($this->getName());
 
