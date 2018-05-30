@@ -194,11 +194,8 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $this->cx->getWebsiteOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
             $content
         );
-        // We need to remove leftover Sigma blocks to avoid duplicates
-        $cleanupTemplate = new \Cx\Core\Html\Sigma();
-        $cleanupTemplate->setTemplate($ls->replace());
         return array(
-            'content' => $cleanupTemplate->get(),
+            'content' => $ls->replace(),
         );
     }
 
