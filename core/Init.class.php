@@ -325,118 +325,12 @@ class InitCMS
      */
     function _selectBestLanguage()
     {
-        global $_CONFIG;
-
-        if (
-            !isset($_CONFIG['languageDetection']) ||
-            $_CONFIG['languageDetection'] == 'off'
-        ) {
-            return $this->defaultFrontendLangId;
-        }
-
-        // Try to find best locale with GeoIp
-        if (
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('GeoIp')
-                ->isGeoIpEnabled() &&
-            $bestLang = $this->selectLocaleByGeoIp()
-        ) {
-            return $bestLang;
-        }
-
-        // no locale found with GeoIp. Try over http
-        if (
-            $bestLang = $this->selectLocaleByHttp()
-        ) {
-            return $bestLang;
-        }
-
-        // no locale found, return default one
-        return $this->defaultFrontendLangId;
-    }
-
-    /**
-     * Finds all locales by a country, detected with GeoIp,
-     * and then checks if one of them matches any of the browser languages
-     * If no browser language matches, the first found locale is returned.
-     * If no locale is found, 0 is returned.
-     *
-     * @return int The found locale's id, otherwise 0
-     */
-    public function selectLocaleByGeoIp() {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-
-        // get country code
-        $country = $cx->getComponent('GeoIp')->getCountryCode(null);
-        if (!$country || !$countryCode = $country['content']) {
-            return 0;
-        }
-
-        // find locales with found country code
-        $em = $cx->getDb()->getEntityManager();
-        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-        $localesByCountry = $localeRepo->findBy(
-            array('country' => $countryCode)
+        return $cx->getComponent('Locale')->selectBestLocale(
+            $cx,
+            $cx->getComponent('Locale')->getLocaleData()
         );
-        if (!$localesByCountry) {
-            return 0;
-        }
-
-        // check if combination of country code and browser lang exists
-        $acceptedLanguages = array_keys($this->_getClientAcceptedLanguages());
-        foreach($acceptedLanguages as $acceptedLanguage) {
-            foreach($localesByCountry as $locale) {
-                if ($locale->getIso1()->getIso1() == $acceptedLanguage) {
-                    return $locale->getId();
-                }
-            }
-        }
-
-        // No combination found, return the first (most relevant) one
-        return $localesByCountry[0]->getId();
     }
-
-    /**
-     * Tries to find a locale by the browser language
-     *
-     * Loops over the client accepted languages (ordered by relevance)
-     * and checks for existing locale.
-     * For full locales with language and country (e.g "en-US")
-     * it strips it and tries to find a locale with the lang code only
-     *
-     * @return int The found locale's id, otherwise 0
-     */
-    public function selectLocaleByHttp() {
-        $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
-        $strippedMatch = 0;
-        foreach (array_keys($arrAcceptedLanguages) as $language) {
-            // check for full match
-            if ($langId = \FWLanguage::getLanguageIdByCode($language)) {
-                return $langId;
-            } elseif(!$strippedMatch) {
-                // stripped lang: e.g 'en-US' becomes 'en'
-                if ($pos = strpos($language, '-')) {
-                    $language = substr($language, 0, $pos);
-                }
-                // check for existence of stripped language
-                if (
-                    // only check for actual stripped languages
-                    $pos &&
-                    $langId = \FWLanguage::getLanguageIdByCode(
-                        $language
-                    )
-                ) {
-                    $strippedMatch = $langId;
-                }
-            }
-        }
-        // No match with full locale or geoip, try to return stripped match
-        if ($strippedMatch) {
-            return $strippedMatch;
-        }
-        return 0;
-    }
-
 
     /**
      * Returns an array with the accepted languages as keys and their
