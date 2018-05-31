@@ -187,7 +187,7 @@ class Search
                         'LINK'                    => '<b><a href="'.$link.
                             '" title="'.contrexx_raw2xhtml($details['Title']).'">'.
                             contrexx_raw2xhtml($details['Title']).'</a></b>',
-                        'TARGET_PATH' => contrexx_raw2xhtml($link),
+                        'TARGET_PATH' => contrexx_raw2xhtml($details['Link']),
                         'SHORT_CONTENT'           => contrexx_raw2xhtml($details['Content']),
                         'SEARCH_RESULT_SRC'       => $link,
                         'SEARCH_RESULT_TITLE'     => contrexx_raw2xhtml($details['Title']),
