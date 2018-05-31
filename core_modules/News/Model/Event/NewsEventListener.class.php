@@ -112,7 +112,12 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                                   );
                 $pageUrlResult  = $objUrl->toString();
             } else {
-                $pageUrlResult = $searchData['redirect'];
+                $pageUrlResult = preg_replace(
+                    '/\\[\\[([A-Z0-9_-]+)\\]\\]/',
+                    '{\\1}',
+                    $searchData['redirect']
+                );
+                \LinkGenerator::parseTemplate($pageUrlResult);
             }
             return $pageUrlResult;
         };
