@@ -2062,7 +2062,7 @@ JSCODE;
                     contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET
                 ),
                 'Content'   => $content,
-                'Link'      => $pageUrlResult->toString(),
+                'Link'      => $pageUrlResult->toString(false),
                 'Component' => $this->moduleName,
             );
         }

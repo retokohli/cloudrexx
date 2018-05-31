@@ -218,7 +218,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'Score'     => 100,
                 'Title'     => $downloadAsset->getName($langId),
                 'Content'   => $downloadAsset->getTrimmedDescription($langId),
-                'Link'      => $url->toString(),
+                'Link'      => $url->toString(false),
                 'Component' => $this->getName(),
             );
             $downloadAsset->next();

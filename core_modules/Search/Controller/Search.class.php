@@ -180,12 +180,6 @@ class Search
                     }
                     $link .= 'searchTerm='.urlencode($term);
 
-                    // fix relativ URIs not starting with a slash-character (/)
-                    if (substr($details['Link'], 0, 1) != '/' && !\FWValidator::isUri($details['Link'])) {
-                        $details['Link'] = '/' . $details['Link'];
-                    }
-                    $linkSrc = \Cx\Core\Routing\Url::fromMagic($details['Link']);
-
                     // parse result into template
                     $objTpl->setVariable(array(
                         'COUNT_MATCH'             =>
@@ -193,7 +187,7 @@ class Search
                         'LINK'                    => '<b><a href="'.$link.
                             '" title="'.contrexx_raw2xhtml($details['Title']).'">'.
                             contrexx_raw2xhtml($details['Title']).'</a></b>',
-                        'TARGET_PATH' => contrexx_raw2xhtml($linkSrc),
+                        'TARGET_PATH' => contrexx_raw2xhtml($link),
                         'SHORT_CONTENT'           => contrexx_raw2xhtml($details['Content']),
                         'SEARCH_RESULT_SRC'       => $link,
                         'SEARCH_RESULT_TITLE'     => contrexx_raw2xhtml($details['Title']),
@@ -319,7 +313,7 @@ class Search
         if (!$page) {
             return array();
         }
-        $pagePath = $page->getPath();
+        $pagePath = \Cx\Core\Routing\Url::fromPage($page);
         $objDatabase = \Env::get('db');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) {
