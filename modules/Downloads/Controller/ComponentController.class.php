@@ -205,7 +205,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return array();
         }
 
-        // set category filter if we have to restrict seach by
+        // set category filter if we have to restrict search by
         // any category IDs
         $filter = null;
         if ($arrCategoryIds) {
