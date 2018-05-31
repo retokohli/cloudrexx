@@ -976,7 +976,7 @@ class PageRepository extends EntityRepository {
                 'Content'   => \Cx\Core_Modules\Search\Controller\Search::shortenSearchContent(
                     $page->getContent(), $config['searchDescriptionLength']
                 ),
-                'Link'      => $this->getPath($page),
+                'Link'      => (string) \Cx\Core\Routing\Url::fromPage($page),
                 'Component' => $page->getComponentController()->getName(),
             );
         }

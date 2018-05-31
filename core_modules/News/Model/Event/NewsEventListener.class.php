@@ -110,7 +110,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                                         FRONTEND_LANG_ID,
                                         array('newsid' => $newsId)
                                   );
-                $pageUrlResult  = $objUrl->toString();
+                $pageUrlResult  = (string) $objUrl;
             } else {
                 $pageUrlResult = preg_replace(
                     '/\\[\\[([A-Z0-9_-]+)\\]\\]/',
