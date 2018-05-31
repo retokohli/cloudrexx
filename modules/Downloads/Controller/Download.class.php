@@ -950,7 +950,14 @@ class Download {
             }
         }
 
-        if (in_array('category_id', array_keys($arrFilter)) && (($arrFilter['category_id'] == 0) || !empty($arrFilter['category_id']))) {
+        if (
+            is_array($arrFilter) &&
+            isset($arrFilter['category_id']) && 
+            (
+                ($arrFilter['category_id'] == 0) ||
+                !empty($arrFilter['category_id'])
+            )
+        ) {
             if (is_array($arrFilter['category_id'])) {
                 if ($subCategories) {
                     $arrSubCategories = array();
@@ -964,6 +971,11 @@ class Download {
                     }
                 } else {
                     foreach ($arrFilter['category_id'] as $condition => $categoryId) {
+                        // in case $condition is a simple array index
+                        // we will apply a simple equal expression 
+                        if (preg_match('/^\d+$/', $condition)) {
+                            $condition = '=';
+                        }
                         $arrCategoryConditions[] = 'tblRC.`category_id` '.$condition.' '.intval($categoryId);
                     }
                 }
@@ -983,7 +995,11 @@ class Download {
             $arrTables[] = 'category';
         }
 
-        if (in_array('download_id', array_keys($arrFilter)) && !empty($arrFilter['download_id'])) {
+        if (
+            is_array($arrFilter) &&
+            isset($arrFilter['download_id']) &&
+            !empty($arrFilter['download_id'])
+        ) {
             $arrConditions[] = '(tblR.`id1` = '.intval($arrFilter['download_id']).' OR tblR.`id2` = '.intval($arrFilter['download_id']).')';
             $arrConditions[] = 'tblD.`id` != '.intval($arrFilter['download_id']);
             $arrTables[] = 'download';
