@@ -997,7 +997,6 @@ class Download {
 
         if (
             is_array($arrFilter) &&
-            isset($arrFilter['download_id']) &&
             !empty($arrFilter['download_id'])
         ) {
             $arrConditions[] = '(tblR.`id1` = '.intval($arrFilter['download_id']).' OR tblR.`id2` = '.intval($arrFilter['download_id']).')';
