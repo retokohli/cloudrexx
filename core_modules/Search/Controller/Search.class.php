@@ -188,13 +188,16 @@ class Search
 
                     // parse result into template
                     $objTpl->setVariable(array(
-                        'COUNT_MATCH' =>
-                        $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%',
-                        'LINK' => '<b><a href="'.$link.
-                        '" title="'.contrexx_raw2xhtml($details['Title']).'">'.
-                        contrexx_raw2xhtml($details['Title']).'</a></b>',
+                        'COUNT_MATCH'             =>
+                            $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%',
+                        'LINK'                    => '<b><a href="'.$link.
+                            '" title="'.contrexx_raw2xhtml($details['Title']).'">'.
+                            contrexx_raw2xhtml($details['Title']).'</a></b>',
                         'TARGET_PATH' => contrexx_raw2xhtml($linkSrc),
-                        'SHORT_CONTENT' => contrexx_raw2xhtml($details['Content']),
+                        'SHORT_CONTENT'           => contrexx_raw2xhtml($details['Content']),
+                        'SEARCH_RESULT_SRC'       => $link,
+                        'SEARCH_RESULT_TITLE'     => contrexx_raw2xhtml($details['Title']),
+                        'SEARCH_RESULT_COMPONENT' => $details['Component'],
                     ));
                     $objTpl->parse('search_result');
                 }
@@ -347,11 +350,12 @@ class Search
             $searchtitle = empty($objResult->fields['title'])
                 ? $_ARRAYLANG['TXT_UNTITLED'] : $objResult->fields['title'];
             $arraySearchResults[] = array(
-                'Score' => $scorePercent,
-                'Title' => $searchtitle,
-                'Content' => $content,
-                'Link' => $temp_pagelink,
-                'Date' => $date,
+                'Score'     => $scorePercent,
+                'Title'     => $searchtitle,
+                'Content'   => $content,
+                'Link'      => $temp_pagelink,
+                'Date'      => $date,
+                'Component' => $module,
             );
             $objResult->MoveNext();
         }

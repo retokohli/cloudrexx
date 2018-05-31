@@ -144,10 +144,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'file' => rawurlencode($name),
                 ));
                 $result[] = array(
-                    'Score'   => 100,
-                    'Title'   => $name,
-                    'Content' => '',
-                    'Link'    => $url->toString()
+                    'Score'     => 100,
+                    'Title'     => $name,
+                    'Content'   => '',
+                    'Link'      => $url->toString(),
+                    'Component' => $this->getName(),
                 );
             }
         }

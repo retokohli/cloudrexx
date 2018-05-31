@@ -2057,10 +2057,13 @@ JSCODE;
             }
 
             $results[] = array(
-                'Score'   => 100,
-                'Title'   => html_entity_decode(contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET),
-                'Content' => $content,
-                'Link'    => $pageUrlResult->toString()
+                'Score'     => 100,
+                'Title'     => html_entity_decode(
+                    contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET
+                ),
+                'Content'   => $content,
+                'Link'      => $pageUrlResult->toString(),
+                'Component' => $this->moduleName,
             );
         }
         return $results;

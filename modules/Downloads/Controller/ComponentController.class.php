@@ -215,10 +215,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             $url->setParam('id', $downloadAsset->getId());
             $result[] = array(
-                'Score'   => 100,
-                'Title'   => $downloadAsset->getName($langId),
-                'Content' => $downloadAsset->getTrimmedDescription($langId),
-                'Link'    => $url->toString()
+                'Score'     => 100,
+                'Title'     => $downloadAsset->getName($langId),
+                'Content'   => $downloadAsset->getTrimmedDescription($langId),
+                'Link'      => $url->toString(),
+                'Component' => $this->getName(),
             );
             $downloadAsset->next();
         }
