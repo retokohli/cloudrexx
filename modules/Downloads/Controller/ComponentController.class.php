@@ -269,7 +269,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $searchVisibleContentOnly = \Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly','Config');
 
         // fetch data about existing application pages of this component
-        $cmds = array('');
+        $cmds = array();
         $em = $this->cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $pages = $pageRepo->getAllFromModuleCmdByLang($this->getName());
@@ -281,6 +281,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // check if an application page is published
         $cmds = array_unique($cmds);
+        $arrCategoryIds = array();
         foreach ($cmds as $cmd) {
             // fetch application page with specific CMD from current locale
             $page = $pageRepo->findOneByModuleCmdLang($this->getName(), $cmd, FRONTEND_LANG_ID);
