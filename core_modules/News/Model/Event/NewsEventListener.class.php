@@ -110,7 +110,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                                         FRONTEND_LANG_ID,
                                         array('newsid' => $newsId)
                                   );
-                $pageUrlResult  = $objUrl->toString(false);
+                $pageUrlResult  = (string) $objUrl;
             } else {
                 $pageUrlResult = $searchData['redirect'];
             }
