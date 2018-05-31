@@ -199,17 +199,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // check for valid published application page
+        $filter = null;
         try {
             $arrCategoryIds = $this->getCategoryFilterForSearchComponent();
+
+            // set category filter if we have to restrict search by
+            // any category IDs
+            if ($arrCategoryIds) {
+                $filter = array('category_id' => $arrCategoryIds);
+            }
         } catch (DownloadsInternalException $e) {
             return array();
-        }
-
-        // set category filter if we have to restrict search by
-        // any category IDs
-        $filter = null;
-        if ($arrCategoryIds) {
-            $filter = array('category_id' => $arrCategoryIds);
         }
 
         // lookup downloads by given keyword
