@@ -45,6 +45,7 @@ namespace Cx\Core_Modules\Cache\Controller;
 class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 {
     const HTTP_STATUS_CODE_HEADER = 'X-StatusCode';
+    const LOCALE_CACHE_FILE_NAME = 'Locale.dat';
     var $boolIsEnabled = false; //Caching enabled?
     var $intCachingTime; //Expiration time for cached file
 
@@ -145,28 +146,82 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
 
-        $country = '';
-        $geoIp = $cx->getComponent('GeoIp');
-        if ($geoIp) {
-            $countryInfo = $geoIp->getCountryCode(array());
-            if (!empty($countryInfo['content'])) {
-                $country = $countryInfo['content'];
-            }
+        $localeInfo = 0;
+        $cachedLocaleData = $this->getCachedLocaleData();
+        if (!$cachedLocaleData) {
+            $localeInfo = $this->selectBestLanguageFromRequest($cx);
+        } else {
+            $localeInfo = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+                $cx,
+                $cachedLocaleData
+            );
         }
         $this->arrPageContent = array(
             'url' => $this->currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
-            'country' => $country,
+            'locale' => $localeInfo,
         );
-        // since crawlers do not send accept language header, we make it optional
-        // in order to keep the logs clean
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $this->arrPageContent['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-        }
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
+    /**
+     * Returns the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @return array Cached locale data or empty array
+     */
+    protected function getCachedLocaleData() {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        if (!file_exists($filename)) {
+            return array();
+        }
+        $cachedData = file_get_contents($filename);
+        return unserialize($cachedData);
+    }
+
+    /**
+     * Sets the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     */
+    protected function setCachedLocaleData($cx) {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        file_put_contents($filename, serialize($cx->getComponent('Locale')->getLocaleData()));
+    }
+
+    /**
+     * Returns the necessary data to later identify the matching locale
+     *
+     * This method does not use database or cached database data
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     * @return string Locale info
+     */
+    protected function selectBestLanguageFromRequest(
+        \Cx\Core\Core\Controller\Cx $cx
+    ) {
+        $localeInfo = '';
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $localeInfo = $countryInfo['content'];
+            }
+        }
+        $localeInfo .= '-';
+        // since crawlers do not send accept language header, we make it optional
+        // in order to keep the logs clean
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $localeInfo .= $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
+        return $localeInfo;
+    }
 
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
@@ -413,6 +468,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isException($page, $cx)) {
             return $this->internalEsiParsing($endcode);
         }
+
+        $this->setCachedLocaleData($cx);
 
         // write header cache file
         $resolver = \Env::get('Resolver');
