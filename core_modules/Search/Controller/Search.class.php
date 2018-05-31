@@ -231,22 +231,25 @@ class Search
         if (!empty($command)) {
             $criteria['cmd'] = $command;
         }
+
         // only list results in case the associated page of the module is active
         $page = $pageRepo->findOneBy($criteria);
         if (!$page || !$page->isActive()) {
             return null;
         }
+
         // don't list results in case the user doesn't have sufficient rights to access the page
         // and the option to list only unprotected pages is set (coreListProtectedPages)
-        $hasPageAccess = true;
         $config = \Env::get('config');
-        if ($config['coreListProtectedPages'] == 'off' && $page->isFrontendProtected()) {
-            $hasPageAccess = \Permission::checkAccess(
-                    $page->getFrontendAccessId(), 'dynamic', true);
-        }
-        if (!$hasPageAccess) {
+        if (
+            $config['coreListProtectedPages'] == 'off' &&
+            $page->isFrontendProtected() &&
+            $this->getComponent('Session')->getSession() &&
+            !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+        ) {
             return null;
         }
+
         // In case a root node was specified, we have to check if the page is in
         // the root page's branch.
         if ($this->rootPage) {
