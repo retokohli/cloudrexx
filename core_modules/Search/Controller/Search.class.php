@@ -238,7 +238,7 @@ class Search
         if (
             $config['coreListProtectedPages'] == 'off' &&
             $page->isFrontendProtected() &&
-            $this->getComponent('Session')->getSession() &&
+            $page->getComponent('Session')->getSession() &&
             !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
         ) {
             return null;
