@@ -440,14 +440,18 @@ class Download {
             $disposition = HTTP_DOWNLOAD_ATTACHMENT;
         }
 
+        $file = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getWebsiteDocumentRootPath() .
+            '/' . $this->getSource($langId);
         $objHTTPDownload = new \HTTP_Download();
-        $objHTTPDownload->setFile(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$this->getSource($langId));
+        $objHTTPDownload->setFile($file);
         $objHTTPDownload->setContentDisposition(
             $disposition,
             str_replace('"', '\"', $this->getSourceName($langId))
         );
-        $objHTTPDownload->setContentType();
-        $objHTTPDownload->send('application/force-download');
+        $contentType = mime_content_type($file);
+        $objHTTPDownload->setContentType($contentType);
+        $objHTTPDownload->send();
         exit;
     }
 
