@@ -1329,6 +1329,7 @@ JS_CODE;
             'DOWNLOADS_'.$variablePrefix.'FILE_FILE_TYPE_ICON'     => $this->getHtmlImageTag($objDownload->getFileIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'FILE_DELETE_ICON'        => $deleteIcon,
             'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;download=' . $objDownload->getId(),
+            'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_LINK_SRC_INLINE'=> CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;download=' . $objDownload->getId() . '&amp;disposition=inline',
             'DOWNLOADS_'.$variablePrefix.'FILE_OWNER'              => contrexx_raw2xhtml($this->getParsedUsername($objDownload->getOwnerId())),
             'DOWNLOADS_'.$variablePrefix.'FILE_OWNER_ID'           => $objDownload->getOwnerId(),
             'DOWNLOADS_'.$variablePrefix.'FILE_SRC'                => htmlentities($objDownload->getSourceName(), ENT_QUOTES, CONTREXX_CHARSET),
@@ -1585,7 +1586,15 @@ JS_CODE;
             $objDownload->incrementDownloadCount();
 
             if ($objDownload->getType() == 'file') {
-                $objDownload->send();
+                $disposition = '';
+                if (!empty($_GET['disposition'])) {
+                    $disposition = contrexx_input2raw($_GET['disposition']);
+                }
+
+                $objDownload->send(
+                    DownloadsLibrary::getOutputLocale()->getId(),
+                    $disposition
+                );
             } else {
                 // add socket -> prevent to hide the source from the customer
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$objDownload->getSource());
