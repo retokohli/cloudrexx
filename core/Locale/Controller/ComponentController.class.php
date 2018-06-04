@@ -139,6 +139,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $countryTable[$countryCode][] = $localeCode;
             }
         }
+        if ($data['DefaultFrontendLocaleId'] == 0) {
+            return array();
+        }
         return $data;
     }
 
