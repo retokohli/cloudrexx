@@ -179,8 +179,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if (!file_exists($filename)) {
             return array();
         }
-        $cachedData = file_get_contents($filename);
-        return unserialize($cachedData);
+        $cachedData = unserialize(file_get_contents($filename));
+        if ($cachedData === false) {
+            return array();
+        }
+        return $cachedData;
     }
 
     /**
