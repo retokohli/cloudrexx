@@ -5590,13 +5590,22 @@ $WhereStatement = '';
             }
         }
 
-        $query = sprintf('
+        $source  = 'opt-in';
+        $consent = '';
+        $query   = sprintf('
             (
                 SELECT SQL_CALC_FOUND_ROWS
                 %2$s
                 FROM `%1$smodule_newsletter_user` AS `nu`
                 %3$s
                 WHERE 1
+                AND (
+                    source != "'. $source .'"
+                    OR (
+                        source = "'. $source .'"
+                        AND consent != "'. $consent .'"
+                    )
+                )
                 %4$s
                 %5$s
                 %10$s
