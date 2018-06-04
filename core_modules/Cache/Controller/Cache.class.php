@@ -192,6 +192,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * Default locale and the following hashtables are cached:
      * <localeCode> to <localeId>
      * <localeCountryCode> to <localeCodes>
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
      */
     protected function setCachedLocaleData($cx) {
         $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
