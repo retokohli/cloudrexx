@@ -123,7 +123,7 @@ class Newsletter extends NewsletterLib
         // on recipient id.
         $objUserCat = $objDatabase->Execute(
             'UPDATE '. DBPREFIX .'module_newsletter_rel_user_cat
-                SET consent = "'. contrexx_raw2db($currentTime) .'"
+                SET consent = "'. $currentTime .'"
             where user = "'. contrexx_raw2db($userId) .'"'
         );
 
@@ -132,7 +132,7 @@ class Newsletter extends NewsletterLib
         $objResult = $objDatabase->Execute(
             'UPDATE '. DBPREFIX .'module_newsletter_user
                 SET status  = '. 1 .',
-                    consent = "'. contrexx_raw2db($currentTime) .'"
+                    consent = "'. $currentTime .'"
             where email = "'. contrexx_raw2db($userEmail) .'"'
         );
         if ($objResult !== false) {

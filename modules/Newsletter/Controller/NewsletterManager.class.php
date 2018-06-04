@@ -4625,10 +4625,10 @@ $WhereStatement = '';
                                         `source`
                                     ) VALUES (
                                         '". $this->_emailCode() ."',
-                                        '". addslashes($email) ."',
+                                        '". contrexx_addslashes($email) ."',
                                         1,
                                         '". time() ."',
-                                        '". contrexx_raw2db($source) ."'
+                                        '". $source ."'
                                     )"
                                 ) !== false) {
                                     $this->_setRecipientLists($objDatabase->Insert_ID(), $arrLists);
@@ -5590,8 +5590,6 @@ $WhereStatement = '';
             }
         }
 
-        $source  = 'opt-in';
-        $consent = '';
         $query   = sprintf('
             (
                 SELECT SQL_CALC_FOUND_ROWS
@@ -5600,10 +5598,10 @@ $WhereStatement = '';
                 %3$s
                 WHERE 1
                 AND (
-                    source != "'. $source .'"
+                    source != "opt-in"
                     OR (
-                        source = "'. $source .'"
-                        AND consent != "'. $consent .'"
+                        source = "opt-in"
+                        AND consent IS NOT NULL
                     )
                 )
                 %4$s

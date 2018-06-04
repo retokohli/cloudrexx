@@ -310,7 +310,7 @@ class NewsletterLib
                 '".intval($status)."',
                 '".time()."',
                 '".intval($language)."',
-                '". contrexx_raw2db($source) ."'
+                '". $source ."'
             )")
         ) {
             return false;
