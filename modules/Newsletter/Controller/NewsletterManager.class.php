@@ -4399,6 +4399,7 @@ $WhereStatement = '';
             'notes'           => $_ARRAYLANG['TXT_NEWSLETTER_NOTES'],
             'language'        => $_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE']
         );
+        $source = 'backend';
 
         if (isset($_POST['import_cancel'])) {
             // Abbrechen. Siehe Abbrechen
@@ -4488,7 +4489,7 @@ $WhereStatement = '';
                         } else {
                             $NewEmails ++;
 
-                            if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['position'], $arrRecipient['company'], $arrRecipient['industry_sector'], $arrRecipient['address'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'], $arrRecipient['phone_office'], $arrRecipient['phone_private'], $arrRecipient['phone_mobile'], $arrRecipient['fax'], $arrRecipient['notes'], $arrRecipient['birthday'], 1, $arrRecipientLists, $arrRecipient['language'])) {
+                            if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['position'], $arrRecipient['company'], $arrRecipient['industry_sector'], $arrRecipient['address'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'], $arrRecipient['phone_office'], $arrRecipient['phone_private'], $arrRecipient['phone_mobile'], $arrRecipient['fax'], $arrRecipient['notes'], $arrRecipient['birthday'], 1, $arrRecipientLists, $arrRecipient['language'], $source)) {
                                 array_push($arrBadEmails, $arrRecipient['email']);
                             } elseif (!empty($recipientSendEmailId)) {
                                 $objRecipient = $objDatabase->SelectLimit("
@@ -4617,9 +4618,17 @@ $WhereStatement = '';
                                 $NewEmails ++;
                                 if ($objDatabase->Execute("
                                     INSERT INTO `".DBPREFIX."module_newsletter_user` (
-                                        `code`, `email`, `status`, `emaildate`
+                                        `code`,
+                                        `email`,
+                                        `status`,
+                                        `emaildate`,
+                                        `source`
                                     ) VALUES (
-                                        '".$this->_emailCode()."', '".addslashes($email)."', 1, ".time()."
+                                        '". $this->_emailCode() ."',
+                                        '". addslashes($email) ."',
+                                        1,
+                                        '". time() ."',
+                                        '". contrexx_raw2db($source) ."'
                                     )"
                                 ) !== false) {
                                     $this->_setRecipientLists($objDatabase->Insert_ID(), $arrLists);
@@ -4926,6 +4935,7 @@ $WhereStatement = '';
         $arrAssociatedLists = array();
         $recipientSendEmailId = isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0;
         $recipientSendMailDisplay = false;
+        $source = 'backend';
 
         if (isset($_POST['newsletter_recipient_email'])) {
             $recipientEmail = $_POST['newsletter_recipient_email'];
@@ -5024,7 +5034,7 @@ $WhereStatement = '';
                                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
                             }
                         } else {
-                            if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                            if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage, $source)) {
                                 if (!empty($recipientSendEmailId)) {
                                     $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
                                     $recipientId  = $objRecipient->fields['id'];

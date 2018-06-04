@@ -274,7 +274,7 @@ class NewsletterLib
     static function _addRecipient(
         $email, $uri, $sex, $salutation, $title, $lastname, $firstname, $position, $company, $industry_sector,
         $address, $zip, $city, $country, $phone_office, $phone_private, $phone_mobile, $fax, $notes, $birthday, $status,
-        $arrLists, $language
+        $arrLists, $language, $source
     ) {
         global $objDatabase;
 
@@ -284,7 +284,7 @@ class NewsletterLib
                 `lastname`, `firstname`, `position`, `company`, `industry_sector`,
                 `address`, `zip`, `city`, `country_id`, `phone_office`, `phone_private`,
                 `phone_mobile`, `fax`, `notes`, `birthday`, `status`,
-                `emaildate`, `language`
+                `emaildate`, `language`, `source`
             ) VALUES (
                 '".self::_emailCode()."',
                 '".contrexx_addslashes($email)."',
@@ -307,9 +307,10 @@ class NewsletterLib
                 '".contrexx_addslashes($fax)."',
                 '".contrexx_addslashes($notes)."',
                 '".contrexx_addslashes($birthday)."',
-                ".intval($status).",
-                ".time().",
-                ".intval($language)."
+                '".intval($status)."',
+                '".time()."',
+                '".intval($language)."',
+                '". contrexx_raw2db($source) ."'
             )")
         ) {
             return false;

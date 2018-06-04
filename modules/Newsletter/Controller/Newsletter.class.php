@@ -105,8 +105,9 @@ class Newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
-        $userEmail = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
-        $count     = 0;
+        $userEmail   = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
+        $count       = 0;
+        $currentTime = date('Y-m-d H:i:s', time());
         if (!empty($userEmail)) {
             $query     = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
             $objResult = $objDatabase->Execute($query);
@@ -117,7 +118,23 @@ class Newsletter extends NewsletterLib
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
             return;
         }
-        $objResult     = $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status=1 where email='". contrexx_raw2db($userEmail) ."'");
+
+        // Update a consent value in module_newsletter_rel_user_cat table based
+        // on recipient id.
+        $objUserCat = $objDatabase->Execute(
+            'UPDATE '. DBPREFIX .'module_newsletter_rel_user_cat
+                SET consent = "'. contrexx_raw2db($currentTime) .'"
+            where user = "'. contrexx_raw2db($userId) .'"'
+        );
+
+        // Update a consent and status value in module_newsletter_user table based
+        // on recipient email id.
+        $objResult = $objDatabase->Execute(
+            'UPDATE '. DBPREFIX .'module_newsletter_user
+                SET status  = '. 1 .',
+                    consent = "'. contrexx_raw2db($currentTime) .'"
+            where email = "'. contrexx_raw2db($userEmail) .'"'
+        );
         if ($objResult !== false) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
 
@@ -259,6 +276,7 @@ class Newsletter extends NewsletterLib
         $arrAssociatedLists = array();
         $arrPreAssociatedInactiveLists = array();
         $code = isset($_REQUEST['code']) ? contrexx_addslashes($_REQUEST['code']) : '';
+        $source = 'opt-in';
 
         if (!empty($code) && !empty($requestedMail)) {
             $objRecipient = $objDatabase->SelectLimit("SELECT accessUserID
@@ -447,7 +465,7 @@ class Newsletter extends NewsletterLib
                                                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA']);
                                             }
                                         } else {
-                                            if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                                            if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage, $source)) {
                                                 if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
                                                     array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
                                                     $showForm = false;
