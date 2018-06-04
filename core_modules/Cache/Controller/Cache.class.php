@@ -205,7 +205,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
         $localeData = $locale->getLocaleData();
-        if (empty($localeData) {
+        if (empty($localeData)) {
             return;
         }
         $file = new \Cx\Lib\FileSystem\File($filename);
