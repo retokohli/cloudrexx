@@ -220,7 +220,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // No combination found, return the first (most relevant) one
-        return $localeData['IdByCode'][current($localeCodesByCountry)];
+        return $localeData['IdByCode'][reset($localeCodesByCountry)];
     }
 
     /**
