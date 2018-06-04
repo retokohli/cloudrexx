@@ -193,7 +193,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     protected function setCachedLocaleData($cx) {
         $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
             static::LOCALE_CACHE_FILE_NAME;
-        file_put_contents($filename, serialize($cx->getComponent('Locale')->getLocaleData()));
+        file_put_contents(
+            $filename,
+            serialize($cx->getComponent('Locale')->getLocaleData())
+        );
     }
 
     /**
