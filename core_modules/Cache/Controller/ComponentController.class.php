@@ -115,7 +115,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(
             'postFlush',
             'Cx\Core\Routing\Model\Entity\RewriteRule',
-            new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
+            new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener(
+                $this->cx
+            )
         );
 
         // TODO: This is a workaround for Doctrine's result query cache.
@@ -123,7 +125,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(
             'postFlush',
             'Cx\Core\Model\Entity\EntityBase',
-            new \Cx\Core_Modules\Cache\Model\Event\CoreEntityBaseEventListener($this->cx)
+            new \Cx\Core_Modules\Cache\Model\Event\CoreEntityBaseEventListener(
+                $this->cx
+            )
+        );
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Locale\Model\Entity\Locale',
+            new \Cx\Core_Modules\Cache\Model\Event\LocaleChangeListener(
+                $this->cx
+            )
         );
     }
 
@@ -435,7 +446,6 @@ Cache clear all';
                     $this->cache->deleteSingleFile($options);
                     break;
                 }
-                // @TODO: this will drop ESI cache too
                 $this->cache->_deleteAllFiles('cxPages');
                 break;
             case 'esi':
