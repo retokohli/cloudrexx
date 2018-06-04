@@ -326,7 +326,7 @@ class InitCMS
     function _selectBestLanguage()
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        return $cx->getComponent('Locale')->selectBestLocale(
+        return \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
             $cx,
             $cx->getComponent('Locale')->getLocaleData()
         );
