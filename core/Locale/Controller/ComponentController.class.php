@@ -104,9 +104,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *  array(
      *      'DefaultFrontendLocaleId' => <defaultLocaleId>
      *      'Hashtables' => array(
-     *          'IdByCode' => array(<localeIso1> => <localeId>),
+     *          'IdByCode' => array(<localeShortForm> => <localeId>),
      *          'CodeByCountry' => array(
-     *              <countryAlpha2> => array(<localeIso1),
+     *              <countryAlpha2> => array(<localeShortForm),
      *          )
      *      )
      *  )
@@ -129,7 +129,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if ($locale->getId() == $_CONFIG['defaultLocaleId']) {
                 $data['DefaultFrontendLocaleId'] = $locale->getId();
             }
-            $localeCode = $locale->getIso1()->getIso1();
+            $localeCode = $locale->getShortForm();
             $data['Hashtables']['IdByCode'][$localeCode] = $locale->getId();
             if ($locale->getCountry()) {
                 $countryCode = $locale->getCountry()->getAlpha2();
