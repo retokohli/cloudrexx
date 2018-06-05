@@ -227,6 +227,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return array();
         }
 
+        /**
+         * @ignore
+         */
+        \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/PEAR/Download.php');
+
         $langId = DownloadsLibrary::getOutputLocale()->getId();
 
         while (!$downloadAsset->EOF) {
@@ -238,7 +243,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $downloadAsset->next();
                 continue;
             }
-            $url->setParam('id', $downloadAsset->getId());
+
+            // determine link-behaviour
+            switch ($config['global_search_linking']) {
+                case HTTP_DOWNLOAD_INLINE:
+                case HTTP_DOWNLOAD_ATTACHMENT:
+                    $url->setParam('disposition', $config['global_search_linking']);
+                    $url->setParam('download', $downloadAsset->getId());
+                    break;
+
+                case 'detail':
+                default:
+                    $url->setParam('id', $downloadAsset->getId());
+                    break;
+            }
+
             $result[] = array(
                 'Score'     => 100,
                 'Title'     => $downloadAsset->getName($langId),
