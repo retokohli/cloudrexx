@@ -424,6 +424,9 @@ class Download {
      *                                      <li>HTTP_DOWNLOAD_ATTACHMENT</li>
      *                                      <li>HTTP_DOWNLOAD_INLINE</li>
      *                                  </ul>
+     *                                  If $disposition is unknown, then
+     *                                  HTTP_DOWNLOAD_ATTACHMENT will be
+     *                                  assumed.
      */
     public function send($langId = 0, $disposition = HTTP_DOWNLOAD_ATTACHMENT)
     {
