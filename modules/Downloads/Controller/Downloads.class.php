@@ -1683,13 +1683,13 @@ JS_CODE;
     }
 
     /**
-     * Identity functional placeholder in the block $block of template
-     * $templatet that will determine the sort order of the downloads.
+     * Identify functional placeholder in the block $block of template
+     * $template that will determine the sort order of the downloads.
      * Placeholder can have the following form:
      * - DOWNLOADS_CONFIG_LIST_CUSTOM => Order by custom order
      * - DOWNLOADS_CONFIG_LIST_ALPHABETIC => Order alphabetically
-     * - DOWNLOADS_CONFIG_LIST_NEWESTTOOLDEST => Order by custom order
-     * - DOWNLOADS_CONFIG_LIST_OLDESTTONEWEST => Order by custom order
+     * - DOWNLOADS_CONFIG_LIST_NEWESTTOOLDEST => Order by latest
+     * - DOWNLOADS_CONFIG_LIST_OLDESTTONEWEST => Order by oldest
      *
      * @param   string  $block Name of the template block to look up for
      *                         functional placeholder
