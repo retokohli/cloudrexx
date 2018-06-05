@@ -411,11 +411,44 @@ class Download {
         }
     }
 
-    public function send($langId = 0)
+    /**
+     * Send asset to client
+     *
+     * Send the file of this instance to the client.
+     * The script execution gets terminated by the end of this method call.
+     *
+     * @param   integer $langId ID of locale the filename should be sent in
+     * @param   string  $disposition    HTTP-Content-Disposition to use. One of
+     *                                  the following constants can be used:
+     *                                  <ul>
+     *                                      <li>HTTP_DOWNLOAD_ATTACHMENT</li>
+     *                                      <li>HTTP_DOWNLOAD_INLINE</li>
+     *                                  </ul>
+     *                                  If $disposition is unknown, then
+     *                                  HTTP_DOWNLOAD_ATTACHMENT will be
+     *                                  assumed.
+     */
+    public function send($langId = 0, $disposition = HTTP_DOWNLOAD_ATTACHMENT)
     {
+        // verify HTTP Content-Disposition
+        if (
+            !in_array(
+                $disposition,
+                array(
+                    HTTP_DOWNLOAD_ATTACHMENT,
+                    HTTP_DOWNLOAD_INLINE,
+                )
+            )
+        ) {
+            $disposition = HTTP_DOWNLOAD_ATTACHMENT;
+        }
+
         $objHTTPDownload = new \HTTP_Download();
         $objHTTPDownload->setFile(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$this->getSource($langId));
-        $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $this->getSourceName($langId)));
+        $objHTTPDownload->setContentDisposition(
+            $disposition,
+            str_replace('"', '\"', $this->getSourceName($langId))
+        );
         $objHTTPDownload->setContentType();
         $objHTTPDownload->send('application/force-download');
         exit;
