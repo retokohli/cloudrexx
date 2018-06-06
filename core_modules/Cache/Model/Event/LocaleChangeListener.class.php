@@ -51,5 +51,6 @@ class LocaleChangeListener extends \Cx\Core\Event\Model\Entity\DefaultEventListe
      */
     public function postFlush() {
         $this->getComponent('Cache')->deleteAllFiles('cxPages');
+        $this->getComponent('Cache')->setCachedLocaleData($this->cx);
     }
 }
