@@ -122,6 +122,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'Hashtables' => array(
                 'IdByCode' => array(),
                 'CodeByCountry' => array(),
+                'Iso1ByCode' => array(),
             ),
         );
         $countryTable &= $data['Hashtables']['CodeByCountry'];
@@ -131,6 +132,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             $localeCode = $locale->getShortForm();
             $data['Hashtables']['IdByCode'][$localeCode] = $locale->getId();
+            $data['Hashtables']['Iso1ByCode'][$localeCode] =>
+                $locale->getIso1()->getIso1();
             if ($locale->getCountry()) {
                 $countryCode = $locale->getCountry()->getAlpha2();
                 if (!isset($countryTable[$countryCode])) {
@@ -204,22 +207,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // find locales with found country code
+        // This only returns locales with a country
         $localeCodesByCountry = $localeData['CodeByCountry'][$country];
         if (!count($localeCodesByCountry)) {
             return 0;
         }
 
         // check if combination of country code and browser lang exists
+        // This finds inexact matches like "de-DE" for browser lang "de"
         $acceptedLanguages = array_keys(\InitCMS::_getClientAcceptedLanguages());
         foreach ($acceptedLanguages as $acceptedLanguage) {
             foreach ($localeCodesByCountry as $localeCode) {
-                if ($localeCode == $acceptedLanguage) {
+                if ($localeData['Iso1ByCode'] == $acceptedLanguage) {
                     return $localeData['IdByCode'][$localeCode];
                 }
             }
         }
 
         // No combination found, return the first (most relevant) one
+        // This implicitly finds exact matches like "de-DE" for browser lang "de-DE"
         return $localeData['IdByCode'][reset($localeCodesByCountry)];
     }
 
