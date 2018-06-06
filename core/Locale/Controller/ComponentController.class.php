@@ -207,7 +207,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // find locales with found country code
         // This only returns locales with a country
-        $localeCodesByCountry = $localeData['CodeByCountry'][$country];
+        $localeCodesByCountry = $localeData['Hashtables']['CodeByCountry'][$country];
         if (!count($localeCodesByCountry)) {
             return 0;
         }
@@ -217,15 +217,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $acceptedLanguages = array_keys(static::getClientAcceptedLanguages());
         foreach ($acceptedLanguages as $acceptedLanguage) {
             foreach ($localeCodesByCountry as $localeCode) {
-                if ($localeData['Iso1ByCode'][$localeCode] == $acceptedLanguage) {
-                    return $localeData['IdByCode'][$localeCode];
+                if ($localeData['Hashtables']['Iso1ByCode'][$localeCode] == $acceptedLanguage) {
+                    return $localeData['Hashtables']['IdByCode'][$localeCode];
                 }
             }
         }
 
         // No combination found, return the first (most relevant) one
         // This implicitly finds exact matches like "de-DE" for browser lang "de-DE"
-        return $localeData['IdByCode'][reset($localeCodesByCountry)];
+        return $localeData['Hashtables']['IdByCode'][reset($localeCodesByCountry)];
     }
 
     /**
@@ -243,8 +243,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $strippedMatch = 0;
         foreach (array_keys($arrAcceptedLanguages) as $language) {
             // check for full match
-            if (isset($localeData['IdByCode'][$language])) {
-                return $localeData['IdByCode'][$language];
+            if (isset($localeData['Hashtables']['IdByCode'][$language])) {
+                return $localeData['Hashtables']['IdByCode'][$language];
             } else if (!$strippedMatch) {
                 // stripped lang: e.g 'en-US' becomes 'en'
                 if ($pos = strpos($language, '-')) {
@@ -254,9 +254,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (
                     // only check for actual stripped languages
                     $pos &&
-                    isset($localeData['IdByCode'][$language])
+                    isset($localeData['Hashtables']['IdByCode'][$language])
                 ) {
-                    $strippedMatch = $localeData['IdByCode'][$language];
+                    $strippedMatch = $localeData['Hashtables']['IdByCode'][$language];
                 }
             }
         }
