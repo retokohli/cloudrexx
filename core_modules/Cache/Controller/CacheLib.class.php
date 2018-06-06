@@ -97,6 +97,11 @@ class CacheLib
     const CACHE_DIRECTORY_OFFSET_ESI = 'esi/';
 
     /**
+     * File name for page cache locale data
+     */
+    const LOCALE_CACHE_FILE_NAME = 'Locale.dat';
+
+    /**
      * Used op cache engines
      * @var array Cache engine names, empty for none
      */
@@ -184,6 +189,11 @@ class CacheLib
                 }
             }
             closedir($handleDir);
+
+            if ($cacheEngine == 'cxPages') {
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate(); 
+                $this->setCachedLocaleData($cx);
+            } 
         }
     }
 
@@ -1237,5 +1247,31 @@ class CacheLib
                 @unlink($file);
             }
         }
+    }
+
+    /**
+     * Sets the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     */
+    public function setCachedLocaleData($cx) {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        if (file_exists($filename)) {
+            return;
+        }
+        $locale = $cx->getComponent('Locale');
+        if (!$locale) {
+            return;
+        }
+        $localeData = $locale->getLocaleData();
+        if (empty($localeData)) {
+            return;
+        }
+        $file = new \Cx\Lib\FileSystem\File($filename);
+        $file->write(serialize($localeData));
     }
 }
