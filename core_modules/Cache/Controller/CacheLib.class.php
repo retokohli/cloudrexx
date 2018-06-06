@@ -189,6 +189,11 @@ class CacheLib
                 }
             }
             closedir($handleDir);
+
+            if ($cacheEngine == 'cxPages') {
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate(); 
+                $this->setCachedLocaleData($cx);
+            } 
         }
     }
 
