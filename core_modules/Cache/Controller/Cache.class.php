@@ -458,6 +458,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return $this->internalEsiParsing($endcode);
         }
 
+        $this->setCachedLocaleData($cx);
+
         // write header cache file
         $resolver = \Env::get('Resolver');
         $headers = $resolver->getHeaders();
