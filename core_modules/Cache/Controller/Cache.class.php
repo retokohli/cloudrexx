@@ -45,7 +45,6 @@ namespace Cx\Core_Modules\Cache\Controller;
 class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 {
     const HTTP_STATUS_CODE_HEADER = 'X-StatusCode';
-    const LOCALE_CACHE_FILE_NAME = 'Locale.dat';
     var $boolIsEnabled = false; //Caching enabled?
     var $intCachingTime; //Expiration time for cached file
 
@@ -184,32 +183,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return array();
         }
         return $cachedData;
-    }
-
-    /**
-     * Sets the cached locale data
-     *
-     * Default locale and the following hashtables are cached:
-     * <localeCode> to <localeId>
-     * <localeCountryCode> to <localeCodes>
-     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
-     */
-    public function setCachedLocaleData($cx) {
-        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
-            static::LOCALE_CACHE_FILE_NAME;
-        if (file_exists($filename)) {
-            return;
-        }
-        $locale = $cx->getComponent('Locale');
-        if (!$locale) {
-            return;
-        }
-        $localeData = $locale->getLocaleData();
-        if (empty($localeData)) {
-            return;
-        }
-        $file = new \Cx\Lib\FileSystem\File($filename);
-        $file->write(serialize($localeData));
     }
 
     /**

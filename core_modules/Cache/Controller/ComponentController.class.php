@@ -498,4 +498,16 @@ Cache clear all';
     public function setCachePrefix($prefix = '') {
         $this->cache->setCachePrefix($prefix);
     }
+
+    /**
+     * Sets the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     */
+    public function setCachedLocaleData($cx) {
+        $this->cache->setCachedLocaleData($cx);
+    }
 }
