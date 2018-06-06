@@ -125,7 +125,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'Iso1ByCode' => array(),
             ),
         );
-        $countryTable &= $data['Hashtables']['CodeByCountry'];
         foreach ($localeRepo->findAll() as $locale) {
             if ($locale->getId() == $_CONFIG['defaultLocaleId']) {
                 $data['DefaultFrontendLocaleId'] = $locale->getId();
@@ -136,10 +135,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $locale->getIso1()->getIso1();
             if ($locale->getCountry()) {
                 $countryCode = $locale->getCountry()->getAlpha2();
-                if (!isset($countryTable[$countryCode])) {
-                    $countryTable[$countryCode] = array();
+                if (!isset($data['Hashtables']['CodeByCountry'][$countryCode])) {
+                    $data['Hashtables']['CodeByCountry'][$countryCode] = array();
                 }
-                $countryTable[$countryCode][] = $localeCode;
+                $data['Hashtables']['CodeByCountry'][$countryCode][] = $localeCode;
             }
         }
         if ($data['DefaultFrontendLocaleId'] == 0) {
