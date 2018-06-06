@@ -132,7 +132,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             $localeCode = $locale->getShortForm();
             $data['Hashtables']['IdByCode'][$localeCode] = $locale->getId();
-            $data['Hashtables']['Iso1ByCode'][$localeCode] =>
+            $data['Hashtables']['Iso1ByCode'][$localeCode] =
                 $locale->getIso1()->getIso1();
             if ($locale->getCountry()) {
                 $countryCode = $locale->getCountry()->getAlpha2();
@@ -218,7 +218,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $acceptedLanguages = array_keys(\InitCMS::_getClientAcceptedLanguages());
         foreach ($acceptedLanguages as $acceptedLanguage) {
             foreach ($localeCodesByCountry as $localeCode) {
-                if ($localeData['Iso1ByCode'] == $acceptedLanguage) {
+                if ($localeData['Iso1ByCode'][$localeCode] == $acceptedLanguage) {
                     return $localeData['IdByCode'][$localeCode];
                 }
             }
