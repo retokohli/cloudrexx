@@ -50,6 +50,6 @@ class LocaleChangeListener extends \Cx\Core\Event\Model\Entity\DefaultEventListe
      * Listens to postFlush event in order to drop cache on changes
      */
     public function postFlush() {
-        $this->getComponent('Cache')->_deleteAllFiles('cxPages');
+        $this->getComponent('Cache')->deleteAllFiles('cxPages');
     }
 }
