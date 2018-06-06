@@ -214,7 +214,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // check if combination of country code and browser lang exists
         // This finds inexact matches like "de-DE" for browser lang "de"
-        $acceptedLanguages = array_keys(\InitCMS::_getClientAcceptedLanguages());
+        $acceptedLanguages = array_keys(static::getClientAcceptedLanguages());
         foreach ($acceptedLanguages as $acceptedLanguage) {
             foreach ($localeCodesByCountry as $localeCode) {
                 if ($localeData['Iso1ByCode'][$localeCode] == $acceptedLanguage) {
@@ -239,7 +239,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return int Locale ID or 0
      */
     protected static function selectLocaleByHttp(array $localeData) {
-        $arrAcceptedLanguages = \InitCMS::_getClientAcceptedLanguages();
+        $arrAcceptedLanguages = static::getClientAcceptedLanguages();
         $strippedMatch = 0;
         foreach (array_keys($arrAcceptedLanguages) as $language) {
             // check for full match
@@ -265,5 +265,27 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $strippedMatch;
         }
         return 0;
+    }
+
+    /**
+     * Returns an array with the accepted languages as keys and their
+     * quality as values
+     * @return  array
+     */
+    protected static function getClientAcceptedLanguages() {
+        $arrLanguages = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) : array();
+        $arrAcceptedLanguages = array();
+        $q = 1;
+        foreach ($arrLanguages as $languageString) {
+            $arrLanguage = explode(';q=', trim($languageString));
+            $language = trim($arrLanguage[0]);
+            $quality = isset($arrLanguage[1]) ? trim($arrLanguage[1]) : $q;
+            isset($arrLanguage[1]) ? $q = trim($arrLanguage[1]) : '';
+            $q -= 0.1;
+            $arrAcceptedLanguages[$language] = (float) $quality;
+        }
+        arsort($arrAcceptedLanguages, SORT_NUMERIC);
+
+        return $arrAcceptedLanguages;
     }
 }
