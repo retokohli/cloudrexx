@@ -642,7 +642,7 @@ function cmd_env {
                 set +f
             fi
             get_config_array
-            environments+=("clxenv${CONFIG["hostname"]//./}")
+            environments+=("clxenv$(getenvname)")
             environments=($(tr ' ' '\n' <<< "${environments[@]}" | sort -u | tr '\n' ' '))
             for environment in "${environments[@]}"; do
                 echo "Shutting down environment clxenv$environment"
@@ -1079,7 +1079,7 @@ function dockerexec {
 }
 
 function internal_dockerexec {
-    local ENV_NAME="${CONFIG[hostname]//"."/}"
+    local ENV_NAME="$(getenvname)"
     local ARGS=()
     for index in "$@"; do
         index="${index//"<web-container>"/"<container-prefix><env-name>_web_1"}"
@@ -1102,7 +1102,13 @@ function internal_dockerexec {
 
 function dockercomposeexec {
     get_config_array
-    docker-compose --project-name "clxenv${CONFIG["hostname"]//./}" "$@"
+    docker-compose --project-name "clxenv$(getenvname)" "$@"
+}
+
+function getenvname {
+    local ENV_NAME="${CONFIG[hostname]//"."/}"
+    ENV_NAME="${ENV_NAME//"-"/}"
+    echo "$ENV_NAME"
 }
 
 # Returns 1 for docker, 0 for local, 2 for non-running docker
