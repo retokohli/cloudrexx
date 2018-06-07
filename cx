@@ -756,12 +756,12 @@ SET FOREIGN_KEY_CHECKS = 1;"
             # create db if it does not exist
             mysql_exec "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
             # load db
-            mysql_load "installer/data/contrexx_dump_structure.sql"
-            mysql_load "installer/data/contrexx_dump_data.sql"
+            mysql_load_named "DB structure" "installer/data/contrexx_dump_structure.sql"
+            mysql_load_named "DB dump" "installer/data/contrexx_dump_data.sql"
             if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
-                mysql_load "${TEMP_FILES["user-backup"]}"
+                mysql_load_named "Restore users" "${TEMP_FILES["user-backup"]}"
                 if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
-                    mysql_load "${TEMP_FILES["session-backup"]}"
+                    mysql_load_named "Restore sessions" "${TEMP_FILES["session-backup"]}"
                 fi
             fi
             # TODO: Check if there's at least one admin, make the user's ID dynamic
@@ -1159,6 +1159,19 @@ function mysql_load {
         cat "$1" | mysql --defaults-file="${TEMP_FILES["db-connection"]}" -A
     else
         cat "$1" | internal_dockerexec exec -i "<db-container>" bash -c "cat - | mysql --defaults-file=${TEMP_FILES["db-connection"]} -A"
+    fi
+}
+
+function mysql_load_named {
+    if ! command -v pv >/dev/null 2>&1; then
+        echo "$1"
+        mysql_load "$2"
+        return
+    fi
+    if mysql_is_local; then
+        pv -pterb -N "$1" "$2" | mysql --defaults-file="${TEMP_FILES["db-connection"]}" -A
+    else
+        pv -pterb -N "$1" "$2" | internal_dockerexec exec -i "<db-container>" bash -c "cat - | mysql --defaults-file=${TEMP_FILES["db-connection"]} -A"
     fi
 }
 
