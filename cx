@@ -1062,7 +1062,11 @@ function phpexec {
                 echo "Environment not running!"
             fi
         else
-            dockerexec exec -ti --user www-data "<web-container>" php index.php "$@"
+            if [ -t 0 ] ; then
+                dockerexec exec -ti --user www-data "<web-container>" php index.php "$@"
+            else
+                dockerexec exec -i --user www-data "<web-container>" php index.php "$@"
+            fi
         fi
     else
         php index.php "$@"
