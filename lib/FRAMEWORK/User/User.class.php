@@ -2254,13 +2254,22 @@ class User extends User_Profile
     {
 
         if ($this->loggedIn) return true;
-        if(isset($_SESSION)
-            && is_object($_SESSION)
-            && $_SESSION->userId
-            && $this->load($_SESSION->userId)
-            && $this->getActiveStatus()
-            && $this->hasModeAccess($backend)
-            && $this->updateLastActivityTime()) {
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $session = $cx->getComponent('Session');
+
+        if (
+            $session &&
+            $session->getSession(false) &&
+            $session->isInitialized() &&
+            isset($_SESSION) &&
+            is_object($_SESSION) &&
+            $_SESSION->userId &&
+            $this->load($_SESSION->userId) &&
+            $this->getActiveStatus() &&
+            $this->hasModeAccess($backend) &&
+            $this->updateLastActivityTime()
+        ) {
             $this->loggedIn = true;
             return true;
         }
