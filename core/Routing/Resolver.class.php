@@ -266,7 +266,7 @@ class Resolver {
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
-                                $sessionObj = $cx->getComponent('Session')->getSession();
+                                $cx->getComponent('Session')->getSession();
                             }
                             $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
@@ -835,7 +835,7 @@ class Resolver {
         if ($section) {
             if ($section == 'logout') {
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                $sessionObj = $cx->getComponent('Session')->getSession();
+                $cx->getComponent('Session')->getSession();
                 if ($objFWUser->objUser->login()) {
                     $objFWUser->logout();
                 }
@@ -1012,7 +1012,7 @@ class Resolver {
                 || $_REQUEST['section'] != 'Login')
         ) {
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            $sessionObj = $cx->getComponent('Session')->getSession();
+            $cx->getComponent('Session')->getSession();
             $_SESSION->cmsSessionStatusUpdate('frontend');
             if (\FWUser::getFWUserObject()->objUser->login()) {
                 if ($page_protected) {

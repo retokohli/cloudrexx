@@ -228,7 +228,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             if (!self::use_session()) {
                 return;
             }
-            $sessionObj = $cx->getComponent('Session')->getSession();
+            $cx->getComponent('Session')->getSession();
         }
         if (empty($_SESSION['shop'])) {
             $_SESSION['shop'] = array();
@@ -266,7 +266,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         // The coupon code may be set when entering the Shop already
         if (isset($_REQUEST['coupon_code'])) {
             $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
-            $sessionObj = $cx->getComponent('Session')->getSession();
+            $cx->getComponent('Session')->getSession();
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
 //\DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
