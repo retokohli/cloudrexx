@@ -878,6 +878,14 @@ SET FOREIGN_KEY_CHECKS = 1;"
     esac
 }
 
+function set_project_var {
+    git config "$1" "$2"
+}
+
+function get_project_var {
+    git config "$1"
+}
+
 function get_config_array {
     local CONFIG_FILE="config/configuration.php"
     local SETTINGS_FILE="config/settings.php"
