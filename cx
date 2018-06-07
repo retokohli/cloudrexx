@@ -371,6 +371,53 @@ Available subcommands are:
                         ;;
                     esac
                     ;;
+                remote)
+                    case "$3" in
+                        set)
+                            echo "Links this installation to a remote site
+
+Synopsis
+    ./cx env remote set <remote> (--snapshot-repo=<repo>)
+
+Parameter explanations:
+    <remote>        Name of the remote site to use
+    <repo_url>      URL of the snapshot repository to use. <site> can be used as a placeholder for <remote> in the URL."
+                            ;;
+                        unset)
+                            echo "Removes link to a remote site
+
+Synopsis
+    ./cx env remote unset"
+                            ;;
+                        show)
+                            echo "Shows to which remote site this installation is linked
+
+Synopsis
+    ./cx env remote show"
+                            ;;
+                        pull)
+                            echo "Pulls and installs newest snapshot from linked remote site
+
+Synopsis
+    ./cx env remote pull <arguments>
+
+Available arguments:
+    (none yet, more to come)"
+                            ;;
+                        *)
+                            echo "Manages link to a remote site
+
+Synopsis
+    ./cx env remote <subcommand> <arguments>
+
+Available subcommands are:
+    set             Sets the remote to use
+    unset           Removes link to remote
+    show            Shows which remote is currently linked
+    pull            Pulls and installs newest snapshot from remote"
+                            ;;
+                    esac
+                    ;;
                 *)
                     echo "This command manages a Cloudrexx installation and its environment.
 
@@ -388,6 +435,7 @@ Available subcommands are:
     config      Configures Cloudrexx (config/configuration.php)
     shell       Interactive shell of the current environment's web container
     component   Manages additional components
+    remote      Manages remote installations
 
 For more info about a subcommand type ./cx help env <subcommand>";
                     ;;
@@ -1073,6 +1121,77 @@ SET FOREIGN_KEY_CHECKS = 1;"
                                 ;;
                         esac
                     fi
+                    ;;
+                *)
+                    (>&2 echo "No such subcommand")
+                    ;;
+            esac
+            ;;
+        remote)
+            local remoteInfo
+            IFS=,
+            remoteInfo=($(get_project_var "clx.project.remote"))
+            case "$2" in
+                set)
+                    local url="https://snapshots.cloudrexx.com/<site>/latest.zip"
+                    if [[ "$3" == "" ]]; then
+                        echo "Site name must not be empty"
+                        exit
+                    fi
+                    if [[ "${ARGUMENTS["snapshot-repo"]}" != "" ]]; then
+                        url="${ARGUMENTS["snapshot-repo"]}"
+                    fi
+                    set_project_var "clx.project.remote" "$3,$url"
+                    ;;
+                unset)
+                    set_project_var "clx.project.remote" ""
+                    ;;
+                show)
+                    local nl=$'\n'
+                    local output="SITE,REPO URL$nl${remoteInfo[*]}"
+                    echo "$output" | column -t -s , 
+                    ;;
+                pull)
+                    workdir=$(mktemp -d)
+                    # fetch package
+                    local url="${remoteInfo[1]}"
+                    url="${url//"<site>"/"${remoteInfo[0]}"}"
+                    if [[ "$url" == "" ]]; then
+                        return
+                    fi
+                    echo "$url" | wget -i - -O "$workdir/snapshot.zip"
+
+                    # unpack
+                    unzip "$workdir/snapshot.zip" -d "$workdir/backup" > /dev/null
+
+                    # drop existing
+                    get_config_array
+                    mysql_create_tempfile
+                    echo "SET FOREIGN_KEY_CHECKS = 0;" > "$workdir/update.sql"
+                    tablePrefixes=("contrexx_content_" "contrexx_log_entry" "contrexx_module_block")
+                    for tablePrefix in "${tablePrefixes[@]}"; do
+                        mysql_exec "SELECT concat('TRUNCATE TABLE \`', TABLE_NAME, '\`;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '$tablePrefix%'" -N >> "$workdir/update.sql"
+                    done
+
+                    # filter
+                    for tablePrefix in "${tablePrefixes[@]}"; do
+                        grep "INSERT INTO \`$tablePrefix" "$workdir/backup/database/sql_dump.sql" >> "$workdir/update.sql"
+                    done
+
+                    # import
+                    mysql_load_named "Executing DB update" "$workdir/update.sql"
+
+                    # copy files
+                    copyDirs=("feed" "images" "media")
+                    for copyDir in "${copyDirs[@]}"; do    
+                        cp -R "$workdir/backup/dataRepository/$copyDir/"* "./$copyDir/" 2>/dev/null
+                        echo "*" > "./$copyDir/.gititnore"
+                    done
+
+                    # clear cache
+                    phpexec Cache clear user
+                    phpexec Cache clear page
+                    rm -R "$workdir"
                     ;;
                 *)
                     (>&2 echo "No such subcommand")
