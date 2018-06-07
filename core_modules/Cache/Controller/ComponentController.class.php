@@ -272,6 +272,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Clear user based ESI cache of a specific user identified by its
+     * session ID.
+     *
+     * @param   string  $sessionId  The session ID of the user of whom
+     *                              to clear the esi cache from.
+     */
+    public function clearUserBasedEsiCache($sessionId) {
+        $this->cache->clearUserBasedEsiCache($sessionId);
+    }
+
+    /**
      * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
      */
     public function getCacheDriver()
