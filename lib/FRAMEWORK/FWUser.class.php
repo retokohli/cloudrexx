@@ -122,7 +122,7 @@ class FWUser extends User_Setting
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $cx->getComponent('Session')->getSession();
 
         if (!isset($_SESSION['auth'])) {
             $_SESSION['auth'] = array();

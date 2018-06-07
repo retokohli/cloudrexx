@@ -290,7 +290,7 @@ class Login
                 $objFWUser->objUser->reset();
                 $objFWUser->logoutAndDestroySession();
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                $sessionObj = $cx->getComponent('Session')->getSession();
+                $cx->getComponent('Session')->getSession();
             } elseif (isset($_POST['login'])) {
                 $_GET['relogin'] = 'true';
             }
