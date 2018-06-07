@@ -304,6 +304,73 @@ Available options are:
     --root          Execute Bash as root
     --sql           Execute SQL on database container instead of Bash on web container."
                     ;;
+                component)
+                    case "$3" in
+                        list)
+                            echo "Lists additional components.
+
+Synopsis
+    ./cx env component list <options>
+
+Available options are:
+    --directories   List the component's directories
+    --raw           Does not shiny-print the output"
+                            ;;
+                        add)
+                            echo "Adds an additional component.
+
+Synopsis
+    ./cx env component add <componentType> <componentName> <gitRepository> (<options>)
+
+Argument description:
+    componentType   One of 'core', 'core_module', 'module', 'theme', 'lib'
+    componentName   Name of the component
+    gitRepository   GIT remote URL
+    options         See options below
+
+Available options:
+    --skip-source   Assume GIT clone is already done. <gitRepository> is optional when using this option.
+    --skip-db       Assume database is already updated and component active."
+                            ;;
+                        remove)
+                            echo "Removes an additional component.
+
+Synopsis
+    ./cx env component remove <componentType> <componentName>
+
+Argument description:
+    componentType   One of 'core', 'core_module', 'module', 'theme', 'lib'
+    componentName   Name of the component"
+                            ;;
+                        update)
+                            echo "Updates an additional component. Add a Data.sql or a OldStructureWithTestData.sql and a Migration.sql file to the Data directory of your component.
+
+Synopsis
+    ./cx env component update <componentType> <componentName> (<options>)
+
+Argument description:
+    componentType   One of 'core', 'core_module', 'module', 'theme', 'lib'
+    componentName   Name of the component
+    options         See options below
+
+Available options:
+    --db            Reset component database
+    --git           Update/pull GIT repository"
+                            ;;
+                        *)
+                        echo "Manages additional components.
+
+Synopsis
+    ./cx env component <subcommand> <arguments>
+
+Available subcommands are:
+    list            Lists registered additional components
+    add             Adds an additional component
+    remove          Removes a registered component
+    update          Updates a registered component"
+                        ;;
+                    esac
+                    ;;
                 *)
                     echo "This command manages a Cloudrexx installation and its environment.
 
@@ -320,6 +387,7 @@ Available subcommands are:
     update      Updates docker images and GIT and reloads database
     config      Configures Cloudrexx (config/configuration.php)
     shell       Interactive shell of the current environment's web container
+    component   Manages additional components
 
 For more info about a subcommand type ./cx help env <subcommand>";
                     ;;
@@ -871,6 +939,145 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     fi
                 fi
             fi
+            ;;
+        component)
+            declare -A types
+            types[core]="core"
+            types[coremodule]="core_modules"
+            types[module]="modules"
+            types[lib]="lib"
+            types[theme]="themes"
+            declare -A typeComponents
+            for type in "${!types[@]}"; do
+                typeComponents[$type]="$(get_project_var "clx.project.component.$type")"
+            done
+            case "$2" in
+                list)
+                    local nl=$'\n'
+                    local output=""
+                    if [[ "${ARGUMENTS["raw"]}" != true ]]; then
+                        output+="TYPE,NAME,REPOSITORY$nl"
+                    fi
+                    IFS=,
+                    for type in "${!typeComponents[@]}"; do
+                        components=("${typeComponents[$type]}")
+                        for name in ${components[@]}; do
+                            if [[ "$name" == "" ]]; then
+                                continue
+                            fi
+                            local gitRemote="error"
+                            if [ -d "${types[$type]}/$name" ]; then
+                                local gitRemote=$(cd "${types[$type]}/$name"; git remote get-url origin)
+                            fi
+                            if [[ "${ARGUMENTS["directories"]}" == true ]]; then
+                                echo "${types[$type]}/$name"
+                            else
+                                output+="$type,$name,$gitRemote$nl"
+                            fi
+                        done
+                    done
+                    if [[ "${ARGUMENTS["directories"]}" != true ]]; then
+                        echo "$output" | column -t -s , 
+                    elif [[ "${ARGUMENTS["raw"]}" ]]; then
+                        echo "$output"
+                    fi
+                    ;;
+                add)
+                    local type="${COMMANDS[2]}"
+                    if [[ "${types[$type]}" == "" ]]; then
+                        echo "Unknown type"
+                        exit
+                    fi
+                    if [[ "${COMMANDS[3]}" == "" ]]; then
+                        echo "Component name must not be empty"
+                        exit
+                    fi
+                    local newList="${typeComponents[$type]}"
+                    if [[ "$newList" != "" ]]; then
+                        newList+=","
+                    fi
+                    newList+="${COMMANDS[3]}"
+                    set_project_var "clx.project.component.$type" "$newList"
+                    if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
+                        git clone "${COMMANDS[4]}" "${types[$type]}/${COMMANDS[3]}"
+                    fi
+                    if [[ ${ARGUMENTS["skip-db"]} != true ]]; then
+                        cmd_env component update "$type" "${COMMANDS[3]}" --db
+                    fi
+                    ;;
+                remove)
+                    local type="${COMMANDS[2]}"
+                    if [[ "$type" == "" ]] || ! [ "${types[$type]+foobar}" ]; then
+                        echo "Unknown type"
+                        exit
+                    fi
+                    IFS=,
+                    read -r -a components <<< "${typeComponents[$type]}"
+                    local component="${COMMANDS[3]}"
+                    if [[ ! " ${components[@]} " =~ " $component " ]]; then
+                        echo "Unknown component"
+                        exit
+                    fi
+                    # TODO: This can lead to a result like "foo,,bar"
+                    components=( "${components[@]/$component}" )
+                    set_project_var "clx.project.component.$type" "${components[*]}"
+                    phpexec deactivate "${types[$type]}" "$component"
+                    ;;
+                update)
+                    local type="$3"
+                    if [[ "$type" == "" ]] || ! [ "${types[$type]+foobar}" ]; then
+                        echo "Unknown type"
+                        exit
+                    fi
+                    IFS=,
+                    read -r -a components <<< "${typeComponents[$type]}"
+                    local component="$4"
+                    if [[ ! " ${components[@]} " =~ " $component " ]]; then
+                        echo "Unknown component"
+                        exit
+                    fi
+                    directory="${types[$type]}/$component"
+                    if [[ ${ARGUMENTS["git"]} = true || ${ARGUMENTS["db"]} != true ]]; then
+                        ( cd "$directory" && git stash && git pull && git stash pop )
+                    fi
+                    if [[ ${ARGUMENTS["db"]} = true || ${ARGUMENTS["git"]} != true ]]; then
+                        case "$type" in
+                            lib)
+                                exit
+                                ;;
+                            theme)
+                                get_config_array
+                                mysql_create_tempfile
+                                local theme=$(mysql_exec "SELECT \`id\` FROM \`contrexx_skins\` WHERE \`foldername\` = '$theme'")
+                                if [[ "$theme" == "" ]]; then
+                                    mysql_exec "INSERT INTO \`contrexx_skins\` SET \`themesname\` = '$theme', \`foldername\` = '$theme', \`expert\` = 1;INSERT INTO \`contrexx_core_view_frontend\` SET \`language\` = 1, \`theme\` = LAST_INSERT_ID(), \`channel\` = 'default';"
+                                fi
+                                mysql_drop_tempfile
+                                ;;
+                            *)
+                                get_config_array
+                                mysql_create_tempfile
+                                TEMP_FILES["component_cleanup"]="$(mktemp)"
+                                echo "SET FOREIGN_KEY_CHECKS = 0;" > "${TEMP_FILES["component_cleanup"]}"
+                                mysql_exec "SELECT concat('DROP TABLE \`', TABLE_NAME, '\`;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'contrexx_${type}_${component,,}%'" -N >> "${TEMP_FILES["component_cleanup"]}"
+                                mysql_load_named "Drop existing data" "${TEMP_FILES["component_cleanup"]}"
+                                if [ -f "$directory/Data/OldStructureWithTestData.sql" ] && [ -f "$directory/Data/Migration.sql" ]; then
+                                    mysql_load_named "Import old Data" "$directory/Data/OldStructureWithTestData.sql"
+                                    mysql_load_named "Executing migration" "$directory/Data/Migration.sql"
+                                fi
+                                phpexec activate "$type" "$component"
+                                if [ -f "$directory/Data/Data.sql" ]; then
+                                    mysql_load_named "Import data" "$directory/Data/Data.sql"
+                                fi
+                                mysql_drop_tempfile
+                                ;;
+                        esac
+                    fi
+                    ;;
+                *)
+                    (>&2 echo "No such subcommand")
+                    ;;
+            esac
             ;;
         *)
             (>&2 echo "No such subcommand")
