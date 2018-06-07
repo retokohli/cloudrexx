@@ -145,22 +145,20 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
 
-        $localeInfo = 0;
-        $cachedLocaleData = $this->getCachedLocaleData();
-        if (!$cachedLocaleData) {
-            $localeInfo = $this->selectBestLanguageFromRequest($cx);
-        } else {
-            $localeInfo = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
-                $cx,
-                $cachedLocaleData
-            );
-        }
         $this->arrPageContent = array(
             'url' => $this->currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
-            'locale' => $localeInfo,
         );
+        $cachedLocaleData = $this->getCachedLocaleData();
+        if (!$cachedLocaleData) {
+            $this->arrPageContent += $this->selectBestLanguageFromRequest($cx);
+        } else {
+            $this->arrPageContent['locale'] = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+                $cx,
+                $cachedLocaleData
+            );
+        }
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
@@ -190,24 +188,25 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      *
      * This method does not use database or cached database data
      * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
-     * @return string Locale info
+     * @return array Locale info
      */
     protected function selectBestLanguageFromRequest(
         \Cx\Core\Core\Controller\Cx $cx
     ) {
-        $localeInfo = '';
+        $localeInfo = array(
+            'country' => '',
+        );
         $geoIp = $cx->getComponent('GeoIp');
         if ($geoIp) {
             $countryInfo = $geoIp->getCountryCode(array());
             if (!empty($countryInfo['content'])) {
-                $localeInfo = $countryInfo['content'];
+                $localeInfo['country'] = $countryInfo['content'];
             }
         }
-        $localeInfo .= '-';
         // since crawlers do not send accept language header, we make it optional
         // in order to keep the logs clean
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $localeInfo .= $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+            $localeInfo['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
         }
         return $localeInfo;
     }
