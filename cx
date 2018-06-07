@@ -786,9 +786,6 @@ function cmd_env {
             ARGUMENTS["show"]=true && cmd_env config
             ;;
         update)
-            if [[ ${ARGUMENTS["db"]} != true && ${ARGUMENTS["git"]} != true ]] || [[ ${ARGUMENTS["docker"]} = true ]]; then
-                dockercomposeexec pull
-            fi
             STRUCTMD5=$(/usr/bin/md5sum installer/data/contrexx_dump_structure.sql)
             DATAMD5=$(/usr/bin/md5sum installer/data/contrexx_dump_data.sql)
             DB_UPDATE_NECESSARY=false
@@ -819,6 +816,11 @@ function cmd_env {
                 else
                     DB_UPDATE_NECESSARY=false
                 fi
+                (cd "_meta"; git stash && git pull && git stash pop)
+                cmd_env config
+            fi
+            if [[ ${ARGUMENTS["db"]} != true && ${ARGUMENTS["git"]} != true ]] || [[ ${ARGUMENTS["docker"]} = true ]]; then
+                dockercomposeexec restart
             fi
             if [[ ${ARGUMENTS["git"]} = true || ${ARGUMENTS["docker"]} = true ]] && [[ ${ARGUMENTS["db"]} != true ]]; then
                 if [[ $DB_UPDATE_NECESSARY = true && ${ARGUMENTS["silent"]} != true ]]; then
