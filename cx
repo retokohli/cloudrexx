@@ -913,6 +913,14 @@ SET FOREIGN_KEY_CHECKS = 1;"
                 fi
             fi
             mysql_drop_tempfile
+
+            cmd_env remote pull
+            while read -r line; do
+                IFS=" "
+                local component=( $line )
+                echo "Update ${component[0]} ${component[1]}"
+                cmd_env component update "${component[0]}" "${component[1]}"
+            done <<< $(ARGUMENTS["raw"]=true && cmd_env component list)
             ;;
         config)
             if [[ ${ARGUMENTS["show"]} = true ]]; then
