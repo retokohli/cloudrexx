@@ -1113,7 +1113,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                                 mysql_create_tempfile
                                 local theme=$(mysql_exec "SELECT \`id\` FROM \`contrexx_skins\` WHERE \`foldername\` = '$theme'")
                                 if [[ "$theme" == "" ]]; then
-                                    mysql_exec "INSERT INTO \`contrexx_skins\` SET \`themesname\` = '$theme', \`foldername\` = '$theme', \`expert\` = 1;INSERT INTO \`contrexx_core_view_frontend\` SET \`language\` = 1, \`theme\` = LAST_INSERT_ID(), \`channel\` = 'default';"
+                                    mysql_exec "INSERT INTO \`contrexx_skins\` SET \`themesname\` = '$theme', \`foldername\` = '$theme', \`expert\` = 1";
                                 fi
                                 mysql_drop_tempfile
                                 ;;
@@ -1183,7 +1183,13 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     get_config_array
                     mysql_create_tempfile
                     echo "SET FOREIGN_KEY_CHECKS = 0;" > "$workdir/update.sql"
-                    tablePrefixes=("contrexx_content_" "contrexx_log_entry" "contrexx_module_block")
+                    tablePrefixes=(
+                        "contrexx_access_user"
+                        "contrexx_content_"
+                        "contrexx_log_entry"
+                        "contrexx_module_"
+                        "contrexx_core_view_frontend"
+                    )
                     for tablePrefix in "${tablePrefixes[@]}"; do
                         mysql_exec "SELECT concat('TRUNCATE TABLE \`', TABLE_NAME, '\`;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '$tablePrefix%'" -N >> "$workdir/update.sql"
                     done
