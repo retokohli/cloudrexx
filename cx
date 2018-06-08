@@ -921,6 +921,9 @@ SET FOREIGN_KEY_CHECKS = 1;"
             mysql_drop_tempfile
 
             while read -r line; do
+                if [[ "$line" == "" ]]; then
+                    continue
+                fi
                 IFS=" "
                 local component=( $line )
                 echo "Update ${component[0]} ${component[1]}"
