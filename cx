@@ -377,7 +377,7 @@ Available subcommands are:
                             echo "Links this installation to a remote site
 
 Synopsis
-    ./cx env remote set <remote> (--snapshot-repo=<repo>)
+    ./cx env remote set <remote> (--snapshot-repo=<repo_url>)
 
 Parameter explanations:
     <remote>        Name of the remote site to use
