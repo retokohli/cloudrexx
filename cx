@@ -1069,14 +1069,14 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     fi
                     ;;
                 remove)
-                    local type="${COMMANDS[2]}"
+                    local type="$3"
                     if [[ "$type" == "" ]] || ! [ "${types[$type]+foobar}" ]; then
                         echo "Unknown type"
                         exit
                     fi
                     IFS=,
                     read -r -a components <<< "${typeComponents[$type]}"
-                    local component="${COMMANDS[3]}"
+                    local component="$4"
                     if [[ ! " ${components[@]} " =~ " $component " ]]; then
                         echo "Unknown component"
                         exit
@@ -1084,7 +1084,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     # TODO: This can lead to a result like "foo,,bar"
                     components=( "${components[@]/$component}" )
                     set_project_var "clx.project.component.$type" "${components[*]}"
-                    phpexec deactivate "${types[$type]}" "$component"
+                    phpexec deactivate "$type" "$component"
                     ;;
                 update)
                     local type="$3"
