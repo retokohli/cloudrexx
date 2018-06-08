@@ -463,6 +463,10 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
      * @return  boolean TRUE if a session exists. Otherwise FALSE.
      */
     public static function sessionExists($sessionId = '') {
+        if (static::isInitialized()) {
+            return true;
+        }
+
         if (
             empty($sessionId) &&
             !empty($_COOKIE[session_name()])
