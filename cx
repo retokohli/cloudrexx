@@ -1212,6 +1212,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     # clear cache
                     phpexec Cache clear user
                     phpexec Cache clear page
+                    phpexec Cache clear esi
                     rm -R "$workdir"
                     ;;
                 *)
