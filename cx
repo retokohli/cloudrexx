@@ -820,6 +820,7 @@ function cmd_env {
                 cmd_env config
             fi
             if [[ ${ARGUMENTS["db"]} != true && ${ARGUMENTS["git"]} != true ]] || [[ ${ARGUMENTS["docker"]} = true ]]; then
+                dockercomposeexec pull
                 dockercomposeexec restart
             fi
             if [[ ${ARGUMENTS["git"]} = true || ${ARGUMENTS["docker"]} = true ]] && [[ ${ARGUMENTS["db"]} != true ]]; then
