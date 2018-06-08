@@ -1184,7 +1184,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     mysql_create_tempfile
                     echo "SET FOREIGN_KEY_CHECKS = 0;" > "$workdir/update.sql"
                     tablePrefixes=(
-                        "contrexx_access_user"
+                        "contrexx_access_"
                         "contrexx_content_"
                         "contrexx_log_entry"
                         "contrexx_module_"
