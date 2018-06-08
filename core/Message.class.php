@@ -197,7 +197,8 @@ class Message
     static function add($message, $class=self::CLASS_INFO)
     {
         if (!static::checkForSession()) {
-            throw new \Exception("\Message can't be used at this point as no session has been initialized yet!");
+            \DBG::log('Message can\'t be used at this point as no session has been initialized yet!');
+            return;
         }
 
         if (empty($_SESSION['messages'])) {
