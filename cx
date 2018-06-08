@@ -883,6 +883,11 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     mysql_load_named "Restore sessions" "${TEMP_FILES["session-backup"]}"
                 fi
             fi
+            mysql_drop_tempfile
+
+            cmd_env remote pull
+
+            mysql_create_tempfile
             # TODO: Check if there's at least one admin, make the user's ID dynamic
             EXISTING_CX_USER=$(mysql_exec "SELECT id FROM contrexx_access_users WHERE id = 1")
             if [[ "$EXISTING_CX_USER" == "" ]]; then
@@ -915,7 +920,6 @@ SET FOREIGN_KEY_CHECKS = 1;"
             fi
             mysql_drop_tempfile
 
-            cmd_env remote pull
             while read -r line; do
                 IFS=" "
                 local component=( $line )
