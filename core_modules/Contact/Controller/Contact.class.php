@@ -130,6 +130,11 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $page->setContent('');
             return;
         }
+
+        // we must force user based cache as the form might contain
+        // user attribute fields data
+        $cx->getComponent('Cache')->forceUserbasedPageCache();
+
         $theme = $themeRepo->findById(\Env::get('init')->getCurrentThemeId());
         $useCaptcha =
             !\FWUser::getFWUserObject()->objUser->login() &&
