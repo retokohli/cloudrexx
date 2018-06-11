@@ -2433,10 +2433,11 @@ class User extends User_Profile
         
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
-        // Flush all esi widgets attached to the current session.
+        // Flush all cache attached to the current session.
         // This is required as after the sign-in, the user might have a
         // greater access level which provides access to more or different
         // content.
+        $cx->getComponent('Cache')->clearUserBasedPageCache(session_id());
         $cx->getComponent('Cache')->clearUserBasedEsiCache(session_id());
 
         // flush access block widgets (currently signed-in users, etc.)

@@ -1250,6 +1250,32 @@ class CacheLib
     }
 
     /**
+     * Clear user based page cache of a specific user identified by its
+     * session ID.
+     *
+     * @param   string  $sessionId  The session ID of the user of whom
+     *                              to clear the page cache from.
+     */
+    public function clearUserBasedPageCache($sessionId) {
+        // abort if no valid session id is supplied
+        if (empty($sessionId)) {
+            return;
+        }
+
+        // fetch complete page cache of specific user
+        $files = glob(
+            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_u' . $sessionId
+        );
+
+        // drop identified page cache of specific user
+        if (count($files)) {
+            foreach ($files as $file) {
+                @unlink($file);
+            }
+        }
+    }
+
+    /**
      * Clear user based ESI cache of a specific user identified by its
      * session ID.
      *
