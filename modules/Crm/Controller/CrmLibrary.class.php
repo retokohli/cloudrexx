@@ -1490,7 +1490,7 @@ class CrmLibrary
             $filters = " WHERE ".implode(' AND ', $where);
         }
 
-        $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
+        $sortingFields = array("c.customer_name", "activities", "c.added_date", "c.contact_familyname",);
         $sortOrder = (isset ($filter['sorto'])) ? (((int) $filter['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
         $sortField = (isset ($filter['sortf']) && $filter['sortf'] != '' && in_array($sortingFields[$filter['sortf']], $sortingFields)) ? $sortingFields[$filter['sortf']] : 'c.id';
 
