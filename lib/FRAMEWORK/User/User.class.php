@@ -1951,7 +1951,9 @@ class User extends User_Profile
         }
         if ($passwordHasChanged) {
             // deletes all sessions which are using this user (except the session changing the password)
-            $_SESSION->cmsSessionDestroyByUserId($this->id);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $session = $cx->getComponent('Session')->getSession();
+            $session->cmsSessionDestroyByUserId($this->id);
         }
     }
 
@@ -2264,8 +2266,8 @@ class User extends User_Profile
             $session->isInitialized() &&
             isset($_SESSION) &&
             is_object($_SESSION) &&
-            $_SESSION->userId &&
-            $this->load($_SESSION->userId) &&
+            $session->userId &&
+            $this->load($session->userId) &&
             $this->getActiveStatus() &&
             $this->hasModeAccess($backend) &&
             $this->updateLastActivityTime()
