@@ -147,6 +147,8 @@ class FWValidator
 
     /**
      * Array of harmful file extensions
+     *
+     * File uploads having those extensions are denied.
      * 
      * @var array
      */
@@ -161,8 +163,10 @@ class FWValidator
     );
 
     /**
-     * Array of harmful file extensions(client script containers)
+     * Array of potential harmful file extensions (client script containers)
      * 
+     * File uploads having those extensions may be allowed by config
+     *
      * @var array
      */
     protected  static $potentialEvilFileExtensions = array(
@@ -265,8 +269,7 @@ class FWValidator
     {
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-        //Check the file extension is present in $evilFileExtensions
-        //if so, its a harm file
+        // check if file is harmfull
         if (in_array($ext, self::$evilFileExtensions)) {
             return false;
         }
@@ -279,30 +282,44 @@ class FWValidator
         // groups mentioned in the option 'allowClientSideScriptUploadOnGroups' then
         //its a harmless file.
         //If the option is 'all' then its a harmless file too.
-        if (in_array($ext, self::$potentialEvilFileExtensions)) {
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml');
-            $allowedCSUpload = \Cx\Core\Setting\Controller\Setting::getValue(
-                                'allowClientsideScriptUpload',
-                                'Config');
-            $allowedCSGroups = \Cx\Core\Setting\Controller\Setting::getValue(
-                                'allowClientSideScriptUploadOnGroups',
-                                'Config');
-            if (    $allowedCSUpload == 'nobody'
-                ||
-                    (   $allowedCSUpload == 'groups'
-                    &&  !count(
-                            array_intersect(
-                                explode(',', $allowedCSGroups),
-                                \FWUser::getFWUserObject()->objUser->getAssociatedGroupIds()
-                            )
-                        )
-                    )
-            ) {
-                return false;
-            }
+
+        // if file is not potentially harmfull, then the file is harmless
+        if (!in_array($ext, self::$potentialEvilFileExtensions)) {
+            return true;
         }
 
-        return true;
+        $allowedCSUpload = \Cx\Core\Setting\Controller\Setting::getValue(
+                            'allowClientsideScriptUpload',
+                            'Config');
+        $allowedCSGroups = \Cx\Core\Setting\Controller\Setting::getValue(
+                            'allowClientSideScriptUploadOnGroups',
+                            'Config');
+
+        // Check if we are allowed to process the potentially harmfull file.
+        // no restriction set at all
+        if ($allowedCSUpload == 'all') {
+            return true;
+        }
+
+        // check if we are a member of a user group that is allowed to upload
+        // potentially harmfull files
+        if (
+            $allowedCSUpload == 'groups' &&
+            (
+                \FWUser::getFWUserObject()->objUser->getAdminStatus() ||
+                count(
+                    array_intersect(
+                        explode(',', $allowedCSGroups),
+                        \FWUser::getFWUserObject()->objUser->getAssociatedGroupIds()
+                    )
+                )
+            )
+        ) {
+            return true;
+        }
+
+        // fallback to file is harmfull
+        return false;
     }
 
 
