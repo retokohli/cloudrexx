@@ -1955,8 +1955,9 @@ class NewsletterManager extends NewsletterLib
                                  WHEN "notificationSubscribe" THEN "'. contrexx_input2int($_POST["mailSendSubscribe"]) .'"
                                  WHEN "notificationUnsubscribe" THEN "'. contrexx_input2int($_POST["mailSendUnsubscribe"]) .'"
                                  WHEN "statistics" THEN "'. contrexx_input2int($_POST["statistics"]) .'"
+                                 WHEN "confirmLinkHour" THEN "'. contrexx_input2int($_POST["confirmLinkHour"]) .'"
                                  END
-                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe", "statistics")';
+                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe", "statistics", "confirmLinkHour")';
             $objDatabase->Execute($queryUpdateSetting);
             if (
                 isset($_POST['statistics_drop']) &&
@@ -2083,6 +2084,8 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_STATISTICS_OFF' =>
                 ($arrSettings['statistics'] == 0
                     ? 'checked="checked"' : ''),
+            'TXT_NEWSLETTER_CONFIRM_LINK_HOUR'   => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_VALIDITY_HOUR'],
+            'NEWSLETTER_CONFIRM_LINK_HOUR_VALUE' => contrexx_raw2xhtml($arrSettings['confirmLinkHour']),
         ));
     }
 
