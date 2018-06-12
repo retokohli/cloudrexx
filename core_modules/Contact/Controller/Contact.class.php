@@ -1152,10 +1152,10 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
     protected static function getTemporaryUploadPath($fieldId)
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $session = $cx->getComponent('Session')->getSession();
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        $tempPath = $session->getTempPath();
+        $tempWebPath = $session->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not get temporary session folder');
 

@@ -2526,11 +2526,14 @@ die("Failed to update the Cart!");
         if ($objUser->login()) {
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {
+                $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+                $session = $cx->getComponent('Session')->getSession();
+
                 // This is still required in confirm() (TODO: remove)
                 $_SESSION['shop']['username'] = self::$objCustomer->username();
                 $_SESSION['shop']['email'] = self::$objCustomer->email();
 //\DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().', email '.self::$objCustomer->email().")");
-                $_SESSION->cmsSessionUserUpdate(self::$objCustomer->id());
+                $session->cmsSessionUserUpdate(self::$objCustomer->id());
                 return true;
             }
         }
