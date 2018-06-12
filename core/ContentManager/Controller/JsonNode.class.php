@@ -683,7 +683,12 @@ class JsonNode implements JsonAdapter {
 
             foreach ($node->getPages() as $page) {
                 $langCode = \FWLanguage::getLanguageCodeById($page->getLang());
-                $tree[$nodeId] = array($langCode => array());
+                if (!isset($tree[$nodeId])) {
+                    $tree[$nodeId] = array();
+                }
+                if (!isset($tree[$nodeId][$langCode])) {
+                    $tree[$nodeId][$langCode] = array();
+                }
                 $tree[$nodeId][$langCode]['title'] = $page->getTitle();
                 $tree[$nodeId][$langCode]['id'] = $page->getId();
                 $tree[$nodeId][$langCode]['level'] = $node->getLvl();
@@ -692,12 +697,16 @@ class JsonNode implements JsonAdapter {
             foreach ($this->fallbacks as $lang => $fallback) {
                 $fallback = $fallback ? $fallback : null;
                 if (isset($tree[$nodeId]) && !array_key_exists($lang, $tree[$nodeId]) && array_key_exists($fallback, $tree[$nodeId])) {
-                    $tree[$nodeId][$lang] = array();
+                    if (!isset($tree[$nodeId][$lang])) {
+                        $tree[$nodeId][$lang] = array();
+                    }
                     $tree[$nodeId][$lang]['title'] = $tree[$nodeId][$fallback]['title'];
                     $tree[$nodeId][$lang]['level'] = $tree[$nodeId][$fallback]['level'];
                 } else if (isset($tree[$nodeId]) && !array_key_exists($lang, $tree[$nodeId])) {
                     if (array_key_exists($langCode, $tree[$nodeId])) {
-                        $tree[$nodeId][$lang] = array();
+                        if (!isset($tree[$nodeId][$lang])) {
+                            $tree[$nodeId][$lang] = array();
+                        }
                         $tree[$nodeId][$lang]['title'] = $tree[$nodeId][$langCode]['title'];
                         $tree[$nodeId][$lang]['level'] = $tree[$nodeId][$langCode]['level'];
                     }
