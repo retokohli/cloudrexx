@@ -438,7 +438,7 @@ class CrmManager extends CrmLibrary
                 if (!empty ($objComment->fields['icon'])) {
                     $iconPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objComment->fields['icon'])."_16X16.thumb";
                 } else {
-                    $iconPath  = '../modules/Crm/View/Media/customer_note.png';
+                    $iconPath  = '/modules/Crm/View/Media/customer_note.png';
                 }
                 $this->_objTpl->setVariable(array(
                         'TXT_COMMENT_ID'              => (int) $objComment->fields['id'],
@@ -3834,7 +3834,7 @@ END;
                     $objTpl->setVariable(array(
                             'CRM_TASK_ID'           => (int) $objResult->fields['id'],
                             'CRM_TASKTITLE'         => contrexx_raw2xhtml($objResult->fields['task_title']),
-                            'CRM_TASKICON'          => !empty ($objResult->fields['icon']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/Crm/View/Media/task_default.png',
+                            'CRM_TASKICON'          => !empty ($objResult->fields['icon']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '/modules/Crm/View/Media/task_default.png',
                             'CRM_TASKTYPE'          => contrexx_raw2xhtml($objResult->fields['task_type_id']),
                             'CRM_CUSTOMERNAME'      => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
                             'CRM_DUEDATE'           => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),
