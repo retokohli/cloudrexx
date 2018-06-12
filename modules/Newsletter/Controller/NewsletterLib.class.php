@@ -943,4 +943,35 @@ class NewsletterLib
         return $Text;
     }
 
+    /**
+     * Auto clean a registers
+     */
+    public function autoCleanRegisters()
+    {
+        $objDatabase     = \Env::get('cx')->getDb()->getAdoDb();
+        $arrSettings     = $this->_getSettings();
+        $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
+        $dateTime        = new \DateTime('now');
+        $dateTime->modify('-' . $confirmLinkHour . ' hours');
+        $objUserResult   = $objDatabase->Execute(
+            'SELECT id FROM '. DBPREFIX .'module_newsletter_user
+                WHERE source = "opt-in"
+                AND consent IS NULL
+                AND emaildate < "'. $dateTime->getTimeStamp() .'"'
+        );
+        if ($objUserResult) {
+            while (!$objUserResult->EOF) {
+                $objUserCat = $objDatabase->Execute(
+                    'DELETE FROM '. DBPREFIX .'module_newsletter_rel_user_cat
+                        WHERE user="'. contrexx_raw2db($objUserResult->fields['id']) .'"'
+                );
+                $objUser = $objDatabase->Execute(
+                    'DELETE FROM '. DBPREFIX .'module_newsletter_user
+                        WHERE id="'. contrexx_raw2db($objUserResult->fields['id']) .'"'
+                );
+
+                $objUserResult->MoveNext();
+            }
+        }
+    }
 }
