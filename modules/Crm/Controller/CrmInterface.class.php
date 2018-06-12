@@ -228,12 +228,16 @@ class CrmInterface extends CrmLibrary
         $fileName       = isset ($_POST['fileName']) ? \FWValidator::getCleanFileName(contrexx_input2raw($_POST['fileName'])) : '';
 
         if (!empty ($fileName)) {
-            $json['fileUri'] = $fileName;
-            $rowIndex      = 1;
-            $importedLines = 0;
-            $first         = true;
-            $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
-            $line          = $objCsv->NextLine();
+            $json['fileUri']     = $fileName;
+            $rowIndex            = 1;
+            $importedLines       = 0;
+            $first               = true;
+            $objCsv              = new CrmCsv(
+                $this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter
+            );
+            $line                = $objCsv->NextLine();
+            $json['data']        = array();
+            $json['contactData'] = array();
             while ($line) {
                 if ($first) {
                     $json['data']['contactHeader'] = $line;
@@ -277,6 +281,7 @@ class CrmInterface extends CrmLibrary
         $importedLines = 0;
         $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
         $line          = $objCsv->NextLine();
+        $json['contactData'] = array();
         while ($line) {
             if ($importedLines == $currentRow) {
                 $json['contactData'][$importedLines] = $line;
