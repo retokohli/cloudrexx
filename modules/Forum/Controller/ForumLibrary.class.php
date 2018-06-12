@@ -1163,6 +1163,7 @@ class ForumLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $index = 0;
+        $arrLatestEntries = array();
         $query = (empty($this->_arrSettings['latest_post_per_thread'])
             ? "SELECT `id` , `category_id` , `thread_id` , `subject` , `user_id` , `time_created`
                  FROM `".DBPREFIX."module_forum_postings`
