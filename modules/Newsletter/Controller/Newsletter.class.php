@@ -839,9 +839,9 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_CURRENT_DATE'   => $now,
             ),
         );
-//         if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
-//             return false;
-//         }
+        if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
+            return false;
+        }
 
         return true;
     }
