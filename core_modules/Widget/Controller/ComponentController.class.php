@@ -77,6 +77,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Do something before a module is loaded
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     */
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        // We do this here again:
+        // This is only triggered for application pages. The template file for
+        // application pages is not yet loaded in preContentLoad().
+        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma('', '', $page);
+        $template->setTemplate($page->getContent());
+        $this->parseWidgets($template, 'ContentManager', 'Page', $page->getId());
+        $page->setContent($template->get());
+    }
+
+    /**
      * Do something before main template gets parsed
      *
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!

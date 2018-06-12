@@ -1912,6 +1912,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
                 true    // followFallbacks
             );
             $page->setDisplay(false);
+            $page->setEditingStatus('');
             \Env::get('em')->persist($page);
             // recursion
             return $pages[$sourceLang]->setupPath($targetLang);
