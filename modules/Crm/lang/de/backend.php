@@ -630,5 +630,5 @@ $_ARRAYLANG['TXT_CRM_TASK_STATUS_COMPLETED'] = 'Erledigt';
 
 // Settings
 $_ARRAYLANG['TXT_ENTER_SORTING']    = 'Geben Sie einen Sortierwert ein';
-$_ARRAYLANG['TXT_SORTING_NUMERIC']  = 'Sortierwert sollte in numerischer [0-9] sein';
+$_ARRAYLANG['TXT_SORTING_NUMERIC']  = 'Sortierwert sollte numerisch sein [0-9]';
 $_ARRAYLANG['TXT_ENTRIES_MARKED']   = 'Aufwärtspfeil';

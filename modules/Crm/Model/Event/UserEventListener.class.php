@@ -65,6 +65,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
 
         $objUser->objAttribute->first();
+        $arrProfile = array();
         while (!$objUser->objAttribute->EOF) {
             $arrProfile[$objUser->objAttribute->getId()] = array();
             $arrProfile[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());

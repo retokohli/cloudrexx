@@ -805,9 +805,9 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
                             'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
                             'CRM_ACTIVITIES_COUNT'      => $objResult->fields['activities'],
-                            'CRM_CONTACT_NOTES_COUNT'   => "?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#notes' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
-                            'CRM_CONTACT_TASK_COUNT'    => "?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#tasks' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
-                            'CRM_CONTACT_DEALS_COUNT'   => "?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#deals' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
+                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#notes' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
+                            'CRM_CONTACT_TASK_COUNT'    => "<a href='?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#tasks' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
+                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#deals' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
                             'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/Crm/View/Media/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_person_small.png',
@@ -5684,6 +5684,7 @@ END;
         $customer['company']    = $objResult->fields['contact_type'] == 1 ? stripslashes($objResult->fields['customer_name']) : stripslashes($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']);// Reply array list for given query
         $customer['cust_input'] = stripslashes($objResult->fields['customer_id']);
         $customer['cur_name']   = stripslashes($objResult->fields['cur_name']);
+        $customer['customer'] = array();
         $row = 0;
         while (!$contactPerson->EOF) {
             $customer['customer'][$row] = array();
