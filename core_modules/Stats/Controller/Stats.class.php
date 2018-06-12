@@ -314,11 +314,13 @@ class Stats extends StatsLibrary
 
         // set javascript statistics
         if ($this->supportJavaScriptSum>0) {
-            $arrSupportJavaScript = isset($this->arrSupportJavaScript[0])
+            $javascriptSupport = isset($this->arrSupportJavaScript[1])
+                ? $this->arrSupportJavaScript[1] : 0;
+            $noJavascriptSupport = isset($this->arrSupportJavaScript[0])
                 ? $this->arrSupportJavaScript[0] : 0;
             $this->_objTpl->setVariable(array(
-                'STATS_CLIENTS_JAVASCRIPT_SUPPORT'    => $this->_makePercentBar(200, 10, 100/$this->supportJavaScriptSum * $this->arrSupportJavaScript[1], 100, 1,'Javascript Support unterstützt') . ' ' . round(100/$this->supportJavaScriptSum * $this->arrSupportJavaScript[1], 2).'% ('. $this->arrSupportJavaScript[1] .')',
-                'STATS_CLIENTS_JAVASCRIPT_NO_SUPPORT' => $this->_makePercentBar(200, 10, 100/$this->supportJavaScriptSum * $arrSupportJavaScript, 100, 1,'Javascript wird nicht unterstützt') . ' ' . round(100/$this->supportJavaScriptSum * $arrSupportJavaScript, 2).'% ('. $arrSupportJavaScript .')'
+                'STATS_CLIENTS_JAVASCRIPT_SUPPORT'    => $this->_makePercentBar(200, 10, 100/$this->supportJavaScriptSum * $javascriptSupport, 100, 1,'Javascript Support unterstützt') . ' ' . round(100/$this->supportJavaScriptSum * $javascriptSupport, 2).'% ('. $javascriptSupport .')',
+                'STATS_CLIENTS_JAVASCRIPT_NO_SUPPORT' => $this->_makePercentBar(200, 10, 100/$this->supportJavaScriptSum * $noJavascriptSupport, 100, 1,'Javascript wird nicht unterstützt') . ' ' . round(100/$this->supportJavaScriptSum * $noJavascriptSupport, 2).'% ('. $noJavascriptSupport .')'
             ));
             $this->_objTpl->hideBlock('stats_clients_javascript_nodata');
         } else {
