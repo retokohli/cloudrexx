@@ -1272,7 +1272,10 @@ class CacheLib
 
         // fetch complete page cache of specific user
         $files = glob(
-            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_u' . $sessionId
+            $this->strCachePath .
+                static::CACHE_DIRECTORY_OFFSET_PAGE . '*_u' .
+                $sessionId . '{,_h}',
+            GLOB_BRACE
         );
 
         if (!is_array($files)) {
