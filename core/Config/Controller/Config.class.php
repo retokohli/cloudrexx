@@ -1024,7 +1024,8 @@ class Config
      */
     public static function getUserGroups()
     {
-        $em        = Cx::instanciate()->getDb()->getEntityManager();
+        $cx        = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em        = $cx->getDb()->getEntityManager();
         $groupRepo = $em->getRepository('\Cx\Core\User\Model\Entity\Group');
         $groups    = $groupRepo->findAll();
         $options   = array();

@@ -289,13 +289,15 @@ class FWValidator
         }
 
         $allowedCSUpload = \Cx\Core\Setting\Controller\Setting::getValue(
-                            'allowClientsideScriptUpload',
-                            'Config');
+            'allowClientsideScriptUpload',
+            'Config'
+        );
         $allowedCSGroups = \Cx\Core\Setting\Controller\Setting::getValue(
-                            'allowClientSideScriptUploadOnGroups',
-                            'Config');
+            'allowClientSideScriptUploadOnGroups',
+            'Config'
+        );
 
-        // Check if we are allowed to process the potentially harmfull file.
+        // Check if we are allowed to process the potentially harmful file.
         // no restriction set at all
         if ($allowedCSUpload == 'all') {
             return true;
