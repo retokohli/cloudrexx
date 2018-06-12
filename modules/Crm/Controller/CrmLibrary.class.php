@@ -1492,7 +1492,7 @@ class CrmLibrary
             $filters = " WHERE ".implode(' AND ', $where);
         }
 
-        $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
+        $sortingFields = array("c.customer_name", "activities", "c.added_date", "c.contact_familyname",);
         $sortOrder = (isset ($filter['sorto'])) ? (((int) $filter['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
         $sortField = (isset ($filter['sortf']) && $filter['sortf'] != '' && in_array($sortingFields[$filter['sortf']], $sortingFields)) ? $sortingFields[$filter['sortf']] : 'c.id';
 
@@ -3124,10 +3124,10 @@ class CrmLibrary
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $session = $cx->getComponent('Session')->getSession();
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        $tempPath = $session->getTempPath();
+        $tempWebPath = $session->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not get temporary session folder');
 
