@@ -36,6 +36,14 @@
 namespace Cx\Core_Modules\Widget\Controller;
 
 /**
+ * Exception for wrong usage of ESI widget
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage coremodules_widget
+ */
+class EsiWidgetControllerException extends \Exception {}
+
+/**
  * JsonAdapter Controller to handle EsiWidgets
  * Usage:
  * - Create a subclass that implements parseWidget()
@@ -243,8 +251,47 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 );
                 return $locale;
             },
-            'user' => function($userId) {
-                return \FWUser::getFWUserObject()->objUser->getUser($userId);
+            'user' => function($sessionId) {
+                // Abort in case no session-ID has been supplied.
+                // Important: non-session-users will have $sessionId
+                // set to '0'
+                if (empty($sessionId)) {
+                    // Verify that no session is active. 
+                    // As no session-ID has been supplied to the ESI-request,
+                    // no session must be present. Otherwise this is a security
+                    // breach and must be stopped.
+                    if ($this->getComponent('Session')->isInitialized()) {
+                        \DBG::msg(
+                            'No session-ID supplied as ESI-argument. ' .
+                            'However a session is active. This is prohibited'
+                        );
+                        throw new EsiWidgetControllerException('Invalid session state!');
+                    }
+
+                    // don't initialize a session as non is required
+                    return $sessionId;
+                }
+
+                // verify session-id param with active session
+                if (
+                    $this->getComponent('Session')->isInitialized() &&
+                    $sessionId != session_id()
+                ) {
+                    \DBG::log(
+                        'Session-ID of ESI-request (' . $sessionId . ') is ' .
+                        'different to currently initialized session (' .
+                         session_id() . ')'
+                    );
+                    throw new EsiWidgetControllerException('Unauthorized session access!');
+                }
+
+                // select session based on supplied ESI-param
+                session_id($sessionId);
+
+                // resume existing session, but don't initialize a new session
+                $this->getComponent('Session')->getSession(false);
+
+                return $sessionId;
             },
             'theme' => function($themeId) {
                 $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();

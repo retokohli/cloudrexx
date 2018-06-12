@@ -122,7 +122,7 @@ class FWUser extends User_Setting
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $session = $cx->getComponent('Session')->getSession();
 
         if (!isset($_SESSION['auth'])) {
             $_SESSION['auth'] = array();
@@ -151,8 +151,8 @@ class FWUser extends User_Setting
         }
 
         $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-        $_SESSION->cmsSessionUserUpdate();
-        $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
+        $session->cmsSessionUserUpdate();
+        $session->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         return false;
     }
 
@@ -180,7 +180,9 @@ class FWUser extends User_Setting
     function loginUser($objUser) {
         global $objInit;
 
-        $_SESSION->cmsSessionUserUpdate($objUser->getId());
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $session = $cx->getComponent('Session')->getSession();
+        $session->cmsSessionUserUpdate($objUser->getId());
         $objUser->registerSuccessfulLogin();
         unset($_SESSION['auth']['loginLastAuthFailed']);
         // Store frontend lang_id in cookie
@@ -563,12 +565,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     $objUser->getUsername(),
                     $restoreLink,
-                    $objUserMail->getSenderName()
+                    $objUserMail->getSenderName(),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyText()
             );
@@ -579,12 +583,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
                     $restoreLink,
-                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyHtml()
             );
