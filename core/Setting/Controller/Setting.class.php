@@ -1042,7 +1042,16 @@ class Setting{
                 }
                 //\DBG::log('setting value ' . $name . ' = ' . $value);
                 self::set($name, $value);
-            } elseif ($arrSettings[$name]['type'] == self::TYPE_CHECKBOX && $arrSettings[$name]['group'] == $submittedGroup) {
+            } elseif (
+                in_array(
+                    $arrSettings[$name]['type'],
+                    array(
+                        self::TYPE_CHECKBOX,
+                        self::TYPE_DROPDOWN_MULTISELECT,
+                    )
+                ) &&
+                $arrSettings[$name]['group'] == $submittedGroup
+            ) {
                 self::set($name, null);
             }
         }
