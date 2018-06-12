@@ -143,6 +143,11 @@
         # JavaScript
         ExpiresByType application/javascript "access plus 1 year"
 
+        # Forces browser caches to verify ETag
+        <IfModule mod_headers.c>
+            Header merge Cache-Control no-cache
+        </IfModule>
+
         # Uncomment & install the following code into the virtual
         # host configuration file.
         #
