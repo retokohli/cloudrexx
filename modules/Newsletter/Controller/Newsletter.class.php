@@ -124,18 +124,19 @@ class Newsletter extends NewsletterLib
         // Checks registered time with current time, if time exceeds
         // configured number of hours user will be removed from a list
         $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
-        $emailedTime     = strtotime(date('H:i:s', $emailDate));
-        $currentTime     = strtotime(date('H:i:s', time()));
-        $diffHour        = ($currentTime - $emailedTime) / 3600;
-        if ($confirmLinkHour < $diffHour) {
-            $objUserCat = $objDatabase->Execute(
-                'DELETE FROM '. DBPREFIX .'module_newsletter_rel_user_cat
-                    WHERE user="'. contrexx_raw2db($userId) .'"'
-            );
-            $objUser = $objDatabase->Execute(
-                'DELETE FROM '. DBPREFIX .'module_newsletter_user
-                    WHERE id="'. contrexx_raw2db($userId) .'"'
-            );
+        $dateTime        = new \DateTime('now');
+        $dateTime->modify('-' . $confirmLinkHour . ' hours');
+        if ($emailDate < $dateTime->getTimeStamp()) {
+            if ($arrSettings['defUnsubscribe']['setvalue'] == 1) {
+                $objUserCat = $objDatabase->Execute(
+                    'DELETE FROM '. DBPREFIX .'module_newsletter_rel_user_cat
+                        WHERE user="'. contrexx_raw2db($userId) .'"'
+                );
+                $objUser = $objDatabase->Execute(
+                    'DELETE FROM '. DBPREFIX .'module_newsletter_user
+                        WHERE id="'. contrexx_raw2db($userId) .'"'
+                );
+            }
             $this->_objTpl->setVariable(
                 'NEWSLETTER_MESSAGE',
                 '<span class="text-danger">'. $_ARRAYLANG['TXT_NEWSLETTER_NOT_CONFIRM_MSG'] .'</span>'
@@ -838,9 +839,9 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_CURRENT_DATE'   => $now,
             ),
         );
-        if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
-            return false;
-        }
+//         if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
+//             return false;
+//         }
 
         return true;
     }

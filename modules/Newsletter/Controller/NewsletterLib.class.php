@@ -959,7 +959,7 @@ class NewsletterLib
                 AND consent IS NULL
                 AND emaildate < "'. $dateTime->getTimeStamp() .'"'
         );
-        if ($objUserResult) {
+        if ($objUserResult && $arrSettings['defUnsubscribe']['setvalue'] == 1) {
             while (!$objUserResult->EOF) {
                 $objUserCat = $objDatabase->Execute(
                     'DELETE FROM '. DBPREFIX .'module_newsletter_rel_user_cat
