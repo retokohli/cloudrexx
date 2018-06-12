@@ -604,6 +604,12 @@ class Setting{
               //Multiselect dropdown/Dropdown menu
               case self::TYPE_DROPDOWN_MULTISELECT:
                   $isMultiSelect = true;
+                  \JS::registerCode('
+                      cx.jQuery(document).ready(function() { 
+                        if (cx.jQuery(".chzn-select-multi").length > 0) { 
+                            cx.jQuery(".chzn-select-multi").chosen({width: "' . self::DEFAULT_INPUT_WIDTH  . 'px"}); 
+                        } 
+                      });');
               case self::TYPE_DROPDOWN:
                 $matches   = null;
                 $arrValues = $arrSetting['values'];
@@ -616,7 +622,7 @@ class Setting{
                 $elementName   = $isMultiSelect ? $name.'[]' : $name;
                 $value         = $isMultiSelect ? self::splitValues($value) : $value;
                 $elementValue  = is_array($value) ? array_flip($value) : $value;
-                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
+                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select-multi"' : '';
                 $element       = \Html::getSelect(
                                     $elementName, $arrValues, $elementValue,
                                     '', '',
