@@ -191,3 +191,5 @@ $_ARRAYLANG['TXT_CORE_CONFIG_ROBOTSTXT'] = 'robots.txt';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_MAINDOMAIN'] = 'Unable to change main domain to %s as the website can not be reached through it. Please verify the DNS-configuration of the domain.';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'] = 'Unable to change the protocol as the website can not be reached on %s';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_FORCE_MAINDOMAIN'] = 'Unable to force the main domain as the website can not be reached through it.';
+$_ARRAYLANG['TXT_CORE_CONFIG_COOKIENOTE'] = 'Show cookie notice';
+$_ARRAYLANG['TXT_CORE_CONFIG_COOKIENOTE_TOOLTIP_HELP'] = 'This shows a cookie note to all new website visitors.';
