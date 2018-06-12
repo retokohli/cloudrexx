@@ -221,6 +221,8 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
 // TODO: check if _uploadFiles does something dangerous with $arrFormData['fields'] (this is raw data!)
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
+            $arrFormData['data'] = array();
+            $arrFormData['meta'] = array();
             foreach ($_POST as $key => $value) {
                 if ((($value === '0') || !empty($value)) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
                     $id = intval(substr($key, 17));
