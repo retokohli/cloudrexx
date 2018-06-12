@@ -155,6 +155,7 @@ class FormGenerator {
      * @return \Cx\Core\Html\Model\Entity\HtmlElement
      */
     public function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
+        global $_ARRAYLANG;
 
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
@@ -165,6 +166,8 @@ class FormGenerator {
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'formtext');
         } else if (isset($fieldOptions['header'])) {
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'header');
+        } else if (isset($_ARRAYLANG[$fieldHeader])) {
+            $fieldHeader = $_ARRAYLANG[$fieldHeader];
         }
         $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldHeader . ' '));
         $group->addChild($label);
@@ -218,13 +221,14 @@ class FormGenerator {
                         'length' => $length,
                         'value' => $value,
                         'options' => $options,
+                        'id' => $entityId,
                     )
                 );
                 if ($jsonResult['status'] == 'success') {
                     $formField = $jsonResult["data"];
                 }
             } else if (is_callable($formFieldGenerator)){
-                $formField = $formFieldGenerator($name, $type, $length, $value, $options);
+                $formField = $formFieldGenerator($name, $type, $length, $value, $options, $entityId);
             }
 
             if (is_a($formField, 'Cx\Core\Html\Model\Entity\HtmlElement')) {

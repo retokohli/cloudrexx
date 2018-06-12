@@ -92,7 +92,7 @@ class Resolver {
 
     /**
      * Remembers if we've come across a redirection while resolving the URL.
-     * This allow to properly redirect via 302.
+     * This allow to properly redirect.
      * @var boolean
      */
     protected $isRedirection = false;
@@ -146,7 +146,7 @@ class Resolver {
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET
      * @param array $fallbackLanguages (languageId => fallbackLanguageId)
-     * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
+     * @param boolean $forceInternalRedirection does not redirect for internal redirections if set to true.
      *                this is used mainly for testing currently.
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
@@ -161,7 +161,7 @@ class Resolver {
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET
      * @param array $fallbackLanguages (languageId => fallbackLanguageId)
-     * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
+     * @param boolean $forceInternalRedirection does not redirect for internal redirections if set to true.
      *                this is used mainly for testing currently.
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
@@ -178,7 +178,14 @@ class Resolver {
         $this->fallbackLanguages = $fallbackLanguages;
         $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
-        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page']->toArray() : array();
+
+        // load preview page from session (if requested)
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $session = $cx->getComponent('Session');
+        $session->getSession($this->pagePreview);
+        if ($session->isInitialized()) {
+            $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page']->toArray() : array();
+        }
     }
 
     public function resolve() {
@@ -229,14 +236,16 @@ class Resolver {
             }
         }
 
-        // used for LinkGenerator
-        define('FRONTEND_LANG_ID', $this->lang);
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getDb()->getTranslationListener()->setTranslatableLocale(
-            \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
-        );
-        // used to load template file
-        \Env::get('init')->setFrontendLangId($this->lang);
+        if ($this->lang) {
+            // used for LinkGenerator
+            define('FRONTEND_LANG_ID', $this->lang);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getDb()->getTranslationListener()->setTranslatableLocale(
+                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+            );
+            // used to load template file
+            \Env::get('init')->setFrontendLangId($this->lang);
+        }
 
 
 
@@ -263,8 +272,15 @@ class Resolver {
                         // Regular page request
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
-                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
-                                $sessionObj = $cx->getComponent('Session')->getSession();
+                            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                            $session = $cx->getComponent('Session');
+                            if (
+                                isset($_GET['pagePreview']) &&
+                                $_GET['pagePreview'] == 1
+                            ) {
+                                // resume existing session, but don't
+                                // initialize a new session
+                                $session->getSession(false);
                             }
                             $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
@@ -536,9 +552,10 @@ class Resolver {
             // TODO: Cache this redirect. This is not done yet since we would
             // need to drop the complete page cache (since we don't know which
             // is the correct cache file for this redirect)
-            header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $target);
-            header('Connection: close');
+            header('Location: ' . $target, true, 301);
+            if (!$this->page->isTargetInternal()) {
+                header('Connection: close');
+            }
             exit;
         }
 
@@ -555,13 +572,10 @@ class Resolver {
             }
             // set query params (like /de/alias1?foo=bar)
             $correctUrl->setParams($this->url->getParamArray());
-            // 301 redirect
             // TODO: Cache this redirect. This is not done yet since we would
             // need to drop the complete page cache (since we don't know which
             // is the correct cache file for this redirect)
-            header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $correctUrl->toString());
-            header('Connection: close');
+            header('Location: ' . $correctUrl->toString(), true, 301);
             exit();
         }
         return $this->page;
@@ -642,7 +656,7 @@ class Resolver {
 
             //(III) extend our url object with matched path / params
             $this->url->setTargetPath($result['matchedPath'].$result['unmatchedPath']);
-            $this->url->setParams($this->url->getSuggestedParams());
+            $this->url->setParams($this->url->getSuggestedParams() . $this->url->getSuggestedAnchor());
 
             $this->page = $result['page'];
         }
@@ -740,14 +754,17 @@ class Resolver {
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
                 $this->resolvePage(true);
-            } else { //external target - redirect via HTTP 302
+            } else { //external target - redirect via HTTP redirect
                 if (\FWValidator::isUri($target)) {
                     $this->headers['Location'] = $target;
                     $emptyString = '';
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
+                    // need to set this before Cache::postFinalize()
+                    http_response_code(301);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-                    header('Location: ' . $target);
+                    header('Location: ' . $target, true, 301);
+                    header('Connection: close');
                     exit;
                 } else {
                     if ($target[0] == '/') {
@@ -769,24 +786,28 @@ class Resolver {
                     $emptyString = '';
                     \Env::set('Resolver', $this);
                     \Env::set('Page', $this->page);
+                    // need to set this before Cache::postFinalize()
+                    http_response_code(301);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-                    header('Location: ' . $target);
+                    header('Location: ' . $target, true, 301);
                     exit;
                 }
             }
         }
 
-        //if we followed one or more redirections, the user shall be redirected by 302.
+        //if we followed one or more redirections, the user shall be redirected.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
             $target = $this->page->getURL($this->pathOffset, array());
             $target->setParams($params);
-            $this->headers['Location'] = $target;
+            $this->headers['Location'] = $target->toString() . $this->url->getSuggestedAnchor();
             $emptyString = '';
             \Env::set('Resolver', $this);
             \Env::set('Page', $this->page);
+            // need to set this before Cache::postFinalize()
+            http_response_code(301);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
-            header('Location: ' . $target);
+            header('Location: ' . $target->toString() . $this->url->getSuggestedAnchor(), true, 301);
             exit;
         }
 
@@ -828,7 +849,7 @@ class Resolver {
         if ($section) {
             if ($section == 'logout') {
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                $sessionObj = $cx->getComponent('Session')->getSession();
+                $cx->getComponent('Session')->getSession();
                 if ($objFWUser->objUser->login()) {
                     $objFWUser->logout();
                 }
@@ -998,15 +1019,12 @@ class Resolver {
         }
 
         // Authentification for protected pages
-        if (   (   $page_protected
-                || $history
-                || !empty($_COOKIE['PHPSESSID']))
-            && (   !isset($_REQUEST['section'])
-                || $_REQUEST['section'] != 'Login')
+        if (($page_protected || $history) &&
+            (
+               !isset($_REQUEST['section']) ||
+                $_REQUEST['section'] != 'Login'
+            )
         ) {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            $sessionObj = $cx->getComponent('Session')->getSession();
-            $_SESSION->cmsSessionStatusUpdate('frontend');
             if (\FWUser::getFWUserObject()->objUser->login()) {
                 if ($page_protected) {
                     if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
@@ -1020,8 +1038,6 @@ class Resolver {
                     \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
                     exit;
                 }
-            } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
-                unset($_COOKIE['PHPSESSID']);
             } else {
                 if (isset($_GET['redirect'])) {
                     $link = $_GET['redirect'];

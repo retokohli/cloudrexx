@@ -359,6 +359,7 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_EDITED'] = "Eintrag wurde erfolgrei
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_DELETED'] = "Eintrag wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_MOVED'] = "Eintrag wurde erfolgreich verschoben.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'] = "Fehler beim Bearbeiten des Eintrages.";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTER_FORM_EDITED'] = "Das Registrationsforumlar kann nicht geändert werden, da bereits Registrationen bestehen.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_DELETED'] = "Fehler beim Löschen des Eintrages.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_MOVED'] = "Fehler beim Verschieben des Eintrages.";
 $_ARRAYLANG['TXT_CALENDAR_NEW_MAIL_TEMPLATE'] = "E-Mail Vorlage hinzufügen";

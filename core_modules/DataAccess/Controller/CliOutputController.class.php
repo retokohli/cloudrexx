@@ -25,7 +25,7 @@
  */
 
 /**
- * Output controller for raw output
+ * Output controller for cli output
  *
  * @copyright   Cloudrexx AG
  * @author Michael Ritter <michael.ritter@cloudrexx.com>
@@ -36,14 +36,14 @@
 namespace Cx\Core_Modules\DataAccess\Controller;
 
 /**
- * Output controller for raw output
+ * Output controller for cli output
  *
  * @copyright   Cloudrexx AG
  * @author Michael Ritter <michael.ritter@cloudrexx.com>
  * @package cloudrexx
  * @subpackage core_modules_dataaccess
  */
-class RawOutputController extends OutputController {
+class CliOutputController extends OutputController {
 
     /**
      * @var Character for top left corner
@@ -141,7 +141,7 @@ class RawOutputController extends OutputController {
     const LINE_END = "\n";
 
     /**
-     * Returns the raw encoded (/unencoded) data
+     * Returns the cli encoded (/unencoded) data
      * @param array $data Data to encode
      * @return string Encoded data
      */
@@ -164,7 +164,31 @@ class RawOutputController extends OutputController {
         if (!count($data)) {
             return '(Empty set)' . static::LINE_END;
         }
+        if ($this->array_depth($data) == 1) {
+            $data = array($data);
+        }
         return $this->tablify($data);
+    }
+
+    /**
+     * Detects the depth of an array
+     * @param array $array Array to analyze
+     * @return int Depth of $array
+     */
+    protected function array_depth(array $array) {
+        $max_depth = 1;
+
+        foreach ($array as $value) {
+            if (is_array($value)) {
+                $depth = $this->array_depth($value) + 1;
+
+                if ($depth > $max_depth) {
+                    $max_depth = $depth;
+                }
+            }
+        }
+
+        return $max_depth;
     }
 
     /**
