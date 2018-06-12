@@ -775,8 +775,7 @@ function cmd_env {
             ;;
         status)
             if [[ ${ARGUMENTS["q"]} == true ]]; then
-                echo "" | dockercomposeexec ps -q > /dev/null
-                exit $?
+                exit $(test -n "$(dockercomposeexec ps -q)")
             else
                 dockercomposeexec ps
             fi
@@ -1001,7 +1000,11 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     if [[ ${ARGUMENTS["root"]} ]]; then
                         dockerexec exec -ti "<web-container>" bash -c "$@"
                     else
-                        dockerexec exec -ti --user www-data "<web-container>" bash -c "$@"
+                        if [ -t 0 ] ; then
+                            dockerexec exec -ti --user www-data "<web-container>" bash -c "$@"
+                        else
+                            dockerexec exec -i --user www-data "<web-container>" bash -c "$@"
+                        fi
                     fi
                 fi
             fi
