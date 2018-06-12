@@ -272,6 +272,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Clear user based page cache of a specific user identified by its
+     * session ID.
+     *
+     * @param   string  $sessionId  The session ID of the user of whom
+     *                              to clear the page cache from.
+     */
+    public function clearUserBasedPageCache($sessionId) {
+        $this->cache->clearUserBasedPageCache($sessionId);
+    }
+
+    /**
      * Clear user based ESI cache of a specific user identified by its
      * session ID.
      *
