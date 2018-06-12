@@ -1199,13 +1199,18 @@ class CacheLib
      */
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
-        if ( 0 < $intPageId ) {
-            $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
-            if ( count( $files ) ) {
-                foreach ( $files as $file ) {
-                    @unlink( $file );
-                }
-            }
+        if (!$intPageId) {
+            return;
+        }
+
+        $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
+
+        if (!is_array($files)) {
+            return;
+        }
+
+        foreach ($files as $file) {
+            @unlink($file);
         }
     }
 
@@ -1242,10 +1247,13 @@ class CacheLib
      */
     public function deleteNonPagePageCache() {
         $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_{,h}', GLOB_BRACE);
-        if (count($files)) {
-            foreach ($files as $file) {
-                @unlink($file);
-            }
+
+        if (!is_array($files)) {
+            return;
+        }
+
+        foreach ($files as $file) {
+            @unlink($file);
         }
     }
 
@@ -1267,11 +1275,13 @@ class CacheLib
             $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_u' . $sessionId
         );
 
+        if (!is_array($files)) {
+            return;
+        }
+
         // drop identified page cache of specific user
-        if (count($files)) {
-            foreach ($files as $file) {
-                @unlink($file);
-            }
+        foreach ($files as $file) {
+            @unlink($file);
         }
     }
 
@@ -1293,11 +1303,13 @@ class CacheLib
             $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . '*_u' . $sessionId . '*'
         );
 
+        if (!is_array($files)) {
+            return;
+        }
+
         // drop identified esi cache of specific user
-        if (count($files)) {
-            foreach ($files as $file) {
-                @unlink($file);
-            }
+        foreach ($files as $file) {
+            @unlink($file);
         }
     }
 
