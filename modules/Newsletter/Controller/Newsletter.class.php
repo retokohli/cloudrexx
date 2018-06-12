@@ -105,17 +105,41 @@ class Newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
+        $arrSettings = $this->_getSettings();
         $userEmail   = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
         $count       = 0;
-        $currentTime = date('Y-m-d H:i:s', time());
+        $currentDateTime = date('Y-m-d H:i:s', time());
         if (!empty($userEmail)) {
-            $query     = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
+            $query     = "SELECT id,emaildate FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
             $userId    = $objResult->fields['id'];
+            $emailDate = $objResult->fields['emaildate'];
         }
         if (empty($count)) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
+            return;
+        }
+
+        // Checks registered time with current time, if time exceeds
+        // configured number of hours user will be removed from a list
+        $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
+        $emailedTime     = strtotime(date('H:i:s', $emailDate));
+        $currentTime     = strtotime(date('H:i:s', time()));
+        $diffHour        = ($currentTime - $emailedTime) / 3600;
+        if ($confirmLinkHour < $diffHour) {
+            $objUserCat = $objDatabase->Execute(
+                'DELETE FROM '. DBPREFIX .'module_newsletter_rel_user_cat
+                    WHERE user="'. contrexx_raw2db($userId) .'"'
+            );
+            $objUser = $objDatabase->Execute(
+                'DELETE FROM '. DBPREFIX .'module_newsletter_user
+                    WHERE id="'. contrexx_raw2db($userId) .'"'
+            );
+            $this->_objTpl->setVariable(
+                'NEWSLETTER_MESSAGE',
+                '<span class="text-danger">'. $_ARRAYLANG['TXT_NEWSLETTER_NOT_CONFIRM_MSG'] .'</span>'
+            );
             return;
         }
 
@@ -123,7 +147,7 @@ class Newsletter extends NewsletterLib
         // on recipient id.
         $objUserCat = $objDatabase->Execute(
             'UPDATE '. DBPREFIX .'module_newsletter_rel_user_cat
-                SET consent = "'. $currentTime .'"
+                SET consent = "'. $currentDateTime .'"
             where user = "'. contrexx_raw2db($userId) .'"'
         );
 
@@ -132,7 +156,7 @@ class Newsletter extends NewsletterLib
         $objResult = $objDatabase->Execute(
             'UPDATE '. DBPREFIX .'module_newsletter_user
                 SET status  = '. 1 .',
-                    consent = "'. $currentTime .'"
+                    consent = "'. $currentDateTime .'"
             where email = "'. contrexx_raw2db($userEmail) .'"'
         );
         if ($objResult !== false) {
@@ -168,8 +192,6 @@ class Newsletter extends NewsletterLib
                         $userSex = '';
                         break;
                 }
-
-                $arrSettings = $this->_getSettings();
 
                 $url = $_SERVER['SERVER_NAME'];
                 $arrMailTemplate = array(
