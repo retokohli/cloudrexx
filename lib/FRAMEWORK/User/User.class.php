@@ -2266,8 +2266,8 @@ class User extends User_Profile
             $session->isInitialized() &&
             isset($_SESSION) &&
             is_object($_SESSION) &&
-            $session->userId &&
-            $this->load($session->userId) &&
+            $session->getSession()->userId &&
+            $this->load($session->getSession()->userId) &&
             $this->getActiveStatus() &&
             $this->hasModeAccess($backend) &&
             $this->updateLastActivityTime()
