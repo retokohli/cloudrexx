@@ -1240,7 +1240,7 @@ CODE;
             }
 
             $localFile  = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativePath, $this->fileSystem);
-            $filePath   = $localFile->getFileSystem()->getFullPath($localFile);
+            $filePath   = $localFile->getFileSystem()->getFullPath($localFile) . $localFile->getFullName();
             $removePath = preg_replace('/'. preg_quote($relativePath, '/') .'$/', '', $filePath);
 
             if ($archive->add($filePath, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
@@ -2075,10 +2075,20 @@ CODE;
         $components = $objSystemComponent->findAll();
         $componentFiles = array();
         foreach ($components as $component) {
-           $componentDirectory = $component->getDirectory() . '/View/Template/Frontend';
-            if (file_exists($componentDirectory)) {
-                foreach (glob("$componentDirectory/*") as $componentFile) {
-                   $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+            foreach (array('Template/Frontend', 'Style') as $offset) {
+                $componentDirectory = $cx->getClassLoader()->getFilePath(
+                    $component->getDirectory(false) . '/View/' . $offset
+                );
+                if (file_exists($componentDirectory)) {
+                    foreach (glob("$componentDirectory/*") as $componentFile) {
+                        if (
+                            substr($componentFile, -3, 3) == 'css' &&
+                            substr($componentFile, -12, 12) != 'Frontend.css'
+                        ) {
+                            continue;
+                        }
+                        $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+                    }
                 }
             }
         }
@@ -2189,7 +2199,10 @@ CODE;
                 if (in_array($fileName, $this->filenames)) {
                     $iconSrc = '../core/ViewManager/View/Media/Config.png';
                 } else {
-                    $iconSrc = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($this->fileSystem->getFullPath($localFile)) . '.png';
+                    $iconSrc  = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath(); 
+                    $iconSrc .= \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon(
+                        $this->fileSystem->getFullPath($localFile) . $localFile->getFullName()
+                    ) . '.png';
                 }
 
                 $icon    = "<img height='16' width='16' alt='icon' src='" . $iconSrc . "' class='icon'>";
@@ -2232,7 +2245,10 @@ CODE;
                 preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $this->fileSystem->readFile($file))
             );
             $objTemplate->setVariable('CONTENT_HTML', $contenthtml);
-            $pathInfo =  pathinfo($this->fileSystem->getFullPath($file), PATHINFO_EXTENSION);
+            $pathInfo = pathinfo(
+                $this->fileSystem->getFullPath($file) . $file->getFullName(),
+                PATHINFO_EXTENSION
+            );
             $mode = 'html';
 
             switch($pathInfo) {
@@ -2372,14 +2388,18 @@ CODE;
             return false;
         }
 
+        $offset = 'Template/Frontend';
+        if (substr($path, -3, 3) == 'css') {
+            $offset = 'Style';
+        }
         //get the Core Modules File path
         if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', $path)) {
-            return \Env::get('cx')->getCoreModuleFolderName() .'/'.$moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+            return \Env::get('cx')->getCoreModuleFolderName() .'/'.$moduleName . ($loadFromComponentDir ? '/View' : '') .'/'.$offset.'/' . $fileName;
         }
 
         //get the Modules File path
         if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', $path)) {
-            return \Env::get('cx')->getModuleFolderName() .'/'. $moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+            return \Env::get('cx')->getModuleFolderName() .'/'. $moduleName . ($loadFromComponentDir ? '/View' : '') .'/'.$offset.'/' . $fileName;
         }
 
         return false;

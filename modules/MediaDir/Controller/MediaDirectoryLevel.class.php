@@ -95,12 +95,11 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereLevelId = null;
         }
 
+        $langId = static::getOutputLocale()->getId();
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $whereActive = "AND (level.active='1') ";
-            $langId = FRONTEND_LANG_ID;
         } else {
             $whereActive = '';
-            $langId = LANG_ID;
         }
 
         switch($this->arrSettings['settingsLevelOrder']) {
@@ -347,6 +346,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
 
                 foreach ($arrLevels as $key => $arrLevel) {
+                    $intBlockId = $arrExistingBlocks[$i];
+
                     if($this->arrSettings['settingsLevelOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
 
@@ -374,6 +375,25 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
                     } else {
                         $strLevelCmd = null;
+                    }
+
+                    // parse entries
+                    if (
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries') &&
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entry')
+                    ) {
+                        $objEntry = new MediaDirectoryEntry($this->moduleName);
+                        $objEntry->getEntries(null, $arrLevel['levelId'], null, null, false, null, true);
+                        if ($objEntry->countEntries()) {
+                            // set mediadirCategoriesLevels_row_N_entry tempalte block to be parsed
+                            $objEntry->setStrBlockName($this->moduleNameLC.'CategoriesLevels_row_'. $intBlockId . '_entry');
+
+                            // prarse related entries
+                            $objEntry->listEntries($objTpl, 5, 'category_level');
+                            $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        } else {
+                            $objTpl->hideBlock($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        }
                     }
 
                     //parse variables
@@ -405,8 +425,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             );
                         }
                     }
-
-                    $intBlockId = $arrExistingBlocks[$i];
 
                     $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_'.$intBlockId);
                     $objTpl->clearVariables();
@@ -513,6 +531,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 $thumbImage = $this->getThumbImage($arrLevels[$intLevelId]['levelPicture']);
                 $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_TYPE' => 'level',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $intLevelId).'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
@@ -644,7 +663,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
     function saveLevel($arrData, $intLevelId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         //get data
         $intId = intval($intLevelId);
@@ -658,6 +677,28 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         $arrName = $arrData['levelName'];
         $arrDescription = $arrData['levelDescription'];
         $arrMetaDesc = $arrData['levelMetaDesc'];
+
+        if (empty($arrName[0])) {
+            $arrName[0] = '[[' . $_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL'] . ']]';
+        }
+        if (
+            empty($arrDescription[0]) &&
+            isset($arrDescription[static::getOutputLocale()->getId()])
+        ) {
+            $arrDescription[0] = $arrDescription[static::getOutputLocale()->getId()];
+        }
+        if (empty($arrDescription[0])) {
+            $arrDescription[0] = '';
+        }
+        if (
+            empty($arrMetaDesc[0]) &&
+            isset($arrMetaDesc[static::getOutputLocale()->getId()])
+        ) {
+            $arrMetaDesc[0] = $arrMetaDesc[static::getOutputLocale()->getId()];
+        }
+        if (empty($arrMetaDesc[0])) {
+            $arrMetaDesc[0] = '';
+        }
 
         if(empty($intId)) {
             //insert new category
@@ -678,10 +719,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $intId = $objDatabase->Insert_ID();
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
-
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
                     $metaDesc = $arrMetaDesc[$arrLang['id']];
@@ -737,10 +774,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
-
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
                     $metaDesc = $arrMetaDesc[$arrLang['id']];
@@ -814,4 +847,4 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         return true;
     }
 }
-?>
+

@@ -245,8 +245,11 @@ class PageLogRepository extends LogEntryRepository
                     }
                     if (!$page->getNodeIdShadowed()) {
                         \DBG::msg('Page #' . $page->getId() . '\'s shadowed node ID is NULL<br />');
-                        $result[][$page->getLang()] = $log;
+                        $result[] = array($page->getLang() => $log);
                     } else {
+                        if (!isset($result[$page->getNodeIdShadowed()])) {
+                            $result[$page->getNodeIdShadowed()] = array();
+                        }
                         $result[$page->getNodeIdShadowed()][$page->getLang()] = $log;
                     }
                 }

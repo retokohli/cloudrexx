@@ -641,9 +641,17 @@ var _active_tab = '.
         foreach ($arrOptions as $key => $value) {
             $options .=
                 '<option value="' . $key . '"'
-                . (is_array($selected) && array_key_exists($key, $selected)
-                    || "$selected" === "$key"
-                        ? Html::ATTRIBUTE_SELECTED : '')
+                . (
+                    (
+                        is_array($selected) &&
+                        array_key_exists($key, $selected)
+                    ) || 
+                    (
+                        !is_array($selected) &&
+                        "$selected" === "$key"
+                    )
+                    ? Html::ATTRIBUTE_SELECTED : ''
+                )
                 . ($attribute ? ' ' . $attribute : '') . '>'
                 . ($value != '' ? contrexx_raw2xhtml($value) : '&nbsp;')
                 . "</option>\n";

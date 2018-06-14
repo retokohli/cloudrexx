@@ -74,10 +74,19 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
     /**
      * @inheritdoc
      */
-    public function __construct(SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
         $this->subwidgetCountLimit = static::DEFAULT_SUBWIDGET_COUNT_LIMIT;
         $this->subwidgetCacheLifetime = static::DEFAULT_SUBWIDGET_CACHE_LIFETIME;
+    }
+
+    /**
+     * Returns the internal name used as identifier for this adapter
+     * @see \Cx\Core\Json\JsonAdapter::getName()
+     * @return string Name of this adapter
+     */
+    public function getName() {
+        return $this->getSystemComponent()->getName() . 'RandomWidget';
     }
 
     /**
@@ -104,10 +113,20 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
      */
     protected function internalParseWidget($widget, $params) {
         if ($widget instanceof \Cx\Core_Modules\Widget\Model\Entity\RandomEsiWidget) {
-            $esiInfos = $this->getRandomEsiWidgetContentInfos($widget, $params);
+            $template = $this->getComponent('Widget')->getWidgetContent(
+                $widget->getName(),
+                $params['get']['theme'],
+                $params['get']['page'],
+                $params['get']['targetComponent'],
+                $params['get']['targetEntity'],
+                $params['get']['targetId'],
+                $params['get']['channel']
+            );
+            $esiInfos = $this->getRandomEsiWidgetContentInfos($widget, $params, $template);
 
             if (count($esiInfos) > $this->getSubwidgetCountLimit()) {
                 // randomly pick some
+                // TODO: This randomly picks some instead of randomizing all
                 $randomIndexes = array_rand($esiInfos, $this->getSubwidgetCountLimit());
                 $limitedEsiInfos = array();
                 foreach ($randomIndexes as $index) {
@@ -123,7 +142,8 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
             }
 
             $esiContent = $this->getComponent('Cache')->getRandomizedEsiContent(
-                $esiInfos
+                $esiInfos,
+                $widget->getUniqueRepetitionCount()
             );
             return array(
                 'content' => $esiContent,
@@ -143,7 +163,8 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
      * )
      * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget The RandomEsiWidget
      * @param array $params ESI request params
+     * @param \Cx\Core\Html\Sigma Widget template
      * @return array List of URLs
      */
-    protected abstract function getRandomEsiWidgetContentInfos($widgetName, $params);
+    protected abstract function getRandomEsiWidgetContentInfos($widgetName, $params, $template);
 }

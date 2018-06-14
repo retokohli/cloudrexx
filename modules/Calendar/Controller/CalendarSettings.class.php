@@ -497,7 +497,7 @@ class CalendarSettings extends CalendarLibrary
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_TEMPLATE_ACTION'          =>  $action,
             $this->moduleLangVar.'_TEMPLATE_LANG'            =>  $lang,
-            $this->moduleLangVar.'_TEMPLATE_CONTENT_HTML'    =>  new \Cx\Core\Wysiwyg\Wysiwyg('content_html', $objMail->content_html, 'fullpage'),
+            $this->moduleLangVar.'_TEMPLATE_CONTENT_HTML'    =>  new \Cx\Core\Wysiwyg\Wysiwyg('content_html', contrexx_raw2xhtml($objMail->content_html), 'fullpage'),
         ));
     }
 
@@ -714,6 +714,7 @@ class CalendarSettings extends CalendarLibrary
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
+            $infoboxJS = '';
             while (!$objResult->EOF) {
                 $objTpl->setVariable(array(
                     'TXT_CALENDAR_SECTION_NAME' => $_ARRAYLANG[$objResult->fields['title']],
@@ -736,12 +737,14 @@ class CalendarSettings extends CalendarLibrary
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_SETTING_ROW'             => $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_SETTING_NAME'            => $objResultSetting->fields['name'],
-                            'TXT_'.$this->moduleLangVar.'_SETTING_NAME'     => $_ARRAYLANG[$objResultSetting->fields['title']],
+                            'TXT_'.$this->moduleLangVar.'_SETTING_NAME'     => isset($_ARRAYLANG[$objResultSetting->fields['title']]) ? $_ARRAYLANG[$objResultSetting->fields['title']] : '',
                             $this->moduleLangVar.'_SETTING_VALUE'           => $arrSetting['output'],
                             $this->moduleLangVar.'_SETTING_INFO'            => $arrSetting['infobox'],
                         ));
 
-                        $infoboxJS .= $arrSetting['infoboxJS'];
+                        if (isset($arrSetting['infoboxJS'])) {
+                            $infoboxJS .= $arrSetting['infoboxJS'];
+                        }
 
                         $i++;
                         $objTpl->parse('settingsList');
@@ -778,6 +781,7 @@ class CalendarSettings extends CalendarLibrary
         global $_ARRAYLANG, $_CORELANG;
 
         $arrSetting = array();
+        $output = '';
 
         switch (intval($type)) {
             case 1:
@@ -851,11 +855,11 @@ class CalendarSettings extends CalendarLibrary
                         case 'getPlaceDataDorpdown':
                             $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
                             $objMediadirForms->getForms();
-                            $objMediadirForms->listForms($objTpl,4);
+                            $objMediadirForms->listForms(null,4);
 
                             $output  = $_ARRAYLANG['TXT_CALENDAR_SELECT_FORM_MEDIADIR'].": <br />";
                             $output .= '<select style="width: 252px;" name="settings['.$name.']" >';
-                            $output .= $objMediadirForms->listForms($objTpl,4,intval($value));
+                            $output .= $objMediadirForms->listForms(null,4,intval($value));
                             $output .= '</select>';
                             break;
                     }

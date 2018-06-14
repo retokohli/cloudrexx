@@ -185,6 +185,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 define('FRONTEND_LANG_ID', $_FRONTEND_LANGID);
                 define('BACKEND_LANG_ID', $_LANGID);
                 define('LANG_ID', $_LANGID);
+                $this->cx->getDb()->getTranslationListener()->setTranslatableLocale(
+                    \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+                );
 
                 /**
                  * Core language data
