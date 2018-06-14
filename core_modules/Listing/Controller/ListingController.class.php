@@ -252,7 +252,7 @@ class ListingController {
             if (!empty($this->filter)) {
                 $data->filter(function($entry) {
                     foreach ($entry as $field=>$data) {
-                        if (strpos($data, $this->filter) !== false) {
+                        if (is_int(strpos($data, $this->filter))) {
                             return true;
                         }
                     }
