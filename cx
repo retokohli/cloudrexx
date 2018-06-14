@@ -1202,7 +1202,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
 
                     # filter
                     for tablePrefix in "${tablePrefixes[@]}"; do
-                        grep "INSERT INTO \`$tablePrefix" "$workdir/backup/database/sql_dump.sql" >> "$workdir/update.sql"
+                        grep "INSERT INTO \`$tablePrefix" "$workdir/backup/database/sql_dump.sql" | grep -v "contrexx_module_mediadir_" | grep -v "contrexx_module_calendar_" >> "$workdir/update.sql"
                     done
 
                     # import
