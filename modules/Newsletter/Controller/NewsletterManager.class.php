@@ -4373,7 +4373,7 @@ $WhereStatement = '';
         \JS::activate('jqueryui');
         \JS::registerJS('modules/Newsletter/View/Script/Backend.js');
 
-        // Set variable to show a message based on language in javascript
+        // Store the language interface text in javascript variable
         \ContrexxJavascript::getInstance()->setVariable(
             'NEWSLETTER_CONSENT_CONFIRM_ERROR',
             $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR'],
@@ -4570,14 +4570,20 @@ $WhereStatement = '';
             $this->_objTpl->addBlockfile('NEWSLETTER_USER_FILE', 'module_newsletter_user_import', 'module_newsletter_user_import.html');
 
             if (isset($_POST['imported'])) {
-                $lineBreakhtml = '';
+                $arrStatusMessage = array('error' => array());
                 if (empty($_POST['newsletter_recipient_associated_list'])) {
-                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
-                    $lineBreakhtml        = '<br/>';
+                    array_push(
+                        $arrStatusMessage['error'],
+                        $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY']
+                    );
                 }
                 if (!$this->isConsentConfirmChecked()) {
-                    self::$strErrMessage .= $lineBreakhtml . $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR'];
+                    array_push(
+                        $arrStatusMessage['error'],
+                        $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR']
+                    );
                 }
+                self::$strErrMessage = implode('<br />', $arrStatusMessage['error']);
             }
 
             $objImport->initFileSelectTemplate($objTpl);
@@ -4602,7 +4608,12 @@ $WhereStatement = '';
             // Get consent confirm html
             $objTpl->setVariable(array(
                 'IMPORT_ADD_NAME'  => $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM_IMPORT'],
-                'IMPORT_ADD_VALUE' => $this->getConsentConfirmHtml(),
+                'IMPORT_ADD_VALUE' => \Html::getCheckbox(
+                    'consentConfirm',
+                    1,
+                    'consentConfirmImport',
+                    $this->isConsentConfirmChecked()
+                ),
                 'IMPORT_ROWCLASS'  => 'row1',
             ));
             $objTpl->parse("additional");
@@ -4937,7 +4948,7 @@ $WhereStatement = '';
         \JS::registerJS('modules/Newsletter/View/Script/Backend.js');
         \JS::registerCSS('modules/Newsletter/View/Style/Backend.css');
 
-        // Set variable to show a message based on language in javascript
+        // Store the language interface text in javascript variable
         \ContrexxJavascript::getInstance()->setVariable(
            'NEWSLETTER_CONSENT_CONFIRM_ERROR',
             $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR'],
@@ -6659,25 +6670,6 @@ function MultiAction() {
         );
 
         return str_replace($search, $replace, $content);
-    }
-
-    /**
-     * Consent confirm html to show in import
-     *
-     * @return string Return a consent confirm checkbox string
-     */
-    public function getConsentConfirmHtml()
-    {
-        $consentChecked = '';
-        if ($this->isConsentConfirmChecked()) {
-            $consentChecked = 'checked="checked"';
-        }
-
-        $consentHtml = '<input
-            type="checkbox" name="consentConfirm" id="consentConfirmImport"
-            value="1"' . $consentChecked . '/>';
-
-        return $consentHtml;
     }
 
     /**

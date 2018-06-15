@@ -1,16 +1,10 @@
 cx.jQuery(document).ready(function(){
   var consentConfirmDiv = jQuery('#consentConfirmdiv'),
       consentCheckbox   = jQuery('#consentConfirm'),
-      checkboxChange    = 0,
       errorMsg          = cx.variables.get('NEWSLETTER_CONSENT_CONFIRM_ERROR', 'Newsletter');
 
   // Checks a url values to hide a consent confirm div during edit by default
-  if (
-    jQuery('form[name="userAddEdit"]') &&
-    getUrlVariables()['tpl'] == 'edit' &&
-    getUrlVariables()['id'] &&
-    getUrlVariables()['id'] != 0
-  ) {
+  if (jQuery('form[name="userAddEdit"]').length && (jQuery('#editUser').val() != 0)) {
     consentConfirmDiv.addClass('inactive');
     consentCheckbox.prop('checked', true);
   }
@@ -20,7 +14,6 @@ cx.jQuery(document).ready(function(){
       consentCheckbox.prop('checked', false);
       consentConfirmDiv.removeClass('inactive');
       consentConfirmDiv.addClass('active');
-      checkboxChange = 1;
     }
   });
 
@@ -32,27 +25,13 @@ cx.jQuery(document).ready(function(){
   })
 
   jQuery('input[name="newsletter_recipient_save"], input[name="newsletter_import_plain"]').click(function(e){
-    if (checkboxChange && !consentCheckbox.is(':checked')) {
-      e.preventDefault();
-      showErrorMsg(errorMsg);
-    } else if (!consentCheckbox.is(':checked')) {
+    if (!consentCheckbox.is(':checked')) {
       e.preventDefault();
       showErrorMsg(errorMsg);
     }
   });
 });
 
-/*
- * Get a url variables with value
- */
-function getUrlVariables()
-{
-  var vars = {};
-  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-    vars[key] = value;
-  });
-  return vars;
-}
 
 /**
  * Show error message
