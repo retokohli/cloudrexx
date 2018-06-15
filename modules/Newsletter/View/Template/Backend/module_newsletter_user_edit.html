@@ -4,7 +4,7 @@
     <th>{TXT_NEWSLETTER_USER_TITLE}</th>
   </tr>
 </table>
-<form action="index.php?cmd=Newsletter&amp;act=users&amp;tpl=edit&amp;id={NEWSLETTER_RECIPIENT_ID}{NEWSLETTER_FILTER_PARAMS}" method="post">
+<form name="userAddEdit" action="index.php?cmd=Newsletter&amp;act=users&amp;tpl=edit&amp;id={NEWSLETTER_RECIPIENT_ID}{NEWSLETTER_FILTER_PARAMS}" method="post">
   <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
     <tr class="row3">
       <td width="15%"><b>{TXT_NEWSLETTER_EMAIL_ADDRESS}</b></td>
@@ -63,6 +63,13 @@
     <tr class="{NEWSLETTER_NOTES_ROWCLASS}" style="vertical-align:top;">
         <td>{TXT_NEWSLETTER_NOTES}</td>
         <td colspan="3"><textarea name="newsletter_recipient_notes" rows="4" cols="39">{NEWSLETTER_RECIPIENT_NOTES}</textarea></td>
+    </tr>
+    <tr id="consentConfirmdiv" class="row1" style="vertical-align:top;">
+        <td>{TXT_NEWSLETTER_CONSENT_CONFIRM}</td>
+        <td colspan="3">
+          <input type="checkbox" name="consentConfirm" id="consentConfirm" value="1" {NEWSLETTER_CONSENT_CONFIRM_CHECK}/>
+        </td>
+        <td></td>
     </tr>
     <!-- BEGIN recipientProfileAttributes -->
     <tr>
