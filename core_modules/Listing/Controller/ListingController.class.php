@@ -147,6 +147,12 @@ class ListingController {
     private $entityName = '';
 
     /**
+     * Number of entries without filtering or paging
+     * @var int
+     */
+    protected $dataSize = 0;
+
+    /**
      * Handles a list
      * @param mixed $entities Entity class name as string or callback function
      * @param array $crit (optional) Doctrine style criteria array to use
@@ -267,11 +273,18 @@ class ListingController {
             if ($this->count) {
                 $data = $data->limit($this->count, $this->offset);
             }
+            $this->dataSize = $data->size();
             return $data;
         }
+        $em = \Env::get('em');
+        $metaData = $em->getClassMetaData($this->entityClass);
+        $qb = $em->createQueryBuilder();
+        $this->dataSize = (int) $qb->select(
+            'count(e.' . reset($metaData->getIdentifierFieldNames()) . ')'
+        )->from($this->entityClass, 'e')->getQuery()->getSingleScalarResult();
 
         // If a callback was specified, use it:
-        $qb = \Env::get('em')->createQueryBuilder();
+        $qb = $em->createQueryBuilder();
         $qb->select('e')->from($this->entityClass, 'e');
         $query = $qb->getQuery();
         if (is_callable($this->callback)) {
@@ -308,6 +321,15 @@ class ListingController {
 
         // return calculated data
         return $data;
+    }
+
+    /**
+     * Returns the number of entries without filtering or paging
+     * This only returns the correct value after getData() is called
+     * @return int Number of entries
+     */
+    public function getDataSize() {
+        return $this->dataSize;
     }
 
     /**
@@ -351,15 +373,14 @@ class ListingController {
     /**
      * This renders the template for paging control element
      * @todo templating!
-     * @todo show only a certain number of pages
      * @todo move to pagingcontroller
      */
     protected function getPagingControl() {
         $html = '';
-        if(!$this->paging || $this->entityClass->size() <= $this->count){
+        if (!$this->paging || $this->dataSize <= $this->count) {
             return $html;
         }
-        $numberOfPages = ceil($this->entityClass->size() / $this->count);
+        $numberOfPages = ceil($this->dataSize / $this->count);
         $activePageNumber = ceil(($this->offset + 1) / $this->count);
 
         /*echo 'Number of entries: ' . count($this->entityClass->toArray()) . '<br />';
@@ -387,8 +408,34 @@ class ListingController {
             $html .= '&lt;&lt;&nbsp;&lt;&nbsp;';
         }
 
+        $noOfPagesBeforeActive = $activePageNumber - 1;
+        $noOfPagesAfterActive = $numberOfPages - $activePageNumber;
+        $beforeSkipDone = false;
+        $afterSkipDone = false;
         for ($pageNumber = 1; $pageNumber <= $numberOfPages; $pageNumber++) {
-            if ($pageNumber == $activePageNumber) {
+            if (
+                $pageNumber < $activePageNumber &&
+                $noOfPagesBeforeActive >= 5 &&
+                $pageNumber > 1 &&
+                $pageNumber < $activePageNumber - 1
+            ) {
+                if (!$beforeSkipDone) {
+                    $beforeSkipDone = true;
+                    $html .= ' ... ';
+                }
+                continue;
+            } else if (
+                $pageNumber > $activePageNumber &&
+                $noOfPagesAfterActive >= 5 &&
+                $pageNumber > $activePageNumber + 1 &&
+                $pageNumber < $numberOfPages
+            ) {
+                if (!$afterSkipDone) {
+                    $afterSkipDone = true;
+                    $html .= ' ... ';
+                }
+                continue;
+            } else if ($pageNumber == $activePageNumber) {
                 // render page without link
                 $html .= $pageNumber . ' ';
                 continue;
@@ -400,7 +447,7 @@ class ListingController {
             $html .= '<a href="' . $url . '">' . $pageNumber . '</a> ';
         }
 
-        if ($this->offset + $this->count < $this->entityClass->size()) {
+        if ($this->offset + $this->count < $this->dataSize) {
             // render goto next
             $pagePos = ($activePageNumber - 0) * $this->count;
             if ($pagePos < 0) {
@@ -417,13 +464,13 @@ class ListingController {
         } else {
             $html .= '&gt;&nbsp;&gt;&gt;';
         }
-        if($this->offset + $this->count > $this->entityClass->size()){
-            $to =  $this->entityClass->size();
-        }else{
+        if ($this->offset + $this->count > $this->dataSize) {
+            $to =  $this->dataSize;
+        } else {
             $to  = $this->offset + $this->count;
         }
         // entry x-y out of n
-        $html .= '&nbsp;Einträge ' . ($this->offset+1). ' - ' . $to . ' von ' . $this->entityClass->size();
+        $html .= '&nbsp;Einträge ' . ($this->offset+1). ' - ' . $to . ' von ' . $this->dataSize;
         return $html;
     }
 }

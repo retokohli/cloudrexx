@@ -78,6 +78,11 @@ class ViewGenerator {
     protected $cx;
 
     /**
+     * @var \Cx\Core_Modules\Listing\Controller\ListingController $listingController
+     */
+    protected $listingController = null;
+
+    /**
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
      * @param array $options component options
@@ -198,24 +203,25 @@ class ViewGenerator {
             // render table if no parameter is set
             $this->object = $object;
             return $this->object->getDataType();
-        } else {
-            if (!is_object($object)) {
-                // Resolve proxies
-                $entityClassName = \Env::get('em')->getClassMetadata($object)->name;
-                $entityRepository = \Env::get('em')->getRepository($entityClassName);
-                $entities = $entityRepository->findAll();
-                if (empty($entities)) {
-                    $this->object = new $entityClassName();
-                    return $entityClassName;
-                } else {
-                    $this->object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
-                    return $this->object->getDataType();
-                }
-            } else {
-                $this->object = $object;
-                return get_class($this->object);
-            }
         }
+        if (is_object($object)) {
+            $this->object = $object;
+            return get_class($this->object);
+        }
+        // Resolve proxies
+        $entityClassName = \Env::get('em')->getClassMetadata($object)->name;
+        $entityRepository = \Env::get('em')->getRepository($entityClassName);
+        $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
+            $entityClassName,
+            $searchCriteria,
+            contrexx_input2raw($this->getVgParam($_GET['term'])),
+            array('paging' => true)
+        );
+        $this->object = $this->listingController->getData();
+        if (!$this->listingController->getDataSize()) {
+            $this->object = new $entityClassName();
+        }
+        return $this->object->getDataType();
     }
 
     /**
@@ -608,18 +614,20 @@ class ViewGenerator {
                 }
             }
 
-            $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
-                $renderObject,
-                $searchCriteria,
-                contrexx_input2raw($this->getVgParam($_GET['term'])),
-                $this->options['functions']
-            );
-            $renderObject = $listingController->getData();
+            if (!$this->listingController) {
+                $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
+                    $renderObject,
+                    $searchCriteria,
+                    contrexx_input2raw($this->getVgParam($_GET['term'])),
+                    $this->options['functions']
+                );
+            }
+            $renderObject = $this->listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
             $backendTable = new \BackendTable($renderObject, $this->options);
             $template->setVariable(array(
                 'TABLE' => $backendTable,
-                'PAGING' => $listingController,
+                'PAGING' => $this->listingController,
             ));
             $searching = (
                 isset($this->options['functions']['searching']) &&
