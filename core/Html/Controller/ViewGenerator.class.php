@@ -220,6 +220,7 @@ class ViewGenerator {
         $this->object = $this->listingController->getData();
         if (!$this->listingController->getDataSize()) {
             $this->object = new $entityClassName();
+            return $entityClassName;
         }
         return $this->object->getDataType();
     }
