@@ -203,8 +203,7 @@ class ViewGenerator {
         $this->initializeOptions($entityClassName, $options);
         $this->getListingController(
             $entityClassName,
-            $entityClassName,
-            $this->options
+            $entityClassName
         );
         $this->object = $this->listingController->getData();
         if (!$this->listingController->getDataSize()) {
@@ -659,8 +658,7 @@ class ViewGenerator {
 
             $this->getListingController(
                 $renderObject,
-                $renderObject->getDataType(),
-                $this->options
+                $renderObject->getDataType()
             );
             $renderObject = $this->listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
