@@ -153,6 +153,11 @@ class ListingController {
     protected $dataSize = 0;
 
     /**
+     * @var \Cx\Core_Modules\Listing\Model\Entity\DataSet
+     */
+    protected $data = null;
+
+    /**
      * Handles a list
      * @param mixed $entities Entity class name as string or callback function
      * @param array $crit (optional) Doctrine style criteria array to use
@@ -199,12 +204,14 @@ class ListingController {
     }
 
     /**
-     * Initializes listing for the given object
-     * @param Cx\Core_Modules\Listing\Model\Listable $listableObject
-     * @param int $mode (optional) A combination of the paging, sorting and filtering modes above (use |)
+     * Loads the data of an object
+     * @param bool $forceRegen (optional) If set to true, cached data is dropped
      * @returm Cx\Core_Modules\Listing\Model\DataSet Parsed data
      */
-    public function getData() {
+    public function getData($forceRegen = false) {
+        if ($this->data && !$forceRegen) {
+            return $this->data;
+        }
         $params = array(
             'offset'    => $this->offset,
             'count'     => $this->count,
@@ -274,52 +281,35 @@ class ListingController {
                 $data = $data->limit($this->count, $this->offset);
             }
             $this->dataSize = $data->size();
+            $this->data = $data;
             return $data;
         }
         $em = \Env::get('em');
-        $metaData = $em->getClassMetaData($this->entityClass);
-        $qb = $em->createQueryBuilder();
-        $this->dataSize = (int) $qb->select(
-            'count(e.' . reset($metaData->getIdentifierFieldNames()) . ')'
-        )->from($this->entityClass, 'e')->getQuery()->getSingleScalarResult();
-
-        // If a callback was specified, use it:
-        $qb = $em->createQueryBuilder();
-        $qb->select('e')->from($this->entityClass, 'e');
-        $query = $qb->getQuery();
-        if (is_callable($this->callback)) {
-            $callable = $this->callback;
-            $query = $callable($this->offset, $this->count, $this->order, $this->criteria);
-            if (!($query instanceof \Doctrine\ORM\Query)) {
-                return $query;
-            }
+        $entityRepository = $em->getRepository($this->entityClass);
+        foreach ($this->order as $field=>&$order) {
+            $order = $order == SORT_DESC ? 'DESC' : 'ASC';
         }
+        $entities = $entityRepository->findBy(
+            $this->criteria,
+            $this->order,
+            $this->count ? $this->count : null,
+            $this->offset
+        );
 
-        if (!class_exists($this->entityClass)) {
-            //throw new ListingException('No such entity "' . $this->entityClass . '"');
+        // YAMLRepository:
+        if ($entityRepository instanceof \Countable) {
+            $this->dataSize = count($entityRepository);
+        } else {
+            $metaData = $em->getClassMetaData($this->entityClass);
+            $qb = $em->createQueryBuilder();
+            $this->dataSize = (int) $qb->select(
+                'count(e.' . reset($metaData->getIdentifierFieldNames()) . ')'
+            )->from($this->entityClass, 'e')->getQuery()->getSingleScalarResult();
         }
-
-        // build query
-        // TODO: check if entity class is managed
-         //$qb = new \Doctrine\ORM\QueryBuilder();
-        $query->setFirstResult($this->offset);
-        $query->setMaxResults($this->count ? $this->count : null);
-        /*foreach ($this->order as $field=>$order) {
-            $query->orderBy($field, $order);
-        }
-        foreach ($this->criteria as $crit=>$param) {
-            $query->addWhere($crit);
-            if ($param) {
-                $query->addParameter($param[0], $param[1]);
-            }
-        }
-        var_dump($query->getDQL());*/
-        $entities = $query->getResult();
-
-        // @todo: check if entities should be encapsulated in a class
-        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
 
         // return calculated data
+        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
+        $this->data = $data;
         return $data;
     }
 

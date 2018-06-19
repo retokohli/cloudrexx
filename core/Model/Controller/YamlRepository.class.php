@@ -63,7 +63,7 @@ class YamlRepositoryException extends \Exception {};
  *              operation will be discarded,merged or overwritten. The behavior
  *              is unknown!
  */
-class YamlRepository {
+class YamlRepository implements \Countable {
     /**
      * Absolute path to the YAML-repository
      * @var string
@@ -446,5 +446,14 @@ class YamlRepository {
      */
     protected function fileExistsAndNotEmpty($filename) {
         return (file_exists($filename) && filesize($filename) > 0);
+    }
+
+    /**
+     * Returns the total count of entities
+     * @see http://php.net/manual/en/class.countable.php
+     * @return int Total count of entities
+     */
+    public function count() {
+        return count($this->entities);
     }
 }
