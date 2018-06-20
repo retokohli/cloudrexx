@@ -164,6 +164,19 @@ class Sigma extends \HTML_Template_Sigma {
         $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
         if ($evm) {
             try {
+                $isGlobal = strpos($string, '<!-- BEGIN __global__ -->') !== false;
+                if ($isGlobal) {
+                    $string = str_replace(
+                        '<!-- BEGIN __global__ -->',
+                        '',
+                        $string
+                    );
+                    $string = str_replace(
+                        '<!-- END __global__ -->',
+                        '',
+                        $string
+                    );
+                }
                 $evm->triggerEvent(
                     'View.Sigma:loadContent',
                     array(
@@ -171,6 +184,10 @@ class Sigma extends \HTML_Template_Sigma {
                         'template' => $this,
                     )
                 );
+                if ($isGlobal) {
+                    $string = '<!-- BEGIN __global__ -->' . $string .
+                        '<!-- END __global__ -->';
+                }
             } catch (\Exception $e) {
                 throw $e;
             }
