@@ -156,6 +156,54 @@ class Sigma extends \HTML_Template_Sigma {
         return $return;
     }
 
+    /**
+     * Triggers an event on setTemplate() and setTemplateFile()
+     * @inheritDoc
+     */
+    function _buildBlocks($string) {
+        $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
+        if ($evm) {
+            try {
+                $evm->triggerEvent(
+                    'View.Sigma:loadContent',
+                    array(
+                        'content' => &$string,
+                        'template' => $this,
+                    )
+                );
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        }
+        return parent::_buildBlocks($string);
+    }
+
+    /**
+     * Triggers an event on setVariable()
+     * @inheritDoc
+     */
+    function setVariable($variable, $value = '') {
+        if (is_array($variable) || is_array($value)) {
+            parent::setVariable($variable, $value);
+            return;
+        }
+        $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
+        if ($evm) {
+            try {
+                $evm->triggerEvent(
+                    'View.Sigma:setVariable',
+                    array(
+                        'content' => &$value,
+                        'template' => $this,
+                    )
+                );
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        }
+        parent::setVariable($variable, $value);
+    }
+
     function replaceBlock($block, $template, $keepContent = false, $outer = false) {
         if (!$outer) {
             return parent::replaceBlock($block, $template, $keepContent);
