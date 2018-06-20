@@ -318,12 +318,16 @@ class Sigma extends \HTML_Template_Sigma {
      */
     function getUnparsedBlock($blockName) {
         if (!isset($this->_blocks[$blockName])) {
-            throw new \Exception('Reverse parsing of block failed');
+            throw new \Exception('Reverse parsing of block "' . $blockName . '" failed');
         }
         return '<!-- BEGIN ' . $blockName . ' -->' .
             preg_replace_callback(
                 '/\{__(' . $this->blocknameRegExp . ')__\}/',
-                function(array $matches) {
+                function(array $matches) use ($blockName) {
+                    if (substr($matches[1], 0, 9) == 'function_') {
+                        $info = $this->_functions[$blockName][substr($matches[1], 9)];
+                        return 'func_' . $info['name'] . '(' . implode(',', $info['args']) . ')';
+                    }
                     return $this->getUnparsedBlock($matches[1]);
                 },
                 $this->_blocks[$blockName]
