@@ -198,7 +198,7 @@ class Sigma extends \HTML_Template_Sigma {
         // This may lead to too much data in $this->_functions but
         // Sigma simply does str_replace() which never matches.
         $func_bkp = $this->_functions;
-        $ret = $this->_buildBlockVariables();
+        $ret = $this->_buildBlockVariables($block);
         $this->_functions = $func_bkp + $this->_functions;
         return $ret;
     }
