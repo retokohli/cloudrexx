@@ -277,6 +277,7 @@ class Newsletter extends NewsletterLib
         $arrPreAssociatedInactiveLists = array();
         $code = isset($_REQUEST['code']) ? contrexx_addslashes($_REQUEST['code']) : '';
         $source = 'opt-in';
+        $categoryId = isset($_GET['category']) ? contrexx_raw2db($_GET['category']) : 0;
 
         if (!empty($code) && !empty($requestedMail)) {
             $objRecipient = $objDatabase->SelectLimit("SELECT accessUserID
@@ -308,6 +309,59 @@ class Newsletter extends NewsletterLib
 
                 //$arrAssociatedLists = $objUser->getSubscribedNewsletterListIDs();
                 $arrPreAssociatedInactiveLists = $objUser->getSubscribedNewsletterListIDs();
+            }
+        }
+
+        // Update a module_newsletter_rel_user_cat.consent value when user confirms
+        // mailing permission link
+        if ($categoryId) {
+            $count           = 0;
+            $userEmail       = isset($_GET['email'])
+                ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
+            $currentDateTime = date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME);
+
+            if (!empty($userEmail)) {
+                // Get a recipient id from newsletter user table based on email id
+                $objUserResult = $objDatabase->Execute(
+                    'SELECT
+                        `id`
+                    FROM '. DBPREFIX .'module_newsletter_user
+                    WHERE `email` ="'. $userEmail .'" AND
+                          `code`  ="'. $code .'" AND
+                          `status`="'. 1 .'"'
+                );
+                $count = $objUserResult->RecordCount();
+            }
+
+            if ($count) {
+                $objUserRel = $objDatabase->Execute(
+                    'SELECT
+                        `consent`
+                    FROM '. DBPREFIX .'module_newsletter_rel_user_cat
+                    WHERE `user`     = "'. contrexx_raw2db($objUserResult->fields['id']) .'" AND
+                          `category` = "'. $categoryId .'" AND
+                          `consent` IS NULL'
+                );
+                if ($objUserRel && $objUserRel->RecordCount() != 0) {
+                    // Update a consent value in module_newsletter_rel_user_cat table based
+                    // on recipient id.
+                    $objUserCat = $objDatabase->Execute(
+                        'UPDATE '. DBPREFIX .'module_newsletter_rel_user_cat
+                            SET `consent` = "'. $currentDateTime .'"
+                        WHERE `user`     = "'. contrexx_raw2db($objUserResult->fields['id']) .'" AND
+                              `category` = "'. $categoryId .'"'
+                    );
+                    if ($objUserCat) {
+                        array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
+                        $showForm = false;
+                    }
+                } else {
+                    array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_EXPIRE']);
+                    $showForm = false;
+                }
+            } else {
+                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NOT_VALID_EMAIL']);
+                $showForm = false;
             }
         }
 

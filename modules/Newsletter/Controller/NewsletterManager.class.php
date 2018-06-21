@@ -351,6 +351,14 @@ class NewsletterManager extends NewsletterLib
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_LISTS'];
         $rowNr = 0;
 
+        if (isset($_GET['tpl']) && ($_GET['tpl'] == 'consentMail')) {
+            if ($this->sendConsentConfirmationMail()) {
+                self::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS'];
+            } else {
+                self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'];
+            }
+        }
+
         if (isset($_GET["bulkdelete"])) {
             $error=0;
             if (!empty($_POST['listid'])) {
@@ -2433,6 +2441,9 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_NOTIFICATION_ACTION' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_ACTION'],
             'TXT_NEWSLETTER_SUBJECT'             => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
             'TXT_NEWSLETTER_USER_EDIT_LINK'      => $_ARRAYLANG['TXT_NEWSLETTER_USER_EDIT_LINK'],
+            'TXT_NEWSLETTER_EMAIL_KEY'           => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_KEY'],
+            'TXT_NEWSLETTER_EMAIL_CONSENT_CONFIRM_KEY' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONSENT_CONFIRM_KEY'],
+            'TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION'      => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION'],
         ));
         return $objTemplate->get();
     }
@@ -6622,6 +6633,92 @@ function MultiAction() {
         );
 
         return str_replace($search, $replace, $content);
+    }
+
+    /**
+     * Send a consent confirmation mail to users based on mailing list
+     *
+     * @return boolean
+     */
+    public function sendConsentConfirmationMail()
+    {
+        global $_ARRAYLANG, $_CONFIG;
+
+        $categoryId  = isset($_GET['id']) ? contrexx_input2int($_GET['id']) : 0;
+        $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $arrSettings = $this->_getSettings();
+
+        if (!$categoryId) {
+            return false;
+        }
+
+        $objUserRel = $objDatabase->Execute(
+            'SELECT
+                `user`
+            FROM '. DBPREFIX .'module_newsletter_rel_user_cat
+            WHERE `category`="'. $categoryId .'" AND
+                  `consent` IS NULL'
+        );
+
+        if ($objUserRel && $objUserRel->RecordCount() != 0) {
+            while (!$objUserRel->EOF) {
+                $userid  = $objUserRel->fields['user'];
+
+                $objUserResult = $objDatabase->Execute(
+                    'SELECT
+                        `code`,
+                        `email`,
+                        `sex`,
+                        `title`,
+                        `firstname`,
+                        `lastname`
+                    FROM '. DBPREFIX .'module_newsletter_user
+                    WHERE `id`="'. $userid .'" AND
+                          `status`="'. 1 .'"'
+                );
+                if ($objUserResult && $objUserResult->RecordCount() == 1) {
+                    $url = $_SERVER['SERVER_NAME'];
+                    $now = date(ASCMS_DATE_FORMAT);
+
+                    if ($objUserResult->fields['sex'] == 'm') {
+                        $sex = 'Male';
+                    } elseif ($objUserResult->fields['sex'] == 'f') {
+                        $sex = 'Female';
+                    } else {
+                        $sex = '';
+                    }
+
+                    $arrMailTemplate = array(
+                        'key'          => 'consent_confirmation_email',
+                        'section'      => 'Newsletter',
+                        'lang_id'      => FRONTEND_LANG_ID,
+                        'to'           => $recipientEmail,
+                        'from'         => $arrSettings['sender_mail']['setvalue'],
+                        'sender'       => $arrSettings['sender_name']['setvalue'],
+                        'reply'        => $arrSettings['reply_mail']['setvalue'],
+                        'substitution' => array(
+                            'NEWSLETTER_USER_SEX'             => $sex,
+                            'NEWSLETTER_USER_TITLE'           => $objUserResult->fields['title'],
+                            'NEWSLETTER_USER_FIRSTNAME'       => $objUserResult->fields['firstname'],
+                            'NEWSLETTER_USER_LASTNAME'        => $objUserResult->fields['lastname'],
+                            'NEWSLETTER_USER_EMAIL'           => $objUserResult->fields['email'],
+                            'NEWSLETTER_CONSENT_CONFIRM_CODE' =>
+                                ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] .
+                                CONTREXX_SCRIPT_PATH . '?section=Newsletter&cmd=subscribe&email=' .
+                                urlencode($objUserResult->fields['email']) . '&code='. $objUserResult->fields['code'] .
+                                '&category=' . $categoryId,
+                            'NEWSLETTER_DOMAIN_URL'           => $url,
+                            'NEWSLETTER_CURRENT_DATE'         => $now,
+                        ),
+                    );
+                    if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
+                        return false;
+                    }
+                }
+                $objUserRel->MoveNext();
+            }
+        }
+        return true;
     }
 }
 
