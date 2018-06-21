@@ -403,6 +403,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
             'TXT_NEWSLETTER_CONFIRM_FLUSH_LIST' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_FLUSH_LIST'],
             'TXT_NEWSLETTER_EXPORT_ALL_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'],
+            'TXT_NEWSLETTER_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_MAIL'],
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -6654,67 +6655,58 @@ function MultiAction() {
 
         $objUserRel = $objDatabase->Execute(
             'SELECT
-                `user`
-            FROM '. DBPREFIX .'module_newsletter_rel_user_cat
-            WHERE `category`="'. $categoryId .'" AND
-                  `consent` IS NULL'
+                `code`,
+                `email`,
+                `sex`,
+                `title`,
+                `firstname`,
+                `lastname`
+            FROM '. DBPREFIX .'module_newsletter_rel_user_cat AS r
+            JOIN '. DBPREFIX .'module_newsletter_user AS u
+            WHERE r.`category` = "'. $categoryId .'" AND
+                  r.`consent` IS NULL AND
+                  u.`id` = r.`user` AND
+                  u.`status` = 1'
         );
 
         if ($objUserRel && $objUserRel->RecordCount() != 0) {
             while (!$objUserRel->EOF) {
-                $userid  = $objUserRel->fields['user'];
-
-                $objUserResult = $objDatabase->Execute(
-                    'SELECT
-                        `code`,
-                        `email`,
-                        `sex`,
-                        `title`,
-                        `firstname`,
-                        `lastname`
-                    FROM '. DBPREFIX .'module_newsletter_user
-                    WHERE `id`="'. $userid .'" AND
-                          `status`="'. 1 .'"'
-                );
-                if ($objUserResult && $objUserResult->RecordCount() == 1) {
-                    $url = $_SERVER['SERVER_NAME'];
-                    $now = date(ASCMS_DATE_FORMAT);
-
-                    if ($objUserResult->fields['sex'] == 'm') {
-                        $sex = 'Male';
-                    } elseif ($objUserResult->fields['sex'] == 'f') {
-                        $sex = 'Female';
-                    } else {
-                        $sex = '';
-                    }
-
-                    $arrMailTemplate = array(
-                        'key'          => 'consent_confirmation_email',
-                        'section'      => 'Newsletter',
-                        'lang_id'      => FRONTEND_LANG_ID,
-                        'to'           => $recipientEmail,
-                        'from'         => $arrSettings['sender_mail']['setvalue'],
-                        'sender'       => $arrSettings['sender_name']['setvalue'],
-                        'reply'        => $arrSettings['reply_mail']['setvalue'],
-                        'substitution' => array(
-                            'NEWSLETTER_USER_SEX'             => $sex,
-                            'NEWSLETTER_USER_TITLE'           => $objUserResult->fields['title'],
-                            'NEWSLETTER_USER_FIRSTNAME'       => $objUserResult->fields['firstname'],
-                            'NEWSLETTER_USER_LASTNAME'        => $objUserResult->fields['lastname'],
-                            'NEWSLETTER_USER_EMAIL'           => $objUserResult->fields['email'],
-                            'NEWSLETTER_CONSENT_CONFIRM_CODE' =>
-                                ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] .
-                                CONTREXX_SCRIPT_PATH . '?section=Newsletter&cmd=subscribe&email=' .
-                                urlencode($objUserResult->fields['email']) . '&code='. $objUserResult->fields['code'] .
-                                '&category=' . $categoryId,
-                            'NEWSLETTER_DOMAIN_URL'           => $url,
-                            'NEWSLETTER_CURRENT_DATE'         => $now,
-                        ),
-                    );
-                    if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
-                        return false;
-                    }
+                $now = date(ASCMS_DATE_FORMAT);
+                if ($objUserRel->fields['sex'] == 'm') {
+                    $sex = 'Male';
+                } elseif ($objUserRel->fields['sex'] == 'f') {
+                    $sex = 'Female';
+                } else {
+                    $sex = '';
                 }
+
+                $arrMailTemplate = array(
+                    'key'          => 'consent_confirmation_email',
+                    'section'      => 'Newsletter',
+                    'lang_id'      => FRONTEND_LANG_ID,
+                    'to'           => $objUserRel->fields['email'],
+                    'from'         => $arrSettings['sender_mail']['setvalue'],
+                    'sender'       => $arrSettings['sender_name']['setvalue'],
+                    'reply'        => $arrSettings['reply_mail']['setvalue'],
+                    'substitution' => array(
+                        'NEWSLETTER_USER_SEX'             => $sex,
+                        'NEWSLETTER_USER_TITLE'           => $objUserRel->fields['title'],
+                        'NEWSLETTER_USER_FIRSTNAME'       => $objUserRel->fields['firstname'],
+                        'NEWSLETTER_USER_LASTNAME'        => $objUserRel->fields['lastname'],
+                        'NEWSLETTER_USER_EMAIL'           => $objUserRel->fields['email'],
+                        'NEWSLETTER_CONSENT_CONFIRM_CODE' =>
+                            ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] .
+                            CONTREXX_SCRIPT_PATH . '?section=Newsletter&cmd=subscribe&email=' .
+                            urlencode($objUserRel->fields['email']) . '&code='. $objUserRel->fields['code'] .
+                            '&category=' . $categoryId,
+                        'NEWSLETTER_DOMAIN_URL'           => $_CONFIG['domainUrl'],
+                        'NEWSLETTER_CURRENT_DATE'         => $now,
+                    ),
+                );
+                if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
+                    return false;
+                }
+
                 $objUserRel->MoveNext();
             }
         }

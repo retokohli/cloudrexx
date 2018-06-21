@@ -277,7 +277,7 @@ class Newsletter extends NewsletterLib
         $arrPreAssociatedInactiveLists = array();
         $code = isset($_REQUEST['code']) ? contrexx_addslashes($_REQUEST['code']) : '';
         $source = 'opt-in';
-        $categoryId = isset($_GET['category']) ? contrexx_raw2db($_GET['category']) : 0;
+        $categoryId = isset($_GET['category']) ? contrexx_input2int($_GET['category']) : 0;
 
         if (!empty($code) && !empty($requestedMail)) {
             $objRecipient = $objDatabase->SelectLimit("SELECT accessUserID
@@ -326,9 +326,9 @@ class Newsletter extends NewsletterLib
                     'SELECT
                         `id`
                     FROM '. DBPREFIX .'module_newsletter_user
-                    WHERE `email` ="'. $userEmail .'" AND
-                          `code`  ="'. $code .'" AND
-                          `status`="'. 1 .'"'
+                    WHERE `email`  = "'. $userEmail .'" AND
+                          `code`   = "'. $code .'" AND
+                          `status` = 1'
                 );
                 $count = $objUserResult->RecordCount();
             }
