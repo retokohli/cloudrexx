@@ -514,4 +514,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONSENT_CONFIRM_KEY'] = 'consent_confirmation_
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'E-Mailing-Berechtigung bestätigen Code';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Die Bestätigungsmail wurde nicht abgeschlossen, da die Bestätigungs-E-Mail fehlgeschlagen ist.';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'Die E-Mail wurde erfolgreich an abonnierte Benutzer gesendet';
-$_ARRAYLANG['TXT_NEWSLETTER_MAIL']                      = 'Senden Sie E-Mails an Benutzer';
+$_ARRAYLANG['TXT_NEWSLETTER_MAIL']                      = 'Zustimmung Bestätigung per E-Mail an Benutzer senden';

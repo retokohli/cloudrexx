@@ -131,4 +131,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_DATE'] = "Tag";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MONTH'] = "Monat";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'] = "Jahr";
 $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_IF_ONLY_ONE_LIST_ACTIVE'] = "Sie müssen mindestens eine Newsletter-Liste selektieren! Wenn Sie keine Newsletter mehr empfangen möchten, dann können Sie sich vom %s.";
-$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_EXPIRE'] = 'Sie haben bereits einen Link bestätigt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_EXPIRE'] = 'Sie haben bereits einen Link bestätigt.';
