@@ -398,6 +398,43 @@ class ViewGenerator {
         }
         // save singleValuedAssociations
         foreach ($entityClassMetadata->getAssociationMappings() as $associationMapping) {
+            $name = $associationMapping['fieldName'];
+            if (
+                isset($this->options['fields']) &&
+                isset($this->options['fields'][$name]) &&
+                isset($this->options['fields'][$name]['storecallback'])
+            ) {
+                $storecallback = $this->options['fields'][$name]['storecallback'];
+                /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
+                 * the function directly without using json. This is not recommended and not working over session */
+                if (
+                    is_array($storecallback) &&
+                    isset($storecallback['adapter']) &&
+                    isset($storecallback['method'])
+                ) {
+                    $callback = function($entity, $value) use($storecallback, $name) {
+                        $json = new \Cx\Core\Json\JsonData();
+                        $jsonResult = $json->data(
+                            $storecallback['adapter'],
+                            $storecallback['method'],
+                            array(
+                                'entity' => $entity,
+                                'postedValue' => $value,
+                            )
+                        );
+                        if ($jsonResult['status'] == 'success') {
+                            return $jsonResult["data"];
+                        }
+                        return $value;
+                    };
+                } else {
+                    $callback = function($entity, $value) use ($storecallback) {
+                        return $storecallback($entity, $value);
+                    };
+                }
+                $callback($entityData, $entity);
+            }
+
             // we're only interested in single valued associations here, so skip others
             if (!$entityClassMetadata->isSingleValuedAssociation($associationMapping['fieldName'])) {
                 continue;
@@ -735,7 +772,8 @@ class ViewGenerator {
                         $optionsField = $this->options['fields'][$field]['filterOptionsField'](
                             $renderObject,
                             $field,
-                            $fieldId
+                            $fieldId,
+                            'vg-' . $this->viewId . '-searchForm'
                         );
                     } else {
                         // parse options
