@@ -772,7 +772,8 @@ class ViewGenerator {
                         $optionsField = $this->options['fields'][$field]['filterOptionsField'](
                             $renderObject,
                             $field,
-                            $fieldId
+                            $fieldId,
+                            'vg-' . $this->viewId . '-searchForm'
                         );
                     } else {
                         // parse options
