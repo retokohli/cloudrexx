@@ -4181,10 +4181,8 @@ INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (17,'show_all_langs','0');
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (1,'cloudrexx',1);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (2,'thun',1);
-INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (4,'cloudrexx',1);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (5,'cloudrexx',2);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (7,'thun',2);
-INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (8,'cloudrexx',2);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (12,'neu',1);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (15,'wcms',1);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (20,'eintrag erstellen',1);
@@ -4195,10 +4193,8 @@ INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (24,'
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (28,'wcms',2);
 INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,1);
 INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,2);
-INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,4);
 INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,5);
 INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,7);
-INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,8);
 INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,15);
 INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (1,28);
 INSERT INTO `contrexx_module_knowledge_tags_articles` (`article`, `tag`) VALUES (7,12);
