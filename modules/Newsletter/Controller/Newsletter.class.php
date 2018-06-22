@@ -106,9 +106,16 @@ class Newsletter extends NewsletterLib
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $userEmail = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
+        $code      = isset($_GET['code']) ? contrexx_addslashes($_GET['code']) : '';
         $count     = 0;
         if (!empty($userEmail)) {
-            $query     = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
+            $query     =
+                'SELECT
+                    `id`
+                FROM '. DBPREFIX .'module_newsletter_user
+                WHERE `status` = 0 AND
+                      `email`  = "'. contrexx_raw2db($userEmail) .'" AND
+                      `code`   = "' . $code . '"';
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
             $userId    = $objResult->fields['id'];
@@ -775,6 +782,13 @@ class Newsletter extends NewsletterLib
         }
 
         $arrSettings = $this->_getSettings();
+        $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $objUser     = $objDatabase->Execute(
+            'SELECT
+                `code`
+            FROM '. DBPREFIX .'module_newsletter_user
+            WHERE `email` = "'. $recipientEmail .'"'
+        );
 
         $url = $_SERVER['SERVER_NAME'];
         $now = date(ASCMS_DATE_FORMAT);
@@ -793,7 +807,10 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_USER_FIRSTNAME' => $recipientFirstname,
                 'NEWSLETTER_USER_LASTNAME'  => $recipientLastname,
                 'NEWSLETTER_USER_EMAIL'     => $recipientEmail,
-                'NEWSLETTER_CONFIRM_CODE'   => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Newsletter&cmd=confirm&email='. urlencode($recipientEmail),
+                'NEWSLETTER_CONFIRM_CODE'   =>
+                    ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . CONTREXX_SCRIPT_PATH .
+                    '?section=Newsletter&cmd=confirm&email=' . urlencode($recipientEmail) .
+                    '&code=' . $objUser->fields['code'],
                 'NEWSLETTER_DOMAIN_URL'     => $url,
                 'NEWSLETTER_CURRENT_DATE'   => $now,
             ),
