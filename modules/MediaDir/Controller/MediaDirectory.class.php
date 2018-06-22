@@ -216,7 +216,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             $page->setVirtual(true);
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule('MediaDir');
-            //$page->setCmd('detail');
             // load source code
             $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
             \LinkGenerator::parseTemplate($applicationTemplate);
@@ -598,7 +597,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             $page->setVirtual(true);
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule('MediaDir');
-            //$page->setCmd('detail');
             // load source code
             $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
             \LinkGenerator::parseTemplate($applicationTemplate);
