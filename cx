@@ -524,9 +524,9 @@ function cmd_envs {
             fi
             dockerexec network create "<proxy-network>"
             if [[ "${ARGUMENTS["certs-dir"]}" != "" ]]; then
-                dockerexec run --rm --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -p "${ARGUMENTS["ssl-port"]}":443 -v "${ARGUMENTS["certs-dir"]}":/etc/nginx/certs:ro -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+                dockerexec run --rm --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -p "${ARGUMENTS["ssl-port"]}":443 -v "${ARGUMENTS["certs-dir"]}":/etc/nginx/certs:ro -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             else
-                dockerexec run --rm --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+                dockerexec run --rm --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             fi
             for env_dir in "${env_dirs[@]}"; do
                 (
