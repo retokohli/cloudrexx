@@ -5379,7 +5379,7 @@ INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (1,'ma
 INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (2,'max_posting_chars','2000');
 INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (3,'wysiwyg_editor','1');
 INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (4,'subject','Eine neue Nachricht von [senderName]');
-INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (5,'from','Contrexx U2U Nachrichtensystem');
+INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (5,'from','Cloudrexx U2U Nachrichtensystem');
 INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (6,'email_message','Hallo <strong>[receiverName]</strong>,<br />\r\n<br />\r\n<strong>[senderName]</strong> hat Ihnen eine private Nachricht gesendet. Um die Nachricht zu lesen, folgen Sie bitte folgendem Link:<br />\r\n<br />\r\nhttp://[domainName]/index.php?section=u2u&amp;cmd=notification<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />\r\n<br />');
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (0,'','Cloudrexx AG','','n',0,1,0,0,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (1,'core','Cloudrexx AG','TXT_CORE_MODULE_DESCRIPTION','n',1,1,1,1,NULL);
