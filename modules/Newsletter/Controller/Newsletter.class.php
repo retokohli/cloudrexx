@@ -106,7 +106,7 @@ class Newsletter extends NewsletterLib
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $userEmail = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
-        $code      = isset($_GET['code']) ? contrexx_addslashes($_GET['code']) : '';
+        $code      = isset($_GET['code']) ? contrexx_raw2db($_GET['code']) : '';
         $count     = 0;
         if (!empty($userEmail)) {
             $query     =
@@ -787,7 +787,7 @@ class Newsletter extends NewsletterLib
             'SELECT
                 `code`
             FROM '. DBPREFIX .'module_newsletter_user
-            WHERE `email` = "'. $recipientEmail .'"'
+            WHERE `email` = "'. contrexx_raw2db($recipientEmail) .'"'
         );
 
         $url = $_SERVER['SERVER_NAME'];
