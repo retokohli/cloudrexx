@@ -2198,13 +2198,13 @@ INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VAL
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_sender','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_subject','New download available on [DOMAIN_URL]');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_to','');
-INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 1, 'default');
-INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 2, 'mobile');
+INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 21, 'default');
+INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 21, 'mobile');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 4, 'print');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 5, 'pdf');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 6, 'app');
-INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 1, 'default');
-INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 2, 'mobile');
+INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 21, 'default');
+INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 21, 'mobile');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 4, 'print');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 5, 'pdf');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 6, 'app');
@@ -4675,6 +4675,7 @@ INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (18,'Graham','graham',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (19,'Highwind','highwind',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (20,'Klasik','klasik',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (21,'Rexx','rexx',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (1,'reload_block_time','1800',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (2,'online_timeout','3000',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (3,'paging_limit','100',1);
