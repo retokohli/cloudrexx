@@ -86,10 +86,12 @@ class DatekeyType extends \Doctrine\DBAL\Types\DateType {
 
     /**
      * {@inheritdoc}
+     * Must be like the first parameter to \Doctrine\DBAL\Types\Type::addType()
+     * (lower case)
      */
     public function getName()
     {
-        return 'Datekey';
+        return 'datekey';
     }
 
     /**

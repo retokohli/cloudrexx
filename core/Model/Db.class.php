@@ -392,7 +392,11 @@ namespace Cx\Core\Model {
 
             //resolve enum, set errors
             $conn = $em->getConnection();
-            foreach (array('enum', 'timestamp', 'datekey') as $type) {
+            foreach (array(
+                'enum' => false,
+                'timestamp' => false,
+                'datekey' => true
+            ) as $type => $markCommented) {
                 \Doctrine\DBAL\Types\Type::addType(
                     $type,
                     'Cx\Core\Model\Model\Entity\\' . ucfirst($type) . 'Type'
@@ -401,6 +405,11 @@ namespace Cx\Core\Model {
                     $type,
                     $type
                 );
+                if ($markCommented) {
+                    $conn->getDatabasePlatform()->markDoctrineTypeCommented(
+                        \Doctrine\DBAL\Types\Type::getType($type)
+                    );
+                }
             }
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping(
                 'set',
