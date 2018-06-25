@@ -109,6 +109,12 @@ class Url {
     protected $suggestedParams = '';
 
     /**
+     * #anchor
+     * @var string
+     */
+    protected $suggestedAnchor = '';
+
+    /**
      * The/Module
      * Found/Path/To/Module
      * The/Special/Module
@@ -187,6 +193,25 @@ class Url {
         // do not add virtual language dir in backend
         if (strpos($this->realPath, \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName()) === 0) {
             $this->setMode('backend');
+        } else if (
+            $this->isInternal() && $this->getMode() == 'frontend' &&
+            in_array($this->protocol, array('http', 'https'))
+        ) {
+            $forcedProtocol = \Cx\Core\Setting\Controller\Setting::getValue(
+                'forceProtocolFrontend',
+                'Config'
+            );
+            if ($forcedProtocol != 'none') {
+                $this->protocol = $forcedProtocol;
+                if (!$replacePorts) {
+                    $this->port = static::getSystemPortByServiceName(
+                        $this->protocol,
+                        'tcp'
+                    );
+                } else {
+                    $this->port = $this->getDefaultPort();
+                }
+            }
         }
 
         if(!empty($data['query'])) {
@@ -294,22 +319,14 @@ class Url {
             return;
         }
         $matches = array();
-        $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
-
-        if ($matchCount == 0) {//seemingly, no parameters are set.
-            $this->suggestedTargetPath = $this->path;
-            $this->suggestedParams = '';
-        } else {
-            $parts = explode('?', $this->path);
-            if ($parts[0] == '') { // we have no path or filename, just set parameters
-                $this->suggestedTargetPath = '';
-                $this->suggestedParams = $this->path;
-            } else {
-                $this->suggestedTargetPath = $matches[1];
-                $this->suggestedParams = $matches[2];
-            }
+        $this->suggestedTargetPath = $this->path;
+        $this->suggestedParams = '';
+        $this->suggestedAnchor = '';
+        if (preg_match('/([^\?#]*)([^#]*)(.*)/', $this->path, $matches)) {
+            $this->suggestedTargetPath = $matches[1];
+            $this->suggestedParams = $matches[2];
+            $this->suggestedAnchor = $matches[3];
         }
-
 
         $this->state = self::SUGGESTED;
     }
@@ -581,6 +598,9 @@ class Url {
         return $this->suggestedParams;
     }
 
+    public function getSuggestedAnchor() {
+        return $this->suggestedAnchor;
+    }
 
     public static function fromRequest() {
         if (php_sapi_name() === 'cli') {

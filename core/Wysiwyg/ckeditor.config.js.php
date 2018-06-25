@@ -116,6 +116,9 @@ CKEDITOR.editorConfig = function( config )
 
     config.toolbar_FrontendEditingTitle = <?php echo $wysiwyg->getToolbar('frontendEditingTitle') ?>;
 
+    // Allow div's within a's
+    CKEDITOR.dtd['a']['div'] = 1;
+
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
@@ -255,7 +258,7 @@ cx.bind("loadingEnd", function(myArgs) {
                     cx.variables.set('bodyClass', data.wysiwygCssReload.bodyClass, 'wysiwyg')
                     cx.variables.set('bodyId', data.wysiwygCssReload.bodyId, 'wysiwyg')
                     var config = {
-                        customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
+                        customConfig: cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
                         removePlugins: 'bbcode'
                     };

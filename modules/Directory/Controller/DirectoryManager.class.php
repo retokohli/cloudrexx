@@ -816,6 +816,7 @@ class DirectoryManager extends DirectoryLibrary
 
         $i= 0;
         $parentId= 0;
+
         $padding = 0;
         //shows all level 1 categories
         if (in_array(0, $this->categories['parentid'])) {
@@ -1953,7 +1954,7 @@ EOF;
         $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
         $count = $objResult->RecordCount();
 
-        $i = 0;
+        $i=0;
         if ($objResult !== false) {
             $file_array = array();
             while (!$objResult->EOF) {
@@ -2131,10 +2132,6 @@ EOF;
             'CATEGORY_SELECTED'         => $categorieSe,
             'LEVEL_DESELECTED'          => $levelDe,
             'LEVEL_SELECTED'            => $levelSe,
-            // TODO: unused variables
-//             'OS'                        => $platforms,
-//             'IP'                        => $dirIp,
-//             'HOST'                      => $dirProvider,
             'ID'                        => $id,
             'TXT_DIRECTORY_SPEZ_SORT'   => $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'],
             'TXT_DIRECTORY_SORT'        => $_ARRAYLANG['TXT_DIRECTORY_SORT'],
@@ -2268,7 +2265,7 @@ EOF;
         $count = $objResult->RecordCount();
 
         //get files
-        $i = 0;
+        $i=0;
         if ($objResult !== false) {
             $file_array = array();
             while (!$objResult->EOF) {

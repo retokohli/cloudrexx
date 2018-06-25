@@ -430,9 +430,13 @@ class Permission extends \Cx\Model\Base\EntityBase {
         }
 
         //check user logged in or not
-        $this->cx->getComponent('Session')->getSession();
         if (!\FWUser::getFWUserObject()->objUser->login()) {
             return false;
+        }
+
+        // admins have all privileges
+        if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+            return true;
         }
 
         //check user's group access
