@@ -5598,10 +5598,10 @@ $WhereStatement = '';
                 %3$s
                 WHERE 1
                 AND (
-                    source != "opt-in"
+                    nu.source != "opt-in"
                     OR (
-                        source = "opt-in"
-                        AND consent IS NOT NULL
+                        nu.source = "opt-in"
+                        AND nu.consent IS NOT NULL
                     )
                 )
                 %4$s
