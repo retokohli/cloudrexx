@@ -954,7 +954,13 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
 
 
-    function refreshInputfields($objTpl, $intEntryId)
+    /**
+     * Refresh the Input fields
+     *
+     * @param \Cx\Core\Html\Sigma $objTpl Template object
+     * @return string Parsed Template content
+     */
+    function refreshInputfields($objTpl)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
