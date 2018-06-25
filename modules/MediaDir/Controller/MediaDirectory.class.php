@@ -160,7 +160,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 } else if (substr($_REQUEST['cmd'],0,3) == 'add'){
                     parent::checkAccess('add_entry');
                     $this->modifyEntry();
-                } else if (substr($_REQUEST['cmd'],0,4) == 'edit') {
+                } else if (substr($_REQUEST['cmd'], 0, 4) == 'edit') {
                     if (
                         (isset($_REQUEST['eid']) && intval($_REQUEST['eid']) != 0) ||
                         (intval($_REQUEST['entryId']) != 0)
