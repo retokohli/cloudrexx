@@ -232,6 +232,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //get ids
+        $arrIds = array();
         if(isset($_GET['cmd'])) {
             $arrIds = explode("-", $_GET['cmd']);
         }
