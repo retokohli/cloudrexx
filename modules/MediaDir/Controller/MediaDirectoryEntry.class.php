@@ -1332,7 +1332,7 @@ JSCODE;
 
             $arrAdditionalQuery[] = " `updated_by`='".$intUserId."'";
 
-            if(intval($arrData['userId']) != 0) {
+            if (isset($arrData['userId']) && intval($arrData['userId']) != 0) {
                 $arrAdditionalQuery[] = "`added_by`='".intval($arrData['userId'])."'";
             }
 
