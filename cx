@@ -1193,7 +1193,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                         "contrexx_access_"
                         "contrexx_content_"
                         "contrexx_log_entry"
-                        "contrexx_module\_"
+                        "contrexx_module_"
                         "contrexx_core_view_frontend"
                     )
                     for tablePrefix in "${tablePrefixes[@]}"; do
