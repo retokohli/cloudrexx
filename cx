@@ -569,6 +569,7 @@ function cmd_envs {
                 fi
             fi
             dockerexec stop "<proxy-container>"
+            dockerexec rm "<proxy-container>"
             dockerexec network rm "<proxy-network>"
             if [ "${#environments[@]}" -eq "1" ]; then
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
