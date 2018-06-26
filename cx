@@ -1181,11 +1181,13 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     if [[ "$url" == "" ]]; then
                         return
                     fi
-                    echo "$url" | wget -i - -O "$workdir/snapshot.zip"
+                    echo "$url" | wget -i - -O "./tmp/remote.zip"
 
                     # unpack
-                    unzip "$workdir/snapshot.zip" -d "$workdir/backup" > /dev/null
+                    echo "Extracting package..."
+                    unzip "./tmp/remote.zip" -d "$workdir/backup" > /dev/null
 
+                    echo "Gathering data..."
                     # drop existing
                     get_config_array
                     mysql_create_tempfile
