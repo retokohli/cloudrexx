@@ -1588,6 +1588,7 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
+        $oldActiveLanguage = array();
         foreach ($arrSettings as $strName => $varValue) {
             switch ($strName) {
                 case 'settingsNumEntries':

@@ -160,8 +160,11 @@ class MediaDirectory extends MediaDirectoryLibrary
                 } else if (substr($_REQUEST['cmd'],0,3) == 'add'){
                     parent::checkAccess('add_entry');
                     $this->modifyEntry();
-                } else if (substr($_REQUEST['cmd'],0,4) == 'edit'){
-                    if((intval($_REQUEST['eid']) != 0) || (intval($_REQUEST['entryId']) != 0)) {
+                } else if (substr($_REQUEST['cmd'], 0, 4) == 'edit') {
+                    if (
+                        (isset($_REQUEST['eid']) && intval($_REQUEST['eid']) != 0) ||
+                        (intval($_REQUEST['entryId']) != 0)
+                    ) {
                         parent::checkAccess('edit_entry');
                         $this->modifyEntry();
                     } else {
@@ -232,6 +235,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //get ids
+        $arrIds = array();
         if(isset($_GET['cmd'])) {
             $arrIds = explode("-", $_GET['cmd']);
         }
@@ -1623,6 +1627,8 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //save entry data
+        $strOkMessage  = '';
+        $strErrMessage = '';
         if(isset($_POST['submitEntryModfyForm']) && intval($_POST['entryId'])) {
             $objEntry = new MediaDirectoryEntry($this->moduleName);
 
