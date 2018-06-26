@@ -1651,7 +1651,11 @@ case "${COMMANDS[0]}" in
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
             requestId=$(tac tmp/log/dbg.log | grep '^[^ ].*"([a-z0-9]\+)" ' -m1 | grep -o ' "([0-9a-z]\+)" ')
-            grep -Poz ".*\"\(${requestId:3:12}\)\"(.+)([\n] .*)*[\n]" tmp/log/dbg.log | tr -d '\000'
+            if [ -t 0 ] ; then
+                grep -Poz ".*\"\(${requestId:3:12}\)\"(.+)([\n] .*)*[\n]" tmp/log/dbg.log | tr -d '\000' | less -F
+            else
+                grep -Poz ".*\"\(${requestId:3:12}\)\"(.+)([\n] .*)*[\n]" tmp/log/dbg.log | tr -d '\000'
+            fi
             exit
         elif [[ ${ARGUMENTS["follow"]} ]]; then
             tail -f -n0 tmp/log/dbg.log
