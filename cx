@@ -1181,7 +1181,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     if [[ "$url" == "" ]]; then
                         return
                     fi
-                    echo "$url" | wget -i - -O "./tmp/remote.zip"
+                    echo "$url" | wget -N -i - -O "./tmp/remote.zip"
 
                     # unpack
                     echo "Extracting package..."
