@@ -1359,6 +1359,9 @@ function set_config_array {
     # replace hostname, port
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['portFrontendHTTP'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["hostname"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['forceDomainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "off")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['forceProtocolFrontend'\]\ +=\ +['\"])[^'\"]*(['\"];))" "none")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['forceProtocolBackend'\]\ +=\ +['\"])[^'\"]*(['\"];))" "none")
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
 
@@ -1417,6 +1420,11 @@ function set_config_array {
             phpexec Setting set Config -engine=Yaml -group=site forceDomainUrl on > /dev/null
             phpexec Setting set Config -engine=Yaml -group=site forceProtocolFrontend http > /dev/null
             phpexec Setting set Config -engine=Yaml -group=administrationArea forceProtocolBackend http > /dev/null
+        else
+            # disable force domain url and protocol
+            mysql_exec "UPDATE \`contrexx_settings\` SET \`setvalue\` = 'off' WHERE \`setname\` = 'forceDomainUrl';
+UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolFrontend';
+UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolBackend';"
         fi
     fi
 }
