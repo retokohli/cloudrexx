@@ -1347,6 +1347,10 @@ function set_config_array {
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((PATHCONFIG\['ascms_root'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
     fi
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((PATHCONFIG\['ascms_root_offset'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['is_activated'\]\ +=\ +)[^;]*(;))" "false")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['username'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['password'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['path'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
     # save config file
     echo "$FILE_CONTENTS" > config/configuration.php
 
