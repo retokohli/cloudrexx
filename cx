@@ -697,22 +697,7 @@ function cmd_env {
                 fi
                 ARGUMENTS["db"]=true && ARGUMENTS["drop-users"]=true && cmd_env update
             fi
-            if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
-                if [[ ${ARGUMENTS["silent"]} != true ]]; then
-                    echo "Configuring cache"
-                fi
-                phpexec Setting set Config -engine=Yaml -group=cache cacheEnabled on > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache internalSsiCache on > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCache memcached > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcacheConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcachedConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=site forceDomainUrl on > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=site forceProtocolFrontend http > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=administrationArea forceProtocolBackend http > /dev/null
-            fi
+            ARGUMENTS["force-default"]=false && cmd_env config
             echo "$result"
             ;;
         up)
@@ -725,6 +710,7 @@ function cmd_env {
                     exit 1
                 fi
             fi
+            [ -d ./tmp/db ] || mkdir -p ./tmp/db
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 dockercomposeexec up -d
                 echo "Waiting for database server to come up..."
@@ -1362,6 +1348,10 @@ function set_config_array {
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((PATHCONFIG\['ascms_root'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
     fi
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((PATHCONFIG\['ascms_root_offset'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['is_activated'\]\ +=\ +)[^;]*(;))" "false")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['username'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['password'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((FTPCONFIG\['path'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
     # save config file
     echo "$FILE_CONTENTS" > config/configuration.php
 
@@ -1370,6 +1360,9 @@ function set_config_array {
     # replace hostname, port
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['portFrontendHTTP'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["hostname"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['forceDomainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "off")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['forceProtocolFrontend'\]\ +=\ +['\"])[^'\"]*(['\"];))" "none")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['forceProtocolBackend'\]\ +=\ +['\"])[^'\"]*(['\"];))" "none")
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
 
@@ -1413,6 +1406,27 @@ function set_config_array {
             echo "Applying configuration to running environment"
         fi
         phpexec config --force
+        if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Configuring cache"
+            fi
+            phpexec Setting set Config -engine=Yaml -group=cache cacheEnabled on > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=cache internalSsiCache on > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=cache cacheUserCache memcached > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcacheConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcachedConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=site forceDomainUrl on > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=site forceProtocolFrontend http > /dev/null
+            phpexec Setting set Config -engine=Yaml -group=administrationArea forceProtocolBackend http > /dev/null
+        else
+            # disable force domain url and protocol
+            mysql_exec "UPDATE \`contrexx_settings\` SET \`setvalue\` = 'off' WHERE \`setname\` = 'forceDomainUrl';
+UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolFrontend';
+UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolBackend';"
+        fi
     fi
 }
 
