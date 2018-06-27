@@ -4296,7 +4296,7 @@ $WhereStatement = '';
                 'country'   => $country,
                 'emaildate' => date(ASCMS_DATE_FORMAT, $user['emaildate']),
                 'type'      => $type,
-                'consent'   => contrexx_raw2xhtml($consentValue),
+                'consent'   => $consentValue,
             );
             $arrSettings = $this->_getSettings();
             if ($arrSettings['statistics']['setvalue']) {
