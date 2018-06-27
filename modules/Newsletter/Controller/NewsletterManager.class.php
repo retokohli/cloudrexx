@@ -4238,6 +4238,7 @@ $WhereStatement = '';
         $emailCount           = array();
         $this->feedback($users, $linkCount, $feedbackCount, $emailCount);
 
+        $dateTime = \Env::get('cx')->getComponent('DateTime');
         foreach ($users as $user) {
             $type = str_replace("_user", "", $user['type']);
             $link_count = isset($linkCount[$user['id']][$type]) ? $linkCount[$user['id']][$type] : 0;
@@ -4248,6 +4249,39 @@ $WhereStatement = '';
                 ? ''
                 : \FWUser::getFWUserObject()->objUser->objAttribute->getById(
                     'country_'.$user['country_id'])->getName();
+
+            $consentValue = '';
+            if (empty($listId)) {
+                switch ($user['source']) {
+                    case 'backend':
+                        $consentValue = 'Manually added';
+                        break;
+                    case 'api':
+                        $consentValue = 'Added via API';
+                        break;
+                    case 'opt-in':
+                        if (!empty($user['consent'])) {
+                            $userDateTime = $dateTime->db2user(
+                                new \DateTime($user['consent'])
+                            );
+                            $consentValue = $userDateTime->format('H:i:s d.m.Y');
+                        } else {
+                            $consentValue = 'External';
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                if (!empty($user['consent'])) {
+                    $userDateTime = $dateTime->db2user(
+                        new \DateTime($user['consent'])
+                    );
+                    $consentValue = $userDateTime->format('H:i:s d.m.Y');
+                } else {
+                    $consentValue = 'External';
+                }
+            }
 
             $output['user'][] = array(
                 'id'        => $user['id'],
@@ -4261,7 +4295,8 @@ $WhereStatement = '';
                 'city'      => empty($user['city']) ? '-' : $user['city'],
                 'country'   => $country,
                 'emaildate' => date(ASCMS_DATE_FORMAT, $user['emaildate']),
-                'type'      => $type
+                'type'      => $type,
+                'consent'   => contrexx_raw2xhtml($consentValue),
             );
             $arrSettings = $this->_getSettings();
             if ($arrSettings['statistics']['setvalue']) {
@@ -5473,7 +5508,8 @@ $WhereStatement = '';
             'TXT_ADD' => $_ARRAYLANG['TXT_ADD'],
             'TXT_IMPORT' => $_ARRAYLANG['TXT_IMPORT'],
             'TXT_EXPORT' => $_ARRAYLANG['TXT_EXPORT'],
-            'TXT_FUNCTIONS' => $_CORELANG['TXT_FUNCTIONS']
+            'TXT_FUNCTIONS' => $_CORELANG['TXT_FUNCTIONS'],
+            'TXT_NEWSLETTER_CONSENT' => $_ARRAYLANG['TXT_NEWSLETTER_CONSENT'],
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWSLETTER_MODIFY_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_RECIPIENT'],
@@ -5556,7 +5592,7 @@ $WhereStatement = '';
                 'fax'               => array('type' => 'field', 'def' => 'phone_fax'),
                 'notes'             => array('type' => 'data',  'def' => ''),
                 'type'              => array('type' => 'data', 'def' => 'access_user'),
-                'emaildate'          => array('type' => 'field', 'def' => 'regdate')
+                'emaildate'         => array('type' => 'field', 'def' => 'regdate'),
             )
         );
 
@@ -5589,6 +5625,26 @@ $WhereStatement = '';
                 $arrRecipientFields[$recipientType][] = $wrappedField;
             }
         }
+
+        if (!empty($newsletterListId)) {
+            array_push(
+                $arrRecipientFields['newsletter'],
+                '`nu` . `source`',
+                '`rc` . `consent`'
+            );
+        } else {
+            array_push(
+                $arrRecipientFields['newsletter'],
+                '`nu` . `source`',
+                '`nu` . `consent`'
+            );
+        }
+
+        array_push(
+            $arrRecipientFields['access'],
+            "'' AS `source`",
+            "'' AS `consent`"
+        );
 
         $query   = sprintf('
             (

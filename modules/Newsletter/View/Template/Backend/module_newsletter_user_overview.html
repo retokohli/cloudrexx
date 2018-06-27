@@ -172,6 +172,7 @@ var cxDataList = function() {
                 recipientRow.append($(htmlTd).append($(htmlAFeedback.replace('[id]', user.id).replace('[type]', user.type)).append(user.feedback)));
             }
             recipientRow.append($(htmlTd).append(user.emaildate));
+            recipientRow.append($(htmlTd).append(user.consent));
             recipientRow.append(userFunctions);
 
             htmlList.append(recipientRow);
@@ -404,6 +405,9 @@ var confirmDeleteInactive = function() {
                     <!-- END statistics -->
                     <td nowrap width="5%">
                         <a name="listSort[emaildate]" rel="desc">{TXT_NEWSLETTER_REGISTRATION_DATE}</a>
+                    </td>
+                    <td nowrap width="5%">
+                        {TXT_NEWSLETTER_CONSENT}
                     </td>
                     <td width="3%" style="text-align:right;">{TXT_FUNCTIONS}</td>
                 </tr>
