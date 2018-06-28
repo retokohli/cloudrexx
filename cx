@@ -1401,12 +1401,12 @@ function set_config_array {
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
     
-    if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]] && [ "$(dockerexec ps -q -f "name=<web-container>")" ]; then
+    if [ "$(dockerexec ps -q -f "name=<web-container>")" ]; then
         if [[ ${ARGUMENTS["silent"]} != true ]]; then
             echo "Applying configuration to running environment"
         fi
-        phpexec config --force
         if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
+            phpexec config --force
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Configuring cache"
             fi
@@ -1423,6 +1423,7 @@ function set_config_array {
             phpexec Setting set Config -engine=Yaml -group=administrationArea forceProtocolBackend http > /dev/null
         else
             # disable force domain url and protocol
+            mysql_create_tempfile
             mysql_exec "UPDATE \`contrexx_settings\` SET \`setvalue\` = 'off' WHERE \`setname\` = 'forceDomainUrl';
 UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolFrontend';
 UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolBackend';"
