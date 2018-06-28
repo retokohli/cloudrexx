@@ -1104,9 +1104,9 @@ SET FOREIGN_KEY_CHECKS = 1;"
                             theme)
                                 get_config_array
                                 mysql_create_tempfile
-                                local theme=$(mysql_exec "SELECT \`id\` FROM \`contrexx_skins\` WHERE \`foldername\` = '$theme'")
+                                local theme=$(mysql_exec "SELECT \`id\` FROM \`contrexx_skins\` WHERE \`foldername\` = '$component'")
                                 if [[ "$theme" == "" ]]; then
-                                    mysql_exec "INSERT INTO \`contrexx_skins\` SET \`themesname\` = '$theme', \`foldername\` = '$theme', \`expert\` = 1";
+                                    mysql_exec "INSERT INTO \`contrexx_skins\` SET \`themesname\` = '$component', \`foldername\` = '$component', \`expert\` = 1";
                                 fi
                                 mysql_drop_tempfile
                                 ;;
