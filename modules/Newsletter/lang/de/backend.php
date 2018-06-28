@@ -509,3 +509,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'] = 'Kein Versand an Mitg
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'] = 'Statistik aktivieren';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'] = 'Bitte beachten Sie, dass mit der Aktivierung dieser Option u.U. personenbezogene Daten erfasst werden, was in den meisten Ländern ohne ausdrückliche Einwilligung der betroffenen Person rechtlich untersagt ist.';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'] = 'Möchten Sie die bisher erfassten Statistik-Daten löschen?';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM']        = 'Diese Person hat sich mit dem Versand von E-Mails einverstanden erklärt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM_IMPORT'] = 'Diese Personen haben sich mit dem Versand von E-Mails einverstanden erklärt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR']  = 'Bitte bestätigen Sie die Zustimmung des E-Mail-Benutzers.';
