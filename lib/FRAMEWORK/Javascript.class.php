@@ -927,52 +927,6 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         $retstring  = '';
         $jsScripts = array();
 
-        // check for each CSS-file if there exists a customized version
-        // in the loaded webdesign theme
-        $loadCssFiles = function ( $cssFiles ) {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            global $objInit;
-
-            $files = array();
-            foreach ($cssFiles as $idx => $file) {
-                // if $idx is an integer, then its a regular
-                // CSS file to be included.
-                // otherwise (if not in frontend-mode), it
-                // might be a customizable CSS file
-                if (
-                    $cx->getMode() !=
-                        \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
-                    preg_match('/^\d+$/', $idx)
-                ) {
-                    $files[] = $file;
-                    continue;
-                }
-
-                // if $idx is not an integer, it may represent
-                // a custom file name, by which the CSS file
-                // might be customized in the current webdesign
-                // template
-                if(
-                    file_exists(
-                        \Env::get('ClassLoader')->getFilePath(
-                            $cx->getWebsiteThemesPath() . '/' .
-                            $objInit->getCurrentThemesPath() .
-                            '/' . $idx
-                        )
-                    )
-                ) {
-                    $files[] = $cx->getWebsiteThemesWebPath() . '/' .
-                        $objInit->getCurrentThemesPath() .
-                        '/' . $idx;
-                    continue;
-                }
-
-                // fallback: add original CSS file
-                $files[] = $file;
-            }
-            return $files;
-        };
-
         if (count(self::$active) > 0) {
             // check for lazy dependencies, if there are lazy dependencies, activate cx
             // cx provides the lazy loading mechanism
@@ -988,7 +942,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                         if (!empty(self::$available[$dependency]['cssfiles'])) {
                             $cssfiles = array_merge(
                                 $cssfiles,
-                                $loadCssFiles(
+                                static::getRealCssFiles(
                                     self::$available[$dependency]['cssfiles']
                                 )
                             );
@@ -1021,7 +975,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 if (!empty($data['cssfiles'])) {
                     $cssfiles = array_merge(
                         $cssfiles,
-                        $loadCssFiles($data['cssfiles'])
+                        static::getRealCssFiles($data['cssfiles'])
                     );
                 }
                 if (isset($data['specialcode']) && strlen($data['specialcode']) > 0) {
@@ -1055,6 +1009,63 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         $retstring .= self::makeJSFiles(self::$customJS);
         $retstring .= self::makeSpecialCode(self::$customCode);
         return $retstring;
+    }
+
+
+    /**
+     * Get the CSS files to be loaded
+     *
+     * Check for each CSS-file if there exists a customized version
+     * in the loaded webdesign theme. If so, the customized version's
+     * path will be returned instead of the original path.
+     *
+     * @param   $cssFiles   array   List of CSS files to check for customized
+     *                              versions of.
+     * @return  array   The supplied array $cssFiles. Whereas the path of CSS
+     *                  files has been replaced, in case there is a customized
+     *                  version available.
+     */
+    protected function getRealCssFiles($cssFiles) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        $files = array();
+        foreach ($cssFiles as $customizingPath => $file) {
+            // if $customizingPath is an integer, then its a regular
+            // CSS file to be included.
+            // otherwise (if not in frontend-mode), it
+            // might be a customizable CSS file
+            if (
+                $cx->getMode() !=
+                    \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
+                preg_match('/^\d+$/', $customizingPath)
+            ) {
+                $files[] = $file;
+                continue;
+            }
+
+            // if $customizingPath is not an integer, it may represent
+            // a custom file name, by which the CSS file
+            // might be customized in the current webdesign
+            // template
+            if(
+                file_exists(
+                    \Env::get('ClassLoader')->getFilePath(
+                        $cx->getWebsiteThemesPath() . '/' .
+                        \Env::get('init')->getCurrentThemesPath() .
+                        '/' . $customizingPath
+                    )
+                )
+            ) {
+                $files[] = $cx->getWebsiteThemesWebPath() . '/' .
+                    \Env::get('init')->getCurrentThemesPath() .
+                    '/' . $customizingPath;
+                continue;
+            }
+
+            // fallback: add original CSS file
+            $files[] = $file;
+        }
+        return $files;
     }
 
 
