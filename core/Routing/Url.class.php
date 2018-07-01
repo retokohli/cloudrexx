@@ -244,24 +244,32 @@ class Url {
      * @return boolean True for internal URL, false otherwise
      */
     public function isInternal() {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        try {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
-        // check domain
-        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
-            'Cx\Core\Net\Model\Entity\Domain'
-        );
-        if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
-            return false;
-        }
+            // check domain
+            $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
+                'Cx\Core\Net\Model\Entity\Domain'
+            );
+            if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
+                return false;
+            }
 
-        // check offset
-        $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
-        $providedOffset = $this->realPath;
-        if (
-            $installationOffset !=
-            substr($providedOffset, 0, strlen($installationOffset))
-        ) {
-            return false;
+            // check offset
+            $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
+            $providedOffset = $this->realPath;
+            if (
+                $installationOffset !=
+                substr($providedOffset, 0, strlen($installationOffset))
+            ) {
+                return false;
+            }
+        } catch (\Exception $e) {
+            // In case the domain repository can't be loaded,
+            // doctrine's entity manager will through an exception.
+            // We catch this exception for that specific case to make
+            // the web-installer work.
+            \DBG::msg($e->getMessage());
         }
         return true;
     }
