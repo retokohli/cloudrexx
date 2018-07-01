@@ -471,14 +471,11 @@ window.setTimeout(3000, function() {
 //DBG::log("Saferpay::payConfirm():");
 //DBG::log("POST: ".var_export($_POST, true));
 //DBG::log("GET: ".var_export($_GET, true));
-        // Predefine the variables parsed by parse_str() to avoid
-        // code analyzer warnings
-        $DATA = $SIGNATURE = '';
-        parse_str($_SERVER['QUERY_STRING']);
+        parse_str($_SERVER['QUERY_STRING'], $arguments);
         // Note: parse_str()'s results comply with the magic quotes setting!
         $arrOrder = array(
-            'DATA' => urlencode(contrexx_input2raw($DATA)),
-            'SIGNATURE' => urlencode(contrexx_input2raw($SIGNATURE)),
+            'DATA' => urlencode(contrexx_input2raw($arguments['DATA'])),
+            'SIGNATURE' => urlencode(contrexx_input2raw($arguments['SIGNATURE'])),
         );
         $attributes = self::getAttributeList('payConfirm', $arrOrder);
         // This won't work without allow_url_fopen
@@ -491,10 +488,9 @@ window.setTimeout(3000, function() {
         }
 //DBG::log("payConfirm: Result: ".self::$arrTemp['result']);
         if (substr($result, 0, 2) == 'OK') {
-            $ID = '';
-            parse_str(substr($result, 3));
+            parse_str(substr($result, 3), $arguments);
   //DBG::log("Saferpay::payConfirm(): SUCCESS, ID $ID");
-            return $ID;
+            return $arguments['ID'];
 // Obsolete
 //            self::$token = $TOKEN;
         }
