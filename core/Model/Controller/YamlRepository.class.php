@@ -211,6 +211,9 @@ class YamlRepository implements \Countable {
      * @return  YamlEntity  Object from repository identified by primary identifier $id
      */
     public function find($id) {
+        if (is_array($id)) {
+            $id = current($id);
+        }
         if (isset($this->entities[$id])) {
             return $this->entities[$id];
         }
