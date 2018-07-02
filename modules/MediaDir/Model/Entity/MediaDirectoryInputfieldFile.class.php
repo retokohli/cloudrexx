@@ -357,7 +357,7 @@ INPUT;
 
         //encode filename
         if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-            $fileName = md5($randomSum . $fileBasename) . $fileExtension;
+            $fileName = md5($randomSum.$fileBasename).$fileExtension;
         }
 
         //check filename

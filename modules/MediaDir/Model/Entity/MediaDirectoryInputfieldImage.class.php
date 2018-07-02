@@ -351,7 +351,7 @@ INPUT;
         $randomSum      = rand(10, 99);
         // encode filename
         if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-            $imageName = md5($randomSum . $imageBasename) . $imageExtension;
+            $imageName = md5($randomSum.$imageBasename).$imageExtension;
         }
         // check filename
         if (file_exists($this->imagePath.'images/'.$imageName)) {

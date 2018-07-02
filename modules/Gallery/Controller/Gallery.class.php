@@ -1053,7 +1053,7 @@ END;
         }
 
         $intMark = intval($intMark);
-        $strMd5 = md5($_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
+        $strMd5 = md5($_SERVER['REMOTE_ADDR'].$_SERVER['HTTP_USER_AGENT']);
 
         $intCookieTime = time()+7*24*60*60;
         $intVotingCheckTime = time()-(12*60*60);

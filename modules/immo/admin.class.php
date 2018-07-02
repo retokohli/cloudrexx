@@ -551,9 +551,10 @@ class Immo extends ImmoLib
                 $objRS->moveNext();
             }
         }
+
         header("Content-Type: text/comma-separated-values", true);
         header("Content-Length: ".strlen($CSVdata));
-        header("Content-MD5: " . md5($CSVdata));
+        header("Content-MD5: ".md5($CSVdata));
         header("Content-Disposition: inline; filename=\"".'immo_stats_contact_'.date('Y-M-D H_m_s', mktime()).".csv\"");
         die($CSVfields.$CSVdata);
     }
