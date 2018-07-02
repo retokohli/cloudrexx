@@ -892,7 +892,7 @@ class Customer extends \User
 // as usernames!
                 $objCustomer->username($objResult->fields['username']);
                 // Copy the md5 hash of the password!
-                $objCustomer->password = $objResult->fields['password'];
+                $objCustomer->setHashedPassword($objResult->fields['password']);
                 $objCustomer->setFrontendLanguage($lang_id);
             }
             if ($objResult->fields['is_reseller']) {

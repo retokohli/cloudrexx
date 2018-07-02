@@ -3989,7 +3989,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                     ? \User::make_password()
                     : $_SESSION['shop']['password']);
 //\DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
-                if (!self::$objCustomer->password($password)) {
+                if (!self::$objCustomer->setPassword($password)) {
                     \Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
                     \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd(
                         'Shop', 'account'));
