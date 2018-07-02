@@ -2125,11 +2125,7 @@ $this->arrRows[2] = '';
         }
         $this->arrClient['language'] = htmlspecialchars($_SERVER['HTTP_ACCEPT_LANGUAGE'], ENT_QUOTES, CONTREXX_CHARSET);
         $this->_getProxyInformations();
-        $client = md5(
-            $this->arrClient['ip'] . $this->arrClient['useragent'] .
-            $this->arrClient['language'] . $this->arrProxy['ip'] .
-            $this->arrProxy['host']
-        );
+        $client = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
         $time = time();
         $voteNEW = isset($_GET['vote']) ? contrexx_input2int($_GET['vote']) : 0;
         $id      = isset($_GET['id']) ? contrexx_input2int($_GET['id']) : 0;

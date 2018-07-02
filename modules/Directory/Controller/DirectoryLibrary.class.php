@@ -738,7 +738,7 @@ class DirectoryLibrary
         if ($arrSettings['encodeFilename']['value'] == 1) {
 // TODO: $fileName is neither set nor used!
 //            $fileName = md5($rand.$filename)."xml";
-            $filename = md5($rand.$filename).'xml';
+            $filename = md5($rand.$filename)."xml";
         }
 
 
