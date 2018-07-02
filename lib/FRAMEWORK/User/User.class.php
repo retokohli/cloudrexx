@@ -1581,9 +1581,7 @@ class User extends User_Profile
             return;
         }
 
-        $this->restore_key = $this->hashPassword(
-            $this->email . $this->regdate . time()
-        );
+        $this->restore_key = md5($this->email.$this->regdate.time());
         $this->restore_key_time = time() + 3600;
     }
 
@@ -1805,9 +1803,7 @@ class User extends User_Profile
     {
         $arrSettings = User_Setting::getSettings();
         if ($arrSettings['user_activation']['status']) {
-            $this->restore_key = $this->hashPassword(
-                $this->username . $this->password . time()
-            );
+            $this->restore_key = md5($this->username.$this->password.time());
             $this->restore_key_time = $arrSettings['user_activation_timeout']['status'] ? time() + $arrSettings['user_activation_timeout']['value'] * 3600 : 0;
         }
         return $this->store();

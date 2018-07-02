@@ -598,14 +598,9 @@ class User extends \Cx\Model\Base\EntityBase {
      */
     public function setRestoreKey($restoreKey = null)
     {
-        if (!empty($restoreKey)) {
-            $this->restoreKey = $restoreKey;
-            return;
-        }
-        $user = new \User();
-        $this->restoreKey = $user->hashPassword(
-            $this->email . $this->regdate . time()
-        );
+        $this->restoreKey = !empty($restoreKey)
+                            ? $restoreKey
+                            : md5($this->email . $this->regdate . time());
     }
 
     /**
