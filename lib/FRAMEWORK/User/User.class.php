@@ -58,8 +58,6 @@ class UserException extends Exception {}
  */
 class User extends User_Profile
 {
-    const HASH_ALGORITHM_MD5 = 'MD5';
-    const HASH_ALGORITHM_BLOWFISH = 'BLOWFISH';
     /**
      * ID of loaded user
      * @var integer
@@ -285,7 +283,6 @@ class User extends User_Profile
         'profile_access'    => 'string',
         'restore_key'       => 'string',
         'restore_key_time'  => 'int',
-        'hash_algorithm'    => 'string',
     );
 
     /**
@@ -317,11 +314,11 @@ class User extends User_Profile
     private $defaultEmailAccessType;
 
     /**
-     * Contains the hash algorithm of currently loaded user
+     * Contains the default hash algorithm to be used for password generation
      *
      * @var string
      */
-    protected $hashAlgorithm;
+    protected $defaultHashAlgorithm;
 
     /**
      * Contains the message if an error occurs
@@ -349,10 +346,7 @@ class User extends User_Profile
 // TODO:  Provide default values here in case the settings are missing!
         $this->defaultProfileAccessTyp = $arrSettings['default_profile_access']['value'];
         $this->defaultEmailAccessType  = $arrSettings['default_email_access']['value'];
-        $this->hashAlgorithm           = \Cx\Core\Setting\Controller\Setting::getValue(
-            'defaultPasswordAlgorithm',
-            'Config'
-        );
+        $this->defaultHashAlgorithm = \PASSWORD_BCRYPT;
         $this->clean();
     }
 
@@ -440,14 +434,16 @@ class User extends User_Profile
             1
         );
 
-        $this->id = $objResult->fields['id'];
-        if (
-            !$objResult ||
-            $objResult->RecordCount() != 1 ||
-            !$this->checkPassword($password)
-        ) {
+        // verify that the user is valid and active
+        if (!$objResult || $objResult->RecordCount() != 1) {
             return false;
         }
+        // verify that the supplied password is valid
+        if (!$this->checkPassword($password, $objResult->fields['passwod'])) {
+            return false;
+        }
+
+        // user account is valid and supplied password is also valid
         return $objResult->fields['id'];
     }
 
@@ -485,59 +481,65 @@ class User extends User_Profile
      * Returns TRUE if the given password matches the current user,
      * FALSE otherwise.
      *
-     * @param string $password Input password
+     * @param   string  $password     Raw password to be verified
+     * @param   string  $passwordHash The hash of the password to verify the
+     *                                supplied password with.
      *
      * @return boolean
      */
-    public function checkPassword($password)
+    public function checkPassword($inputPassword, $passwordHash = '')
     {
         global $objDatabase;
 
-        $query = '
-            SELECT `password`, `hash_algorithm`
-              FROM `'.DBPREFIX.'access_users`
-            WHERE `id` = ' . $this->id;
-        $objResult = $objDatabase->Execute($query);
-        $userHashAlgorithm = $objResult->fields['hash_algorithm'];
-        if (
-            !$objResult ||
-            $objResult->RecordCount() == 0 ||
-            empty($userHashAlgorithm)
-        ) {
+        try {
+            // fetch hash of password from database,
+            // if it has not been supplied as argument
+            if ($passwordHash == '') {
+                $query = '
+                    SELECT `password`
+                      FROM `'.DBPREFIX.'access_users`
+                    WHERE `id` = ' . $this->id;
+                $objResult = $objDatabase->Execute($query);
+                if (
+                    !$objResult ||
+                    $objResult->RecordCount() != 1
+                ) {
+                    return false;
+                }
+                $passwordHash = $objResult->fields['password'];
+            }
+
+            // check if password is hashed with legacy algorithm (md5)
+            if (preg_match('/^[a-f0-9]{32}$/i', $setPassword)) {
+                // verify md5 hash of password
+                if (md5($inputPassword) != $passwordHash) {
+                    return false;
+                }
+
+                // regenerate hash using new algorithm
+                $this->setPassword($password);
+                $this->store();
+                return true;
+            }
+
+            // verify password
+            if (!password_verify($password, $passwordHash)) {
+                return false;
+            }
+
+            // check if we need to regenerate the password hash using a newer
+            // hash algorithm
+            if (password_needs_rehash($passwordHash, $this->defaultHashAlgorithm)) {
+                $this->setPassword($password);
+                $this->store();
+                return true;
+            }
+
+            return true;
+        } catch (UserException $e) {
+            \DBG::log($e->getMessage());
             return false;
         }
-
-        // Check the password by using MD5 hash_algorithm
-        if (
-            $userHashAlgorithm == self::HASH_ALGORITHM_MD5 &&
-            $objResult->fields['password'] !== md5($password)
-        ) {
-            return false;
-        }
-
-        // Check the password by using BLOWFISH hash_algorithm
-        if (
-            $userHashAlgorithm == self::HASH_ALGORITHM_BLOWFISH &&
-            !password_verify($password, $objResult->fields['password'])
-        ) {
-            return false;
-        }
-
-        // If the User's password algorithm differ with the default password
-        // algorithm and the current password verification is correct then
-        // update the User password by the default password algorithm
-        $defaultPasswordAlgorithm = \Cx\Core\Setting\Controller\Setting::getValue(
-            'defaultPasswordAlgorithm',
-            'Config'
-        );
-        if ($userHashAlgorithm != $defaultPasswordAlgorithm) {
-            $user = $this->getUser($this->id);
-            $user->setHashAlgorithm($defaultPasswordAlgorithm);
-            $user->setPassword($password);
-            $user->store();
-        }
-
-        return true;
     }
 
 
@@ -924,23 +926,6 @@ class User extends User_Profile
         return $this->restore_key_time;
     }
 
-    /**
-     * Get a user hash algorithm
-     *
-     * @return string
-     */
-    public function getHashAlgorithm()
-    {
-        return $this->hashAlgorithm;
-    }
-
-    /**
-     * Set a user hash algorithm
-     */
-    public function setHashAlgorithm($hashAlgorithm)
-    {
-        $this->hashAlgorithm = $hashAlgorithm;
-    }
 
     public function getStaticPermissionIds($reload=false)
     {
@@ -1159,7 +1144,6 @@ class User extends User_Profile
             $this->profile_access = isset($this->arrCachedUsers[$id]['profile_access']) ? $this->arrCachedUsers[$id]['profile_access'] : $this->defaultProfileAccessTyp;
             $this->restore_key = isset($this->arrCachedUsers[$id]['restore_key']) ? $this->arrCachedUsers[$id]['restore_key'] : '';
             $this->restore_key_time = isset($this->arrCachedUsers[$id]['restore_key_time']) ? $this->arrCachedUsers[$id]['restore_key_time'] : 0;
-            $this->hashAlgorithm = isset($this->arrCachedUsers[$id]['hash_algorithm']) ? $this->arrCachedUsers[$id]['hash_algorithm'] : '';
             $this->password = '';
             $this->arrGroups = null;
             $this->arrNewsletterListIDs = null;
@@ -2016,8 +2000,7 @@ class User extends User_Profile
                 `primary_group` = ".intval($this->primary_group).",
                 `profile_access` = '".$this->profile_access."',
                 `restore_key` = '".$this->restore_key."',
-                `restore_key_time` = ".$this->restore_key_time.",
-                `hash_algorithm` = '" . $this->hashAlgorithm . "'
+                `restore_key_time` = ".$this->restore_key_time."
             WHERE `id` = ".$this->id
         ) === false) {
             $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
@@ -2058,8 +2041,7 @@ class User extends User_Profile
                 `primary_group`,
                 `profile_access`,
                 `restore_key`,
-                `restore_key_time`,
-                `hash_algorithm`
+                `restore_key_time`
             ) VALUES (
                 '".addslashes($this->username)."',
                 ".intval($this->is_admin).",
@@ -2080,8 +2062,7 @@ class User extends User_Profile
                 ".intval($this->primary_group).",
                 '".$this->profile_access."',
                 '".$this->restore_key."',
-                '".$this->restore_key_time."',
-                '" . $this->hashAlgorithm . "'
+                '".$this->restore_key_time."'
             )")) {
             $this->id = $objDatabase->Insert_ID();
             if (!$this->createProfile()) {
@@ -2651,12 +2632,7 @@ class User extends User_Profile
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_PASSWORD_NOT_CONFIRMED'];
                 return false;
             }
-            if ($this->hashAlgorithm == self::HASH_ALGORITHM_BLOWFISH) {
-                $this->password = $this->hashPassword($password);
-            } else {
-                $this->password = md5($password);
-            }
-
+            $this->password = $this->hashPassword($password);
             return true;
         }
         if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {
@@ -3184,14 +3160,20 @@ class User extends User_Profile
     }
 
     /**
-     * Create the new password with hash
+     * Generate hash of password with default hash algorithm
      *
-     * @param string $password input password
+     * @param string $password Password to be hashed
      *
-     * @return string the hashed password, or false on failure.
+     * @return string The generated hash of the supplied password
+     * @throws  UserException   In case the password hash generation fails
      */
     public function hashPassword($password)
     {
-        return password_hash($password, PASSWORD_BCRYPT);
+        $hash = password_hash($password, $this->defaultHashAlgorithm);
+        if ($hash !== false) {
+            return $hash;
+        }
+
+        throw new UserException('Failed to generate a new password hash');
     }
 }

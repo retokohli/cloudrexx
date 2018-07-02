@@ -4416,10 +4416,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             if ($password != $password_confirm) {
                 return \Message::error($_ARRAYLANG['TXT_SHOP_PASSWORD_NOT_CONFIRMED']);
             }
-            if (strlen($password) < 6) {
-                return \Message::error($_ARRAYLANG['TXT_PASSWORD_MIN_CHARS']);
-            }
-            if (!self::$objCustomer->password($password)) {
+            if (!self::$objCustomer->setPassword($password)) {
                 return \Message::error($_ARRAYLANG['TXT_SHOP_PASSWORD_INVALID']);
             }
             if (!self::$objCustomer->store()) {

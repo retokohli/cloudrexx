@@ -234,11 +234,6 @@ class Config
                     'value' => '',
                     'values' => '{src:\\' . __CLASS__ . '::getUserGroups()}',
                 ),
-                'defaultPasswordAlgorithm' => array(
-                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                    'value' => '',
-                    'values' => 'MD5:MD5,BLOWFISH:BLOWFISH',
-                ),
             ),
             'contactInformation' => array(
                 'coreAdminName' => array(

@@ -110,27 +110,6 @@ class Customer extends \User
     }
 
     /**
-     * Get or set the password
-     *
-     * Note that the password is set as plain text, but only the md5 hash
-     * is returned!
-     * If setting the password fails, returns null.
-     * @param   string    $password       The optional password in plain text
-     * @return  string                    The md5 password hash on success,
-     *                                    null otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function password($password=null)
-    {
-        if (isset($password)) {
-            // plain!
-            if (!$this->setPassword($password)) return null;
-        }
-        // md5!
-        return $this->password;
-    }
-
-    /**
      * Get or set the e-mail address
      * @param   string    $email          The optional e-mail address
      * @return  string                    The e-mail address

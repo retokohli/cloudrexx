@@ -153,11 +153,6 @@ class User extends \Cx\Model\Base\EntityBase {
     private $userProfile;
 
     /**
-     * @var string $hashAlgorithm
-     */
-    protected $hashAlgorithm;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     private $group;
@@ -184,10 +179,6 @@ class User extends \Cx\Model\Base\EntityBase {
         $this->restoreKey = '';
         $this->restoreKeyTime = '';
         $this->u2uActive = 0;
-        $this->hashAlgorithm = \Cx\Core\Setting\Controller\Setting::getValue(
-            'defaultPasswordAlgorithm',
-            'Config'
-        );
 
         $this->group = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -651,26 +642,6 @@ class User extends \Cx\Model\Base\EntityBase {
     public function getU2uActive()
     {
         return $this->u2uActive;
-    }
-
-    /**
-     * Set hashAlgorithm
-     *
-     * @param string $hashAlgorithm
-     */
-    public function setHashAlgorithm($hashAlgorithm)
-    {
-        $this->hashAlgorithm = $hashAlgorithm;
-    }
-
-    /**
-     * Get hashAlgorithm
-     *
-     * @return string $hashAlgorithm
-     */
-    public function getHashAlgorithm()
-    {
-        return $this->hashAlgorithm;
     }
 
     /**
