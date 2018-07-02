@@ -372,6 +372,9 @@ class User extends User_Profile
             return false;
         }
 
+        // ensure the password is properly hashed 
+        $this->updatePasswordHash($password);
+
         return true;
     }
 
@@ -439,7 +442,7 @@ class User extends User_Profile
             return false;
         }
         // verify that the supplied password is valid
-        if (!$this->checkPassword($password, $objResult->fields['passwod'])) {
+        if (!$this->checkPassword($password, $objResult->fields['password'])) {
             return false;
         }
 
@@ -483,65 +486,119 @@ class User extends User_Profile
      *
      * @param   string  $password     Raw password to be verified
      * @param   string  $passwordHash The hash of the password to verify the
-     *                                supplied password with.
-     *
+     *                                supplied password with. If not supplied,
+     *                                it will be fetched from the database.
      * @return boolean
      */
-    public function checkPassword($inputPassword, $passwordHash = '')
+    public function checkPassword($password, $passwordHash = '')
     {
-        global $objDatabase;
+        // do not allow empty passwords
+        if ($password == '') {
+            return false;
+        }
 
         try {
             // fetch hash of password from database,
             // if it has not been supplied as argument
-            if ($passwordHash == '') {
-                $query = '
-                    SELECT `password`
-                      FROM `'.DBPREFIX.'access_users`
-                    WHERE `id` = ' . $this->id;
-                $objResult = $objDatabase->Execute($query);
-                if (
-                    !$objResult ||
-                    $objResult->RecordCount() != 1
-                ) {
-                    return false;
-                }
-                $passwordHash = $objResult->fields['password'];
+            if (
+                $passwordHash == '' &&
+                $this->getId()
+            ) {
+                $passwordHash = $this->fetchPasswordHashFromDatabase();
             }
 
             // check if password is hashed with legacy algorithm (md5)
-            if (preg_match('/^[a-f0-9]{32}$/i', $setPassword)) {
-                // verify md5 hash of password
-                if (md5($inputPassword) != $passwordHash) {
-                    return false;
-                }
-
-                // regenerate hash using new algorithm
-                $this->setPassword($password);
-                $this->store();
+            if (
+                preg_match('/^[a-f0-9]{32}$/i', $passwordHash) &&
+                md5($password) == $passwordHash
+            ) {
                 return true;
             }
 
             // verify password
-            if (!password_verify($password, $passwordHash)) {
-                return false;
-            }
-
-            // check if we need to regenerate the password hash using a newer
-            // hash algorithm
-            if (password_needs_rehash($passwordHash, $this->defaultHashAlgorithm)) {
-                $this->setPassword($password);
-                $this->store();
+            if (password_verify($password, $passwordHash)) {
                 return true;
             }
 
-            return true;
+            return false;
         } catch (UserException $e) {
             \DBG::log($e->getMessage());
             return false;
         }
     }
 
+    /**
+     * Verify that the password is properly hashed
+     *
+     * If the hashed password is outdated it will be updated in the database.
+     *
+     * @param   string  $password     Current raw password
+     * @param   string  $passwordHash The matching hash of the password. If not
+     *                                supplied, it will be fetched from the
+     *                                database.
+     */
+    protected function updatePasswordHash($password, $passwordHash = '') {
+        try {
+            // fetch hash of password from database,
+            // if it has not been supplied as argument
+            if (
+                $passwordHash == '' &&
+                $this->getId()
+            ) {
+                $passwordHash = $this->fetchPasswordHashFromDatabase();
+            }
+
+            // verify the supplied password to ensure that a newly
+            // generated password hash will be valid
+            if (!$this->checkPassword($password, $passwordHash)) {
+                return;
+            }
+
+            // check if password is hashed with legacy algorithm (md5)
+            if (preg_match('/^[a-f0-9]{32}$/i', $passwordHash)) {
+                // regenerate hash using new algorithm
+                $this->setPassword($password, null, false, false);
+                $this->store();
+                return;
+            }
+
+            // check if we need to regenerate the password hash using a newer
+            // hash algorithm
+            if (password_needs_rehash($passwordHash, $this->defaultHashAlgorithm)) {
+                // regenerate hash using new algorithm
+                $this->setPassword($password, null, false, false);
+                $this->store();
+                return;
+            }
+        } catch (UserException $e) {
+            \DBG::log($e->getMessage());
+        }
+    }
+
+    /**
+     * Fetch the password hash of the currently loaded user from the database
+     *
+     * @return  string  Password hash of currently loaded user.
+     */
+    protected function fetchPasswordHashFromDatabase() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+
+        $query = '
+            SELECT `password`
+              FROM `'.DBPREFIX.'access_users`
+            WHERE `id` = ' . $this->id;
+        $objResult = $db->Execute($query);
+
+        if (
+            !$objResult ||
+            $objResult->RecordCount() != 1
+        ) {
+            throw new UserException('Unable to load unknown user');
+        }
+
+        return $objResult->fields['password'];
+    }
 
     /**
      * Clean user metadata
@@ -2617,17 +2674,25 @@ class User extends User_Profile
      * by the second parameter $confirmedPassword.
      * @param   string    $password           The new password
      * @param   string    $confirmedPassword  The new password, again
+     * @param   boolean   $reset
+     * @param   boolean   $verify             Whether or not to verify if
+     *                                        $password is a valid password
+     *                                        according to the set password
+     *                                        complexity rules.
      * @return  boolean                       True on success, false otherwise
      * @global  array     $_CORELANG
      */
-    public function setPassword($password, $confirmedPassword=null, $reset=false)
+    public function setPassword($password, $confirmedPassword=null, $reset=false, $verify=true)
     {
         global $_CORELANG, $_CONFIG;
 
         if ((empty($password) && empty($confirmedPassword) && $this->id && !$reset) || isset($_SESSION['user_id'])) {
             return true;
         }
-        if (self::isValidPassword($password)) {
+        if (
+            !$verify ||
+            self::isValidPassword($password)
+        ) {
             if (isset($confirmedPassword) && $password != $confirmedPassword) {
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_PASSWORD_NOT_CONFIRMED'];
                 return false;
