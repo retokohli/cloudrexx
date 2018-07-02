@@ -44,7 +44,7 @@ namespace Cx\Core\LanguageManager\Controller;
  * @package     cloudrexx
  * @subpackage  core_languagemanager
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
      * List of replacements for additional characters for slugifier
@@ -136,66 +136,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('EsiWidgetController');
     }
 
-    public function registerEventListeners() {
-        $this->cx->getEvents()->addEventListener('preComponent', $this);
-    }
-
     /**
-     * Event handler to load component language
-     * @param string $eventName Name of triggered event, should always be static::EVENT_NAME
-     * @param array $eventArgs Supplied arguments, should be an array (see DBG message below)
-     */
-    public function onEvent($eventName, array $eventArgs) {
-        global $_ARRAYLANG;
-
-        // we might be in a hook where lang is not yet initialized (before resolve)
-        if (!count($_ARRAYLANG)) {
-            $_ARRAYLANG = array();
-        }
-
-        $frontend = $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
-        $objInit = \Env::get('init');
-        switch ($eventName) {
-            case 'preComponent':
-                // Skip if this component's lang already is in $_ARRAYLANG
-                if (
-                    in_array(
-                        $eventArgs['componentName'],
-                        $this->componentsWithLoadedLang
-                    )
-                ) {
-                    return;
-                }
-
-                $_ARRAYLANG = array_merge(
-                    $_ARRAYLANG,
-                    $objInit->getComponentSpecificLanguageData(
-                        $eventArgs['componentName'],
-                        $frontend
-                    )
-                );
-                $this->componentsWithLoadedLang[] = $eventArgs['componentName'];
-                break;
-        }
-    }
-
-     /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $subMenuTitle, $_ARRAYLANG;
-        $subMenuTitle = $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'];
-
-        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
-        $cachedRoot = $this->cx->getTemplate()->getRoot();
-
-        \Permission::checkAccess(22, 'static');
-        $objLanguageManager = new \Cx\Core\LanguageManager\Controller\LanguageManager();
-        $objLanguageManager->getLanguagePage();
-
-        $this->cx->getTemplate()->setRoot($cachedRoot);
+        $localeUri = $this->cx->getWebsiteOffsetPath() .
+            $this->cx->getBackendFolderName() .
+             '/Locale';
+        \Cx\Core\Csrf\Controller\Csrf::redirect($localeUri);
     }
 
     /**
@@ -235,6 +185,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 define('FRONTEND_LANG_ID', $_FRONTEND_LANGID);
                 define('BACKEND_LANG_ID', $_LANGID);
                 define('LANG_ID', $_LANGID);
+                $this->cx->getDb()->getTranslationListener()->setTranslatableLocale(
+                    \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+                );
 
                 /**
                  * Core language data
@@ -350,7 +303,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         $widgetController = $this->getComponent('Widget');
-        $langManager      = new LanguageManager();
         $widgetNames      = array(
             'CHARSET',
             'LANGUAGE_NAVBAR',
@@ -361,7 +313,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         foreach (
             array_merge(
                 $widgetNames,
-                $langManager->getLanguagePlaceholderNames()
+                $this->getLanguagePlaceholderNames()
             ) as $widgetName
         ) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -376,5 +328,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget
             );
         }
+    }
+
+    /**
+     * Get language placeholder names
+     *
+     * @return array
+     */
+    protected function getLanguagePlaceholderNames()
+    {
+        $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+        foreach ($activeLanguages as $langData) {
+            $placeholders[] = 'LANG_CHANGE_' . str_replace('-', '_', strtoupper($langData['lang']));
+            $placeholders[] = 'LANG_SELECTED_' . str_replace('-', '_', strtoupper($langData['lang']));
+        }
+        return $placeholders;
     }
 }

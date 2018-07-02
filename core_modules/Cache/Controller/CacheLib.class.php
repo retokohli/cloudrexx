@@ -82,14 +82,24 @@ class CacheLib
     const CACHE_ENGINE_ZEND_OPCACHE = 'zendopcache';
 
     /**
-     * file system user cache extension
-     */
-    const CACHE_ENGINE_FILESYSTEM = 'filesystem';
-
-    /**
      * cache off
      */
     const CACHE_ENGINE_OFF = 'off';
+
+    /**
+     * Page cache directory offset
+     */
+    const CACHE_DIRECTORY_OFFSET_PAGE = 'page/';
+
+    /**
+     * ESI cache directory offset
+     */
+    const CACHE_DIRECTORY_OFFSET_ESI = 'esi/';
+
+    /**
+     * File name for page cache locale data
+     */
+    const LOCALE_CACHE_FILE_NAME = 'Locale.dat';
 
     /**
      * Used op cache engines
@@ -124,6 +134,14 @@ class CacheLib
     protected $jsonData = null;
 
     /**
+     * Prefix to be used to identify cache entries in shared caching
+     * environments.
+     *
+     * @var string
+     */
+    protected $cachePrefix;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -143,26 +161,39 @@ class CacheLib
             $this->getDoctrineCacheDriver()->deleteAll();
             return;
         }
-        $handleDir = opendir($this->strCachePath);
+        $handleDir = opendir(
+            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE
+        );
         if ($handleDir) {
             while ($strFile = readdir($handleDir)) {
                 if ($strFile != '.' && $strFile != '..') {
                     switch ($cacheEngine) {
                         case 'cxPages':
-                            if(is_file($this->strCachePath . $strFile)){
-                                unlink($this->strCachePath . $strFile);
+                            if (is_file(
+                                $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile
+                            )) {
+                                unlink(
+                                    $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile
+                                );
                             }
                             break;
                         case 'cxEntries':
                             $this->getDoctrineCacheDriver()->deleteAll();
                             break;
                         default:
-                            unlink($this->strCachePath . $strFile);
+                            unlink(
+                                $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile
+                            );
                             break;
                     }
                 }
             }
             closedir($handleDir);
+
+            if ($cacheEngine == 'cxPages') {
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate(); 
+                $this->setCachedLocaleData($cx);
+            } 
         }
     }
 
@@ -211,7 +242,9 @@ class CacheLib
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             ini_set('opcache.save_comments', 1);
             ini_set('opcache.load_comments', 1);
-            @ini_set('opcache.enable', 1);
+            if (!ini_get('opcache.enable')) {
+                @ini_set('opcache.enable', 1);
+            }
 
             if (
                 !$this->isActive(self::CACHE_ENGINE_ZEND_OPCACHE) ||
@@ -276,8 +309,14 @@ class CacheLib
             unset($this->memcached); // needed for reinitialization
             if (class_exists('\Memcached')) {
                 $memcached = new \Memcached();
+                $memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, false);
                 if (@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
-                    $this->memcached = $memcached;
+                    $servers = $memcached->getStats();
+                    if (!empty($servers) &&
+                        isset($servers[$memcachedConfiguration['ip'] . ':' . $memcachedConfiguration['port']])
+                    ) {
+                        $this->memcached = $memcached;
+                    }
                 }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
@@ -292,11 +331,6 @@ class CacheLib
             $this->isConfigured(self::CACHE_ENGINE_XCACHE, true)
         ) {
             $this->userCacheEngines[] = self::CACHE_ENGINE_XCACHE;
-        }
-
-        // Filesystem
-        if ($this->isConfigured(self::CACHE_ENGINE_FILESYSTEM)) {
-            $this->userCacheEngines[] = self::CACHE_ENGINE_FILESYSTEM;
         }
     }
 
@@ -466,27 +500,42 @@ class CacheLib
      *     <adapterMethod>,
      *     <params>,
      * )
+     * @param array $esiContentInfos List of ESI content info arrays
+     * @param int $count (optional) Number of unique random entries to parse
+     * @return string ESI randomized include code
      */
-    public function getRandomizedEsiContent($esiContentInfos) {
+    public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
-            $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
+            $urls[] = $this->getUrlFromApi(
+                $esiContentInfo[0],
+                $esiContentInfo[1],
+                $esiContentInfo[2]
+            )->toString();
         }
         $settings = $this->getSettings();
         if (
-            is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
+            is_a(
+                $this->getSsiProxy(),
+                '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx'
+            ) &&
             (
                 !isset($settings['internalSsiCache']) ||
                 $settings['internalSsiCache'] != 'on'
             )
         ) {
             try {
-                return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+                return $this->getApiResponseForUrl(
+                    $urls[rand(0, (count($urls) - 1))]
+                );
             } catch (\Exception $e) {
                 return '';
             }
         }
-        return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
+        return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode(
+            $urls,
+            $count
+        );
     }
 
     /**
@@ -496,7 +545,7 @@ class CacheLib
      * @throws \Exception If JsonAdapter request did not succeed
      * @return string API content or empty string
      */
-    protected function getApiResponseForUrl($url, $response = null) {
+    protected function getApiResponseForUrl($url) {
         // Initialize only when needed, we need DB for this!
         if (empty($this->apiUrlString)) {
             $this->apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', array(), array()), 0, -1);
@@ -521,9 +570,19 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
-        if ($response) {
-            $arguments['response'] = $response;
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $arguments['response'] = new \Cx\Core\Routing\Model\Entity\Response(
+            null,
+            200,
+            new \Cx\Core\Routing\Model\Entity\Request(
+                'get',
+                new \Cx\Core\Routing\Url($url),
+                array(
+                    'Referer' => $cx->getRequest()->getUrl()->toString(),
+                )
+            )
+        );
+        $arguments['response']->setPage($cx->getPage());
 
         if (!$this->jsonData) {
             $this->jsonData = new \Cx\Core\Json\JsonData();
@@ -535,7 +594,7 @@ class CacheLib
             !isset($response['data']) ||
             !isset($response['data']['content'])
         ) {
-            throw new \Exception('JsonAdapter returned with an error');
+            throw new \Exception('JsonAdapter returned with an error: "' . $response['message'] . '"');
         }
         return $response['data']['content'];
     }
@@ -568,12 +627,13 @@ class CacheLib
         // make sure params are in correct order:
         $correctIndexOrder = array(
             'page',
-            'lang',
+            'locale',
             'user',
             'theme',
             'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
@@ -610,8 +670,6 @@ class CacheLib
                 return extension_loaded('memcached');
             case self::CACHE_ENGINE_XCACHE:
                 return extension_loaded('xcache');
-            case self::CACHE_ENGINE_FILESYSTEM:
-                return true;
         }
     }
 
@@ -628,14 +686,12 @@ class CacheLib
                 $setting = 'opcache.enable';
                 break;
             case self::CACHE_ENGINE_MEMCACHE:
-                return $this->memcache ? true : false;
+                return !empty($this->memcache) ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcached ? true : false;
+                return !empty($this->memcached) ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                return true;
         }
         if (!empty($setting)) {
             $configurations = ini_get_all();
@@ -655,7 +711,10 @@ class CacheLib
                 }
                 return true;
             case self::CACHE_ENGINE_ZEND_OPCACHE:
-                return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
+                // opcache.load_comments no longer exists since PHP7
+                // therefore, ini_get() will return FALSE in case the
+                // php directive does not exist
+                return ini_get('opcache.save_comments') && (ini_get('opcache.load_comments') === false || ini_get('opcache.load_comments'));
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
@@ -669,9 +728,6 @@ class CacheLib
                     );
                 }
                 return ini_get('xcache.size') > 0;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                return is_writable($cx->getWebsiteCachePath());
         }
     }
 
@@ -762,7 +818,14 @@ class CacheLib
             $this->_deleteAllFiles('cxPages');
         }
 
-        $cacheEngine = $cacheEngine == null ? $this->userCacheEngine : $cacheEngine;
+        if ($cacheEngine == null) {
+            if ($this->userCacheEngine == self::CACHE_ENGINE_MEMCACHED) {
+                // do not automatically flush memcached as fallback
+                // this will break Gedmo etc
+            } else {
+                $cacheEngine = $this->userCacheEngine;
+            }
+        }
         switch ($cacheEngine) {
             case self::CACHE_ENGINE_APC:
                 $this->clearApc();
@@ -779,8 +842,6 @@ class CacheLib
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 $this->clearZendOpCache();
                 break;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                $this->_deleteAllFiles();
             default:
                 break;
         }
@@ -902,19 +963,24 @@ class CacheLib
 
     /**
      * Clears all Memcacheddata related to this Domain if Memcache is installed
+     * @return  integer Returns the number of invalidated keys
      */
-    private function clearMemcached()
+    public function clearMemcached()
     {
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
         //$this->memcache->flush(); //<- not like this!!!
         $keys = $this->memcached->getAllKeys();
+        $n = 0;
         foreach($keys as $key){
             if(strpos($key, $this->getCachePrefix()) !== false){
                 $this->memcached->delete($key);
+                $n++;
             }
         }
+
+        return $n;
     }
 
     /**
@@ -945,7 +1011,24 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+
+        // TODO: check if the initialization of the prefix could be moved into
+        //       the constructor
+        if (empty($this->cachePrefix)) {
+            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+        }
+
+        return $this->cachePrefix;
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     * @param   $prefix String  The new CachePrefix to be used.
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cachePrefix = $prefix;
     }
 
     /**
@@ -982,9 +1065,6 @@ class CacheLib
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
                 $cache->setNamespace($this->getCachePrefix());
                 break;
-            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
-                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache($this->strCachePath);
-                break;
             default:
                 $cache = new \Doctrine\Common\Cache\ArrayCache();
                 break;
@@ -1015,9 +1095,10 @@ class CacheLib
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($url) {
+    public function getCacheFileNameSearchPartsFromUrl($url, $originalUrl) {
         try {
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
@@ -1026,12 +1107,13 @@ class CacheLib
         }
         $searchParams = array(
             'p' => 'page',
-            'l' => 'lang',
+            'l' => 'locale',
             'u' => 'user',
             't' => 'theme',
             'ch' => 'channel',
             'g' => 'country',
             'c' => 'currency',
+            'r' => 'ref',
             'tc' => 'targetComponent',
             'te' => 'targetEntity',
             'ti' => 'targetId',
@@ -1041,9 +1123,17 @@ class CacheLib
             if (!isset($params[$long])) {
                 continue;
             }
-            // security: abort if any mystirius characters are found
+            // security: abort if any mysterious characters are found
             if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
                 return array();
+            }
+            if ($long == 'ref') {
+                $params[$long] = str_replace(
+                    '$(HTTP_REFERER)',
+                    $originalUrl,
+                    $params[$long]
+                );
+                $params[$long] = md5($params[$long]);
             }
             $fileNameSearchParts[$short] = '_' . $short . $params[$long];
         }
@@ -1053,10 +1143,12 @@ class CacheLib
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
-        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url, $originalUrl);
         try {
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
@@ -1065,18 +1157,28 @@ class CacheLib
         }
         $correctIndexOrder = array(
             'page',
-            'lang',
+            'locale',
             'user',
             'theme',
             'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
         );
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
+        }
+        // Make sure placeholders are replaced before generating filename.
+        // Otherwise the filename will be non-unique.
+        if (isset($params['ref'])) {
+            $params['ref'] = str_replace(
+                '$(HTTP_REFERER)',
+                $originalUrl,
+                $params['ref']
+            );
         }
         $fileName = '';
         if (is_object($url)) {
@@ -1097,13 +1199,18 @@ class CacheLib
      */
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
-        if ( 0 < $intPageId ) {
-            $files = glob($this->strCachePath . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
-            if ( count( $files ) ) {
-                foreach ( $files as $file ) {
-                    @unlink( $file );
-                }
-            }
+        if (!$intPageId) {
+            return;
+        }
+
+        $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
+
+        if (!is_array($files)) {
+            return;
+        }
+
+        foreach ($files as $file) {
+            @unlink($file);
         }
     }
 
@@ -1139,11 +1246,99 @@ class CacheLib
      * Those are cached header redirects
      */
     public function deleteNonPagePageCache() {
-        $files = glob($this->strCachePath . '*_{,h}', GLOB_BRACE);
-        if (count($files)) {
-            foreach ($files as $file) {
-                @unlink($file);
-            }
+        $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_{,h}', GLOB_BRACE);
+
+        if (!is_array($files)) {
+            return;
         }
+
+        foreach ($files as $file) {
+            @unlink($file);
+        }
+    }
+
+    /**
+     * Clear user based page cache of a specific user identified by its
+     * session ID.
+     *
+     * @param   string  $sessionId  The session ID of the user of whom
+     *                              to clear the page cache from.
+     */
+    public function clearUserBasedPageCache($sessionId) {
+        // abort if no valid session id is supplied
+        if (empty($sessionId)) {
+            return;
+        }
+
+        // fetch complete page cache of specific user
+        $files = glob(
+            $this->strCachePath .
+                static::CACHE_DIRECTORY_OFFSET_PAGE . '*_u' .
+                $sessionId . '{,_h}',
+            GLOB_BRACE
+        );
+
+        if (!is_array($files)) {
+            return;
+        }
+
+        // drop identified page cache of specific user
+        foreach ($files as $file) {
+            @unlink($file);
+        }
+    }
+
+    /**
+     * Clear user based ESI cache of a specific user identified by its
+     * session ID.
+     *
+     * @param   string  $sessionId  The session ID of the user of whom
+     *                              to clear the esi cache from.
+     */
+    public function clearUserBasedEsiCache($sessionId) {
+        // abort if no valid session id is supplied
+        if (empty($sessionId)) {
+            return;
+        }
+
+        // fetch complete esi cache of specific user
+        $files = glob(
+            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . '*_u' . $sessionId . '*'
+        );
+
+        if (!is_array($files)) {
+            return;
+        }
+
+        // drop identified esi cache of specific user
+        foreach ($files as $file) {
+            @unlink($file);
+        }
+    }
+
+    /**
+     * Sets the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     */
+    public function setCachedLocaleData($cx) {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        if (file_exists($filename)) {
+            return;
+        }
+        $locale = $cx->getComponent('Locale');
+        if (!$locale) {
+            return;
+        }
+        $localeData = $locale->getLocaleData();
+        if (empty($localeData)) {
+            return;
+        }
+        $file = new \Cx\Lib\FileSystem\File($filename);
+        $file->write(serialize($localeData));
     }
 }

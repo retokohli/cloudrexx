@@ -115,7 +115,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(
             'postFlush',
             'Cx\Core\Routing\Model\Entity\RewriteRule',
-            new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
+            new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener(
+                $this->cx
+            )
+        );
+
+        // TODO: This is a workaround for Doctrine's result query cache.
+        //       Proper handling of ResultCache must be implemented.
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Model\Entity\EntityBase',
+            new \Cx\Core_Modules\Cache\Model\Event\CoreEntityBaseEventListener(
+                $this->cx
+            )
+        );
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Locale\Model\Entity\Locale',
+            new \Cx\Core_Modules\Cache\Model\Event\LocaleChangeListener(
+                $this->cx
+            )
         );
     }
 
@@ -203,11 +222,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *     <adapterMethod>,
      *     <params>,
      * )
-     * @param array $esiContentInfos
-     * @return string ESI random include tag
+     * @param array $esiContentInfos List of ESI content info arrays
+     * @param int $count (optional) Number of unique random entries to parse
+     * @return string ESI randomized include code
      */
-    public function getRandomizedEsiContent($esiContentInfos) {
-        return $this->cache->getRandomizedEsiContent($esiContentInfos);
+    public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
+        return $this->cache->getRandomizedEsiContent($esiContentInfos, $count);
     }
 
     /**
@@ -252,6 +272,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Clear user based page cache of a specific user identified by its
+     * session ID.
+     *
+     * @param   string  $sessionId  The session ID of the user of whom
+     *                              to clear the page cache from.
+     */
+    public function clearUserBasedPageCache($sessionId) {
+        $this->cache->clearUserBasedPageCache($sessionId);
+    }
+
+    /**
+     * Clear user based ESI cache of a specific user identified by its
+     * session ID.
+     *
+     * @param   string  $sessionId  The session ID of the user of whom
+     *                              to clear the esi cache from.
+     */
+    public function clearUserBasedEsiCache($sessionId) {
+        $this->cache->clearUserBasedEsiCache($sessionId);
+    }
+
+    /**
      * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
      */
     public function getCacheDriver()
@@ -262,19 +304,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($urlPattern) {
-        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern);
+    public function getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl) {
+        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl);
     }
 
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart = true) {
-        return $this->cache->getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart);
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        return $this->cache->getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart);
     }
 
     /**
@@ -400,10 +445,17 @@ Cache clear all';
                             CacheLib::CACHE_ENGINE_MEMCACHE,
                             CacheLib::CACHE_ENGINE_MEMCACHED,
                             CacheLib::CACHE_ENGINE_XCACHE,
-                            CacheLib::CACHE_ENGINE_FILESYSTEM,
                         )
                     )) {
                         echo 'Unknown cache engine' . "\n";
+                        return;
+                    }
+                    if ($options == CacheLib::CACHE_ENGINE_MEMCACHED) {
+                        if (!extension_loaded('memcached')) {
+                            dl('memcached');
+                        }
+                        $droppedKeys = $this->cache->clearMemcached();
+                        echo $droppedKeys . ' keys dropped from Memcached' . "\n";
                         return;
                     }
                     $this->cache->_deleteAllFiles($options);
@@ -413,10 +465,9 @@ Cache clear all';
                 break;
             case 'page':
                 if (!empty($options)) {
-                    $this->cache>_deleteSingleFile($options);
+                    $this->cache->deleteSingleFile($options);
                     break;
                 }
-                // @TODO: this will drop ESI cache too
                 $this->cache->_deleteAllFiles('cxPages');
                 break;
             case 'esi':
@@ -458,5 +509,27 @@ Cache clear all';
             return;
         }
         $this->cache->forceUserbasedPageCache();
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     * @param   $prefix String  The new CachePrefix to be used
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cache->setCachePrefix($prefix);
+    }
+
+    /**
+     * Sets the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     */
+    public function setCachedLocaleData($cx) {
+        $this->cache->setCachedLocaleData($cx);
     }
 }

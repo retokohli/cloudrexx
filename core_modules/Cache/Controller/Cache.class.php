@@ -44,6 +44,7 @@ namespace Cx\Core_Modules\Cache\Controller;
  */
 class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 {
+    const HTTP_STATUS_CODE_HEADER = 'X-StatusCode';
     var $boolIsEnabled = false; //Caching enabled?
     var $intCachingTime; //Expiration time for cached file
 
@@ -86,6 +87,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     {
         global $_CONFIG;
 
+        if ($_CONFIG['cacheEnabled'] == 'off') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
         // able to determine of the mobile device wishes to be served
@@ -96,17 +102,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             !isset($_REQUEST['smallscreen'])
         );
 
-        if ($_CONFIG['cacheEnabled'] == 'off') {
-            $this->boolIsEnabled = false;
-            return;
-        }
-
         if (isset($_REQUEST['caching']) && $_REQUEST['caching'] == '0') {
             $this->boolIsEnabled = false;
             return;
         }
 
+        // @todo: A component should have a possibility to add caching exceptions
         if (isset($_GET['templateEditor']) && $_GET['templateEditor'] == 1) {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
+        // @todo: A component should have a possibility to add caching exceptions
+        if (isset($_GET['pagePreview'])) {
             $this->boolIsEnabled = false;
             return;
         }
@@ -134,30 +142,74 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         //            system.
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
-        $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
-            $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        $country = '';
-        $geoIp = $cx->getComponent('GeoIp');
-        if ($geoIp) {
-            $countryInfo = $geoIp->getCountryCode(array());
-            if (!empty($countryInfo['content'])) {
-                $country = $countryInfo['content'];
-            }
-        }
+        $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
+
         $this->arrPageContent = array(
-            'url' => $currentUrl,
+            'url' => $this->currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
-            'country' => $country,
         );
-        // since crawlers do not send accept language header, we make it optional
-        // in order to keep the logs clean
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $this->arrPageContent['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        $cachedLocaleData = $this->getCachedLocaleData();
+        if (!$cachedLocaleData) {
+            $this->arrPageContent += $this->selectBestLanguageFromRequest($cx);
+        } else {
+            $this->arrPageContent['locale'] = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+                $cx,
+                $cachedLocaleData
+            );
         }
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
+    /**
+     * Returns the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @return array Cached locale data or empty array
+     */
+    protected function getCachedLocaleData() {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        if (!file_exists($filename)) {
+            return array();
+        }
+        $cachedData = unserialize(file_get_contents($filename));
+        if ($cachedData === false) {
+            return array();
+        }
+        return $cachedData;
+    }
+
+    /**
+     * Returns the necessary data to later identify the matching locale
+     *
+     * This method does not use database or cached database data
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     * @return array Locale info
+     */
+    protected function selectBestLanguageFromRequest(
+        \Cx\Core\Core\Controller\Cx $cx
+    ) {
+        $localeInfo = array(
+            'country' => '',
+        );
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $localeInfo['country'] = $countryInfo['content'];
+            }
+        }
+        // since crawlers do not send accept language header, we make it optional
+        // in order to keep the logs clean
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $localeInfo['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
+        return $localeInfo;
+    }
 
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
@@ -167,11 +219,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // TODO: $dynVars needs to be built dynamically (via event handler)
         $this->dynVars = array(
             'GEO' => array(
+                // This is not specified by W3C but by Akamai
                 'country_code' => function() use ($cx) {
                     return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
                 },
             ),
             'HTTP_COOKIE' => array(
+                // This only supports PHPSESSID instead of full cookie support
+                // as specified by W3C
                 'PHPSESSID' => function() {
                     $sessId = 0;
                     if (!empty($_COOKIE[session_name()])) {
@@ -180,7 +235,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     return $sessId;
                 },
             ),
+            // HTTP_ACCEPT_LANGUAGE
+            // HTTP_HOST
+            // HTTP_USER_AGENT
+            'HTTP_REFERER' => function() {
+                if (!isset($_SERVER['HTTP_REFERER'])) {
+                    return '';
+                }
+                return $_SERVER['HTTP_REFERER'];
+            },
             'QUERY_STRING' => function () {
+                // This is not according to W3C specifications since it
+                // includes the leading "?" if there are params. This is due
+                // to backwards compatibility
                 $parameters = array();
                 parse_str($_SERVER['QUERY_STRING'], $parameters);
                 if (isset($parameters['__cap'])) {
@@ -196,7 +263,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if (!$this->boolIsEnabled) {
             return null;
         }
-        $files = glob($this->strCachePath . $this->strCacheFilename . "*");
+        $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $this->strCacheFilename . "*");
 
         // sort out false-positives (header and ESI cache files)
         $cacheFileUserRegex = '';
@@ -205,7 +272,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         } else {
             $cacheFileUserRegex = '(?:_u0|)';
         }
-        $cacheFileRegex = '/([0-9a-f]{32})_([0-9]+' . $cacheFileUserRegex . ')?$/';
+        $cacheFileRegex = '/([0-9a-f]{32})_(([0-9]+)' . $cacheFileUserRegex . ')?$/';
         $files = preg_grep(
             $cacheFileRegex,
             $files
@@ -223,15 +290,30 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
         $file = current($files);
 
+        // load headers
+        $matches = array();
+        preg_match($cacheFileRegex, $file, $matches);
+        // @todo: Make header cache user based
+
+        // $matches[2] is not set if the following conditions are all true:
+        // 1. We have no session
+        // 2. Request is not user-based
+        // 3. We have no page (request to without URI-Slug, for example: /de/)
+        if (!isset($matches[2])) {
+            $matches[2] = '';
+        }
+
+        $headerFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $matches[1] . '_h' . $matches[2];
+
         if (filemtime($file) > (time() - $this->intCachingTime)) {
-            // load headers
-            $matches = array();
-            preg_match($cacheFileRegex, $file, $matches);
-            $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
             if (file_exists($headerFile)) {
                 $headers = unserialize(file_get_contents($headerFile));
                 if (is_array($headers)) {
                     foreach ($headers as $name=>$value) {
+                        if ($name == static::HTTP_STATUS_CODE_HEADER) {
+                            http_response_code($value);
+                            continue;
+                        }
                         if (is_numeric($name)) {
                             // This allows headers without a ':'
                             header($value);
@@ -261,10 +343,15 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $endcode = file_get_contents($file);
 
             echo $this->internalEsiParsing($endcode, true);
+            $parsingTime = $cx->stopTimer();
+
+            \DBG::writeFinishLine($cx, true);
             exit;
         } else {
-            $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
-            $headerFile->delete();
+            if (file_exists($headerFile)) {
+                $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
+                $headerFile->delete();
+            }
             $file = new \Cx\Lib\FileSystem\File($file);
             $file->delete();
         }
@@ -278,9 +365,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     {
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$url) {
-                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+            if (is_callable($vars)) {
+                $esiPlaceholder = '$(' . $groupName . ')';
                 $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
+            } else {
+                foreach ($vars as $varName=>$url) {
+                    $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                    $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
+                }
             }
         }
         
@@ -297,12 +389,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // all the following exceptions are TEMPORARY and only necessary
             // due to non-proper implementation of caching mechanisms
-            
-            // do not cache if a user is logged in (since we can't handle user based ESI caches yet)
-            function ($cx, $page) {
-                return session_id() != '' &&
-                    \FWUser::getFWUserObject()->objUser->login();
-            },
 
             // do not cache if uploader is in use (since its ID will get cached otherwise)
             function ($cx, $page) {
@@ -336,6 +422,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'Jobs',
             'Knowledge',
             'Livecam',
+            'Login' => array(
+                function($page) {
+                    return $_SERVER['REQUEST_METHOD'] === 'POST';
+                },
+            ),
             'Market',
             'Media',
             'Media1',
@@ -371,9 +462,15 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return $this->internalEsiParsing($endcode);
         }
 
+        $this->setCachedLocaleData($cx);
+
         // write header cache file
         $resolver = \Env::get('Resolver');
         $headers = $resolver->getHeaders();
+        $httpStatusCode = http_response_code();
+        if (is_int(http_response_code()) && $httpStatusCode != 200) {
+            $headers[static::HTTP_STATUS_CODE_HEADER] = $httpStatusCode;
+        }
         $this->writeCacheFileForRequest(
             $page,
             $headers,
@@ -421,12 +518,17 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->cleanupCacheFiles($this->strCacheFilename, $pageId, $userbased);
 
         if (count($headers)) {
-            $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId . $user;
+            foreach ($headers as &$header) {
+                $header = (string) $header;
+            }
+            $handleFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $this->strCacheFilename . '_h' . $pageId . $user;
             $File = new \Cx\Lib\FileSystem\File($handleFile);
             $File->write(serialize($headers));
         }
+        \DBG::log('Writing cache file "' . $this->strCacheFilename . '_' . $pageId . $user . ' for request info:');
+        \DBG::dump($this->arrPageContent);
         // write page cache file
-        $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $pageId . $user;
+        $handleFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $this->strCacheFilename . '_' . $pageId . $user;
         $File = new \Cx\Lib\FileSystem\File($handleFile);
         $File->write($endcode);
     }
@@ -453,8 +555,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
         $cacheFileNames = array();
         foreach ($cacheFileSuffixes as $cacheFileSuffix) {
-            $cacheFileNames[] = $this->strCachePath . $filename . '_' . $pageId . $cacheFileSuffix;
-            $cacheFileNames[] = $this->strCachePath . $filename . '_h' . $pageId . $cacheFileSuffix;
+            $cacheFileNames[] = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $filename . '_' . $pageId . $cacheFileSuffix;
+            $cacheFileNames[] = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $filename . '_h' . $pageId . $cacheFileSuffix;
         }
         foreach ($cacheFileNames as $cacheFileName) {
             if (!file_exists($cacheFileName)) {
@@ -480,12 +582,36 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $settings = $this->getSettings();
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
             // return cached content if available
-            $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
-            if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
-                if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
-                    return file_get_contents($this->strCachePath . $cacheFile);
+            $cacheFile = $this->getCacheFileNameFromUrl(
+                $matches[1],
+                $this->currentUrl
+            );
+            if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile)) {
+                $expireTimestamp = -1;
+                if (file_exists($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile . '_h')) {
+                    $expireTimestamp = file_get_contents(
+                        $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile . '_h'
+                    );
+                }
+
+                if (
+                    (
+                        $expireTimestamp >= 0 && $expireTimestamp > time()
+                    ) ||
+                    (
+                        $expireTimestamp < 0 && filemtime(
+                            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile
+                        ) > (
+                            time() - $this->intCachingTime
+                        )
+                    )
+                ) {
+                    \DBG::dump($matches[1]);
+                    \DBG::dump($cacheFile);
+                    return file_get_contents($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
                 } else {
-                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    \DBG::msg('Drop expired cached file ' . $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
                     $file->delete();
                 }
             }
@@ -502,7 +628,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // TODO: Somehow FRONTEND_LANG_ID is sometimes undefined here...
             $esiUrl = new \Cx\Lib\Net\Model\Entity\Url($matches[1]);
-            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('lang'));
+            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('locale'));
             if (!defined('FRONTEND_LANG_ID')) {
                 define('FRONTEND_LANG_ID', $langId);
             }
@@ -517,7 +643,20 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $content = $this->getApiResponseForUrl($matches[1]);
 
                 if ($settings['internalSsiCache'] == 'on') {
-                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    // back-replace ESI variables that are url encoded
+                    foreach ($this->dynVars as $groupName=>$vars) {
+                        if (is_callable($vars)) {
+                            $esiPlaceholder = '$(' . $groupName . ')';
+                            $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                        } else {
+                            foreach ($vars as $varName=>$url) {
+                                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                                $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                            }
+                        }
+                    }
+
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
                     $file->write($content);
                 }
             } catch (\Exception $e) {
@@ -551,14 +690,29 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // Random include tags
             $htmlCode = preg_replace_callback(
-                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#U',
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>([\s\S]*)<!-- ESI_RANDOM_END -->#U',
                 function($matches) {
+                    $includeCount = substr_count(
+                        $matches[2],
+                        '<esi:include src="'
+                    );
+                    $randomIncludes = '';
                     $uris = explode('\',\'', substr($matches[1], 1, -1));
-                    $randomNumber = rand(0, count($uris) - 1);
-                    $uri = $uris[$randomNumber];
-                    
-                    // this needs to match the format below!
-                    return '<esi:include src="' . $uri . '" onerror="continue"/>';
+                    for ($i = 0; $i < $includeCount; $i++) {
+                        if (!count($uris)) {
+                            continue;
+                        }
+                        $randomNumber = rand(0, count($uris) - 1);
+                        $uri = $uris[$randomNumber];
+                        unset($uris[$randomNumber]);
+                        // re-index array
+                        $uris = array_values($uris);
+
+                        // this needs to match the format below!
+                        $randomIncludes .= '<esi:include src="' . $uri . '" onerror="continue"/>';
+                    }
+
+                    return $randomIncludes;
                 },
                 $htmlCode
             );
