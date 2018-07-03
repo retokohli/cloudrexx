@@ -471,6 +471,7 @@ window.setTimeout(3000, function() {
 //DBG::log("Saferpay::payConfirm():");
 //DBG::log("POST: ".var_export($_POST, true));
 //DBG::log("GET: ".var_export($_GET, true));
+        $arguments = array();
         parse_str($_SERVER['QUERY_STRING'], $arguments);
         // Note: parse_str()'s results comply with the magic quotes setting!
         $arrOrder = array(
