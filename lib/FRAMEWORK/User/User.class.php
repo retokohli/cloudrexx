@@ -373,7 +373,11 @@ class User extends User_Profile
         }
 
         // ensure the password is properly hashed 
-        $this->updatePasswordHash($password);
+        try {
+            $this->updatePasswordHash($password);
+        } catch (UserException $e) {
+            \DBG::log($e->getMessage());
+        }
 
         return true;
     }
@@ -536,42 +540,41 @@ class User extends User_Profile
      * @param   string  $passwordHash The matching hash of the password. If not
      *                                supplied, it will be fetched from the
      *                                database.
+     * @throws  UserException         In case the password hash could not be
+     *                                updated, a UserException is thrown.
      */
     protected function updatePasswordHash($password, $passwordHash = '') {
-        try {
-            // fetch hash of password from database,
-            // if it has not been supplied as argument
-            if (
-                $passwordHash == '' &&
-                $this->getId()
-            ) {
-                $passwordHash = $this->fetchPasswordHashFromDatabase();
-            }
+        // fetch hash of password from database,
+        // if it has not been supplied as argument
+        if (
+            $passwordHash == '' &&
+            $this->getId()
+        ) {
+            $passwordHash = $this->fetchPasswordHashFromDatabase();
+        }
 
-            // verify the supplied password to ensure that a newly
-            // generated password hash will be valid
-            if (!$this->checkPassword($password, $passwordHash)) {
-                return;
-            }
+        // verify the supplied password to ensure that a newly
+        // generated password hash will be valid
+        if (!$this->checkPassword($password, $passwordHash)) {
+            throw new UserException('Supplied password does not match hash');
+        }
 
-            // check if password is hashed with legacy algorithm (md5)
-            if (preg_match('/^[a-f0-9]{32}$/i', $passwordHash)) {
-                // regenerate hash using new algorithm
-                $this->setPassword($password, null, false, false);
-                $this->store();
-                return;
-            }
-
-            // check if we need to regenerate the password hash using a newer
+        if (
+            // verify that password is not hashed by legacy algorithm (md5)
+            !preg_match('/^[a-f0-9]{32}$/i', $passwordHash) &&
+            // and that the password has been hashed by using the prefered
             // hash algorithm
-            if (password_needs_rehash($passwordHash, $this->defaultHashAlgorithm)) {
-                // regenerate hash using new algorithm
-                $this->setPassword($password, null, false, false);
-                $this->store();
-                return;
-            }
-        } catch (UserException $e) {
-            \DBG::log($e->getMessage());
+            !password_needs_rehash($passwordHash, $this->defaultHashAlgorithm)
+        ) {
+            return;
+        }
+
+        // regenerate hash using new algorithm
+        if (!$this->setPassword($password, null, false, false)) {
+            throw new UserException('New password hash generation failed');
+        }
+        if (!$this->store()) {
+            throw new UserException('Storing new password hash failed');
         }
     }
 
