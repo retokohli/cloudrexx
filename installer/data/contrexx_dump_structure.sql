@@ -1086,7 +1086,8 @@ CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `id_field` int(10) unsigned NOT NULL,
   `formlabel` text NOT NULL,
   `formvalue` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_entry` (`id_entry`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_recipient` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
