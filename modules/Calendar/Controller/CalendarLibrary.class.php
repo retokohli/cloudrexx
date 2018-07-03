@@ -871,7 +871,7 @@ EOF;
         if ($eventName == 'clearEsiCache') {
             $this->cx->getEvents()->triggerEvent(
                 'clearEsiCache',
-                array('Widget', $this->getHeadlinePlaceholders())
+                array('Widget', static::getHeadlinePlaceholders())
             );
             return;
         }
@@ -1003,7 +1003,7 @@ EOF;
      *
      * @return array
      */
-    public function getHeadlinePlaceholders()
+    public static function getHeadlinePlaceholders()
     {
         $placeholders = array();
         for ($i = 1; $i <= 20; $i++) {
