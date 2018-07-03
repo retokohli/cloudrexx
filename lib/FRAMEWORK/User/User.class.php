@@ -345,7 +345,7 @@ class User extends User_Profile
         $arrSettings = FWUser::getSettings();
 // TODO:  Provide default values here in case the settings are missing!
         $this->defaultProfileAccessTyp = $arrSettings['default_profile_access']['value'];
-        $this->defaultEmailAccessType  = $arrSettings['default_email_access']['value'];
+        $this->defaultEmailAccessType = $arrSettings['default_email_access']['value'];
         $this->defaultHashAlgorithm = \PASSWORD_BCRYPT;
         $this->clean();
     }
