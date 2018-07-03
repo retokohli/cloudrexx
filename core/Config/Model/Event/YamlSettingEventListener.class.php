@@ -75,11 +75,6 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                         //clear cache
                          $widgetNames = array(
                             'DATE',
-                            'TIME',
-                            'DATE_YEAR',
-                            'DATE_MONTH',
-                            'DATE_DAY',
-                            'DATE_TIME'
                         );
                         $this->cx->getEvents()->triggerEvent(
                             'clearEsiCache', array('Widget',  $widgetNames)
