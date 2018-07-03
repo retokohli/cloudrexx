@@ -231,19 +231,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             },
             '%b' => function($time) use ($_CORELANG) {
                 $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ABBREV3_ARRAY']);
-                $monthIdx = strftime('%m', $time);
+                $monthIdx = intval(strftime('%m', $time));
                 return $months[$monthIdx];
             },
             '%B' => function($time) use ($_CORELANG) {
                 $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ARRAY']);
-                $monthIdx = strftime('%m', $time);
+                $monthIdx = intval(strftime('%m', $time));
                 return $months[$monthIdx];
             },
             '%c' => null, // not yet suppored
             '%E' => null, // not yet suppored
             '%h' => function($time) use ($_CORELANG) {
                 $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ABBREV3_ARRAY']);
-                $monthIdx = strftime('%m', $time);
+                $monthIdx = intval(strftime('%m', $time));
                 return $months[$monthIdx];
             },
             '%O' => null, // not yet suppored
