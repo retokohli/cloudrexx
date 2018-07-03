@@ -143,7 +143,7 @@ namespace Cx\Core\Model {
          * @return  \Cx\Core\Model\Db   Instance based on existing database connection
          */
         public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser,
-                                                      \PDO $pdo, $adoDb, \Cx\Core\Model\Controller\EntityManager $em
+                                                      \PDO $pdo, \ADODB_pdo $adoDb, \Cx\Core\Model\Controller\EntityManager $em
         ) {
             // Bind database connection
 
