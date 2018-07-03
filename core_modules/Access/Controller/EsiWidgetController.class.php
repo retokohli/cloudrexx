@@ -57,6 +57,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
     {
         global $_CORELANG;
 
+        if ($name == 'ACCESS_USER_COUNT') {
+            $template->setVariable($name, \FWUser::getUserCount());
+            return;
+        }
+
         $template->setVariable(
             \Env::get('init')->getComponentSpecificLanguageData(
                 'Access',
