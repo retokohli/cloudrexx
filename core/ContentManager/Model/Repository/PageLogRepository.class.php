@@ -170,13 +170,13 @@ class PageLogRepository extends LogEntryRepository
                 c0_.version AS version,
                 c0_.username AS username
             FROM
-                contrexx_log_entry c0_
+                ' . DBPREFIX . 'log_entry c0_
             INNER JOIN (
                 SELECT
                     MAX(c1_.version) AS version,
                     c1_.object_id AS object_id
                 FROM
-                    contrexx_log_entry c1_
+                    '. DBPREFIX . 'log_entry c1_
                 WHERE
                     (c1_.object_class = :objectClass)
                 GROUP BY
@@ -186,7 +186,7 @@ class PageLogRepository extends LogEntryRepository
                 c0_.object_id = c2_.object_id AND
                 c0_.version = c2_.version
             LEFT JOIN
-                contrexx_content_page AS c3_
+                ' . DBPREFIX . 'content_page AS c3_
             ON
                 c3_.id = c0_.object_id
             WHERE

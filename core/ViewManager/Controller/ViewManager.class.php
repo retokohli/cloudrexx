@@ -2087,6 +2087,9 @@ CODE;
                         ) {
                             continue;
                         }
+                        if (!isset($componentFiles[$component->getType()])) {
+                            $componentFiles[$component->getType()] = array();
+                        }
                         $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
                     }
                 }
