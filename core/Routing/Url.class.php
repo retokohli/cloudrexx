@@ -240,6 +240,12 @@ class Url {
 
     /**
      * Checks wheter this Url points to a location within this installation
+     *
+     * The check works by checking if the domain of the url is a registered
+     * domain in the repo of \Cx\Core\Net\Model\Entity\Domain.
+     * If for some reason, the domain repo can't be loaded and the check is
+     * therefore unable to perform its task, it will return TRUE as fallback.
+     *
      * @todo This does not work correctly if setPath() is called from outside
      * @return boolean True for internal URL, false otherwise
      */
@@ -264,7 +270,7 @@ class Url {
             ) {
                 return false;
             }
-        } catch (\Exception $e) {
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
             // In case the domain repository can't be loaded,
             // doctrine's entity manager will throw an exception.
             // We catch this exception for that specific case to make
