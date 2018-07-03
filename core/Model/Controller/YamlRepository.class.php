@@ -211,6 +211,13 @@ class YamlRepository implements \Countable {
      * @return  YamlEntity  Object from repository identified by primary identifier $id
      */
     public function find($id) {
+        // as YamlRepository does not support composite-keys,
+        // we have to check if $id is an array (=> composite-key)
+        // and if so, simply fetch the first element of the array
+        // which will then be our primary key
+        if (is_array($id)) {
+            $id = current($id);
+        }
         if (isset($this->entities[$id])) {
             return $this->entities[$id];
         }
