@@ -425,7 +425,7 @@ class FWUser extends User_Setting
     }
 
 
-    private function setLoggedInInfos($objTemplate, $blockName = '')
+    public function setLoggedInInfos($objTemplate, $blockName = '')
     {
         global $_CORELANG;
 
