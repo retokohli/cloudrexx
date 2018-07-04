@@ -106,6 +106,52 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 }
                 break;
 
+            case 'METAIMAGE_WIDTH':
+            case 'METAIMAGE_HEIGHT':
+                $widgetValue = '';
+                if (!$page->getMetarobots()) {
+                    break;
+                }
+
+                $image = $page->getMetaimage();
+
+                // todo: load image path from MediaSource
+                $imagePath = $this->cx->getWebsiteDocumentRootPath() . $image;
+
+                // todo: check if file exists through related
+                // method from MediaSource file system
+                if (empty($image) || !file_exists($imagePath)) {
+                    $image = contrexx_raw2xhtml(
+                        \Cx\Core\Setting\Controller\Setting::getValue(
+                            'defaultMetaimage',
+                            'Config'
+                        )
+                    );
+                    $imagePath = $this->cx->getWebsiteDocumentRootPath() . $image;
+                }
+
+                if (!file_exists($imagePath)) {
+                    break;
+                }
+                $imageInfo = getimagesize($imagePath);
+                $imageWidth = null; 
+                $imageHeight = null;
+                if (!empty($imageInfo) &&
+                    isset($imageInfo[0]) &&
+                    isset($imageInfo[1])
+                ) {
+                    $imageWidth = $imageInfo[0];
+                    $imageHeight = $imageInfo[1];
+                }
+
+                if ($name == 'METAIMAGE_WIDTH') {
+                    $widgetValue = $imageWidth;
+                } else {
+                    $widgetValue = $imageHeight;
+                }
+                
+                break;
+
             case 'METAROBOTS':
                 $widgetValue = 'none';
                 if ($page->getMetarobots()) {

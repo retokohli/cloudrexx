@@ -91,6 +91,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'METADESC',
                 'METAROBOTS',
                 'METAIMAGE',
+                'METAIMAGE_WIDTH',
+                'METAIMAGE_HEIGHT',
                 'CONTENT_TITLE',
                 //'CONTENT_TEXT',
                 'CSS_NAME',
@@ -154,16 +156,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\Node', $nodeListener);
 
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\LogEntry', new \Cx\Core\ContentManager\Model\Event\LogEntryEventListener());
-    }
 
-    /**
-     * Do something for search the content
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core\ContentManager\Model\Event\PageEventListener());
-   }
+        // Event register for search content
+        $evm->addEventListener('SearchFindContent', $pageListener);
+    }
 
     /**
      * {@inheritdoc}
@@ -177,5 +173,4 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $page->setMetaimage(\Env::get('config')['defaultMetaimage']);
         }
     }
-
 }

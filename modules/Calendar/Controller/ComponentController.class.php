@@ -115,8 +115,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         // Get Calendar Events
         $widgetController = $this->getComponent('Widget');
-        $calendarLib      = new CalendarLibrary('');
-        foreach ($calendarLib->getHeadlinePlaceholders() as $widgetName) {
+        foreach (CalendarLibrary::getHeadlinePlaceholders() as $widgetName) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName

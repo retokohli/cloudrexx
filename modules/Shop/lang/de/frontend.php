@@ -48,7 +48,7 @@ $_ARRAYLANG['SHOP_PASSWORD_CURRENT'] = "Aktuelles Kennwort";
 $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Geben Sie die E-Mail Adresse für Ihr Konto ein.<br />Ihnen wird anschliessend ein neues Kennwort zugeschickt.";
 $_ARRAYLANG['SHOP_PASSWORD_NEW'] = "Neues Kennwort";
 $_ARRAYLANG['TXT_ACCEPT_AGB'] = "Bitte bestätigen Sie die Akzeptanz der allgemeinen Geschäftsbedingungen.";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=Agb\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=Agb\" target=\"_blank\">Geschäftsbedingungen</a>, sowie die <a href=\"index.php?section=Privacy\" target=\"_blank\">Datenschutzerklärung</a> zu kennen und akzeptiere diese.";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Kreditinstitut";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bankleitzahl (BLZ)";
 $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Kontoinhaber";
@@ -489,6 +489,7 @@ $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET'] = "Der eingegebene Gutscheincode 
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY'] = "Der eingegebene Gutscheincode ist nicht mehr gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP'] = "Der eingegebene Gutscheincode wurde bereits verwendet und ist nicht mehr gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'] = "Der eingegebene Gutscheincode ist erst ab einer Bestellsumme von %2\$s %1\$.2f gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_MULTIPLE_MWST'] = "Der Gutscheincode ist für Ihre Bestellung leider nicht gültig";
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'] = "Achtung!<br />Der Gesamtbetrag Ihrer Bestellung erreicht nicht den Mindestbestellwert von %2\$s %1\$0.2f.";
 $_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER'] = "Kartennummer";
 $_ARRAYLANG['TXT_SHOP_CVC'] = "Prüfziffer (CVC)";

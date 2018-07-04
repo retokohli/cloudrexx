@@ -48,7 +48,7 @@ $_ARRAYLANG['SHOP_PASSWORD_CURRENT'] = "Current password";
 $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Please enter the e-mail address for the account.<br/> You will receive a new password afterwards.";
 $_ARRAYLANG['SHOP_PASSWORD_NEW'] = "New password";
 $_ARRAYLANG['TXT_ACCEPT_AGB'] = "Please confirm your acceptance of the terms and conditions";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "I confirm the correctness of the entered data and I know the <a href=\"index.php?section=Agb\" target=\"_blank\">terms and conditions</a> and accept them.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "I confirm the correctness of the entered data and I know the <a href=\"index.php?section=Agb\" target=\"_blank\">terms and conditions</a> and <a href=\"index.php?section=Privacy\" target=\"_blank\">data privacy statement</a> and accept them.";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Bank name";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bank code number";
 $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Account holder";
@@ -511,6 +511,7 @@ $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET'] = "Der eingegebene Gutscheincode 
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY'] = "Der eingegebene Gutscheincode ist nicht mehr gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP'] = "Der eingegebene Gutscheincode wurde bereits verwendet und ist nicht mehr gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'] = "Der eingegebene Gutscheincode ist erst ab einer Bestellsumme von %2\$s %1\$.2f gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_MULTIPLE_MWST'] = "Unfortunately, your coupon code is not valid for this order";
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'] = "Achtung!<br />Der Gesamtbetrag Ihrer Bestellung erreicht nicht den Mindestbestellwert von %2\$s %1\$0.2f.";
 // Headers for Product ordering in list view
 $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'] = "Standard";

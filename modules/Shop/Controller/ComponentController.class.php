@@ -60,7 +60,27 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_CORELANG, $subMenuTitle, $intAccessIdOffset, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                \Env::get('cx')->getPage()->setContent(Shop::getPage(\Env::get('cx')->getPage()->getContent()));
+                $page->setContent(Shop::getPage($page->getContent()));
+
+                // show product title if the user is on the product details page
+                $metaTitle = Shop::getPageTitle();
+                if ($metaTitle) {
+                    $page->setTitle($metaTitle);
+                    $page->setContentTitle($metaTitle);
+                    $page->setMetaTitle($metaTitle);
+                }
+                $metaDesc = Shop::getPageMetaDesc();
+                if ($metaDesc) {
+                    $page->setMetadesc($metaDesc);
+                }
+                $metaImage = Shop::getPageMetaImage();
+                if ($metaImage) {
+                    $page->setMetaimage($metaImage);
+                }
+                $metaKeys = Shop::getPageMetaKeys();
+                if ($metaKeys) {
+                    $page->setMetakeys($metaKeys);
+                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:

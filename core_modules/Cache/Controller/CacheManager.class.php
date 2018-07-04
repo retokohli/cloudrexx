@@ -304,7 +304,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @return  integer Number of cached entries by Memcached
      */
     protected function getMemcachedEntryCount() {
-        if (!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
+        if (!$this->isConfigured(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
 
@@ -354,6 +354,10 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     'key' => 'memcacheSetting',
                     'defaultPort' => 11211,
                 ),
+                'cacheUserCacheMemcachedConfig' => array(
+                    'key' => 'memcachedSetting',
+                    'defaultPort' => 11211,
+                ),
                 'cacheProxyCacheConfig' => array(
                     'key' => 'reverseProxy',
                     'defaultPort' => 8080,
@@ -395,6 +399,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->initOPCaching(); // reinit opcaches
         $this->getActivatedCacheEngines();
         $this->clearCache($this->getOpCacheEngine());
+        $this->clearCache($this->getUserCacheEngine());
 
         if ($oldSsiValue != contrexx_input2db($_POST['cacheSsiOutput'])) {
             $this->_deleteAllFiles('cxPages');

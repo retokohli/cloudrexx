@@ -36,6 +36,14 @@
 namespace Cx\Core_Modules\Widget\Controller;
 
 /**
+ * Exception for wrong usage of ESI widget
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage coremodules_widget
+ */
+class EsiWidgetControllerException extends \Exception {}
+
+/**
  * JsonAdapter Controller to handle EsiWidgets
  * Usage:
  * - Create a subclass that implements parseWidget()
@@ -124,7 +132,6 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         }
 
         // resolve widget template
-        $widget = $this->getComponent('Widget')->getWidget($params['get']['name']);
         return $this->internalParseWidget($widget, $params);
     }
 
@@ -218,13 +225,14 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                         // get referrer
                         $headers = $params['response']->getRequest()->getHeaders();
                         $fragments = array();
-                        if (isset($headers['Referer'])) {
-                            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
-                            $referer = $refUrl->getPath();
-                            $additionalPath = substr($referer, strlen(\Cx\Core\Routing\Url::fromPage($page)->toString(false)));
-                            if (!empty($additionalPath)) {
-                                $fragments = explode('/', substr($additionalPath, 1));
-                            }
+                        if (!empty($params['get']['path'])) {
+                            // -> get additional path fragments
+                            $fragments = explode(
+                                '/',
+                                $this->getComponent('Widget')->decode(
+                                    $params['get']['path']
+                                )
+                            );
                         }
 
                         // get the component
@@ -276,8 +284,47 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 );
                 return $locale;
             },
-            'user' => function($userId) {
-                return \FWUser::getFWUserObject()->objUser->getUser($userId);
+            'user' => function($sessionId) {
+                // Abort in case no session-ID has been supplied.
+                // Important: non-session-users will have $sessionId
+                // set to '0'
+                if (empty($sessionId)) {
+                    // Verify that no session is active. 
+                    // As no session-ID has been supplied to the ESI-request,
+                    // no session must be present. Otherwise this is a security
+                    // breach and must be stopped.
+                    if ($this->getComponent('Session')->isInitialized()) {
+                        \DBG::msg(
+                            'No session-ID supplied as ESI-argument. ' .
+                            'However a session is active. This is prohibited'
+                        );
+                        throw new EsiWidgetControllerException('Invalid session state!');
+                    }
+
+                    // don't initialize a session as non is required
+                    return $sessionId;
+                }
+
+                // verify session-id param with active session
+                if (
+                    $this->getComponent('Session')->isInitialized() &&
+                    $sessionId != session_id()
+                ) {
+                    \DBG::log(
+                        'Session-ID of ESI-request (' . $sessionId . ') is ' .
+                        'different to currently initialized session (' .
+                         session_id() . ')'
+                    );
+                    throw new EsiWidgetControllerException('Unauthorized session access!');
+                }
+
+                // select session based on supplied ESI-param
+                session_id($sessionId);
+
+                // resume existing session, but don't initialize a new session
+                $this->getComponent('Session')->getSession(false);
+
+                return $sessionId;
             },
             'theme' => function($themeId) {
                 $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
@@ -294,6 +341,19 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             'currency' => function($currencyCode) {
                 // this should return a currency object
                 return $currencyCode;
+            },
+            'path' => function($base64Path) {
+                return $this->getComponent('Widget')->decode(
+                    $base64Path
+                );
+            },
+            'query' => function($base64Query) {
+                $queryParams = array();
+                parse_str(
+                    $this->getComponent('Widget')->decode($base64Query),
+                    $queryParams
+                );
+                return $queryParams;
             },
             'ref' => function($originalUrl) use ($params) {
                 $headers = $params['response']->getRequest()->getHeaders();
