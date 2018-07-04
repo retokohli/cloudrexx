@@ -213,7 +213,6 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 $page = $pageRepo->findOneById($pageId);
                 if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
                     // get referrer
-                    $headers = $params['response']->getRequest()->getHeaders();
                     $fragments = array();
                     if (!empty($params['get']['path'])) {
                         // -> get additional path fragments
