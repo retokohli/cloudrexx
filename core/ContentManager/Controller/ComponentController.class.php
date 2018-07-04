@@ -160,17 +160,4 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // Event register for search content
         $evm->addEventListener('SearchFindContent', $pageListener);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function adjustResponse(
-        \Cx\Core\Routing\Model\Entity\Response $response
-    ) {
-        $page = $response->getPage();
-        // Set meta image to default if it's not defined
-        if (empty($page->getMetaimage())) {
-            $page->setMetaimage(\Env::get('config')['defaultMetaimage']);
-        }
-    }
 }

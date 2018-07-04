@@ -92,6 +92,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Do something after content is loaded from DB
+     * 
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
+     */
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        if ($this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+
+        //Parse the Hot / Latest jobs
+        $jobLib = new JobsLibrary();
+        $jobLib->parseHotOrLatestJobs($this->cx->getTemplate());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function adjustResponse(
