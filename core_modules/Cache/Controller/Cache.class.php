@@ -260,6 +260,41 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             },
         );
 
+        // TODO: $dynFuncs needs to be built dynamically (via event handler)
+        $this->dynFuncs = array(
+            'strftime' => function($args) use ($cx) {
+                // Notes:
+                //   This function does not support the ESI dynamic function
+                //   modifiers %E, %O and %+.
+                //   This function does yet implement locales.
+                //   Therefore, the return value of locale specific format
+                //   parameters is unknown.
+                //   If you need locale specific parameters, do implement
+                //   an EsiWidget for it. For reference see EsiWidget
+                //   DATE of DateTime component
+
+                $time = time();
+                $format = '';
+
+                switch (count($args)) {
+                    case 1:
+                        $format = $args[0];
+                        break;
+                    case 2:
+                        $time = $args[0];
+                        $format = $args[1];
+                        break;
+
+                    default:
+                        \DBG::msg('Invalid arguments supplied to $strftime()');
+                        return;
+                }
+                $format = trim($format, '\'');
+
+                return strftime($format, $time);
+            },
+        );
+
         if (!$this->boolIsEnabled) {
             return null;
         }
@@ -686,6 +721,41 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                         $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
                     }
                 }
+            }
+
+            // apply ESI dynamic functions
+            foreach ($this->dynFuncs as $function => $callback) {
+                // execute ESI dynamic functions in content
+                $htmlCode = preg_replace_callback(
+                    '/\$' . $function . '\(' . '([^)]*)' . '\)/',
+                    function($matches) use ($callback) {
+                        // extract arguments from function call
+                        $arglist = $matches[1];
+                        $args = preg_split(
+                            '/
+                                # argument enclosed in double quotes
+                                [\s,]* "([^"]+)"[\s,]*
+
+                                |
+
+                                # argument enclosed in single quotes
+                                [\s,]* \'([^\']+)\'[\s,]*
+
+                                |
+
+                                # end of argument list
+                                [\s,]+
+                            /x',
+                            $arglist,
+                            0,
+                            PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                        );
+
+                        // pass extracted arguments to dynamic function
+                        return $callback($args);
+                    },
+                    $htmlCode
+                );
             }
 
             // Random include tags
