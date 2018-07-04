@@ -215,13 +215,14 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                     // get referrer
                     $headers = $params['response']->getRequest()->getHeaders();
                     $fragments = array();
-                    if (isset($headers['Referer'])) {
+                    if (!empty($params['get']['path'])) {
                         // -> get additional path fragments
-                        $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
-                        $pathParts = $refUrl->getPathParts();
-                        $offsetPathParts = explode('/', $this->cx->getWebsiteOffsetPath());
-                        $offsetPathParts[] = \Env::get('virtualLanguageDirectory');
-                        $fragments = array_diff_assoc($pathParts, $offsetPathParts);
+                        $fragments = explode(
+                            '/',
+                            $this->getComponent('Widget')->decode(
+                                $params['get']['path']
+                            )
+                        );
                     }
                     // get the component
                     $pageComponent = $this->getComponent($page->getModule());
@@ -308,6 +309,19 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             'currency' => function($currencyCode) {
                 // this should return a currency object
                 return $currencyCode;
+            },
+            'path' => function($base64Path) {
+                return $this->getComponent('Widget')->decode(
+                    $base64Path
+                );
+            },
+            'query' => function($base64Query) {
+                $queryParams = array();
+                parse_str(
+                    $this->getComponent('Widget')->decode($base64Query),
+                    $queryParams
+                );
+                return $queryParams;
             },
             'ref' => function($originalUrl) use ($params) {
                 $headers = $params['response']->getRequest()->getHeaders();
