@@ -347,6 +347,7 @@ class User_Profile
      */
     protected function parseCoreAttributeFilterConditions($arrFilter)
     {
+        die('test');
         if (empty($this->objAttribute)) {
             $this->initAttributes();
         }
@@ -366,8 +367,15 @@ class User_Profile
 
                     case 'title':
                     case 'country':
+                        $callBack = function($condition) {
+                            if (preg_match("#([0-9]+)#", $condition, $pattern)) {
+                                return $pattern[0];
+                            } else {
+                                return 0;
+                            }
+                        };
                         $arrConditions[] = '(tblP.`'.$attribute.'` = '.(is_array($condition) ? implode(' OR tblP.`'.$attribute.'` = ',
-                            array_map(create_function('$condition', 'if (preg_match(\'#([0-9]+)#\', $condition, $pattern)) {return $pattern[0];} else {return 0;}'), $condition))
+                            array_map($callBack, $condition))
                             : (preg_match('#([0-9]+)#', $condition, $pattern) ? $pattern[0] : 0)).')';
                         break;
 
