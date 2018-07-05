@@ -4054,12 +4054,20 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Authenticate new Customer
         if ($new_customer) {
             // Fails for "unregistered" Customers!
-            if (self::$objCustomer->auth(
+// TODO: this feature did never work, as self::$objCustomer->auth() did
+//       expect a md5-hashed password. But now, since the method does no longer
+//       expect a md5-hashed password, but instead the raw password,
+//       the self::$objCustomer->auth() method does now work.
+//       As a result of this, the behavior of the Shop and the system is
+//       unknown if the new customer would suddenly be sign-in to the system.
+//       Therefore, the behavior must extensively be tested be fore the feature
+//       can be activated (by uncommenting it)
+            /*if (self::$objCustomer->auth(
                 $_SESSION['shop']['username'], $_SESSION['shop']['password'], false, true)) {
                 if (!self::_authenticate()) {
                     return \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING']);
                 }
-            }
+            }*/
         }
         $shipper_id = (empty($_SESSION['shop']['shipperId'])
             ? null : $_SESSION['shop']['shipperId']);
