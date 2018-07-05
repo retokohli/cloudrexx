@@ -1835,18 +1835,38 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
+    /**
+     * Get the page title
+     *
+     * @return string
+     */
     public function getPageTitle() {
         return $this->pageTitle;
     }
 
+    /**
+     * Get the meta title
+     *
+     * @return string
+     */
     public function getMetaTitle() {
         return contrexx_html2plaintext($this->metaTitle);
     }
 
+    /**
+     * Get the meta description
+     *
+     * @return string
+     */
     public function getMetaDescription() {
         return contrexx_html2plaintext($this->metaDescription);
     }
 
+    /**
+     * Get the meta image
+     *
+     * @return string
+     */
     public function getMetaImage() {
         return $this->metaImage;
     }
