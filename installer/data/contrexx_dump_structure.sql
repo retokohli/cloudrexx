@@ -137,7 +137,7 @@ CREATE TABLE `contrexx_access_users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `username` varchar(255) DEFAULT NULL,
-  `password` varchar(32) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
   `auth_token` varchar(32) NOT NULL,
   `auth_token_timeout` int NOT NULL DEFAULT '0',
   `regdate` int NOT NULL DEFAULT '0',
