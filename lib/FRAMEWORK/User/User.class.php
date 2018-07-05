@@ -359,7 +359,7 @@ class User extends User_Profile
      * and the users last authentication time gets updated.
      * Returns TRUE on success or FALSE on failure.
      * @param   string    $username   The username
-     * @param   string    $password   The MD5 hash of the password
+     * @param   string    $password   The raw password
      * @param   boolean   $backend    Tries to authenticate for the backend
      *                                if true, false otherwise
      * @return  boolean               True on success, false otherwise
@@ -2672,7 +2672,7 @@ class User extends User_Profile
     /**
      * Sets password of user
      *
-     * This will set the attribute password of this object to the md5 hash
+     * This will set the attribute password of this object to the hash
      * of $password if $password is a valid password and if it was confirmed
      * by the second parameter $confirmedPassword.
      * @param   string    $password           The new password
@@ -2713,18 +2713,18 @@ class User extends User_Profile
     }
 
     /**
-     * Set new password as md5 sum of password
-     * @param   string $hashedPassword The md5 sum of the new password to be set
+     * Set new password as hash of password
+     * @param   string $hashedPassword The hash of the new password to be set
      */
     public function setHashedPassword($hashedPassword) {
         $this->password = $hashedPassword;
     }
 
     /**
-     * Returns the md5 sum of the newly set password of the user account if it has been changed.
-     * This method only returns the password (its md5 sum) of the user account in case it has
+     * Returns the hash of the newly set password of the user account if it has been changed.
+     * This method only returns the password (its hash) of the user account in case it has
      * been changed using {@see \User::setPassword()}.
-     * This method's purpose is to have the newly set password (its md5 sum) available in
+     * This method's purpose is to have the newly set password (its hash) available in
      * the model events through it.
      * @return  string  The newly set password of the user account
      */
