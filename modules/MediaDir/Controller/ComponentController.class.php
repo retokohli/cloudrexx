@@ -52,6 +52,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     protected $canonicalUrl = null;
 
+    /**
+     * @var MediaDirectory
+     */
+    protected $mediaDirectory = null;
+
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
@@ -67,11 +72,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $objMediaDirectory = new MediaDirectory(\Env::get('cx')->getPage()->getContent(), $this->getName());
-                $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
-                $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
-                $objMediaDirectory->metaTitle = $pageMetaTitle;
-                \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
+                // we need to re-instanciate MediaDirectory as
+                // page content could have changed
+                $this->mediaDirectory = new MediaDirectory(
+                    $page->getContent(),
+                    $this->getName()
+                );
+                $this->mediaDirectory->pageTitle = $page->getTitle();
+                $this->mediaDirectory->metaTitle = $page->getMetatitle();
+                $page->setContent($this->mediaDirectory->getPage());
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -469,6 +478,39 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'Link',
             '<' . $this->canonicalUrl->toString() . '>; rel="canonical"'
         );
+
+        $page = $response->getPage();
+        if (!$page) {
+            return;
+        }
+        $this->mediaDirectory = new MediaDirectory(
+            $page->getContent(),
+            $this->getName()
+        );
+        $this->mediaDirectory->pageTitle = $page->getTitle();
+        $this->mediaDirectory->metaTitle = $page->getMetatitle();
+        // we need to parse the complete page as the meta info is not set otherwise
+        $this->mediaDirectory->getPage();
+        if (
+            $this->mediaDirectory->getPageTitle() != '' &&
+            $this->mediaDirectory->getPageTitle() != $page->getTitle()
+        ) {
+            $page->setTitle($this->mediaDirectory->getPageTitle());
+            $page->setContentTitle($this->mediaDirectory->getPageTitle());
+            $page->setMetaTitle($this->mediaDirectory->getPageTitle());
+        }
+        if ($this->mediaDirectory->getMetaTitle() != '') {
+            $page->setMetatitle($this->mediaDirectory->getMetaTitle());
+        }
+        if ($this->mediaDirectory->getMetaDescription() != '') {
+            $page->setMetadesc($this->mediaDirectory->getMetaDescription());
+        }
+        if ($this->mediaDirectory->getMetaImage() != '') {
+            $page->setMetaimage($this->mediaDirectory->getMetaImage());
+        }
+        if ($this->mediaDirectory->getMetaKeys() != '') {
+            $page->setMetakeys($this->mediaDirectory->getMetaKeys());
+        }
     }
 
     protected function setCanonicalUrl(
