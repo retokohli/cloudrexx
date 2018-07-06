@@ -399,8 +399,8 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $teaserFrame = $this->arrTeaserFrameTemplates[$templateId]['html'];
             if (preg_match_all('/<!-- BEGIN (teaser_[0-9]+) -->/ms', $teaserFrame, $arrTeaserBlocks)) {
                 $funcSort = function ($a, $b) {
-                    $aNr = preg_replace("/^[^_]+_/", "", $a);
-                    $bNr = preg_replace("/^[^_]+_/", "", $b);
+                    $aNr = preg_replace('/^[^_]+_/', '', $a);
+                    $bNr = preg_replace('/^[^_]+_/', '', $b);
                     if ($aNr == $bNr) {
                         return 0;
                     }
