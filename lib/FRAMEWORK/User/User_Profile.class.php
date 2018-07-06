@@ -347,7 +347,6 @@ class User_Profile
      */
     protected function parseCoreAttributeFilterConditions($arrFilter)
     {
-        die('test');
         if (empty($this->objAttribute)) {
             $this->initAttributes();
         }
@@ -367,8 +366,8 @@ class User_Profile
 
                     case 'title':
                     case 'country':
-                        $callBack = function($condition) {
-                            if (preg_match("#([0-9]+)#", $condition, $pattern)) {
+                        $callBack = function ($condition) {
+                            if (preg_match('#([0-9]+)#', $condition, $pattern)) {
                                 return $pattern[0];
                             } else {
                                 return 0;
