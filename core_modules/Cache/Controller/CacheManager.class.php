@@ -399,6 +399,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->initOPCaching(); // reinit opcaches
         $this->getActivatedCacheEngines();
         $this->clearCache($this->getOpCacheEngine());
+        $this->clearCache($this->getUserCacheEngine());
 
         if ($oldSsiValue != contrexx_input2db($_POST['cacheSsiOutput'])) {
             $this->_deleteAllFiles('cxPages');

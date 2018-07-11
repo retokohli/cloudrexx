@@ -457,7 +457,7 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
         $mergedButtons = array();
         // Verify that there is anything to merge at all
         if (empty($removedButtons)) {
-            return '';
+            return join(',', $this->loadSystemRemovedButtons());
         }
 
         $mergedButtons = array_shift($removedButtons);

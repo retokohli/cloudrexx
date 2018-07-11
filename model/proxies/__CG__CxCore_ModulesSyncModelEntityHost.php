@@ -321,6 +321,17 @@ class Host extends \Cx\Core_Modules\Sync\Model\Entity\Host implements \Doctrine\
     /**
      * {@inheritDoc}
      */
+    public function removeHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntities)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeHostEntity', array($hostEntities));
+
+        return parent::removeHostEntity($hostEntities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getHostEntities()
     {
 
