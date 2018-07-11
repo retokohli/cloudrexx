@@ -567,7 +567,7 @@ class CrmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['industryType']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
-                        print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['contact_amount'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($objResult->fields['contact_amount']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['updated_date']).$this->_csvSeparator;
@@ -584,7 +584,7 @@ class CrmInterface extends CrmLibrary
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['cType'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
-                        print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['contact_amount'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($objResult->fields['contact_amount']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($langName).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
@@ -603,7 +603,7 @@ class CrmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['industryType']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
-                        print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['contact_amount'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($objResult->fields['contact_amount']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($langName).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
