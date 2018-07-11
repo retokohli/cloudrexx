@@ -214,7 +214,6 @@ $_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'] = "Ville";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_WYSIWYG'] = "Wysiwyg Editor";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_GOOGLEWEATHER'] = "Google Wetter";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_CLASSIFICATION'] = "Classification";
-$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PLACEHOLDER_INFO'] = "Verfügbare Platzhalter und Blöcke für alle Eingabefelder. Diese Platzhalter ünd Blöcke können frei verwendet werden und werden geparst, sobald das entsprechende Eingabefeld Inhalt enthält.";
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GLOBAL_PLACEHOLDER_INFO'] = "Globaler Block für sämtliche Eingabefelder. Dieser Block parst automatisch alle ausgefüllten Eingabefelder in der definierten Reihenfolgen.";
 $_ARRAYLANG['TXT_MEDIADIR_RESTORE'] = "Remettre";
 $_ARRAYLANG['TXT_MEDIADIR_COMMENTS'] = "Remarques";

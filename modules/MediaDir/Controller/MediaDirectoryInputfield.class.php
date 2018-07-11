@@ -145,6 +145,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 `input`.`order` ASC, `input`.`id` ASC
         ');
 
+        $arrInputfields = array();
         if ($objInputfields !== false) {
             while (!$objInputfields->EOF) {
                 $arrInputfield = array();
@@ -202,7 +203,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
         $arrCategorySelector['id'] = 1;
         $arrCategorySelector['order'] = !empty($this->intFormId) ? $this->arrSettings['categorySelectorOrder'][$this->intFormId] : 0;
-        $arrCategorySelector['name'][0] = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'];
+        $arrCategorySelector['name'] = array(0 => $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES']);
         $arrCategorySelector['type_name'] = '';
         $arrCategorySelector['required'] = 1;
         $arrCategorySelector['type'] = 0;
@@ -213,7 +214,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
         if($this->arrSettings['settingsShowLevels']) {
             $arrLevelSelector['id'] = 2;
             $arrLevelSelector['order'] = !empty($this->intFormId) ? $this->arrSettings['levelSelectorOrder'][$this->intFormId] : 0;
-            $arrLevelSelector['name'][0] = $_ARRAYLANG['TXT_MEDIADIR_LEVELS'];
+            $arrLevelSelector['name'] = array(0 => $_ARRAYLANG['TXT_MEDIADIR_LEVELS']);
             $arrLevelSelector['type_name'] = '';
             $arrLevelSelector['required'] = 1;
             $arrLevelSelector['type'] = 0;
@@ -237,7 +238,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
 
 
-    function listInputfields($objTpl, $intView, $intEntryId = null)
+    public function listInputfields($objTpl, $intView, $intEntryId = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
@@ -627,30 +628,55 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
      *
      * @return boolean true | false
      */
-    public function updateInputFields($intFieldId, $arrFieldNames, $arrFieldDefaultValues, $arrFieldInfos)
+    public function updateInputFields($intFieldId, $arrFieldNames, $arrFieldDefaultValues, $arrFieldInfos, $existingLocaleIds = array())
     {
         global $objDatabase;
 
         foreach ($this->arrFrontendLanguages as $arrLang) {
-            $sourceLocaleId = static::getOutputLocale()->getId();
+            $sourceLocaleId = $this->getSourceLocaleIdForTargetLocale($arrLang['id'], $existingLocaleIds);
 
+            // init output locale values
             if (empty($arrFieldNames[0])){
                 $arrFieldNames[0] = '';
             }
+            if (empty($arrFieldDefaultValues[0])){
+                $arrFieldDefaultValues[0] = '';
+            }
+            if (empty($arrFieldInfos[0])){
+                $arrFieldInfos[0] = '';
+            }
 
-            if (isset($arrFieldNames[$arrLang['id']])) {
+            if (
+                (
+                    !$existingLocaleIds ||
+                    in_array($arrLang['id'], $existingLocaleIds)
+                ) &&
+                isset($arrFieldNames[$arrLang['id']])
+            ) {
                 $strFieldName = $arrFieldNames[$arrLang['id']];
             } else {
                 $strFieldName = $arrFieldNames[$sourceLocaleId];
             }
 
-            if (isset($arrFieldDefaultValues[$arrLang['id']])) {
+            if (
+                (
+                    !$existingLocaleIds ||
+                    in_array($arrLang['id'], $existingLocaleIds)
+                ) &&
+                isset($arrFieldDefaultValues[$arrLang['id']])
+            ) {
                 $strFieldDefaultValue = $arrFieldDefaultValues[$arrLang['id']];
             } else {
                 $strFieldDefaultValue = $arrFieldDefaultValues[$sourceLocaleId];
             }
 
-            if (isset($arrFieldInfos[$arrLang['id']])) {
+            if (
+                (
+                    !$existingLocaleIds ||
+                    in_array($arrLang['id'], $existingLocaleIds)
+                ) &&
+                isset($arrFieldInfos[$arrLang['id']])
+            ) {
                 $strFieldInfo = $arrFieldInfos[$arrLang['id']];
             } else {
                 $strFieldInfo = $arrFieldInfos[$sourceLocaleId];
@@ -848,12 +874,16 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             $intNeighborId = $this->arrInputfields[$intNeighborKey]['id'];
             $intNeighborOrder = $intOrder;
 
-            $arrElements = array();
-
-            $arrElements[0]['id'] = $intFieldId;
-            $arrElements[0]['order'] = $intNewOrder;
-            $arrElements[1]['id'] = $intNeighborId;
-            $arrElements[1]['order'] = $intNeighborOrder;
+            $arrElements = array(
+                array(
+                    'id'    => $intFieldId,
+                    'order' => $intNewOrder,
+                ),
+                array(
+                    'id'    => $intNeighborId,
+                    'order' => $intNeighborOrder,
+                )
+            );
 
             foreach ($arrElements as $arrData) {
                 if($arrData['id'] == 1) {
@@ -924,7 +954,13 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
 
 
-    function refreshInputfields($objTpl, $intEntryId)
+    /**
+     * Refresh the Input fields
+     *
+     * @param \Cx\Core\Html\Sigma $objTpl Template object
+     * @return string Parsed Template content
+     */
+    function refreshInputfields($objTpl)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
@@ -1065,6 +1101,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 `id` ASC
         ");
 
+        $arrInputfieldTypes = array();
         if ($objInputfieldTypes !== false) {
             while (!$objInputfieldTypes->EOF) {
 
@@ -1220,6 +1257,7 @@ EOF;
                 `id` ASC
         ");
 
+        $arrInputfieldVerifications = array();
         if ($objInputfieldVerifications !== false) {
             while (!$objInputfieldVerifications->EOF) {
 
