@@ -977,7 +977,8 @@ define('EZ_GRIDLINE_COLUMNS', 1);
         if (!is_array($cols)){
             // take the columns from the first row of the data set
             reset($data);
-            list($k,$v)=each($data);
+            list($k) = array_keys($data);
+            list($v) = array_values($data);
             if (!is_array($v)){
                 return;
             }

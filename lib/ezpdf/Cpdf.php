@@ -1016,8 +1016,9 @@
             $res.= ' /W [';
             reset($cid_widths);
 			$opened = false;
-			while (list($k,$v) = each($cid_widths)) {
-				list($nextk, $nextv) = each($cid_widths);
+			foreach ($cid_widths as $k => $v) {
+			    list($nextk) = array_keys($cid_widths);
+				list($nextv) = array_values($cid_widths);
 				//echo "\n$k ($v) == $nextk ($nextv)";
 				if(($k + 1) == $nextk){
 					if(!$opened){
@@ -2755,7 +2756,7 @@
             reset($regs[0]);
             
             $prevEndTagIndex = 0;
-            while(list($k,$curTag) = each($regs[0])){
+            foreach ($regs[0] as $k => $curTag) {
                 $curTagIndex = mb_strlen(substr($text, 0, $curTag[1]), 'UTF-8');
                 $endTagIndex = $curTagIndex + strlen($curTag[0]);
                 
