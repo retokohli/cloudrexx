@@ -1016,9 +1016,13 @@
             $res.= ' /W [';
             reset($cid_widths);
 			$opened = false;
+			$nextKeys   = array_keys($cid_widths);
+			$nextValues = array_values($cid_widths);
+			$i = 1;
 			foreach ($cid_widths as $k => $v) {
-			    list($nextk) = array_keys($cid_widths);
-				list($nextv) = array_values($cid_widths);
+			    $nextk = $nextKeys[$i];
+			    $nextv = $nextValues[$i];
+			    $i++;
 				//echo "\n$k ($v) == $nextk ($nextv)";
 				if(($k + 1) == $nextk){
 					if(!$opened){
@@ -1027,7 +1031,6 @@
 					} else if($opened) {
 						$res.= ' '.$v;
 					}
-					prev($cid_widths);
 				} else {
 					if($opened){
 						$res.=" $v]";
@@ -1036,7 +1039,6 @@
 					}
 					
 					$opened = false;
-					prev($cid_widths);
 				}
 			}
 			
