@@ -1,5 +1,19 @@
 SET FOREIGN_KEY_CHECKS=0;
 
+DROP TABLE IF EXISTS `contrexx_module_topics_rel_entry_category`;
+DROP TABLE IF EXISTS `contrexx_module_topics_entries`;
+DROP TABLE IF EXISTS `contrexx_module_topics_categories`;
+CREATE TABLE `contrexx_module_topics_categories` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `parent_id` int(10) UNSIGNED DEFAULT NULL,
+  `active` tinyint(1) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `description` text,
+  `created` datetime NOT NULL,
+  `updated` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 INSERT INTO `contrexx_module_topics_categories` (`id`, `parent_id`, `active`, `name`, `slug`, `description`, `created`, `updated`) VALUES
 (1, NULL, 1, 'Personenversicherungen', 'personenversicherungen', NULL, '2016-08-29 10:22:01', '2016-08-29 10:22:07'),
 (2, NULL, 1, 'Sachversicherungen', 'sachversicherungen', NULL, '2016-08-29 10:22:01', '2016-08-29 10:22:08'),
@@ -7,6 +21,17 @@ INSERT INTO `contrexx_module_topics_categories` (`id`, `parent_id`, `active`, `n
 (4, NULL, 1, 'Motorfahrzeugversicherungen', 'motorfahrzeugversicherungen', NULL, '2016-08-29 10:22:01', '2016-08-29 10:22:08'),
 (5, NULL, 1, 'Fonds / Finanz', 'fonds-finanz', NULL, '2016-08-29 10:22:01', '2016-08-29 10:22:08'),
 (6, NULL, 1, 'Versicherungsrecht', 'versicherungsrecht', NULL, '2016-08-29 10:22:01', '2016-08-29 10:22:09');
+
+CREATE TABLE `contrexx_module_topics_entries` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `active` tinyint(1) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `href` varchar(1024) DEFAULT NULL,
+  `description` text NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `contrexx_module_topics_entries` (`id`, `active`, `name`, `slug`, `href`, `description`, `created`, `updated`) VALUES
 (1, 1, 'Erschwerungen', 'erschwerungen', NULL, 'Mit Erschwerungen können auch Versicherungen abgeschlossen werden, die ein erhöhtes oder anomales <a href="risiko">Risiko</a> beinhalten. Die erschwerten Bedingungen können in einer abgekürzten <a href="versicherungsdauer">Versicherungsdauer</a> bestehen (bei jüngerem Endalter ist das Risiko im allgemeinen kleiner und auch statistisch besser berechenbar), oder in einer gegenüber der Tarifprämie erhöhten <a href="pramie">Prämie</a>. Der Prämienzuschlag kann für die ganze <a href="vertragsdauer">Vertragsdauer</a> oder nur für eine bestimmte Zeit vereinbart werden. Räumt die Gesellschaft eine Revisionsmöglichkeit ein, kann die <a href="versicherte-person">versicherte Person</a> später aufgrund einer neuen <a href="gesundheitsprufung">Gesundheitsprüfung</a> den Wegfall oder die Reduktion des Zuschlages beantragen. Eine weitere Möglichkeit besteht in der Staffelung der Todesfallsumme, indem zum Beispiel bei Tod im ersten Versicherungsjahr nur ein Teil und in jedem weiteren Versicherungsjahr weitere Teile der Versicherungssumme ausbezahlt werden. Die Art des Risikos kann auch eine Kombination der verschiedenen Erschwerungen bedingen. Eine weitere Möglichkeit besteht darin, besondere Risiken oder die Folgen einer durchgemachten Erkrankung oder eines erlittenen Unfalls von der Deckung auszuschliessen (<a href="vorbehalt">Vorbehalt</a>).', '2016-08-29 10:21:09', '2016-08-29 10:22:18'),
@@ -1042,6 +1067,11 @@ INSERT INTO `contrexx_module_topics_entries` (`id`, `active`, `name`, `slug`, `h
 (1023, 1, 'Ausschüttungsrendite (Barrendite)', 'ausschuttungsrendite-barrendite', NULL, 'Der ausgeschüttete Ertrag im Verhältnis zum aktuellen Börsenkurs entspricht der Ausschüttungsrendite.', '2016-08-29 10:21:09', '2016-08-29 10:21:55'),
 (1024, 1, 'Zero Bonds', 'zero-bonds', NULL, '<a href="obligationen">Obligationen</a> ohne Verzinsung. Anstelle einer Verzinsung erhält der Käufer eines Zero Bonds den Titel zu einem Diskont. Die Rückzahlung erfolgt zu 100%.', '2016-08-29 10:21:09', '2016-08-29 10:22:18'),
 (1025, 1, '<tag> de', 'tag-de', 'http://tv.psico.ch/dev/', '', '2016-09-20 09:25:57', '2016-09-20 09:53:15');
+
+CREATE TABLE `contrexx_module_topics_rel_entry_category` (
+  `entry_id` int(10) UNSIGNED NOT NULL,
+  `category_id` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `contrexx_module_topics_rel_entry_category` (`entry_id`, `category_id`) VALUES
 (1, 1),
@@ -18603,5 +18633,38 @@ INSERT INTO `contrexx_translations` (`id`, `locale`, `object_class`, `field`, `f
 (16458, 'de', 'Cx\\Modules\\Topics\\Model\\Entity\\Entry', 'slug', '1025', 'tag-de'),
 (16459, 'de', 'Cx\\Modules\\Topics\\Model\\Entity\\Entry', 'href', '1025', 'http://tv.psico.ch/dev/'),
 (16460, 'de', 'Cx\\Modules\\Topics\\Model\\Entity\\Entry', 'description', '1025', '');
+
+ALTER TABLE `contrexx_module_topics_categories`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `active_idx` (`active`),
+  ADD KEY `parent_idx` (`parent_id`),
+  ADD KEY `name_idx` (`name`),
+  ADD KEY `slug_idx` (`slug`),
+  ADD KEY `description_idx` (`description`(255)),
+  ADD KEY `created_idx` (`created`),
+  ADD KEY `updated_idx` (`updated`);
+
+ALTER TABLE `contrexx_module_topics_entries`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `active_idx` (`active`),
+  ADD KEY `name_idx` (`name`),
+  ADD KEY `slug_idx` (`slug`),
+  ADD KEY `description_idx` (`description`(255)),
+  ADD KEY `created_idx` (`created`),
+  ADD KEY `updated_idx` (`updated`);
+
+ALTER TABLE `contrexx_module_topics_rel_entry_category`
+  ADD PRIMARY KEY (`entry_id`,`category_id`),
+  ADD KEY `category_id` (`category_id`);
+
+
+ALTER TABLE `contrexx_module_topics_categories`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `contrexx_module_topics_entries`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1026;
+
+ALTER TABLE `contrexx_module_topics_rel_entry_category`
+  ADD CONSTRAINT `contrexx_module_topics_rel_entry_category_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `contrexx_module_topics_categories` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `contrexx_module_topics_rel_entry_category_ibfk_2` FOREIGN KEY (`entry_id`) REFERENCES `contrexx_module_topics_entries` (`id`) ON DELETE CASCADE;
 
 SET FOREIGN_KEY_CHECKS=1;
