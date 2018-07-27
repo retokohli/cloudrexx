@@ -272,7 +272,7 @@ class NewsLibrary
      */
     protected function getCategoryMenu(
             $categories,
-            $selectedCategory = 0,
+            $selectedCategory = array(),
             $hiddenCategories = array(),
             $onlyCategoriesWithEntries = false,
             $showLevel = true
@@ -1510,7 +1510,10 @@ class NewsLibrary
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);
                 if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
-                    $monthlyStats[$newsYear.'_'.$newsMonth]['name'] = $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear;
+                    $monthlyStats[$newsYear . '_' . $newsMonth] = array(
+                        'name' => $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear,
+                        'news' => array(),
+                    );
                 }
                 $monthlyStats[$newsYear.'_'.$newsMonth]['news'][] = $objResult->fields;
                 $objResult->MoveNext();
@@ -2761,7 +2764,10 @@ EOF;
         }
 
         $isActive  = $this->arrSettings['news_comments_autoactivate'];
-        $ipAddress = contrexx_input2raw($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $ipAddress = $cx->getComponent(
+            'Stats'
+        )->getCounterInstance()->getUniqueUserId();
 
         $objResult = $objDatabase->Execute("
             INSERT INTO `".DBPREFIX."module_news_comments`
@@ -2851,9 +2857,19 @@ EOF;
         }
 
         //Now check database (make sure the user didn't delete the cookie
-        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_news_comments`
-                                                 WHERE  `ip_address` = '".contrexx_input2db($_SERVER['REMOTE_ADDR'])."'
-                                                        AND `date` > ".(time() - intval($this->arrSettings['news_comments_timeout'])));
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $ipAddress = $cx->getComponent(
+            'Stats'
+        )->getCounterInstance()->getUniqueUserId();
+        $objResult = $objDatabase->SelectLimit('
+            SELECT
+                1
+            FROM
+                `' . DBPREFIX . 'module_news_comments`
+            WHERE
+                `ip_address` = "' . $ipAddress . '" AND
+                `date` > ' . (time() - intval($this->arrSettings['news_comments_timeout']))
+        );
         if ($objResult && !$objResult->EOF) {
             return true;
         }

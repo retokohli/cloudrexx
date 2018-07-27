@@ -137,7 +137,7 @@ CREATE TABLE `contrexx_access_users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `username` varchar(255) DEFAULT NULL,
-  `password` varchar(32) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
   `auth_token` varchar(32) NOT NULL,
   `auth_token_timeout` int NOT NULL DEFAULT '0',
   `regdate` int NOT NULL DEFAULT '0',
@@ -894,8 +894,6 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `event_id` int(11) NOT NULL,
   `date` int(15) NOT NULL,
   `submission_date` timestamp DEFAULT '0000-00-00 00:00:00',
-  `host_name` varchar(255) NOT NULL,
-  `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
   `invite_id` int NULL DEFAULT NULL,
   `user_id` int(7) NOT NULL,
@@ -1088,7 +1086,8 @@ CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `id_field` int(10) unsigned NOT NULL,
   `formlabel` text NOT NULL,
   `formvalue` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_entry` (`id_entry`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_recipient` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1836,33 +1835,6 @@ CREATE TABLE `contrexx_module_egov_products` (
   `alternative_names` text NOT NULL,
   PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB ;
-CREATE TABLE `contrexx_module_egov_settings` (
-  `set_id` int(11) NOT NULL DEFAULT '0',
-  `set_sender_name` varchar(255) NOT NULL DEFAULT '',
-  `set_sender_email` varchar(255) NOT NULL DEFAULT '',
-  `set_recipient_email` varchar(255) NOT NULL DEFAULT '',
-  `set_state_subject` varchar(255) NOT NULL DEFAULT '',
-  `set_state_email` text NOT NULL,
-  `set_calendar_color_1` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_color_2` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_color_3` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_legende_1` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_legende_2` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_legende_3` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_background` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_border` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_date_label` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_date_desc` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_subject` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_email` text NOT NULL,
-  `set_orderentry_name` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_sender` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_recipient` varchar(255) NOT NULL DEFAULT '',
-  `set_paypal_email` text NOT NULL,
-  `set_paypal_currency` text NOT NULL,
-  `set_paypal_ipn` tinyint(1) NOT NULL DEFAULT '0',
-  KEY `set_id` (`set_id`)
-) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_feed_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL DEFAULT '',
@@ -2776,7 +2748,7 @@ CREATE TABLE `contrexx_module_news_comments` (
   `date` int(14) DEFAULT NULL,
   `poster_name` varchar(255) NOT NULL DEFAULT '',
   `userid` int(5) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `ip_address` varchar(32) NOT NULL DEFAULT '',
   `is_active` enum('0','1') NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
