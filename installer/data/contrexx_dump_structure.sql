@@ -137,7 +137,7 @@ CREATE TABLE `contrexx_access_users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `username` varchar(255) DEFAULT NULL,
-  `password` varchar(32) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
   `auth_token` varchar(32) NOT NULL,
   `auth_token_timeout` int NOT NULL DEFAULT '0',
   `regdate` int NOT NULL DEFAULT '0',
@@ -1086,7 +1086,8 @@ CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `id_field` int(10) unsigned NOT NULL,
   `formlabel` text NOT NULL,
   `formvalue` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_entry` (`id_entry`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_recipient` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

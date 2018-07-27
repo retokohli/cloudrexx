@@ -707,6 +707,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             }
                         }
 
+                        if (!isset($arrAlphaGroups[$strAlphaIndex])) {
+                            $arrAlphaGroups[$strAlphaIndex] = array();
+                        }
+
                         $arrAlphaGroups[$strAlphaIndex][] = $arrEntry;
                     }
 
@@ -1328,7 +1332,7 @@ JSCODE;
 
             $arrAdditionalQuery[] = " `updated_by`='".$intUserId."'";
 
-            if(intval($arrData['userId']) != 0) {
+            if (isset($arrData['userId']) && intval($arrData['userId']) != 0) {
                 $arrAdditionalQuery[] = "`added_by`='".intval($arrData['userId'])."'";
             }
 
@@ -1490,6 +1494,9 @@ JSCODE;
                             $arrNewValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
                             foreach ($arrValues as $strKey => $strMasterValue) {
                                 if ($intLangId == $outputLocaleId) {
+                                    if (!isset($arrDefault[$intKey])) {
+                                        $arrDefault[$intKey] = array();
+                                    }
                                     if ($arrNewDefault[$strKey] != $strMasterValue) {
                                         if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
                                             $arrDefault[$intKey][$strKey] = $strMasterValue;
@@ -1501,6 +1508,9 @@ JSCODE;
                                     }
                                 } else {
                                     if ($arrNewValues[$strKey] == '') {
+                                        if (!isset($arrDefault[$intKey])) {
+                                            $arrDefault[$intKey] = array();
+                                        }
                                         $arrDefault[$intKey][$strKey] = $strMasterValue;
                                     } else {
                                         $arrDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId];

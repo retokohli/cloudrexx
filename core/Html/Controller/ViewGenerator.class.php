@@ -844,6 +844,15 @@ class ViewGenerator {
                 if (empty($entityColumnNames)) {
                     return false;
                 }
+
+                // instanciate a dummy entity of the model we are about
+                // to render. we will need this for fetching any default values
+                if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                    $object = new $entityClassWithNS();
+                } else {
+                    $object = $this->object;
+                }
+
                 foreach($entityColumnNames as $column) {
                     $field = $entityObject->getFieldName($column);
                     if (in_array($field, $primaryKeyNames)) {
@@ -851,8 +860,10 @@ class ViewGenerator {
                     }
                     $fieldDefinition = $entityObject->getFieldMapping($field);
                     $this->options[$field]['type'] = $fieldDefinition['type'];
-                    if ($entityObject->getFieldValue($this->object, $field) !== null) {
-                        $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
+
+                    // fetch default value of entity's field
+                    if ($entityObject->getFieldValue($object, $field) !== null) {
+                        $renderArray[$field] = $entityObject->getFieldValue($object, $field);
                         continue;
                     }
                     $renderArray[$field] = '';
