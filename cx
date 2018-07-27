@@ -818,7 +818,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             for value in "${!FORCED_ARGUMENTS[@]}"; do
                 CONFIG_OVERRIDE[$value]=${FORCED_ARGUMENTS[$value]}
             done
-            # loop over CONFIG_OVERRIDE and override all 
+            # loop over CONFIG_OVERRIDE and override all
             for value in "${!CONFIG_OVERRIDE[@]}"; do
                 CONFIG[$value]=${CONFIG_OVERRIDE[$value]}
             done
@@ -1035,16 +1035,18 @@ function set_config_array {
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
     else
         FILE_CONTENTS=${FILE_CONTENTS//"<novhost>"/""}
         FILE_CONTENTS=${FILE_CONTENTS//"</novhost>"/""}
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
         FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
     fi
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
-    
+
     if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]] && [ "$(dockerexec ps -q -f "name=<web-container>")" ]; then
         if [[ ${ARGUMENTS["silent"]} != true ]]; then
             echo "Applying configuration to running environment"
