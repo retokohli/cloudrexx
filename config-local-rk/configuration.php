@@ -48,7 +48,7 @@ define('CONTREXX_INSTALLED', true);
 * -------------------------------------------------------------------------
 */
 $_DBCONFIG['host'] = 'localhost'; // This is normally set to localhost
-$_DBCONFIG['database'] = 'cloudrexx-github-rk'; // Database name
+$_DBCONFIG['database'] = 'cloudrexx'; // Database name
 //$_DBCONFIG['database'] = 'revierjagdluzern'; // Database name
 $_DBCONFIG['tablePrefix'] = 'contrexx_'; // Database table prefix
 $_DBCONFIG['user'] = 'root'; // Database username
