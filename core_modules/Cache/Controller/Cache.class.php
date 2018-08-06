@@ -145,28 +145,71 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
 
-        $country = '';
-        $geoIp = $cx->getComponent('GeoIp');
-        if ($geoIp) {
-            $countryInfo = $geoIp->getCountryCode(array());
-            if (!empty($countryInfo['content'])) {
-                $country = $countryInfo['content'];
-            }
-        }
         $this->arrPageContent = array(
             'url' => $this->currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
-            'country' => $country,
         );
-        // since crawlers do not send accept language header, we make it optional
-        // in order to keep the logs clean
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $this->arrPageContent['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        $cachedLocaleData = $this->getCachedLocaleData();
+        if (!$cachedLocaleData) {
+            $this->arrPageContent += $this->selectBestLanguageFromRequest($cx);
+        } else {
+            $this->arrPageContent['locale'] = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+                $cx,
+                $cachedLocaleData
+            );
         }
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
+    /**
+     * Returns the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @return array Cached locale data or empty array
+     */
+    protected function getCachedLocaleData() {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        if (!file_exists($filename)) {
+            return array();
+        }
+        $cachedData = unserialize(file_get_contents($filename));
+        if ($cachedData === false) {
+            return array();
+        }
+        return $cachedData;
+    }
+
+    /**
+     * Returns the necessary data to later identify the matching locale
+     *
+     * This method does not use database or cached database data
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     * @return array Locale info
+     */
+    protected function selectBestLanguageFromRequest(
+        \Cx\Core\Core\Controller\Cx $cx
+    ) {
+        $localeInfo = array(
+            'country' => '',
+        );
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $localeInfo['country'] = $countryInfo['content'];
+            }
+        }
+        // since crawlers do not send accept language header, we make it optional
+        // in order to keep the logs clean
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $localeInfo['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
+        return $localeInfo;
+    }
 
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
@@ -214,6 +257,41 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 if (!empty($queryString)) {
                     return '?' . $queryString;
                 }
+            },
+        );
+
+        // TODO: $dynFuncs needs to be built dynamically (via event handler)
+        $this->dynFuncs = array(
+            'strftime' => function($args) use ($cx) {
+                // Notes:
+                //   This function does not support the ESI dynamic function
+                //   modifiers %E, %O and %+.
+                //   This function does yet implement locales.
+                //   Therefore, the return value of locale specific format
+                //   parameters is unknown.
+                //   If you need locale specific parameters, do implement
+                //   an EsiWidget for it. For reference see EsiWidget
+                //   DATE of DateTime component
+
+                $time = time();
+                $format = '';
+
+                switch (count($args)) {
+                    case 1:
+                        $format = $args[0];
+                        break;
+                    case 2:
+                        $time = $args[0];
+                        $format = $args[1];
+                        break;
+
+                    default:
+                        \DBG::msg('Invalid arguments supplied to $strftime()');
+                        return;
+                }
+                $format = trim($format, '\'');
+
+                return strftime($format, $time);
             },
         );
 
@@ -379,6 +457,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'Jobs',
             'Knowledge',
             'Livecam',
+            'Login' => array(
+                function($page) {
+                    return $_SERVER['REQUEST_METHOD'] === 'POST';
+                },
+            ),
             'Market',
             'Media',
             'Media1',
@@ -413,6 +496,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isException($page, $cx)) {
             return $this->internalEsiParsing($endcode);
         }
+
+        $this->setCachedLocaleData($cx);
 
         // write header cache file
         $resolver = \Env::get('Resolver');
@@ -636,6 +721,41 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                         $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
                     }
                 }
+            }
+
+            // apply ESI dynamic functions
+            foreach ($this->dynFuncs as $function => $callback) {
+                // execute ESI dynamic functions in content
+                $htmlCode = preg_replace_callback(
+                    '/\$' . $function . '\(' . '([^)]*)' . '\)/',
+                    function($matches) use ($callback) {
+                        // extract arguments from function call
+                        $arglist = $matches[1];
+                        $args = preg_split(
+                            '/
+                                # argument enclosed in double quotes
+                                [\s,]* "([^"]+)"[\s,]*
+
+                                |
+
+                                # argument enclosed in single quotes
+                                [\s,]* \'([^\']+)\'[\s,]*
+
+                                |
+
+                                # end of argument list
+                                [\s,]+
+                            /x',
+                            $arglist,
+                            0,
+                            PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                        );
+
+                        // pass extracted arguments to dynamic function
+                        return $callback($args);
+                    },
+                    $htmlCode
+                );
             }
 
             // Random include tags
