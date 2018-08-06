@@ -224,6 +224,16 @@ class Config
                 'recaptchaSecretKey' => array(
                     'value' => '',
                 ),
+                'allowClientsideScriptUpload' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => 'nobody',
+                    'values' => '{src:\\' . __CLASS__ . '::getClientSideScriptUploadOptions()}',
+                ),
+                'allowClientSideScriptUploadOnGroups' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_MULTISELECT,
+                    'value' => '',
+                    'values' => '{src:\\' . __CLASS__ . '::getUserGroups()}',
+                ),
             ),
             'contactInformation' => array(
                 'coreAdminName' => array(
@@ -981,6 +991,50 @@ class Config
             'contrexxCaptcha:' .  $_ARRAYLANG['TXT_CORE_CONFIG_CONTREXX_CAPTCHA_LABEL'],
             'reCaptcha:' .  $_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHA_LABEL']
         );
+        return implode(',', $options);
+    }
+
+    /**
+     * Returns client side script upload options
+     * 
+     * @return string client side script upload options
+     */
+    public static function getClientSideScriptUploadOptions()
+    {
+        global $_ARRAYLANG;
+
+        $uploadOptions = array(
+            'nobody'    => 'TXT_CORE_CONFIG_NOBODY_LABEL',
+            'groups'    => 'TXT_CORE_CONFIG_GROUPS_LABEL',
+            'all'       => 'TXT_CORE_CONFIG_ALL_LABEL',
+        );
+
+        $options   = array();
+        foreach ($uploadOptions as $key => $label) {
+            $options[] = $key . ':' . $_ARRAYLANG[$label];
+        }
+
+        return implode(',', $options);
+    }
+
+    /**
+     * Returns user groups
+     * 
+     * @return string user groups as string
+     */
+    public static function getUserGroups()
+    {
+        $cx        = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em        = $cx->getDb()->getEntityManager();
+        $groupRepo = $em->getRepository('\Cx\Core\User\Model\Entity\Group');
+        $groups    = $groupRepo->findAll();
+        $options   = array();
+        if (!empty($groups)) {
+            foreach ($groups as $group) {
+                $options[] = $group->getGroupId() . ':' . $group->getGroupName();
+            }
+        }
+
         return implode(',', $options);
     }
 

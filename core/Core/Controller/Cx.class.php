@@ -2097,8 +2097,6 @@ namespace Cx\Core\Core\Controller {
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
                 'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()->toString()),
                 'CURRENT_URL'                    => contrexx_raw2xhtml(\Env::get('init')->getCurrentPageUri()),
-                'DATE'                           => showFormattedDate(),
-                'TIME'                           => date('H:i', time()),
                 'NAVTREE'                        => $objNavbar->getTrail(),
                 'SUBNAVBAR_FILE'                 => $objNavbar->getSubnavigation($themesPages['subnavbar'], $this->license, $boolShop),
                 'SUBNAVBAR2_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar2'], $this->license, $boolShop),
@@ -2192,11 +2190,6 @@ namespace Cx\Core\Core\Controller {
                 $this->template->setVariable(array(
                     'SIDEBAR_FILE' => $themesPages['sidebar'],
                     'JAVASCRIPT_FILE' => $themesPages['javascript'],
-                    'BUILDIN_STYLE_FILE' => $themesPages['buildin_style'],
-                    'DATE_YEAR' => date('Y'),
-                    'DATE_MONTH' => date('m'),
-                    'DATE_DAY' => date('d'),
-                    'DATE_TIME' => date('H:i'),
                     'BUILDIN_STYLE_FILE' => $themesPages['buildin_style'],
                     'JAVASCRIPT_LIGHTBOX' =>
                         '<script type="text/javascript" src="lib/lightbox/javascript/mootools.js"></script>
