@@ -1443,7 +1443,12 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                     $objExport = new MediaDirectoryExport($this->moduleName);
                     switch ($_POST['step']) {
                         case 'exportCSV':
-                            $strStatus = $objExport->exportCSV(intval($_POST['interfacesExportForm']), $_POST['interfacesExportSelectedCategories'], $_POST['interfacesExportSelectedLevels'], intval($_POST['interfacesExportMask']));
+                            $strStatus = $objExport->exportCSV(
+                                isset($_POST['interfacesExportForm']) ? contrexx_input2int($_POST['interfacesExportForm']) : 0,
+                                isset($_POST['interfacesExportSelectedCategories']) ? contrexx_input2int($_POST['interfacesExportSelectedCategories']) : array(),
+                                isset($_POST['interfacesExportSelectedLevels']) ? contrexx_input2int($_POST['interfacesExportSelectedLevels']) : array(),
+                                isset($_POST['interfacesExportMask']) ? contrexx_input2int($_POST['interfacesExportMask']) : 0
+                            );
                             break;
                     }
             }

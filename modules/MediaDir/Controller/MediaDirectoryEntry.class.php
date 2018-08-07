@@ -282,9 +282,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $this->strBlockName = $this->moduleNameLC."EntryList";
         }
 
-        if ($objInit->mode == 'frontend') {
-            if (intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
-                $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
+        if($objInit->mode == 'frontend') {
+            // only list entries in their primary (or translated) locale
+            if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
+                if ($this->arrSettings['settingsTranslationStatus']) {
+                    // only list entries in their translated locale
+                    $strWhereLangId = 'AND entry.`translation_status` REGEXP "(^|,)' . $langId . '(,|$)"';
+                } else {
+                    // only list entries in their primary locale
+                    $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
+                }
             }
         }
 
@@ -454,8 +461,15 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         	$strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
         }
 
+        // only find entry by its primary (or translated) locale
         if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
-            $strWhereLangId = "AND (entry.`lang_id` = ". static::getOutputLocale()->getId() .") ";
+            if ($this->arrSettings['settingsTranslationStatus']) {
+                // only find entry by its translated locale
+                $strWhereLangId = 'AND entry.`translation_status` REGEXP "(^|,)' . static::getOutputLocale()->getId() . '(,|$)"';
+            } else {
+                // only find entry by its primary locale
+                $strWhereLangId = "AND (entry.`lang_id` = ". static::getOutputLocale()->getId() .") ";
+            }
         }
 
         $query = "
@@ -737,6 +751,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             } else {
                                 $strAlphaIndex = '#';
                             }
+                        }
+
+                        if (!isset($arrAlphaGroups[$strAlphaIndex])) {
+                            $arrAlphaGroups[$strAlphaIndex] = array();
                         }
 
                         $arrAlphaGroups[$strAlphaIndex][] = $arrEntry;
@@ -1193,41 +1211,49 @@ JSCODE;
     /**
      * Update the entries while activating the new language.
      *
-     * @return null
+     * @param   array
      */
-    public function updateEntries()
-    {
-        global $objDatabase;
+    public function updateEntries($usedLocaleIds = array()) {
+        $db = $this->cx->getDb()->getAdoDb();
+        foreach ($this->arrFrontendLanguages as $arrLocale) {
+            $sourceLocaleId = static::getSourceLocaleIdForTargetLocale($arrLocale['id'], $usedLocaleIds);
+            $objEntries = $db->Execute('
+                SELECT t1.* 
+                FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1
+                WHERE
+                    `lang_id` = ' . $sourceLocaleId . '
+                 OR `lang_id` =  "
+                        SELECT
+                            first_rel_inputfield.`lang_id` AS `id`
+                        FROM
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
+                        LEFT JOIN
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
+                        ON
+                            first_rel_inputfield.`field_id` = inputfield.`id`
+                        WHERE
+                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
+                        AND
+                            (first_rel_inputfield.`form_id` = t1.`form_id`)
+                        AND
+                            (first_rel_inputfield.`value` != "")
+                        LIMIT 1"
+                GROUP BY `field_id`, `entry_id`, `form_id`
+                ORDER BY `entry_id`'
+            );
 
-        $objEntries = $objDatabase->Execute('SELECT t1.* FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1 WHERE `lang_id` = '.FRONTEND_LANG_ID.' OR `lang_id` =  "SELECT
-                                            first_rel_inputfield.`lang_id` AS `id`
-                                        FROM
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
-                                        LEFT JOIN
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
-                                        ON
-                                            first_rel_inputfield.`field_id` = inputfield.`id`
-                                        WHERE
-                                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
-                                        AND
-                                            (first_rel_inputfield.`form_id` = t1.`form_id`)
-                                        AND
-                                            (first_rel_inputfield.`value` != "")
-                                        LIMIT 1" GROUP BY `field_id`, `entry_id`, `form_id`  ORDER BY `entry_id`'
-                        );
-
-        if ($objEntries !== false) {
+            if ($objEntries === false) {
+                continue;
+            }
             while (!$objEntries->EOF) {
-                foreach ($this->arrFrontendLanguages as $lang) {
-                    $objDatabase->Execute('
-                        INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
-                            SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
-                                `lang_id`="' . contrexx_raw2db($lang['id']) . '",
-                                `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
-                                `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
-                                `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
-                    );
-                }
+                $db->Execute('
+                    INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
+                        SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
+                            `lang_id`="' . contrexx_raw2db($arrLocale['id']) . '",
+                            `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
+                            `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
+                            `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
+                );
                 $objEntries->MoveNext();
             }
         }
@@ -1246,7 +1272,10 @@ JSCODE;
         $strCreateDate = time();
         $strUpdateDate = time();
         $intUserId = intval($objFWUser->objUser->getId());
-        $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strLastIp = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
         $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
 
 
@@ -1349,7 +1378,7 @@ JSCODE;
 
             $arrAdditionalQuery[] = " `updated_by`='".$intUserId."'";
 
-            if(intval($arrData['userId']) != 0) {
+            if (isset($arrData['userId']) && intval($arrData['userId']) != 0) {
                 $arrAdditionalQuery[] = "`added_by`='".intval($arrData['userId'])."'";
             }
 
@@ -1511,6 +1540,9 @@ JSCODE;
                             $arrNewValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
                             foreach ($arrValues as $strKey => $strMasterValue) {
                                 if ($intLangId == $outputLocaleId) {
+                                    if (!isset($arrDefault[$intKey])) {
+                                        $arrDefault[$intKey] = array();
+                                    }
                                     if ($arrNewDefault[$strKey] != $strMasterValue) {
                                         if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
                                             $arrDefault[$intKey][$strKey] = $strMasterValue;
@@ -1522,6 +1554,9 @@ JSCODE;
                                     }
                                 } else {
                                     if ($arrNewValues[$strKey] == '') {
+                                        if (!isset($arrDefault[$intKey])) {
+                                            $arrDefault[$intKey] = array();
+                                        }
                                         $arrDefault[$intKey][$strKey] = $strMasterValue;
                                     } else {
                                         $arrDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId];
@@ -1678,7 +1713,10 @@ JSCODE;
         $strPopularDate = $this->arrEntries[intval($intEntryId)]['entryPopularDate'];
         $intPopularDays = intval($this->arrSettings['settingsPopularNumRestore']);
         $strLastIp      = $this->arrEntries[intval($intEntryId)]['entryLastIp'];
-        $strNewIp       = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strNewIp       = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
 
         $strToday  = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $tempDays  = date("d",$strPopularDate);
@@ -1982,37 +2020,65 @@ JSCODE;
      */
     public function searchResultsForSearchModule($searchTerm)
     {
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-
-        // only list results in case the associated page of the module is active
-        $page = $pageRepo->findOneBy(array(
-            'module' => 'MediaDir',
-            'lang'   => FRONTEND_LANG_ID,
-            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-        ));
-
-        //If page is not exists or page is inactive then return empty result
-        if (!$page || !$page->isActive()) {
-            return array();
-        }
-
         //get the config site values
         \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
         $coreListProtectedPages   = \Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages','Config');
         $searchVisibleContentOnly = \Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly','Config');
+
         //get the config otherConfigurations value
         \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
         $searchDescriptionLength  = \Cx\Core\Setting\Controller\Setting::getValue('searchDescriptionLength','Config');
 
-        $hasPageAccess = true;
-        $isNotVisible = ($searchVisibleContentOnly == 'on') && !$page->isVisible();
-        if ($coreListProtectedPages == 'off' && $page->isFrontendProtected()) {
-            $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+        // fetch data about existing application pages of this component
+        $cmds = array();
+        $em = $this->cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $pages = $pageRepo->getAllFromModuleCmdByLang($this->moduleName);
+        foreach ($pages as $pagesOfLang) {
+            foreach ($pagesOfLang as $page) {
+                $cmds[] = $page->getCmd();
+            }
         }
 
-        //If the page is invisible and frontend access is denied then return empty result
-        if ($isNotVisible || !$hasPageAccess) {
+        // check if an application page is published
+        $cmds = array_unique($cmds);
+        foreach ($cmds as $idx => $cmd) {
+            // fetch application page with specific CMD from current locale
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmd, FRONTEND_LANG_ID);
+
+            // skip if page does not exist in current locale or has not been
+            // published
+            if (
+                !$page ||
+                !$page->isActive()
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+
+            // skip invisible page (if excluded from search)
+            if (
+                $searchVisibleContentOnly == 'on' &&
+                !$page->isVisible()
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+
+            // skip protected page (if excluded from search)
+            if (
+                $coreListProtectedPages == 'off' &&
+                $page->isFrontendProtected() &&
+                $page->getComponent('Session')->getSession() &&
+                !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+        }
+
+        // abort in case no valid application page is published
+        if (empty($cmds)) {
             return array();
         }
 
@@ -2083,10 +2149,13 @@ JSCODE;
             }
 
             $results[] = array(
-                'Score'   => 100,
-                'Title'   => html_entity_decode(contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET),
-                'Content' => $content,
-                'Link'    => $pageUrlResult->toString()
+                'Score'     => 100,
+                'Title'     => html_entity_decode(
+                    contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET
+                ),
+                'Content'   => $content,
+                'Link'      => (string) $pageUrlResult,
+                'Component' => $this->moduleName,
             );
         }
         return $results;

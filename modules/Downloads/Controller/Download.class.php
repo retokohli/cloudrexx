@@ -411,13 +411,50 @@ class Download {
         }
     }
 
-    public function send($langId = 0)
+    /**
+     * Send asset to client
+     *
+     * Send the file of this instance to the client.
+     * The script execution gets terminated by the end of this method call.
+     *
+     * @param   integer $langId ID of locale the filename should be sent in
+     * @param   string  $disposition    HTTP-Content-Disposition to use. One of
+     *                                  the following constants can be used:
+     *                                  <ul>
+     *                                      <li>HTTP_DOWNLOAD_ATTACHMENT</li>
+     *                                      <li>HTTP_DOWNLOAD_INLINE</li>
+     *                                  </ul>
+     *                                  If $disposition is unknown, then
+     *                                  HTTP_DOWNLOAD_ATTACHMENT will be
+     *                                  assumed.
+     */
+    public function send($langId = 0, $disposition = HTTP_DOWNLOAD_ATTACHMENT)
     {
+        // verify HTTP Content-Disposition
+        if (
+            !in_array(
+                $disposition,
+                array(
+                    HTTP_DOWNLOAD_ATTACHMENT,
+                    HTTP_DOWNLOAD_INLINE,
+                )
+            )
+        ) {
+            $disposition = HTTP_DOWNLOAD_ATTACHMENT;
+        }
+
+        $file = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getWebsiteDocumentRootPath() .
+            '/' . $this->getSource($langId);
         $objHTTPDownload = new \HTTP_Download();
-        $objHTTPDownload->setFile(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$this->getSource($langId));
-        $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $this->getSourceName($langId)));
-        $objHTTPDownload->setContentType();
-        $objHTTPDownload->send('application/force-download');
+        $objHTTPDownload->setFile($file);
+        $objHTTPDownload->setContentDisposition(
+            $disposition,
+            str_replace('"', '\"', $this->getSourceName($langId))
+        );
+        $contentType = mime_content_type($file);
+        $objHTTPDownload->setContentType($contentType);
+        $objHTTPDownload->send();
         exit;
     }
 
@@ -469,6 +506,25 @@ class Download {
             $this->loadLocales();
         }
         return isset($this->descriptions[$langId]) ? $this->descriptions[$langId] : '';
+    }
+
+    /**
+     * Returns the description trimmed to maximum length of 100 characters.
+     *
+     * @param   integer $langId ID of the locale the trimmed description
+     *                          shall be returned in
+     * @return  string  The trimmed description of locale $langId
+     */
+    public function getTrimmedDescription($langId = LANG_ID)
+    {
+        $description = $this->getDescription($langId);
+        if (strlen($description) > 100) {
+            $shortDescription = substr($description, 0, 97).'...';
+        } else {
+            $shortDescription = $description;
+        }
+
+        return $shortDescription;
     }
 
     public function getMetakeys($langId = 0)
@@ -931,7 +987,14 @@ class Download {
             }
         }
 
-        if (in_array('category_id', array_keys($arrFilter)) && (($arrFilter['category_id'] == 0) || !empty($arrFilter['category_id']))) {
+        if (
+            is_array($arrFilter) &&
+            isset($arrFilter['category_id']) && 
+            (
+                ($arrFilter['category_id'] == 0) ||
+                !empty($arrFilter['category_id'])
+            )
+        ) {
             if (is_array($arrFilter['category_id'])) {
                 if ($subCategories) {
                     $arrSubCategories = array();
@@ -945,6 +1008,11 @@ class Download {
                     }
                 } else {
                     foreach ($arrFilter['category_id'] as $condition => $categoryId) {
+                        // in case $condition is a simple array index
+                        // we will apply a simple equal expression 
+                        if (preg_match('/^\d+$/', $condition)) {
+                            $condition = '=';
+                        }
                         $arrCategoryConditions[] = 'tblRC.`category_id` '.$condition.' '.intval($categoryId);
                     }
                 }
@@ -964,7 +1032,10 @@ class Download {
             $arrTables[] = 'category';
         }
 
-        if (in_array('download_id', array_keys($arrFilter)) && !empty($arrFilter['download_id'])) {
+        if (
+            is_array($arrFilter) &&
+            !empty($arrFilter['download_id'])
+        ) {
             $arrConditions[] = '(tblR.`id1` = '.intval($arrFilter['download_id']).' OR tblR.`id2` = '.intval($arrFilter['download_id']).')';
             $arrConditions[] = 'tblD.`id` != '.intval($arrFilter['download_id']);
             $arrTables[] = 'download';

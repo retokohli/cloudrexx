@@ -363,30 +363,37 @@ class CalendarManager extends CalendarLibrary
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
         \JS::registerJS('modules/Calendar/View/Script/Backend.js');
 
-        \ContrexxJavascript::getInstance()->setVariable(array(
-            'language_id' => \FWLanguage::getDefaultLangId()
-        ), 'calendar');
+        \ContrexxJavascript::getInstance()->setVariable(
+            array(
+                'language_id' => \FWLanguage::getDefaultLangId()
+            ),
+            'calendar'
+        );
         $this->getSettings();
         $this->getFrontendLanguages();
 
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
-        if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
-            if($objEvent->save($_POST)) {
-                    $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
-                    if (isset($_POST['save_and_publish'])) {
-                        \Permission::checkAccess(180, 'static');
-                        if($objEvent->confirm()) {
-                            // do nothing
-                        } else {
-                            $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
-                        }
+        if (isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
+            if ($objEvent->save($_POST)) {
+                $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
+                if (isset($_POST['save_and_publish'])) {
+                    \Permission::checkAccess(180, 'static');
+                    if($objEvent->confirm()) {
+                        // do nothing
+                    } else {
+                        $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
                     }
-                    $this->showOverview();
-                    return;
+                }
+                $this->showOverview();
+                return;
             } else {
+                if ($objEvent->hasErrorMessage()) {
+                    $this->errMessage = $objEvent->getErrorMessage();
+                } else {
                     $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'];
+                }
             }
-            if($this->arrSettings['rssFeedStatus'] == 1) {
+            if ($this->arrSettings['rssFeedStatus'] == 1) {
                 $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
                 $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
                 $objFeed->creatFeed();
@@ -405,9 +412,25 @@ class CalendarManager extends CalendarLibrary
         $copy = isset($_REQUEST['copy']) && !empty($_REQUEST['copy']);
         $this->_pageTitle = $copy || empty($eventId) ? $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT'] : $_ARRAYLANG['TXT_CALENDAR_EVENT']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
 
-        if($eventId != 0) {
+        if ($eventId != 0) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
             $objEvent->getData();
+
+            // Fetch requested event.
+            $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+            $event = $eventRepo->findOneBy(array(
+                'id' => $eventId,
+            ));
+
+            // abort in case the event does not exist
+            if (!$event) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromMagic(
+                        $this->cx->getWebsiteBackendPath() . '/' . $this->moduleName
+                    )
+                );
+                return;
+            }
         }
 
         //parse weekdays
