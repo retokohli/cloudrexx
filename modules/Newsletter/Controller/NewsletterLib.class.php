@@ -953,25 +953,19 @@ class NewsletterLib
         $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
         $dateTime        = new \DateTime('now');
         $dateTime->modify('-' . $confirmLinkHour . ' hours');
-        $objUserResult   = $objDatabase->Execute(
-            'SELECT id FROM '. DBPREFIX .'module_newsletter_user
-                WHERE source = "opt-in"
-                AND consent IS NULL
-                AND emaildate < "'. $dateTime->getTimeStamp() .'"'
-        );
-        if ($objUserResult && $arrSettings['defUnsubscribe']['setvalue'] == 1) {
-            while (!$objUserResult->EOF) {
-                $objUserCat = $objDatabase->Execute(
-                    'DELETE FROM '. DBPREFIX .'module_newsletter_rel_user_cat
-                        WHERE user="'. contrexx_raw2db($objUserResult->fields['id']) .'"'
-                );
-                $objUser = $objDatabase->Execute(
-                    'DELETE FROM '. DBPREFIX .'module_newsletter_user
-                        WHERE id="'. contrexx_raw2db($objUserResult->fields['id']) .'"'
-                );
 
-                $objUserResult->MoveNext();
-            }
+        if ($arrSettings['defUnsubscribe']['setvalue'] == 1) {
+            $objUser = $objDatabase->Execute(
+                'DELETE
+                        userCat,
+                        users
+                    FROM '. DBPREFIX .'module_newsletter_user as users
+                        INNER JOIN '. DBPREFIX .'module_newsletter_rel_user_cat as userCat
+                            ON users.id = userCat.user
+                    WHERE users.source = "opt-in"
+                    AND users.consent IS NULL
+                    AND users.emaildate < "'. $dateTime->getTimeStamp() .'"'
+            );
         }
     }
 }
