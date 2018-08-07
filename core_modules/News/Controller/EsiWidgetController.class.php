@@ -177,8 +177,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
                 // intentionally no break here
             case 'news_category_widget':
+                // fetch category-ID from page request
+                $categoryId = 0;
+                if (isset($params['query']['category'])) {
+                    $categoryId = intval($params['query']['category']);
+                } elseif (isset($params['query']['filterCategory'])) {
+                    $categoryId = intval($params['query']['filterCategory']);
+                }
+
                 $newsLib = new NewsLibrary();
-                $newsLib->getNewsCategories($template, $langId);
+                $newsLib->getNewsCategories($template, $langId, $categoryId);
                 return;
                 break;
 

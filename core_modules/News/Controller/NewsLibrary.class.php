@@ -206,13 +206,14 @@ class NewsLibrary
      *
      * @param   \Cx\Core\Html\Sigma $template   Template object to be parsed
      * @param integer $langId Language id
+     * @param integer $categoryId ID of category to highlight
      *
      * @return string Formated ul/li of categories
      */
-    public function getNewsCategories($template = null, $langId = null)
+    public function getNewsCategories($template = null, $langId = null, $categoryId = 0)
     {
         $categoriesLang = $this->getCategoriesLangData();
-        return $this->_buildNewsCategories($template, $this->nestedSetRootId, $categoriesLang, $langId);
+        return $this->_buildNewsCategories($template, $this->nestedSetRootId, $categoriesLang, $langId, $categoryId);
     }
 
     /**
@@ -223,6 +224,7 @@ class NewsLibrary
      * @param integer   $catId          Category id
      * @param array     $categoriesLang Category locale
      * @param integer   $langId         Language id
+     * @param integer $categoryId ID of category to highlight
      *
      * @return string Formated ul/li of categories
      */
@@ -230,7 +232,8 @@ class NewsLibrary
         $template,
         $catId,
         $categoriesLang,
-        $langId = null
+        $langId = null,
+        $categoryId = 0
     ) {
         if (!$this->categoryExists($catId)) {
             return;
@@ -255,13 +258,15 @@ class NewsLibrary
             $this->parseNewsCategoryWidgetBlock(
                 $template,
                 'news_category_widget_item_open',
-                $category
+                $category,
+                $categoryId
             );
 
             $this->parseNewsCategoryWidgetBlock(
                 $template,
                 'news_category_widget_item_content',
-                $category
+                $category,
+                $categoryId
             );
         }
 
@@ -270,20 +275,23 @@ class NewsLibrary
             $this->parseNewsCategoryWidgetBlock(
                 $template,
                 'news_category_widget_list_open',
-                $category
+                $category,
+                $categoryId
             );
             foreach ($subCategories as $subCat) {
                 $this->_buildNewsCategories(
                     $template,
                     $subCat['id'],
                     $categoriesLang,
-                    $langId
+                    $langId,
+                    $categoryId
                 );
             }
             $this->parseNewsCategoryWidgetBlock(
                 $template,
                 'news_category_widget_list_close',
-                $category
+                $category,
+                $categoryId
             );
         }
 
@@ -291,7 +299,8 @@ class NewsLibrary
             $this->parseNewsCategoryWidgetBlock(
                 $template,
                 'news_category_widget_item_close',
-                $category
+                $category,
+                $categoryId
             );
         }
 
@@ -311,8 +320,14 @@ class NewsLibrary
      * @param   \Cx\Core\Html\Sigma $template   Template object to parse
      * @param   string  $block  Name of block to parse
      * @param   array   $category   Category data as array
+     * @param   integer $categoryId ID of category to highlight
      */
-    protected function parseNewsCategoryWidgetBlock($template, $block, $category) {
+    protected function parseNewsCategoryWidgetBlock(
+        $template,
+        $block,
+        $category,
+        $categoryId
+    ) {
         $blocks = array(
             'news_category_widget_list_open',
             'news_category_widget_item_open',
@@ -334,6 +349,23 @@ class NewsLibrary
                     'NEWS_CATEGORY_LEVEL'   => $category['level'],
                     'NEWS_CATEGORY_URL'     => $category['url'],
                 ));
+
+                if ($category['id'] == $categoryId) {
+                    if ($template->blockExists($element . '_active')) {
+                        $template->touchBlock($element . '_active');
+                    }
+                    if ($template->blockExists($element . '_inactive')) {
+                        $template->hideblock($element . '_inactive');
+                    }
+                } else {
+                    if ($template->blockExists($element . '_active')) {
+                        $template->hideBlock($element . '_active');
+                    }
+                    if ($template->blockExists($element . '_inactive')) {
+                        $template->touchBlock($element . '_inactive');
+                    }
+                }
+
                 $template->touchBlock($element);
                 continue;
             }
