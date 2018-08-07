@@ -204,60 +204,145 @@ class NewsLibrary
      * Generates the formated ul/li of categories
      * Used in the template's
      *
+     * @param   \Cx\Core\Html\Sigma $template   Template object to be parsed
      * @param integer $langId Language id
      *
      * @return string Formated ul/li of categories
      */
-    public function getNewsCategories($langId = null)
+    public function getNewsCategories($template = null, $langId = null)
     {
-
         $categoriesLang = $this->getCategoriesLangData();
-
-        return $this->_buildNewsCategories($this->nestedSetRootId, $categoriesLang, $langId);
+        return $this->_buildNewsCategories($template, $this->nestedSetRootId, $categoriesLang, $langId);
     }
 
     /**
      * Generates the formated ul/li of categories
      * Used in the template's
      *
+     * @param \Cx\Core\Sigma    $template   Template object to be parsed
      * @param integer   $catId          Category id
      * @param array     $categoriesLang Category locale
      * @param integer   $langId         Language id
      *
      * @return string Formated ul/li of categories
      */
-    function _buildNewsCategories($catId, $categoriesLang, $langId = null)
-    {
-        $html = '';
-        if ($this->categoryExists($catId)) {
-            if ($langId === null) {
-                $langId = FRONTEND_LANG_ID;
-            }
-            $category = $this->objNestedSet->pickNode($catId, true);
-            if ($catId != $this->nestedSetRootId) {
-                $html .= "<li>";
-
-                $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('News');
-                $newsUrl->setParam('category', $catId);
-
-                $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][$langId]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][$langId]).'</a>';
-            }
-
-            $subCategories = $this->objNestedSet->getChildren($catId, true);
-            if (!empty($subCategories)) {
-                $html .= "<ul class='news_category_lvl_{$category['level']}'>";
-                foreach ($subCategories as $subCat) {
-                    $html .= $this->_buildNewsCategories($subCat['id'], $categoriesLang, $langId);
-                }
-                $html .= "</ul>";
-            }
-
-            if ($catId != $this->nestedSetRootId) {
-                $html .= "</li>";
-            }
+    function _buildNewsCategories(
+        $template,
+        $catId,
+        $categoriesLang,
+        $langId = null
+    ) {
+        if (!$this->categoryExists($catId)) {
+            return;
         }
 
-        return $html;
+        if ($langId === null) {
+            $langId = FRONTEND_LANG_ID;
+        }
+
+        $category = $this->objNestedSet->pickNode($catId, true);
+        $category['url'] = null;
+        $category['title'] = '';
+
+        if ($catId != $this->nestedSetRootId) {
+            $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('News');
+            $newsUrl->setParam('category', $catId);
+            $category['url'] = $newsUrl;
+            $category['title'] = contrexx_raw2xhtml(
+                $categoriesLang[$catId][$langId]
+            );
+
+            $this->parseNewsCategoryWidgetBlock(
+                $template,
+                'news_category_widget_item_open',
+                $category
+            );
+
+            $this->parseNewsCategoryWidgetBlock(
+                $template,
+                'news_category_widget_item_content',
+                $category
+            );
+        }
+
+        $subCategories = $this->objNestedSet->getChildren($catId, true);
+        if (!empty($subCategories)) {
+            $this->parseNewsCategoryWidgetBlock(
+                $template,
+                'news_category_widget_open',
+                $category
+            );
+            foreach ($subCategories as $subCat) {
+                $this->_buildNewsCategories(
+                    $template,
+                    $subCat['id'],
+                    $categoriesLang,
+                    $langId
+                );
+            }
+            $this->parseNewsCategoryWidgetBlock(
+                $template,
+                'news_category_widget_close',
+                $category
+            );
+        }
+
+        if ($catId != $this->nestedSetRootId) {
+            $this->parseNewsCategoryWidgetBlock(
+                $template,
+                'news_category_widget_item_close',
+                $category
+            );
+        }
+
+        if ($catId != $this->nestedSetRootId) {
+            return;
+        }
+
+        return $template->get();
+    }
+
+    /**
+     * Parse element of category widget block
+     *
+     * The element identified by $block will be parsed in template $template.
+     * All other elements (blocks) in the template will be hidden.
+     *
+     * @param   \Cx\Core\Html\Sigma $template   Template object to parse
+     * @param   string  $block  Name of block to parse
+     * @param   array   $category   Category data as array
+     */
+    protected function parseNewsCategoryWidgetBlock($template, $block, $category) {
+        $blocks = array(
+            'news_category_widget_open',
+            'news_category_widget_item_open',
+            'news_category_widget_item_content',
+            'news_category_widget_item_close',
+            'news_category_widget_close',
+        );
+
+        foreach ($blocks as $element) {
+            if (!$template->blockExists($element)) {
+                continue;
+            }
+
+            // parse selected list element
+            if ($element == $block) {
+                $template->setVariable(array(
+                    'NEWS_CATEGORY_ID'      => $category['id'],
+                    'NEWS_CATEGORY_TITLE'   => $category['title'],
+                    'NEWS_CATEGORY_LEVEL'   => $category['level'],
+                    'NEWS_CATEGORY_URL'     => $category['url'],
+                ));
+                $template->touchBlock($element);
+                continue;
+            }
+
+            // hide all other list elements
+            $template->hideBlock($element);
+        }
+
+        $template->parse('news_category_widget');
     }
 
     /**

@@ -208,6 +208,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
 
+        // news category block widget
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'news_category_widget',
+            \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
+        );
+        $widgetController->registerWidget(
+            $widget
+        );
+
         // Register tag-cloud widget
         $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
             $this,
