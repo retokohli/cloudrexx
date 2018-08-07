@@ -269,7 +269,7 @@ class NewsLibrary
         if (!empty($subCategories)) {
             $this->parseNewsCategoryWidgetBlock(
                 $template,
-                'news_category_widget_open',
+                'news_category_widget_list_open',
                 $category
             );
             foreach ($subCategories as $subCat) {
@@ -282,7 +282,7 @@ class NewsLibrary
             }
             $this->parseNewsCategoryWidgetBlock(
                 $template,
-                'news_category_widget_close',
+                'news_category_widget_list_close',
                 $category
             );
         }
@@ -314,11 +314,11 @@ class NewsLibrary
      */
     protected function parseNewsCategoryWidgetBlock($template, $block, $category) {
         $blocks = array(
-            'news_category_widget_open',
+            'news_category_widget_list_open',
             'news_category_widget_item_open',
             'news_category_widget_item_content',
             'news_category_widget_item_close',
-            'news_category_widget_close',
+            'news_category_widget_list_close',
         );
 
         foreach ($blocks as $element) {
