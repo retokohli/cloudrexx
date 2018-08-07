@@ -2663,6 +2663,7 @@ EOF;
                $templateVariablePrefix . 'NEWS_COMMENTS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                $templateVariablePrefix . 'NEWS_COMMENTS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                $templateVariablePrefix . 'NEWS_COMMENTS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
+               $templateVariablePrefix . 'NEWS_COMMENTS_TIMESTAMP'    => $objResult->fields['date'],
             ));
 
             $objTpl->parse($templateBlockPrefix . 'news_comment');
@@ -3099,6 +3100,7 @@ EOF;
            $templateVariablePrefix . 'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT, $objResult->fields['newsdate']),
            $templateVariablePrefix . 'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
            $templateVariablePrefix . 'NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
+           $templateVariablePrefix . 'NEWS_TIMESTAMP'      => $objResult->fields['newsdate'],
            $templateVariablePrefix . 'NEWS_LINK_TITLE'     => $htmlLinkTitle,
            $templateVariablePrefix . 'NEWS_LINK'           => $htmlLink,
            $templateVariablePrefix . 'NEWS_LINK_URL'       => contrexx_raw2xhtml($newsUrl),
