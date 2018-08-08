@@ -303,6 +303,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         $widgetController = $this->getComponent('Widget');
+
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this, 'locale_navbar', \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
+        );
+        $widgetController->registerWidget(
+            $widget
+        );
+
         $widgetController->registerWidget(
             new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
                 $this,

@@ -52,6 +52,7 @@ namespace Cx\Core\LanguageManager\Controller;
 
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
 
+
     /**
      * Parses a widget
      *
@@ -62,6 +63,51 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function parseWidget($name, $template, $response, $params)
     {
+        if ($name == 'locale_navbar') {
+            $template->touchBlock($name);
+
+            $template->setVariable(
+                'ACTIVE_LANGUAGE_NAME', $params['locale']->getShortForm()
+            );
+
+            $page = $params['page'];
+            if (!$page) {
+                return;
+            }
+
+            $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+
+            foreach ($activeLanguages as $langId => $langData) {
+                $lang = strtolower($langData['lang']);
+
+                $navbar = new \Navigation($page->getId(), $page);
+                $locale = $this->cx->getDb()->getEntityManager()
+                    ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
+                    ->findOneByCode($lang);
+
+                // return early and don't set variable if locale doesn't exist
+                if (!$locale) {
+                    return;
+                }
+
+                if ($lang == $params['locale']->getShortForm()) {
+                    $template->touchBlock('current_locale');
+                }
+                $template->setVariable(
+                    array(
+                    'LANG_NAME' => $lang,
+                    'LANG_CHANGE' => $navbar->getLanguageLinkById(
+                        $page, $locale->getId()
+                    ),
+                    )
+                );
+
+                $template->parseCurrentBlock();
+            }
+
+            return;
+        }
+
         if ($name === 'CHARSET') {
             $template->setVariable($name, CONTREXX_CHARSET);
             return;
@@ -99,12 +145,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         $navbar = new \Navigation($page->getId(), $page);
         if ($name === 'LANGUAGE_NAVBAR') {
-            $template->setVariable($name, $navbar->getFrontendLangNavigation($page));
+            $template->setVariable(
+                $name, $navbar->getFrontendLangNavigation($page)
+            );
             return;
         }
 
         if ($name === 'LANGUAGE_NAVBAR_SHORT') {
-            $template->setVariable($name, $navbar->getFrontendLangNavigation($page, true));
+            $template->setVariable(
+                $name, $navbar->getFrontendLangNavigation($page, true)
+            );
             return;
         }
 
