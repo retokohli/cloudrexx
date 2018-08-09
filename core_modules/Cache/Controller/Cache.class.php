@@ -291,7 +291,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 }
                 $format = trim($format, '\'');
 
-                return strftime($format, $time);
+                return \Cx\Core\DateTime\Controller\ComponentController::strftime(
+                    $format,
+                    $time
+                );
             },
         );
 

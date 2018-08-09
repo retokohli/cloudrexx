@@ -211,7 +211,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *                  language-dependent strings respect the current set
      *                  locale.
      */
-    public function strftime($format, $timestamp = null) {
+    public static function strftime($format, $timestamp = null) {
         global $_CORELANG;
 
         if (!$timestamp) {
