@@ -957,14 +957,14 @@ class NewsletterLib
         if ($arrSettings['defUnsubscribe']['setvalue'] == 1) {
             $objUser = $objDatabase->Execute(
                 'DELETE
-                        userCat,
-                        users
-                    FROM '. DBPREFIX .'module_newsletter_user as users
-                        INNER JOIN '. DBPREFIX .'module_newsletter_rel_user_cat as userCat
-                            ON users.id = userCat.user
-                    WHERE users.source = "opt-in"
-                    AND users.consent IS NULL
-                    AND users.emaildate < "'. $dateTime->getTimeStamp() .'"'
+                    userCat,
+                    users
+                FROM '. DBPREFIX .'module_newsletter_user as users
+                    INNER JOIN '. DBPREFIX .'module_newsletter_rel_user_cat as userCat
+                        ON users.id = userCat.user
+                WHERE users.source = "opt-in"
+                AND users.consent IS NULL
+                AND users.emaildate < "'. $dateTime->getTimeStamp() .'"'
             );
         }
     }
