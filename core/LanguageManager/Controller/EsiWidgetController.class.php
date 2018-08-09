@@ -52,38 +52,62 @@ namespace Cx\Core\LanguageManager\Controller;
 
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
 
-
     /**
      * Parses a widget
      *
      * @param string                                 $name     Widget name
-     * @param \Cx\Core\Html\Sigma Widget             $template Template
+     * @param \Cx\Core\Html\Sigma              $template Template
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
      * @param array                                  $params   Get parameters
      */
     public function parseWidget($name, $template, $response, $params)
     {
         if ($name == 'locale_navbar') {
-            $template->touchBlock($name);
 
-            $template->setVariable(
-                'ACTIVE_LANGUAGE_NAME', $params['locale']->getShortForm()
-            );
+            $currentPage = $this->cx->getPage();
+            $listProtectedPages = \Cx\Core\Setting\Controller\Setting::getValue(
+                'coreListProtectedPages',
+                'Config'
+            ) == 'on';
 
-            $page = $params['page'];
-            if (!$page) {
-                return;
-            }
+            foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                $langId = $lang['id'];
+                $lang = $lang['lang'];
+                $langPage = $currentPage->getNode()->getPage($langId);
+                // if page is not translated,
+                // inactive (incl. scheduled publishing) or protected
+                if (
+                    !$langPage ||
+                    !$langPage->isActive() ||
+                    (
+                        !$listProtectedPages &&
+                        $langPage->isFrontendProtected() &&
+                        !\Permission::checkAccess(
+                            $langPage->getFrontendAccessId(), 'dynamic', true
+                        )
+                    )
+                ) {
+                    continue;
+                }
+                $template->setVariable(
+                    array(
+                    'PAGE_LINK' => contrexx_raw2xhtml(
+                        \Cx\Core\Routing\Url::fromPage($langPage)->toString()
+                    ),
+                    'PAGE_TITLE' => contrexx_raw2xhtml($langPage->getTitle()),
+                    'LOCALE' => $lang,
+                    'LANGUAGE_CODE' => $params['locale']->getShortForm(),
+                    )
+                );
 
-            $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+                $page = $params['page'];
+                if (!$page) {
+                    return;
+                }
 
-            foreach ($activeLanguages as $langId => $langData) {
-                $lang = strtolower($langData['lang']);
-
-                $navbar = new \Navigation($page->getId(), $page);
-                $locale = $this->cx->getDb()->getEntityManager()
-                    ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
-                    ->findOneByCode($lang);
+                $locale = $this->cx->getDb()->getEntityManager()->getRepository(
+                    '\Cx\Core\Locale\Model\Entity\Locale'
+                )->findOneByCode($lang);
 
                 // return early and don't set variable if locale doesn't exist
                 if (!$locale) {
@@ -93,18 +117,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 if ($lang == $params['locale']->getShortForm()) {
                     $template->touchBlock('current_locale');
                 }
-                $template->setVariable(
-                    array(
-                    'LANG_NAME' => $lang,
-                    'LANG_CHANGE' => $navbar->getLanguageLinkById(
-                        $page, $locale->getId()
-                    ),
-                    )
-                );
-
-                $template->parseCurrentBlock();
+                $template->parse($name);
             }
-
             return;
         }
 
