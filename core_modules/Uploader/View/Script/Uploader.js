@@ -326,7 +326,11 @@
                             parseStatusMessage(this, file, displayStatus, html, progress, errorCode);
                         }
                     } else {
-                        parseStatusMessage(this, file, 'danger', response.message, true, 200);
+                        if (/[0-9]+/.exec(response.message)) {
+                            parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(response.message), 'mediabrowser'), true, response.message);
+                        } else {
+                            parseStatusMessage(this, file, 'danger', response.message, true, 200);
+                        }
                     }
                 } catch (ex) {
                     parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_200', 'mediabrowser'), true, 200);
