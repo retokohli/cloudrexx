@@ -35,16 +35,12 @@ class EsiWidgetController
             $livecam = new \Cx\Modules\Livecam\Controller\Livecam('');
             $camSettings = $livecam->getCamSettings($livecam);
 
-            $extension = pathinfo(
-                $camSettings['currentImagePath'], PATHINFO_EXTENSION
+            $imageSize = getimagesize(
+                $camSettings['currentImagePath']
             );
+            $imageType = image_type_to_mime_type($imageSize[2]);
 
-            // If the path had no extension
-            if (empty($extension)) {
-                $extension = 'jpeg';
-            }
-
-            $imageSrc = 'image/' . $extension . ';base64,'. base64_encode(
+            $imageSrc = $imageType . ';base64,'. base64_encode(
                 file_get_contents($camSettings['currentImagePath'])
             );
 
