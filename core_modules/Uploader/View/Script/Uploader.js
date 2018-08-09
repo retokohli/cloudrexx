@@ -327,8 +327,10 @@
                         }
                     } else {
                         if (/[0-9]+/.exec(response.message)) {
+                            // Messages with an error code
                             parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(response.message), 'mediabrowser'), true, response.message);
                         } else {
+                            // Throw an exception to show custom messages
                             parseStatusMessage(this, file, 'danger', response.message, true, 200);
                         }
                     }
