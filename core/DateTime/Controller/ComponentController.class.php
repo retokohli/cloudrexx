@@ -204,52 +204,113 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param   string  $format Format according to http://php.net/strftime
      * @param   integer $timestamp  The timestamp to be formatted (optional)
+     * @param   string  $locale The locale to use instead of the currently loaded locale by the system
      * @global  array   $_CORELANG
      * @return  string  Returns a string formatted according format using the
      *                  given timestamp or the current local time if no
      *                  timestamp is given. Month and weekday names and other
      *                  language-dependent strings respect the current set
      *                  locale.
+     * @todo    Drop argument $locale. As soon as the Locale component
+     *          does provide the ability to load language files, the
+     *          argument $locale must be dropped. The Locale component
+     *          must itself figure out which language files it must load. 
+     * @todo    Migrate code that loads the language files
+     *          (InitCMS::loadLangFile()) to use the Locale component
+     *          as soon as the Locale provides such a method.
      */
-    public static function strftime($format, $timestamp = null) {
+    public static function strftime($format, $timestamp = null, $locale = '') {
         global $_CORELANG;
+        if (
+            empty($_CORELANG) &&
+            !empty($locale)
+        ) {
+            $sourceLanguage = $locale;
+            if (!in_array($sourceLanguage, array('da', 'de', 'en', 'fr', 'it', 'ru'))) {
+                $sourceLanguage = 'en';
+            }
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $path = $cx->getCodeBaseDocumentRootPath() . '/lang/' . $sourceLanguage . '/frontend.php';
+            $isCustomized = false;
+            $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
+            if (file_exists($path) || !file_exists($customizedPath)) {
+                require $path;
+            }
+            if ($isCustomized) {
+                require $customizedPath;
+            }
+            $_CORELANG = $_ARRAYLANG;
+        }
 
         if (!$timestamp) {
             $timestamp = time();
         }
 
         $customFormatHandlers = array(
+            //  The abbreviated weekday name according to the current locale
             '%a' => function($time) use ($_CORELANG) {
                 $days = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV3_ARRAY']);
                 $dayIdx = strftime('%w', $time);
                 return $days[$dayIdx];
             },
+
+            //  The full weekday name according to the current locale
             '%A' => function($time) use ($_CORELANG) {
                 $days = explode(',', $_CORELANG['TXT_CORE_DAY_ARRAY']);
                 $dayIdx = strftime('%w', $time);
                 return $days[$dayIdx];
             },
+
+            //  The abbreviated month name according to the current locale
             '%b' => function($time) use ($_CORELANG) {
                 $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ABBREV3_ARRAY']);
                 $monthIdx = intval(strftime('%m', $time));
                 return $months[$monthIdx];
             },
+
+            // The full month name according to the current locale
             '%B' => function($time) use ($_CORELANG) {
                 $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ARRAY']);
                 $monthIdx = intval(strftime('%m', $time));
                 return $months[$monthIdx];
             },
-            '%c' => null, // not yet suppored
-            '%E' => null, // not yet suppored
+
+            // The preferred date and time representation for the current locale
+            // TODO: implement
+            '%c' => null,
+
+            // Equivalent to %b
             '%h' => function($time) use ($_CORELANG) {
                 $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ABBREV3_ARRAY']);
                 $monthIdx = intval(strftime('%m', $time));
                 return $months[$monthIdx];
             },
-            '%O' => null, // not yet suppored
-            '%x' => null, // not yet suppored
-            '%X' => null, // not yet suppored
-            '%+' => null, // not yet suppored
+
+            // Some conversion specifiers can be modified by preceding them by
+            // the E or O modifier to indicate that an alternative format
+            // should be used. The effect of the O modifier is to use
+            // alternative numeric symbols (e.g., roman numerals), and that of
+            // the E modifier is to use a locale-dependent alternative
+            // representation. If the alternative format or specification does
+            // not exist for the current locale, the behavior will be as if the
+            // unmodified conversion specification were used. 
+            // TODO: implement
+            '%E' => null,
+            '%O' => null,
+
+            // The preferred date representation for the current locale
+            // without the time
+            // TODO: implement
+            '%x' => null,
+
+            // The preferred time representation for the current locale
+            // without the date
+            // TODO: implement
+            '%X' => null,
+
+            //  The date and time in date(1) format
+            // TODO: implement
+            '%+' => null,
         );
 
         // escape format characters to be used in preg_replace_callback()
@@ -270,6 +331,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
 
                 $replacement = $customFormatHandlers[$matches[0]];
+                if (is_null($replacement)) {
+                    \DBG::msg('ESI function $strftime(): Unsupported modifier '. $matches[0]);
+                    return;
+                }
                 if (is_callable($replacement)) {
                     return $replacement($timestamp);
                 }
