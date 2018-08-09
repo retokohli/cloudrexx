@@ -359,8 +359,12 @@ class EsiWidget extends Widget {
                         );
                         break;
                     case static::ESI_VAR_NAME_QUERY:
+                        $params = $_GET;
+                        unset($params['__cap']);
+                        unset($params['section']);
+                        unset($params['cmd']);
                         $esiVarValue = $this->getComponent('Widget')->encode(
-                            http_build_query($_GET)
+                            http_build_query($params, '', '&')
                         );
                         break;
                 }
