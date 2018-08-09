@@ -265,13 +265,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'strftime' => function($args) use ($cx) {
                 // Notes:
                 //   This function does not support the ESI dynamic function
-                //   modifiers %E, %O and %+.
-                //   This function does yet implement locales.
-                //   Therefore, the return value of locale specific format
-                //   parameters is unknown.
-                //   If you need locale specific parameters, do implement
-                //   an EsiWidget for it. For reference see EsiWidget
-                //   DATE of DateTime component
+                //   modifiers %c, %E, %O, %x, %X and %+.
 
                 $time = time();
                 $format = '';
@@ -291,9 +285,18 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 }
                 $format = trim($format, '\'');
 
+                // TODO: drop this code as soon as strftime of DateTime
+                // component does no longer need any locale info.
+                $locale = '';
+                $cachedLocaleData = $this->getCachedLocaleData();
+                if (in_array($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode'])) {
+                    $locale = array_search($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode']);
+                }
+                // end of TODO
                 return \Cx\Core\DateTime\Controller\ComponentController::strftime(
                     $format,
-                    $time
+                    $time,
+                    $locale
                 );
             },
         );
