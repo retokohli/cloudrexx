@@ -4369,8 +4369,6 @@ $WhereStatement = '';
     {
         global $objDatabase, $_ARRAYLANG;
 
-        \JS::activate('cx');
-        \JS::activate('jqueryui');
         \JS::registerJS('modules/Newsletter/View/Script/Backend.js');
 
         // Store the language interface text in javascript variable
@@ -4561,7 +4559,7 @@ $WhereStatement = '';
                 isset($_POST['imported']) &&
                 (
                     empty($_POST['newsletter_recipient_associated_list']) ||
-                    !$this->isConsentConfirmChecked()
+                    !isset($_POST['consentConfirm'])
                 )
             )
         ) {
@@ -4577,7 +4575,7 @@ $WhereStatement = '';
                         $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY']
                     );
                 }
-                if (!$this->isConsentConfirmChecked()) {
+                if (!isset($_POST['consentConfirm'])) {
                     array_push(
                         $arrStatusMessage['error'],
                         $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR']
@@ -4612,7 +4610,7 @@ $WhereStatement = '';
                     'consentConfirm',
                     1,
                     'consentConfirmImport',
-                    $this->isConsentConfirmChecked()
+                    isset($_POST['importfile']) && isset($_POST['consentConfirm'])
                 ),
                 'IMPORT_ROWCLASS'  => 'row1',
             ));
@@ -4630,7 +4628,7 @@ $WhereStatement = '';
             if (isset($_POST['newsletter_import_plain'])) {
                 if (empty($_POST['newsletter_recipient_associated_list'])) {
                     self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
-                } elseif (!$this->isConsentConfirmChecked()) {
+                } elseif (!isset($_POST['consentConfirm'])) {
                     self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR'];
                 } else {
                     $arrLists = array();
@@ -4943,8 +4941,6 @@ $WhereStatement = '';
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        \JS::activate('cx');
-        \JS::activate('jqueryui');
         \JS::registerJS('modules/Newsletter/View/Script/Backend.js');
         \JS::registerCSS('modules/Newsletter/View/Style/Backend.css');
 
@@ -5068,7 +5064,7 @@ $WhereStatement = '';
         if (isset($_POST['newsletter_recipient_save'])) {
             $objValidator = new \FWValidator();
             if ($objValidator->isEmail($recipientEmail)) {
-                if ($this->isConsentConfirmChecked()) {
+                if (isset($_POST['consentConfirm'])) {
                     if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
                         if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId, $copy)) {
                             //reset the $recipientId on copy function
@@ -5392,7 +5388,7 @@ $WhereStatement = '';
 //            'JAVASCRIPTCODE' => $this->JSadduser(),
             'NEWSLETTER_FILTER_PARAMS'      => $filterParams,
             'TXT_NEWSLETTER_CONSENT_CONFIRM'   => $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM'],
-            'NEWSLETTER_CONSENT_CONFIRM_CHECK' => $this->isConsentConfirmChecked()
+            'NEWSLETTER_CONSENT_CONFIRM_CHECK' => isset($_POST['consentConfirm'])
                 ? 'checked="checked"' : '',
         ));
         $this->_objTpl->parse('module_newsletter_user_edit');
@@ -6670,20 +6666,6 @@ function MultiAction() {
         );
 
         return str_replace($search, $replace, $content);
-    }
-
-    /**
-     * Check consent confirm has checked
-     *
-     * @return boolean True if conssent confirm checked, false otherwise
-     */
-    public function isConsentConfirmChecked()
-    {
-        if (isset($_POST['consentConfirm'])) {
-            return true;
-        }
-
-        return false;
     }
 }
 
