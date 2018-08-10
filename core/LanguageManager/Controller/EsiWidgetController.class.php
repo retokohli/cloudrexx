@@ -83,7 +83,9 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                         !$listProtectedPages &&
                         $langPage->isFrontendProtected() &&
                         !\Permission::checkAccess(
-                            $langPage->getFrontendAccessId(), 'dynamic', true
+                            $langPage->getFrontendAccessId(),
+                            'dynamic',
+                            true
                         )
                     )
                 ) {
@@ -160,14 +162,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         $navbar = new \Navigation($page->getId(), $page);
         if ($name === 'LANGUAGE_NAVBAR') {
             $template->setVariable(
-                $name, $navbar->getFrontendLangNavigation($page)
+                $name,
+                $navbar->getFrontendLangNavigation($page)
             );
             return;
         }
 
         if ($name === 'LANGUAGE_NAVBAR_SHORT') {
             $template->setVariable(
-                $name, $navbar->getFrontendLangNavigation($page, true)
+                $name,
+                $navbar->getFrontendLangNavigation($page, true)
             );
             return;
         }
