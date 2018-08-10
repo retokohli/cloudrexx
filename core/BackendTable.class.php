@@ -176,6 +176,13 @@ class BackendTable extends HTML_Table {
                         isset($options['fields'][$origHeader]['table']['parse'])
                     ) {
                         $callback = $options['fields'][$origHeader]['table']['parse'];
+                        $vgId = null;
+                        if (
+                            isset($options['functions']) &&
+                            isset($options['functions']['vg_increment_number'])
+                        ) {
+                            $vgId = $options['functions']['vg_increment_number'];
+                        }
                         if (
                             is_array($callback) &&
                             isset($callback['adapter']) &&
@@ -188,13 +195,20 @@ class BackendTable extends HTML_Table {
                                 array(
                                     'data' => $data,
                                     'rows' => $rows,
+                                    'options' => $options['fields'][$origHeader],
+                                    'vgId' => $vgId,
                                 )
                             );
                             if ($jsonResult['status'] == 'success') {
                                 $data = $jsonResult["data"];
                             }
                         } else if(is_callable($callback)){
-                            $data = $callback($data, $rows);
+                            $data = $callback(
+                                $data,
+                                $rows,
+                                $options['fields'][$origHeader],
+                                $vgId
+                            );
                         }
                         $encode = false; // todo: this should be set by callback
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
