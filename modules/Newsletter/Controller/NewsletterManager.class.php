@@ -6668,48 +6668,49 @@ function MultiAction() {
                   u.`id` = r.`user` AND
                   u.`status` = 1'
         );
-
-        if ($objUserRel && $objUserRel->RecordCount() != 0) {
-            while (!$objUserRel->EOF) {
-                $now = date(ASCMS_DATE_FORMAT);
-                if ($objUserRel->fields['sex'] == 'm') {
-                    $sex = 'Male';
-                } elseif ($objUserRel->fields['sex'] == 'f') {
-                    $sex = 'Female';
-                } else {
-                    $sex = '';
-                }
-
-                $arrMailTemplate = array(
-                    'key'          => 'consent_confirmation_email',
-                    'section'      => 'Newsletter',
-                    'lang_id'      => FRONTEND_LANG_ID,
-                    'to'           => $objUserRel->fields['email'],
-                    'from'         => $arrSettings['sender_mail']['setvalue'],
-                    'sender'       => $arrSettings['sender_name']['setvalue'],
-                    'reply'        => $arrSettings['reply_mail']['setvalue'],
-                    'substitution' => array(
-                        'NEWSLETTER_USER_SEX'             => $sex,
-                        'NEWSLETTER_USER_TITLE'           => $objUserRel->fields['title'],
-                        'NEWSLETTER_USER_FIRSTNAME'       => $objUserRel->fields['firstname'],
-                        'NEWSLETTER_USER_LASTNAME'        => $objUserRel->fields['lastname'],
-                        'NEWSLETTER_USER_EMAIL'           => $objUserRel->fields['email'],
-                        'NEWSLETTER_CONSENT_CONFIRM_CODE' =>
-                            ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] .
-                            CONTREXX_SCRIPT_PATH . '?section=Newsletter&cmd=subscribe&email=' .
-                            urlencode($objUserRel->fields['email']) . '&code='. $objUserRel->fields['code'] .
-                            '&category=' . $categoryId,
-                        'NEWSLETTER_DOMAIN_URL'           => $_CONFIG['domainUrl'],
-                        'NEWSLETTER_CURRENT_DATE'         => $now,
-                    ),
-                );
-                if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
-                    return false;
-                }
-
-                $objUserRel->MoveNext();
-            }
+        if ($objUserRel && $objUserRel->RecordCount() == 0) {
+            return false;
         }
+
+        $now = date(ASCMS_DATE_FORMAT);
+        while (!$objUserRel->EOF) {
+            $sex = '';
+            if ($objUserRel->fields['sex'] == 'm') {
+                $sex = 'Male';
+            } elseif ($objUserRel->fields['sex'] == 'f') {
+                $sex = 'Female';
+            }
+
+            $arrMailTemplate = array(
+                'key'          => 'consent_confirmation_email',
+                'section'      => 'Newsletter',
+                'lang_id'      => FRONTEND_LANG_ID,
+                'to'           => $objUserRel->fields['email'],
+                'from'         => $arrSettings['sender_mail']['setvalue'],
+                'sender'       => $arrSettings['sender_name']['setvalue'],
+                'reply'        => $arrSettings['reply_mail']['setvalue'],
+                'substitution' => array(
+                    'NEWSLETTER_USER_SEX'             => $sex,
+                    'NEWSLETTER_USER_TITLE'           => $objUserRel->fields['title'],
+                    'NEWSLETTER_USER_FIRSTNAME'       => $objUserRel->fields['firstname'],
+                    'NEWSLETTER_USER_LASTNAME'        => $objUserRel->fields['lastname'],
+                    'NEWSLETTER_USER_EMAIL'           => $objUserRel->fields['email'],
+                    'NEWSLETTER_CONSENT_CONFIRM_CODE' =>
+                        ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] .
+                        CONTREXX_SCRIPT_PATH . '?section=Newsletter&cmd=confirm&email=' .
+                        urlencode($objUserRel->fields['email']) . '&code='. $objUserRel->fields['code'] .
+                        '&category=' . $categoryId,
+                    'NEWSLETTER_DOMAIN_URL'           => $_CONFIG['domainUrl'],
+                    'NEWSLETTER_CURRENT_DATE'         => $now,
+                ),
+            );
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
+                return false;
+            }
+
+            $objUserRel->MoveNext();
+        }
+
         return true;
     }
 }
