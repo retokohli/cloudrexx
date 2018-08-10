@@ -113,10 +113,10 @@ class Newsletter extends NewsletterLib
             ? contrexx_addslashes($_REQUEST['code']) : '';
         $currentTime     = date('Y-m-d H:i:s', time());
         $count           = 0;
-        $status          = isset($_GET['category']) ? 1 : 0;
-        $catConsentQuery = '"';
-        $userCodeQuery   = isset($_GET['category'])
-            ? '" AND `code` = "'. $code .'"' : '"';
+        $status          = $categoryId ? 1 : 0;
+        $catConsentQuery = '';
+        $userCodeQuery   = $categoryId
+            ? ' AND `code` = "'. $code .'"' : '';
 
         if (!empty($userEmail)) {
             $query     = '
@@ -124,7 +124,7 @@ class Newsletter extends NewsletterLib
                     `id`
                 FROM '. DBPREFIX .'module_newsletter_user
                 WHERE `email`  = "'. $userEmail .'" AND
-                      `status` = "'. $status .
+                      `status` = "'. $status . '"' .
                       $userCodeQuery;
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
@@ -139,14 +139,14 @@ class Newsletter extends NewsletterLib
         // clicks a mailing permission link, if null continue code below this condition
         // otherwise return a error message
         if ($categoryId) {
-            $catConsentQuery = '" AND `category` = "'. $categoryId .'" AND `consent` IS NULL';
+            $catConsentQuery = ' AND `category` = "'. $categoryId .'" AND `consent` IS NULL';
             $objUserRel      = $objDatabase->Execute(
                 'SELECT
                     `consent`
                 FROM '. DBPREFIX .'module_newsletter_rel_user_cat
-                WHERE `user`     = "'. contrexx_raw2db($userId) . $catConsentQuery
+                WHERE `user` = "'. contrexx_raw2db($userId) . '"' . $catConsentQuery
             );
-            if ($objUserRel->RecordCount() == 0) {
+            if ($objUserRel && $objUserRel->RecordCount() == 0) {
                 $this->_objTpl->setVariable(
                     "NEWSLETTER_MESSAGE",
                     '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>'
@@ -161,7 +161,7 @@ class Newsletter extends NewsletterLib
         $objUserCat = $objDatabase->Execute(
             'UPDATE '. DBPREFIX .'module_newsletter_rel_user_cat
                 SET consent = "'. $currentTime .'"
-            where user = "'. contrexx_raw2db($userId) . $catConsentQuery
+            where user = "'. contrexx_raw2db($userId) . '"' . $catConsentQuery
         );
 
         if ($objUserCat !== false && $status) {
