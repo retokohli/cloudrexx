@@ -326,7 +326,7 @@
                             parseStatusMessage(this, file, displayStatus, html, progress, errorCode);
                         }
                     } else {
-                        if (/[0-9]+/.exec(response.message)) {
+                        if (/^[0-9]+$/.exec(response.message)) {
                             // Messages with an error code
                             parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(response.message), 'mediabrowser'), true, response.message);
                         } else {
