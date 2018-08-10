@@ -2326,8 +2326,11 @@ class GalleryManager extends GalleryLibrary
         $arrImageSize = getimagesize($tempPath.'/'.$file);
         if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
              @unlink($tempPath.'/'.$file);
-             throw new \Exception($lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
-
+             throw new \Exception(str_replace(
+                 '{WIDTH}',
+                 $objGallery->arrSettings['image_width'],
+                 $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH'])
+             );
         }
 
         //check if file needs to be renamed
