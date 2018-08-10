@@ -93,9 +93,13 @@ class ComponentController
     }
 
     /**
-     * Init code after system initialization for example widgets
+     * Do something after system initialization
      *
-     * @param \Cx\Core\Core\Controller\Cx $cx
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
