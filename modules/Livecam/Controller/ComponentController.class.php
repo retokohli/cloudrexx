@@ -109,6 +109,9 @@ class ComponentController
             'LIVECAM_CURRENT_IMAGE_B64',
             \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_PLACEHOLDER
         );
+        $widget->setEsiVariable(
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_PAGE
+        );
         $widgetController->registerWidget(
             $widget
         );
