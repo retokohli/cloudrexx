@@ -63,15 +63,27 @@ class EsiWidgetController
     {
         if ($name == 'LIVECAM_CURRENT_IMAGE_B64') {
             $livecam = new \Cx\Modules\Livecam\Controller\Livecam('');
-            $camSettings = $livecam->getCamSettings($livecam);
+            $camSettings = $livecam->getCamSettings($livecam->getCam());
 
-            $imageSize = getimagesize(
+            // Get image with http_request2
+            $requestLivecam = new \HTTP_Request2(
                 $camSettings['currentImagePath']
             );
-            $imageType = image_type_to_mime_type($imageSize[2]);
+            $url = $requestLivecam->getUrl();
+            $url->setQueryVariables(
+                array(
+                'package_name' => array('HTTP_Request2', 'Net_URL2'),
+                'status'       => 'Open'
+                )
+            );
+            $url->setQueryVariable('cmd', 'display');
+
+            $responseLivecam = $requestLivecam->send();
+            $livecameImage = $responseLivecam->getBody();
+            $imageType = $responseLivecam->getHeader('content-type');
 
             $imageSrc = $imageType . ';base64,'. base64_encode(
-                file_get_contents($camSettings['currentImagePath'])
+                $livecameImage
             );
 
             $response->setExpirationDate(new \DateTime('+1minute'));
