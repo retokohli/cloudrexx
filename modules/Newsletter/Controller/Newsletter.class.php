@@ -108,7 +108,9 @@ class Newsletter extends NewsletterLib
         $arrSettings = $this->_getSettings();
         $userEmail   = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
         $count       = 0;
-        $currentDateTime = date('Y-m-d H:i:s', time());
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
+        $currentTime = $dateTime->format('Y-m-d H:i:s');
         if (!empty($userEmail)) {
             $query     = "SELECT id,emaildate FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
             $objResult = $objDatabase->Execute($query);
@@ -146,20 +148,27 @@ class Newsletter extends NewsletterLib
 
         // Update a consent value in module_newsletter_rel_user_cat table based
         // on recipient id.
-        $objUserCat = $objDatabase->Execute(
-            'UPDATE '. DBPREFIX .'module_newsletter_rel_user_cat
-                SET consent = "'. $currentDateTime .'"
-            where user = "'. contrexx_raw2db($userId) .'"'
-        );
+        $objUserCat = $objDatabase->Execute('
+            UPDATE
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+            SET
+                `consent` = "' . $currentTime . '"
+            WHERE
+                `user` = "' . contrexx_raw2db($userId) . '" AND
+                `consent` IS NULL
+        ');
 
         // Update a consent and status value in module_newsletter_user table based
         // on recipient email id.
-        $objResult = $objDatabase->Execute(
-            'UPDATE '. DBPREFIX .'module_newsletter_user
-                SET status  = '. 1 .',
-                    consent = "'. $currentDateTime .'"
-            where email = "'. contrexx_raw2db($userEmail) .'"'
-        );
+        $objResult = $objDatabase->Execute('
+            UPDATE
+                `' . DBPREFIX . 'module_newsletter_user`
+            SET
+                `status` = 1,
+                `consent` = "' . $currentTime . '"
+            WHERE
+                `email` = "' . contrexx_raw2db($userEmail) . '"
+        ');
         if ($objResult !== false) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
 
