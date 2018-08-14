@@ -1,0 +1,21 @@
+Cx\Core\MediaSource\Model\Entity\IndexerEntry:
+  type: entity
+  table: core_mediasource_indexer_entry
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    path:
+      type: string
+      length: 255
+    indexer:
+      type: string
+      length: 255
+    content:
+      type: string
+      length: 65535
+    lastUpdate:
+      type: datetime
+      column: last_update
