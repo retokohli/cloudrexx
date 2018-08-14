@@ -831,8 +831,9 @@ CODE;
         $foreignEntities = $localEntity->$foreignEntityGetter();
         // if association is EXTRA_LAZY: limit! --> slice() only works with EXTRA_LAZY
         if ($assocMapping['fetch'] == \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EXTRA_LAZY) {
+            $page = 0; // paging is not yet implemented
             $foreignEntities = $foreignEntities->slice(
-                0 * $maxEntriesPerPage,
+                $page * $maxEntriesPerPage,
                 $maxEntriesPerPage
             );
             $noOfRelatedEntries = $localEntity->$foreignEntityGetter()->count();
