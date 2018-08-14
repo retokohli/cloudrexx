@@ -882,6 +882,10 @@ CODE;
                     $foreignEntityIdentifierField
                 );
                 $foreignEntityIdentifierGetter = 'get' . $methodBaseName;
+                // N:N relations don't have a getter with that name
+                if (!method_exists($foreignForeignEntity, $foreignEntityIdentifierGetter)) {
+                    continue;
+                }
                 $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->$foreignEntityIdentifierGetter();
             }
 
