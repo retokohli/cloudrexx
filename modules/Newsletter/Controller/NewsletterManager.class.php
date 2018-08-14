@@ -4625,7 +4625,7 @@ $WhereStatement = '';
                                         `source`
                                     ) VALUES (
                                         '". $this->_emailCode() ."',
-                                        '". contrexx_addslashes($email) ."',
+                                        '". addslashes($email) ."',
                                         1,
                                         '". time() ."',
                                         '". $source ."'
