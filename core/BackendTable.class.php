@@ -397,13 +397,13 @@ class BackendTable extends HTML_Table {
     function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = false)
     {
         if ($encode) {
-            //1->n relations
+            // 1->n & n->n relations
+            $displayedRelationsLimit = 3;
             if (is_object($contents) && $contents instanceof \Doctrine\ORM\PersistentCollection) {
                 // EXTRA_LAZY fetched can be sliced (results in a LIMIT)
-                $contents = $contents->slice(0, 4);
+                $contents = $contents->slice(0, $displayedRelationsLimit + 1);
             }
             if (is_array($contents)) {
-                $displayedRelationsLimit = 3;
                 if (count($contents) > $displayedRelationsLimit) {
                     $contents = array_slice($contents, 0, $displayedRelationsLimit);
                     $contents[] = '...';
