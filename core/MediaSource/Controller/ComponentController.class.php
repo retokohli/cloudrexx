@@ -72,20 +72,24 @@ class ComponentController
     /**
      * Register a new indexer.
      *
-     * @param $indexer string class name
+     * @param $indexer OBJECT class name
      * @param $type    string type of indexer
      *
      * @throws \Exception if an index already exists with this extension type
      * @return void
      */
-    public function registerIndexer($indexer, $type)
+    public function registerIndexer($indexer)
     {
         global $_ARRAYLANG;
 
-        if (empty($this->indexes[$type])) {
-            $this->indexes[$type] = $indexer;
-        } else {
-            throw new \Exception($_ARRAYLANG['TXT_INDEX_ALREADY_EXISTS']);
+        $extensions = $indexer->getExtensions();
+        foreach ($extensions as $extension) {
+            if (!empty($this->indexes[$extension])) {
+                throw new \Cx\Core\MediaSource\Model\Entity\IndexerException(
+                    $_ARRAYLANG['TXT_INDEX_ALREADY_EXISTS']
+                );
+            }
+            $this->indexes[$extension] = $indexer;
         }
     }
 

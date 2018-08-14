@@ -32,13 +32,30 @@
 
 namespace Cx\Core\MediaSource\Model\Entity;
 
+class IndexerException extends \Exception {}
 
-abstract class Indexer
+abstract class Indexer extends \Cx\Model\Base\EntityBase
 {
     /**
      * @var $type string extension type
      */
     protected $type;
+
+    /**
+     * Extension array
+     */
+    protected $extensions;
+
+    /**
+     * Get extensions of indexer
+     *
+     * @return string
+     */
+    public function getExtensions()
+    {
+        return $this->extensions;
+    }
+
 
     /**
      * Get type of indexer
@@ -60,7 +77,7 @@ abstract class Indexer
      */
     public function index($mediaSource, $path)
     {
-        $em = \Env::em();
+        $em = $this->cx->getDb()->getEntityManager();
         $files = array();
 
         if (filetype($path) == 'dir') {
@@ -69,12 +86,13 @@ abstract class Indexer
             $file = $mediaSource->getFileSystem()->getFileFromPath($path);
             $files->push($file);
         }
-
-        for ($i = 0; $i < count($files); $i++) {
+        foreach ($files as $file) {
             $indexerEntry = \Cx\Core\MediaSource\Model\Entity\IndexerEntry();
             $indexerEntry->setPath($path);
             $indexerEntry->setIndexer();
-            $indexerEntry->setContent($this->getText($mediaSource, $path));
+            $indexerEntry->setContent(
+                $this->getText($mediaSource, $file->getPath())
+            );
             $indexerEntry->setTimestamp(\DateTime('now'));
             $em->persist($indexerEntry);
         }
@@ -92,12 +110,14 @@ abstract class Indexer
      */
     protected function clearIndex($path = '')
     {
-        $em = \Env::em();
+        $em = $this->cx->getDb()->getEntityManager();
         $indexerEntryRepo = $em->getRepository(
-            '\Cx\Core\MediaSource\Model\Entity\IndexerEntry'
+            $this->getNamespace() . '\Model\Entity\IndexerEntry'
         );
         if (!empty($path)) {
-            $indexerEntries = $indexerEntryRepo->findBy(array('path' => $path));
+            $indexerEntries = $indexerEntryRepo->findBy(
+                array('path' => $path, 'indexer' => $this->getName())
+            );
         } else {
             $indexerEntries = $indexerEntryRepo->findBy(
                 array('indexer' => $this->getName())
