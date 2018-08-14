@@ -399,7 +399,8 @@ class BackendTable extends HTML_Table {
         if ($encode) {
             //1->n relations
             if (is_object($contents) && $contents instanceof \Doctrine\ORM\PersistentCollection) {
-                $contents = $contents->toArray();
+                // EXTRA_LAZY fetched can be sliced (results in a LIMIT)
+                $contents = $contents->slice(0, 4);
             }
             if (is_array($contents)) {
                 $displayedRelationsLimit = 3;
