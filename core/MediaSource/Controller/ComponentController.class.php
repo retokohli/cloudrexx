@@ -48,6 +48,11 @@ class ComponentController
     extends SystemComponentController
 {
     /**
+     * Includ all registered indexes
+     */
+    protected $indexes = array();
+
+    /**
      * Register your events here
      *
      * Do not do anything else here than list statements like
@@ -62,5 +67,47 @@ class ComponentController
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
         return array();
+    }
+
+    /**
+     * Register a new indexer.
+     *
+     * @param $indexer string class name
+     * @param $type    string type of indexer
+     *
+     * @throws \Exception if an index already exists with this extension type
+     * @return void
+     */
+    public function registerIndexer($indexer, $type)
+    {
+        global $_ARRAYLANG;
+
+        if (empty($this->indexes[$type])) {
+            $this->indexes[$type] = $indexer;
+        } else {
+            throw new \Exception($_ARRAYLANG['TXT_INDEX_ALREADY_EXISTS']);
+        }
+    }
+
+    /**
+     * List all indexer
+     *
+     * @return array
+     */
+    public function listIndexers()
+    {
+        return $this->indexes;
+    }
+
+    /**
+     * Get indexer by id
+     *
+     * @param $type string type of indexer
+     *
+     * @return string
+     */
+    public function getIndexer($type)
+    {
+        return $this->indexes[$type];
     }
 }
