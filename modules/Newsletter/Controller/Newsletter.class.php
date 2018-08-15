@@ -130,6 +130,7 @@ class Newsletter extends NewsletterLib
                 `consent` = "' . $currentTime . '"
             WHERE
                 `user` = "' . contrexx_raw2db($userId) . '" AND
+                `source` = "opt-in" AND
                 `consent` IS NULL
         ');
 
@@ -142,7 +143,9 @@ class Newsletter extends NewsletterLib
                 `status` = 1,
                 `consent` = "' . $currentTime . '"
             WHERE
-                `email` = "' . contrexx_raw2db($userEmail) . '"
+                `email` = "' . contrexx_raw2db($userEmail) . '" AND
+                `source` = "opt-in" AND
+                `consent` IS NULL
         ');
         if ($objResult !== false) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
