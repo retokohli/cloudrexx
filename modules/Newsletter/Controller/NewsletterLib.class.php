@@ -481,23 +481,6 @@ class NewsletterLib
         return true;
     }
 
-    function _addRecipient2List($recipientId, $listId)
-    {
-        global $objDatabase;
-
-        $objRelList = $objDatabase->Execute("SELECT 1 FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId." AND category = ".$listId);
-        if ($objRelList !== false) {
-            if ($objRelList->RecordCount() == 0) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (`user`, `category`) VALUES (".$recipientId.", ".$listId.")") !== false) {
-                    return true;
-                }
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
     static function _emailCode()
     {
         $ReturnVar = '';

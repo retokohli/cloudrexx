@@ -4610,9 +4610,11 @@ $WhereStatement = '';
                             $EmailCount++;
                             $objRecipient = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_newsletter_user` WHERE `email` = '".addslashes($email)."'", 1);
                             if ($objRecipient->RecordCount() == 1) {
-                                foreach ($arrLists as $listId) {
-                                    $this->_addRecipient2List($objRecipient->fields['id'], $listId);
-                                }
+                                static::_setRecipientLists(
+                                    $objRecipient->fields['id'],
+                                    $arrLists,
+                                    $source
+                                );
                                 $ExistEmails++;
                             } else {
                                 $NewEmails ++;
@@ -4703,59 +4705,6 @@ $WhereStatement = '';
 
         return $ReturnVar;
     }
-
-    /**
-     * Sets the list-categories for an User
-
-     * @param int $CreatedID the ID of the user in the Database
-     */
-    function _setCategories($CreatedID)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        if (empty($_REQUEST['category'])) {
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=$CreatedID");
-            $queryIC         = "SELECT id FROM ".DBPREFIX."module_newsletter_category";
-            $objResultIC     = $objDatabase->Execute($queryIC);
-            if ($objResultIC !== false) {
-                while (!$objResultIC->EOF) {
-                    $objDatabase->Execute("
-                        INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (
-                            user, category
-                        ) VALUES (
-                            $CreatedID, ".$objResultIC->fields['id']."
-                        )");
-                    $objResultIC->MoveNext();
-                }
-            }
-        } else {
-            $currentCategories = array(intval($_REQUEST['category']));
-            //fetch all current categories that this user is in
-            $query = "SELECT * from ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=$CreatedID";
-            $objRS = $objDatabase->Execute($query);
-            while(!$objRS->EOF) {
-                $currentCategories[] = $objRS->fields['category'];
-                $objRS->MoveNext();
-            }
-            //make the categories-array unique
-            $uniqueCategories = array_unique($currentCategories);
-            //delete all relations from this user
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=$CreatedID");
-
-            //re-import the unique categories
-            foreach ($uniqueCategories as $catId) {
-                if ($catId != 0) {
-                    if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat
-                                    (user, category)
-                                    VALUES (".$CreatedID.", ".$catId.")") === false) {
-                        return self::$strErrMessage = $_ARRAYLANG['TXT_DATABASE_ERROR'];
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
 
     function _getAssociatedListSelection()
     {
