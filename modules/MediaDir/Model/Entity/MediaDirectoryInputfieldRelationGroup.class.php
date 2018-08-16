@@ -78,10 +78,10 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;
+        global $objDatabase, $objInit, $_ARRAYLANG;
 
         $intId = intval($arrInputfield['id']);
-
+        $langId = static::getOutputLocale()->getId();
 
         switch ($intView) {
             default:
@@ -104,7 +104,7 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
                     $strValue = null;
                 }
 
-                $intFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $intFormType = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrSelectorOptions = array();
                 $arrValue = explode(",",$strValue);
 
@@ -238,7 +238,7 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
 
                 $listElementsJSON = json_encode($arrSelectedList);
 
-                $editPageCmd = 'edit'.(empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID]);*/
+                $editPageCmd = 'edit'.(empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId]);*/
                 /*$strInputfield = '<div class="'.$strSelectorWrapperClass.'" style="overflow: hidden;">';
                 $strInputfield .= '<ul id="'.$strNotSelectedId.'" class="'.$strSelectorListClass.'" '.$strStyle.'>';
                 $strInputfield .= '</ul>';
@@ -388,7 +388,7 @@ EOF;
                     $strValue = null;
                 }
 
-                $intFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $intFormType = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrValue = explode(",",$strValue);
                 $arrSelectorOptions = array();
 
@@ -509,9 +509,10 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $langId = static::getOutputLocale()->getId();
 
         if(!empty($strValue)) {
             $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
@@ -544,13 +545,13 @@ EOF;
                 $intRelationDefaultLang = intval($objRelationDefaultLang->fields['lang_id']);
 
                 if($this->arrSettings['settingsTranslationStatus'] == 1) {
-                    if(in_array($_LANGID, $arrTranslationStatus)) {
-                        $intRelationLangId = $_LANGID;
+		            if(in_array($langId, $arrTranslationStatus)) {
+		                $intRelationLangId = $langId;
                     } else {
                         $intRelationLangId = $intRelationDefaultLang;
                     }
                 } else {
-                    $intRelationLangId = $_LANGID;
+		            $intRelationLangId = $langId;
                 }
                 $objRelationValues = $objDatabase->Execute("
                     SELECT
@@ -647,14 +648,16 @@ EOF;
     }
 
     protected function getSectionUrl($mode, $formId) {
+        $langId = static::getOutputLocale()->getId();
+
         $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         // fetch form specific page (i.e. section=MediaDir&cmd=add3 / section=MediaDir&cmd=edit3)
-        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $mode.$formId, FRONTEND_LANG_ID);
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $mode.$formId, $langId);
 
         // fetch regular page (section=MediaDir&cmd=add / section=MediaDir&cmd=edit)
         if (!$page || !$page->isActive()) {
-            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $mode, FRONTEND_LANG_ID);
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $mode, $langId);
         }
 
         // abort in case the entry can't be linked to an existing page

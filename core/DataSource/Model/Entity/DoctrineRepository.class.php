@@ -87,10 +87,10 @@ class DoctrineRepository extends DataSource {
         }
 
         // $elementId
-        if (isset($elementId)) {
+        if (isset($elementId) && count($elementId)) {
             $meta = $em->getClassMetadata($this->getIdentifier());
             $identifierField = $meta->getSingleIdentifierFieldName();
-            $criteria[$identifierField] = $elementId;
+            $criteria[$identifierField] = current($elementId);
         }
 
         // $order
@@ -279,8 +279,43 @@ class DoctrineRepository extends DataSource {
         $associationMappings = $entityClassMetadata->getAssociationMappings();
         $classMethods = get_class_methods($entity);
         foreach ($associationMappings as $field => $associationMapping) {
-            if (   $entityClassMetadata->isSingleValuedAssociation($field)
-                && in_array('set'.ucfirst($field), $classMethods)
+            if (!isset($data[$field])) {
+                continue;
+            }
+            // handle many to many relations
+            if ($associationMapping['type'] == \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_MANY) {
+                // prepare data
+                $foreignEntityIndexes = explode(',', $data[$field]);
+                $targetRepo = $em->getRepository($associationMapping['targetEntity']);
+                $primaryKeys = $entityClassMetadata->getIdentifierFieldNames();
+                $addMethod = 'add'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
+                // foreach distant entity
+                foreach ($foreignEntityIndexes as $foreignEntityIndex) {
+                    // prepare data
+                    $foreignEntityIds = explode('/', $foreignEntityIndex);
+                    $foreignEntityIndexData = array();
+                    foreach ($primaryKeys as $i=>$primaryFieldName) {
+                        $foreignEntityIndexData[$primaryFieldName] = $foreignEntityIds[$i];
+                    }
+                    $this->cx->getEvents()->triggerEvent(
+                        'preDistantEntityLoad',
+                        array(
+                            'targetEntityClassName' => $associationMapping['targetEntity'],
+                            'targetId' => &$foreignEntityIndexData,
+                        )
+                    );
+                    // find and add entity
+                    $targetEntity = $targetRepo->findOneBy($foreignEntityIndexData);
+                    if (!$targetEntity) {
+                        throw new \Exception(
+                            'Entity not found (' . $associationMapping['targetEntity'] . ' with ID ' . var_export($foreignEntityIndexData, true) . ')'
+                        );
+                    }
+                    $entity->$addMethod($targetEntity);
+                }
+            } else if (
+                $entityClassMetadata->isSingleValuedAssociation($field) &&
+                in_array('set'.ucfirst($field), $classMethods)
             ) {
                 $foreignId = $data[$field];
                 if (is_array($foreignId)) {

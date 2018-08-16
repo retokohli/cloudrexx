@@ -105,7 +105,7 @@ class Csrf {
         if (!empty(self::$current_code)) {
             return self::$current_code;
         }
-        self::$current_code = base64_encode(rand(1000000000000, 9999999999999));
+        self::$current_code = base64_encode(rand(100000000, 999999999));
         self::$current_code = preg_replace('#[\'"=%]#', '_', self::$current_code);
         self::__setkey(self::$current_code, self::$validity_count);
         return self::$current_code;

@@ -69,6 +69,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
     protected function clearCachePageForDomainAndPort($urlPattern, $domain, $port) {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $strCachePath = $cx->getWebsiteCachePath() . '/';
+        $strCachePath .= \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_DIRECTORY_OFFSET_ESI;
 
         $glob = null;
         $glob2 = null;
@@ -134,7 +135,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
     protected function globDrop($glob) {
         $fileNames = glob($glob);
         foreach ($fileNames as $fileName) {
-            if (!preg_match('#/[0-9a-f]{32}((_[plutcgr][a-zA-Z0-9]+)+)?$#', $fileName)) {
+            if (!preg_match('#/[0-9a-f]{32}((_[plutcgrq][a-zA-Z0-9-=\.]+)+)?$#', $fileName)) {
                 continue;
             }
             try {
