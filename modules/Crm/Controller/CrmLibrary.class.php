@@ -1432,7 +1432,11 @@ class CrmLibrary
             $where[] = " (c.customer_type = '".intval($filter['customer_type'])."')";
         }
         if (isset($filter['filter_membership']) && !empty($filter['filter_membership'])) {
-            $where[] = " mem.membership_id IN(" . implode(',', $filter['filter_membership']) . ")";
+            $where[] = " mem.membership_id IN(" . 
+                implode(
+                    ',', 
+                    contrexx_input2int($filter['filter_membership'])
+                ) . ")";
         }
 
         $orderBy = '';

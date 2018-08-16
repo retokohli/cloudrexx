@@ -5474,7 +5474,11 @@ END;
             $where[] = " (c.customer_type = '".intval($_REQUEST['customer_type'])."')";
         }
         if (isset($_REQUEST['filter_membership']) && !empty($_REQUEST['filter_membership'])) {
-            $where[] = " mem.membership_id IN(" . implode(',', $_REQUEST['filter_membership']) . ")";
+            $where[] = " mem.membership_id IN(" . 
+                implode(
+                    ',', 
+                    contrexx_input2int($_REQUEST['filter_membership'])
+                ) . ")";
         }
 
         if (isset($_REQUEST['term']) && !empty($_REQUEST['term'])) {
