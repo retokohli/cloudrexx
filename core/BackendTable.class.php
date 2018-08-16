@@ -176,6 +176,13 @@ class BackendTable extends HTML_Table {
                         isset($options['fields'][$origHeader]['table']['parse'])
                     ) {
                         $callback = $options['fields'][$origHeader]['table']['parse'];
+                        $vgId = null;
+                        if (
+                            isset($options['functions']) &&
+                            isset($options['functions']['vg_increment_number'])
+                        ) {
+                            $vgId = $options['functions']['vg_increment_number'];
+                        }
                         if (
                             is_array($callback) &&
                             isset($callback['adapter']) &&
@@ -188,13 +195,20 @@ class BackendTable extends HTML_Table {
                                 array(
                                     'data' => $data,
                                     'rows' => $rows,
+                                    'options' => $options['fields'][$origHeader],
+                                    'vgId' => $vgId,
                                 )
                             );
                             if ($jsonResult['status'] == 'success') {
                                 $data = $jsonResult["data"];
                             }
                         } else if(is_callable($callback)){
-                            $data = $callback($data, $rows);
+                            $data = $callback(
+                                $data,
+                                $rows,
+                                $options['fields'][$origHeader],
+                                $vgId
+                            );
                         }
                         $encode = false; // todo: this should be set by callback
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
@@ -304,6 +318,37 @@ class BackendTable extends HTML_Table {
                 $this->setCellContents($row, 0, $multiActionsCode . $select, 'TD', 0);
                 $this->setCellAttributes($row, 0, array('colspan' => $col + is_array($options['functions'])));
             }
+            // adds custom attributes to row
+            if (isset($options['rowAttributes'])) {
+                $row = 1 + $this->hasMasterTableHeader;
+                $callback = $options['rowAttributes'];
+                foreach ($attrs as $rowname=>$rows) {
+                    $originalAttributes = $this->getRowAttributes($row);
+                    $data = $originalAttributes;
+                    if (
+                        is_array($callback) &&
+                        isset($callback['adapter']) &&
+                        isset($callback['method'])
+                    ) {
+                        $json = new \Cx\Core\Json\JsonData();
+                        $jsonResult = $json->data(
+                            $callback['adapter'],
+                            $callback['method'],
+                            array(
+                                'data' => $rows,
+                                'attributes' => $originalAttributes,
+                            )
+                        );
+                        if ($jsonResult['status'] == 'success') {
+                            $data = $jsonResult['data'];
+                        }
+                    } else if(is_callable($callback)){
+                        $data = $callback($data, $originalAttributes);
+                    }
+                    $this->updateRowAttributes($row, $data, true);
+                    $row++;
+                }
+            }
             $attrs = array();
         }
         //add the sorting parameters as table attribute
@@ -352,12 +397,13 @@ class BackendTable extends HTML_Table {
     function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = false)
     {
         if ($encode) {
-            //1->n relations
+            // 1->n & n->n relations
+            $displayedRelationsLimit = 3;
             if (is_object($contents) && $contents instanceof \Doctrine\ORM\PersistentCollection) {
-                $contents = $contents->toArray();
+                // EXTRA_LAZY fetched can be sliced (results in a LIMIT)
+                $contents = $contents->slice(0, $displayedRelationsLimit + 1);
             }
             if (is_array($contents)) {
-                $displayedRelationsLimit = 3;
                 if (count($contents) > $displayedRelationsLimit) {
                     $contents = array_slice($contents, 0, $displayedRelationsLimit);
                     $contents[] = '...';

@@ -99,7 +99,7 @@ CREATE TABLE `contrexx_access_user_network` (
 CREATE TABLE `contrexx_access_user_profile` (
   `user_id` int NOT NULL,
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL DEFAULT 'gender_undefined',
-  `title` int NOT NULL,
+  `title` int DEFAULT NULL,
   `designation` varchar(255) NOT NULL DEFAULT '',
   `firstname` varchar(255) NOT NULL DEFAULT '',
   `lastname` varchar(255) NOT NULL DEFAULT '',
@@ -137,7 +137,7 @@ CREATE TABLE `contrexx_access_users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `username` varchar(255) DEFAULT NULL,
-  `password` varchar(32) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
   `auth_token` varchar(32) NOT NULL,
   `auth_token_timeout` int NOT NULL DEFAULT '0',
   `regdate` int NOT NULL DEFAULT '0',
@@ -445,6 +445,7 @@ CREATE TABLE `contrexx_core_module_sync_host` (
   `api_version` int(11) NOT NULL,
   `url_template` varchar(255) NOT NULL,
   `state` int(1) NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `host_UNIQUE` (`host`)
 ) ENGINE=InnoDB;
@@ -677,7 +678,7 @@ CREATE TABLE `contrexx_module_blog_comments` (
   `lang_id` int(2) unsigned NOT NULL DEFAULT '0',
   `is_active` enum('0','1') NOT NULL DEFAULT '1',
   `time_created` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `ip_address` varchar(32) NOT NULL DEFAULT '',
   `user_id` int(5) unsigned NOT NULL DEFAULT '0',
   `user_name` varchar(50) DEFAULT NULL,
   `user_mail` varchar(250) DEFAULT NULL,
@@ -734,7 +735,7 @@ CREATE TABLE `contrexx_module_blog_votes` (
   `vote_id` int(8) unsigned NOT NULL AUTO_INCREMENT,
   `message_id` int(6) unsigned NOT NULL DEFAULT '0',
   `time_voted` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `ip_address` varchar(32) NOT NULL DEFAULT '',
   `vote` enum('1','2','3','4','5','6','7','8','9','10') NOT NULL DEFAULT '1',
   PRIMARY KEY (`vote_id`),
   KEY `message_id` (`message_id`)
@@ -893,8 +894,6 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `event_id` int(11) NOT NULL,
   `date` int(15) NOT NULL,
   `submission_date` timestamp DEFAULT '0000-00-00 00:00:00',
-  `host_name` varchar(255) NOT NULL,
-  `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
   `invite_id` int NULL DEFAULT NULL,
   `user_id` int(7) NOT NULL,
@@ -1087,7 +1086,8 @@ CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `id_field` int(10) unsigned NOT NULL,
   `formlabel` text NOT NULL,
   `formvalue` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_entry` (`id_entry`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_recipient` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1477,8 +1477,6 @@ CREATE TABLE `contrexx_module_directory_dir` (
   `hits` int(9) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `addedby` varchar(50) NOT NULL DEFAULT '',
-  `provider` varchar(255) NOT NULL DEFAULT '',
-  `ip` varchar(255) NOT NULL DEFAULT '',
   `validatedate` varchar(14) NOT NULL DEFAULT '',
   `lastip` varchar(50) NOT NULL DEFAULT '',
   `popular_date` varchar(30) NOT NULL DEFAULT '',
@@ -1838,33 +1836,6 @@ CREATE TABLE `contrexx_module_egov_products` (
   `alternative_names` text NOT NULL,
   PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB ;
-CREATE TABLE `contrexx_module_egov_settings` (
-  `set_id` int(11) NOT NULL DEFAULT '0',
-  `set_sender_name` varchar(255) NOT NULL DEFAULT '',
-  `set_sender_email` varchar(255) NOT NULL DEFAULT '',
-  `set_recipient_email` varchar(255) NOT NULL DEFAULT '',
-  `set_state_subject` varchar(255) NOT NULL DEFAULT '',
-  `set_state_email` text NOT NULL,
-  `set_calendar_color_1` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_color_2` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_color_3` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_legende_1` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_legende_2` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_legende_3` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_background` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_border` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_date_label` varchar(255) NOT NULL DEFAULT '',
-  `set_calendar_date_desc` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_subject` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_email` text NOT NULL,
-  `set_orderentry_name` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_sender` varchar(255) NOT NULL DEFAULT '',
-  `set_orderentry_recipient` varchar(255) NOT NULL DEFAULT '',
-  `set_paypal_email` text NOT NULL,
-  `set_paypal_currency` text NOT NULL,
-  `set_paypal_ipn` tinyint(1) NOT NULL DEFAULT '0',
-  KEY `set_id` (`set_id`)
-) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_feed_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL DEFAULT '',
@@ -2043,7 +2014,6 @@ CREATE TABLE `contrexx_module_gallery_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `picid` int(10) unsigned NOT NULL DEFAULT '0',
   `date` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `name` varchar(50) NOT NULL DEFAULT '',
   `email` varchar(250) NOT NULL DEFAULT '',
   `www` varchar(250) NOT NULL DEFAULT '',
@@ -2095,7 +2065,6 @@ CREATE TABLE `contrexx_module_gallery_votes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `picid` int(10) unsigned NOT NULL DEFAULT '0',
   `date` int(14) unsigned NOT NULL DEFAULT '0',
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `md5` varchar(32) NOT NULL DEFAULT '',
   `mark` int(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
@@ -2109,7 +2078,6 @@ CREATE TABLE `contrexx_module_guestbook` (
   `url` tinytext NOT NULL,
   `email` tinytext NOT NULL,
   `comment` text NOT NULL,
-  `ip` varchar(15) NOT NULL DEFAULT '',
   `location` tinytext NOT NULL,
   `lang_id` tinyint(2) NOT NULL DEFAULT '1',
   `datetime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -2289,7 +2257,8 @@ CREATE TABLE `contrexx_module_knowledge_article_content` (
   `answer` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `module_knowledge_article_content_lang` (`lang`),
-  KEY `module_knowledge_article_content_article` (`article`)
+  KEY `module_knowledge_article_content_article` (`article`),
+  FULLTEXT KEY `content` (`question`,`answer`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_knowledge_articles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -2462,7 +2431,6 @@ CREATE TABLE `contrexx_module_mediadir_comments` (
   `entry_id` int(7) NOT NULL,
   `added_by` varchar(255) NOT NULL,
   `date` varchar(100) NOT NULL,
-  `ip` varchar(100) NOT NULL,
   `name` varchar(255) NOT NULL,
   `mail` varchar(255) NOT NULL,
   `url` varchar(255) NOT NULL,
@@ -2781,7 +2749,7 @@ CREATE TABLE `contrexx_module_news_comments` (
   `date` int(14) DEFAULT NULL,
   `poster_name` varchar(255) NOT NULL DEFAULT '',
   `userid` int(5) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `ip_address` varchar(32) NOT NULL DEFAULT '',
   `is_active` enum('0','1') NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
@@ -2813,7 +2781,7 @@ CREATE TABLE `contrexx_module_news_rel_tags` (
 CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL DEFAULT '',
   `value` varchar(250) NOT NULL DEFAULT '',
-  KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`) USING BTREE
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_news_settings_locale` (
   `name` varchar(50) NOT NULL DEFAULT '',
@@ -3234,6 +3202,7 @@ CREATE TABLE `contrexx_module_shop_discount_coupon` (
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `cumulative` int(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
@@ -3310,9 +3279,7 @@ CREATE TABLE `contrexx_module_shop_orders` (
   `payment_id` int(10) unsigned NOT NULL DEFAULT '0',
   `payment_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
   `ip` varchar(50) NOT NULL DEFAULT '',
-  `host` varchar(100) NOT NULL DEFAULT '',
   `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `browser` varchar(255) NOT NULL DEFAULT '',
   `note` text NOT NULL,
   `modified_on` timestamp NULL DEFAULT NULL,
   `modified_by` varchar(50) DEFAULT NULL,

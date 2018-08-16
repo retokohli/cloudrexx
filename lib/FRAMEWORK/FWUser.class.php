@@ -110,8 +110,14 @@ class FWUser extends User_Setting
     {
         global $_CORELANG;
 
-        $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
-        $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
+        $username = null;
+        if (isset($_POST['USERNAME']) && $_POST['USERNAME'] != '') {
+            $username = contrexx_input2raw($_POST['USERNAME']);
+        }
+        $password = null;
+        if (isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '') {
+            $password = contrexx_input2raw($_POST['PASSWORD']);
+        }
         $authToken = !empty($_GET['auth-token']) ? contrexx_input2raw($_GET['auth-token']) : null;
         $userId = !empty($_GET['user-id']) ? contrexx_input2raw($_GET['user-id']) : null;
 
@@ -122,7 +128,7 @@ class FWUser extends User_Setting
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $session = $cx->getComponent('Session')->getSession();
 
         if (!isset($_SESSION['auth'])) {
             $_SESSION['auth'] = array();
@@ -151,8 +157,8 @@ class FWUser extends User_Setting
         }
 
         $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-        $_SESSION->cmsSessionUserUpdate();
-        $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
+        $session->cmsSessionUserUpdate();
+        $session->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         return false;
     }
 
@@ -163,8 +169,14 @@ class FWUser extends User_Setting
      */
     public function checkLogin()
     {
-        $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
-        $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
+        $username = null;
+        if (isset($_POST['USERNAME']) && $_POST['USERNAME'] != '') {
+            $username = contrexx_input2raw($_POST['USERNAME']);
+        }
+        $password = null;
+        if (isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '') {
+            $password = contrexx_input2raw($_POST['PASSWORD']);
+        }
 
         if (isset($username) && isset($password)) {
             return $this->objUser->checkLoginData($username, $password, \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check());
@@ -180,7 +192,9 @@ class FWUser extends User_Setting
     function loginUser($objUser) {
         global $objInit;
 
-        $_SESSION->cmsSessionUserUpdate($objUser->getId());
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $session = $cx->getComponent('Session')->getSession();
+        $session->cmsSessionUserUpdate($objUser->getId());
         $objUser->registerSuccessfulLogin();
         unset($_SESSION['auth']['loginLastAuthFailed']);
         // Store frontend lang_id in cookie
@@ -423,7 +437,7 @@ class FWUser extends User_Setting
     }
 
 
-    private function setLoggedInInfos($objTemplate, $blockName = '')
+    public function setLoggedInInfos($objTemplate, $blockName = '')
     {
         global $_CORELANG;
 
