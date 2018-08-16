@@ -448,7 +448,7 @@ class NewsletterLib
         global $objDatabase;
 
         // delete
-        if (!$objDatabase->Execute('
+        if ($objDatabase->Execute('
             DELETE FROM
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat`
             WHERE
