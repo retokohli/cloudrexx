@@ -88,17 +88,23 @@ class MediaSource extends DataSource {
     protected $fileSystem;
 
     /**
+     * @var bool if indexer is activated
+     */
+    protected $isIndexActivated;
+
+    /**
      * @var \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController
      */
     protected $systemComponentController;
 
     public function __construct($name,$humanName, $directory, $accessIds = array(), $position = '',FileSystem $fileSystem = null, \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController = null) {
-        $this->fileSystem = $fileSystem ? $fileSystem : LocalFileSystem::createFromPath($directory[0]);
+        $this->fileSystem = $fileSystem ? $fileSystem : LocalFileSystem::createFromPath($directory[0], $isIndexActivated = true);
         $this->name      = $name;
         $this->position  = $position;
         $this->humanName = $humanName;
         $this->directory = $directory;
         $this->accessIds = $accessIds;
+        $this->setIsIndexerActivated($isIndexActivated);
 
         // Sets provided SystemComponentController
         $this->systemComponentController = $systemComponentController;
@@ -117,6 +123,28 @@ class MediaSource extends DataSource {
             );
             $this->systemComponentController = $this->getComponent($matches[1]);
         }
+    }
+
+    /**
+     * Define if indexer is activated
+     *
+     * @param $activated
+     *
+     * @return void
+     */
+    public function setIsIndexerActivated($activated)
+    {
+        $this->isIndexActivated = $activated;
+    }
+
+    /**
+     * Get information if indexer is activated
+     *
+     * @return bool
+     */
+    public function getIsIndexerActivated()
+    {
+        return $this->isIndexActivated;
     }
 
     /**
@@ -271,5 +299,85 @@ class MediaSource extends DataSource {
      */
     public function remove($elementId) {
         throw new \Exception('Not yet implemented');
+    }
+
+    /**
+     * Get all matches from search term.
+     *
+     * @param $searchterm string term to search
+     *
+     * @throws \Cx\Core\Core\Model\Entity\SystemComponentException
+     * @return array all file names that match
+     */
+    public function getFileSystemMatches($searchterm, $path)
+    {
+        $config = \Env::get('config');
+        $fullPath = $this->getDirectory()[0] . '/' . $path;
+        $fileList = array();
+        $searchResult = array();
+
+        if (filetype($path) == 'dir') {
+            $fileList = $this->getFileSystem()->getFileList($path);
+        } else {
+            $fileEntry = $this->getFileSystem()->getFileFromPath($fullPath);
+            array_push($fileList, $fileEntry);
+        }
+
+        $files = $this->getAllFilesAsObject($fileList, $fullPath, array());
+
+        foreach ($files as $file) {
+            $fileInformation = array();
+            $filePath = $file->getPath() . '/' . $file->getFullName();
+            $fileWebPath = $file->getPath() . '/' . $file->getFullName();
+
+            if (strpos($file->getName(), $searchterm) === false) {
+                continue;
+            }
+
+            $content = '';
+            if ($this->isIndexActivated) {
+                $indexer = $this->getComponentController()->getIndexer(
+                    $file->getExtension()
+                );
+
+                if (!empty($indexer)) {
+                    $match = $indexer->getMatch($searchterm, $filePath);
+
+                    $content = substr(
+                        $match->getContent(), 0, $config[
+                        'searchDescriptionLength'
+                        ]
+                    ).'...';
+                }
+            }
+
+            $fileInformation['Score'] = 100;
+            $fileInformation['Title'] = ucfirst($file->getName());
+            $fileInformation['Content'] = $content;
+            $link = explode('/var/www/html', $fileWebPath);
+            $fileInformation['Link'] = $link[1];
+            $fileInformation['Component'] = $this->getHumanName();
+            array_push($searchResult, $fileInformation);
+        }
+
+        return $searchResult;
+    }
+
+    protected function getAllFilesAsObject($fileList, $path, $result)
+    {
+        foreach ($fileList as $fileEntryKey =>$fileListEntry) {
+            $newPath = $path . '/' . $fileEntryKey;
+            if (is_dir($newPath)) {
+                $result = $this->getAllFilesAsObject(
+                    $fileListEntry, $newPath, $result
+                );
+            } else if (is_file($newPath)) {
+                $file = new \Cx\Core\MediaSource\Model\Entity\LocalFile(
+                    $newPath, $this->getFileSystem()
+                );
+                array_push($result, $file);
+            }
+        }
+        return $result;
     }
 }

@@ -47,6 +47,18 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
     protected $extensions;
 
     /**
+     * Set extensions of indexer
+     *
+     * @param $extensions array all extensions of indexer
+     *
+     * @return void
+     */
+    public function setExtensions($extensions)
+    {
+        $this->extensions = $extensions;
+    }
+
+    /**
      * Get extensions of indexer
      *
      * @return string
@@ -55,7 +67,6 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
     {
         return $this->extensions;
     }
-
 
     /**
      * Get type of indexer
@@ -72,7 +83,8 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
      * @param $mediaSource \Cx\Core\MediaSource\Model\Entity\MediaSource
      * @param $path        string path to index
      *
-     * @throws \Exception
+     *
+     * @throws \Doctrine\ORM\OptimisticLockException
      * @return void
      */
     public function index($mediaSource, $path)
@@ -87,7 +99,12 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
             $files->push($file);
         }
         foreach ($files as $file) {
-            $indexerEntry = \Cx\Core\MediaSource\Model\Entity\IndexerEntry();
+            $indexerEntry = $em->getRepository(
+                $this->getNamespace() . '\Model\Entity\IndexerEntry'
+            )->findOneBy(array('path' => $path));
+            if (empty($indexerEntry)) {
+                $indexerEntry = \Cx\Core\MediaSource\Model\Entity\IndexerEntry();
+            }
             $indexerEntry->setPath($path);
             $indexerEntry->setIndexer();
             $indexerEntry->setContent(
@@ -105,7 +122,7 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
      *
      * @param $path string path to string bla
      *
-     * @throws \Exception
+     * @throws \Doctrine\ORM\OptimisticLockException
      * @return void
      */
     protected function clearIndex($path = '')
@@ -127,6 +144,30 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
             $em->delete($indexerEntry);
         }
         $em->flush();
+    }
+
+    /**
+     * Return all index entries that match
+     *
+     * @param $searchterm string term to search
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return \Cx\Core\MediaSource\Model\Entity\IndexerEntry
+     */
+    public function getMatch($searchterm, $path)
+    {
+        $em = $this->cx->getDb()->getEntityManager();
+
+        $qb = $em->createQueryBuilder();
+        $query = $qb->select(array('ie'))->from(
+            'Cx\Core\MediaSource\Model\Entity\IndexerEntry', 'ie'
+        )->where(
+            $qb->expr()->like(
+                'ie.content', $qb->expr()->literal('%'.$searchterm.'%')
+            )
+        )->andWhere('ie.path = :path')->setParameter('path', $path)->getQuery();
+
+        return $query->getOneOrNullResult();
     }
 
     /**
