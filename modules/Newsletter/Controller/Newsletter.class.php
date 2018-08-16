@@ -141,10 +141,10 @@ class Newsletter extends NewsletterLib
                 `' . DBPREFIX . 'module_newsletter_user`
             SET
                 `status` = 1,
+                `source` = "opt-in",
                 `consent` = "' . $currentTime . '"
             WHERE
                 `email` = "' . contrexx_raw2db($userEmail) . '" AND
-                `source` = "opt-in" AND
                 `consent` IS NULL
         ');
         if ($objResult !== false) {
