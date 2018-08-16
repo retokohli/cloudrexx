@@ -114,7 +114,7 @@ class Newsletter extends NewsletterLib
         $currentTime     = date('Y-m-d H:i:s', time());
         $count           = 0;
         $status          = $categoryId ? 1 : 0;
-        $catConsentQuery = '';
+        $catConsentQuery = ' AND `consent` IS NULL';
         $userCodeQuery   = $categoryId
             ? ' AND `code` = "'. $code .'"' : '';
 
@@ -122,10 +122,12 @@ class Newsletter extends NewsletterLib
             $query     = '
                 SELECT
                     `id`
-                FROM '. DBPREFIX .'module_newsletter_user
-                WHERE `email`  = "'. $userEmail .'" AND
-                      `status` = "'. $status . '"' .
-                      $userCodeQuery;
+                FROM
+                    `' . DBPREFIX . 'module_newsletter_user`
+                WHERE
+                    `email`  = "' . $userEmail . '" AND
+                    `status` = "' . $status . '"' .
+                    $userCodeQuery;
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
             $userId    = $objResult->fields['id'];
@@ -140,11 +142,13 @@ class Newsletter extends NewsletterLib
         // otherwise return a error message
         if ($categoryId) {
             $catConsentQuery = ' AND `category` = "'. $categoryId .'" AND `consent` IS NULL';
-            $objUserRel      = $objDatabase->Execute(
-                'SELECT
+            $objUserRel      = $objDatabase->Execute('
+                SELECT
                     `consent`
-                FROM '. DBPREFIX .'module_newsletter_rel_user_cat
-                WHERE `user` = "'. contrexx_raw2db($userId) . '"' . $catConsentQuery
+                FROM
+                    `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+                WHERE
+                    `user` = "' . contrexx_raw2db($userId) . '"' . $catConsentQuery
             );
             if ($objUserRel && $objUserRel->RecordCount() == 0) {
                 $this->_objTpl->setVariable(
@@ -158,10 +162,13 @@ class Newsletter extends NewsletterLib
         // Update a consent value in module_newsletter_rel_user_cat table based
         // on recipient id or Update a consent value in module_newsletter_rel_user_cat
         // table based on recipient id and category id when user clicks a mailing permission link
-        $objUserCat = $objDatabase->Execute(
-            'UPDATE '. DBPREFIX .'module_newsletter_rel_user_cat
-                SET consent = "'. $currentTime .'"
-            where user = "'. contrexx_raw2db($userId) . '"' . $catConsentQuery
+        $objUserCat = $objDatabase->Execute('
+            UPDATE
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+            SET
+                `consent` = "' . $currentTime . '"
+            where
+                `user` = "' . contrexx_raw2db($userId) . '"' . $catConsentQuery
         );
 
         if ($objUserCat !== false && $status) {
@@ -174,12 +181,15 @@ class Newsletter extends NewsletterLib
         // Update a consent and status value in module_newsletter_user table based
         // on recipient email id when user confirms a subscription.
         if (!$categoryId) {
-            $objResult = $objDatabase->Execute(
-                'UPDATE '. DBPREFIX .'module_newsletter_user
-                    SET status  = '. 1 .',
-                        consent = "'. $currentTime .'"
-                where email = "'. contrexx_raw2db($userEmail) .'"'
-            );
+            $objResult = $objDatabase->Execute('
+                UPDATE
+                    `' . DBPREFIX . 'module_newsletter_user`
+                SET
+                    `status`  = 1,
+                    `consent` = "' . $currentTime . '"
+                where
+                    `email` = "' . contrexx_raw2db($userEmail) . '"
+            ');
         }
 
         if ($objResult !== false && !$status) {

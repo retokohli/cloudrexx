@@ -6652,22 +6652,25 @@ function MultiAction() {
         if (!$categoryId) {
             return false;
         }
-
-        $objUserRel = $objDatabase->Execute(
-            'SELECT
+        $objUserRel = $objDatabase->Execute('
+            SELECT
                 `code`,
                 `email`,
                 `sex`,
                 `title`,
                 `firstname`,
                 `lastname`
-            FROM '. DBPREFIX .'module_newsletter_rel_user_cat AS r
-            JOIN '. DBPREFIX .'module_newsletter_user AS u
-            WHERE r.`category` = "'. $categoryId .'" AND
-                  r.`consent` IS NULL AND
-                  u.`id` = r.`user` AND
-                  u.`status` = 1'
-        );
+            FROM
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS r
+            JOIN
+                `' . DBPREFIX . 'module_newsletter_user` AS u
+            WHERE
+                r.`category` = "' . $categoryId . '" AND
+                r.`consent` IS NULL AND
+                u.`id` = r.`user` AND
+                u.`status` = 1
+        ');
+
         if ($objUserRel && $objUserRel->RecordCount() == 0) {
             return false;
         }
