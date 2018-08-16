@@ -34,7 +34,7 @@
 namespace Cx\Core\MediaSource\Model\Entity;
 
 interface FileSystem {
-    public function getFileList($directory, $recursive = false);
+    public function getFileList($directory, $recursive = true);
     public function removeFile(File $file);
     public function moveFile(File $file, $destination);
     public function writeFile(File $file, $content);

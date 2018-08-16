@@ -190,7 +190,7 @@ var refreshInputfields = function(formId)
     <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist" id="formContainer">
         <tbody>
             <tr>
-                <th colspan="11">{TXT_MEDIADIR_PAGE_TITLE}</th>
+                <th colspan="2">{TXT_MEDIADIR_PAGE_TITLE}</th>
             </tr>
             <tr class="row1">
                 <td valign="top" width="200">{TXT_MEDIADIR_NAME}</td>
@@ -200,7 +200,7 @@ var refreshInputfields = function(formId)
                     </div>
                     <div id="formNameExpanded" style="display: none;">
                         <!-- BEGIN mediadirFormNameList -->
-                        <input name="formName[{MEDIADIR_FORM_NAME_LANG_ID}]" type="text" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('../core/Country/View/Media/Flag/flag_{TXT_MEDIADIR_FORM_NAME_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{TXT_MEDIADIR_FORM_NAME_LANG_NAME}" value="{MEDIADIR_FORM_NAME}" />&nbsp;{TXT_MEDIADIR_FORM_NAME_LANG_NAME}&nbsp;&nbsp;&nbsp;{MEDIADIR_MINIMIZE}<br />
+                        <input name="formName[{MEDIADIR_FORM_NAME_LANG_ID}]" type="text" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('/core/Country/View/Media/Flag/flag_{TXT_MEDIADIR_FORM_NAME_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{TXT_MEDIADIR_FORM_NAME_LANG_NAME}" value="{MEDIADIR_FORM_NAME}" />&nbsp;{TXT_MEDIADIR_FORM_NAME_LANG_NAME}&nbsp;&nbsp;&nbsp;{MEDIADIR_MINIMIZE}<br />
                         <!-- END mediadirFormNameList -->
                     </div>
                 </td>
@@ -213,7 +213,7 @@ var refreshInputfields = function(formId)
                     </div>
                     <div id="formDescriptionExpanded" style="display: none;">
                         <!-- BEGIN mediadirFormDescriptionList -->
-                        <textarea name="formDescription[{MEDIADIR_FORM_DESCRIPTION_LANG_ID}]" style="height: 50px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('../core/Country/View/Media/Flag/flag_{TXT_MEDIADIR_FORM_DESCRIPTION_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{TXT_MEDIADIR_FORM_DESCRIPTION_LANG_NAME}" >{MEDIADIR_FORM_DESCRIPTION}</textarea>&nbsp;{TXT_MEDIADIR_FORM_DESCRIPTION_LANG_NAME}&nbsp;&nbsp;&nbsp;{MEDIADIR_MINIMIZE}<br />
+                        <textarea name="formDescription[{MEDIADIR_FORM_DESCRIPTION_LANG_ID}]" style="height: 50px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('/core/Country/View/Media/Flag/flag_{TXT_MEDIADIR_FORM_DESCRIPTION_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{TXT_MEDIADIR_FORM_DESCRIPTION_LANG_NAME}" >{MEDIADIR_FORM_DESCRIPTION}</textarea>&nbsp;{TXT_MEDIADIR_FORM_DESCRIPTION_LANG_NAME}&nbsp;&nbsp;&nbsp;{MEDIADIR_MINIMIZE}<br />
                         <!-- END mediadirFormDescriptionList -->
                     </div>
                 </td>
@@ -312,7 +312,7 @@ var refreshInputfields = function(formId)
     <div id="placeholders" class="formTab" style="display: none;">
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
             <tr>
-                <th colspan="8">{TXT_MEDIADIR_SETTINGS_PLACEHOLDER}</th>
+                <th>{TXT_MEDIADIR_SETTINGS_PLACEHOLDER}</th>
             </tr>
             <tr class="row3">
                 <td>{TXT_MEDIADIR_SETTINGS_PLACEHOLDER_INFO}</td>

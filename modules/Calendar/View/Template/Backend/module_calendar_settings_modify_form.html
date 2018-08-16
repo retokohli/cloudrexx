@@ -22,7 +22,9 @@ function appendField(){
 }
 
 function deleteField(fieldId){
-    $J('#inputfield_'+fieldId).fadeOut("slow", function(){ $J('#inputfield_'+fieldId).remove();});
+    if (confirm('{TXT_CALENDAR_CONFIRM_DELETE_DATA}\n{TXT_CALENDAR_ACTION_IS_IRREVERSIBLE}')) {
+        $J('#inputfield_'+fieldId).fadeOut("slow", function(){ $J('#inputfield_'+fieldId).remove();});
+    }
 }
 
 function ExpandMinimize(toggle, id) {
