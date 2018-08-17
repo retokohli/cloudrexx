@@ -4238,7 +4238,6 @@ $WhereStatement = '';
         $emailCount           = array();
         $this->feedback($users, $linkCount, $feedbackCount, $emailCount);
 
-        $dateTime = \Env::get('cx')->getComponent('DateTime');
         foreach ($users as $user) {
             $type = str_replace("_user", "", $user['type']);
             $link_count = isset($linkCount[$user['id']][$type]) ? $linkCount[$user['id']][$type] : 0;
@@ -4260,26 +4259,18 @@ $WhereStatement = '';
                         $consentValue = 'Added via API';
                         break;
                     case 'opt-in':
+                        $consentValue = 'External';
                         if (!empty($user['consent'])) {
-                            $userDateTime = $dateTime->db2user(
-                                new \DateTime($user['consent'])
-                            );
-                            $consentValue = $userDateTime->format('H:i:s d.m.Y');
-                        } else {
-                            $consentValue = 'External';
+                            $consentValue = $this->getUserDateTime($user['consent']);
                         }
                         break;
                     default:
                         break;
                 }
             } else {
+                $consentValue = 'External';
                 if (!empty($user['consent'])) {
-                    $userDateTime = $dateTime->db2user(
-                        new \DateTime($user['consent'])
-                    );
-                    $consentValue = $userDateTime->format('H:i:s d.m.Y');
-                } else {
-                    $consentValue = 'External';
+                    $consentValue = $this->getUserDateTime($user['consent']);
                 }
             }
 
@@ -6678,6 +6669,22 @@ function MultiAction() {
         );
 
         return str_replace($search, $replace, $content);
+    }
+
+    /**
+     * Get a user dateTime in H:i:s d.m.Y format from db data
+     *
+     * @param string $userDateTime DateTime from a db
+     * @return string Return a formatted dateTime as string
+     */
+    public function getUserDateTime($userDateTime)
+    {
+        $cx                  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $dateTime            = $cx->getComponent('DateTime');
+        $createDateTimeForDb = $dateTime->createDateTimeForDb($userDateTime);
+        $db2User             = $dateTime->db2user($createDateTimeForDb);
+
+        return $db2User->format('H:i:s d.m.Y');
     }
 }
 
