@@ -1185,11 +1185,19 @@ END;
                         $newName = $part1 . '_' . time() . $exte;
                     }
                 }
-
+                $tempName = $newName;
                 //if the name has changed, the file needs to be renamed afterwards
                 if ($newName != $file) {
+                    $tempName = $file;
                     $arrFilesToRename[$file] = $newName;
                 }
+
+                // Add index
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $cx->getEvents()->triggerEvent('MediaSource:Add', array(
+                    'path' => $path . $newName,
+                    'tmpPath' => $tempPath . '/' . $tempName,
+                ));
 
                 array_push($arrFiles, $newName);
             }

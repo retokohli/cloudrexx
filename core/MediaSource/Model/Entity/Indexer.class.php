@@ -82,37 +82,48 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
      *
      * @param $mediaSource \Cx\Core\MediaSource\Model\Entity\MediaSource
      * @param $path        string path to index
+     * @param $oldPath     string old path to index used for update
      *
      *
      * @throws \Doctrine\ORM\OptimisticLockException
      * @return void
      */
-    public function index($mediaSource, $path)
+    public function index($path, $oldPath = '', $tmpPath = '')
     {
         $em = $this->cx->getDb()->getEntityManager();
-        $files = array();
+        $repo = $em->getRepository(
+            'Cx\Core\MediaSource\Model\Entity\IndexerEntry'
+        );
 
-        if (filetype($path) == 'dir') {
-            $files = $mediaSource->getFileSystem()->getFileList($path);
-        } else {
-            $file = $mediaSource->getFileSystem()->getFileFromPath($path);
-            $files->push($file);
-        }
-        foreach ($files as $file) {
-            $indexerEntry = $em->getRepository(
-                $this->getNamespace() . '\Model\Entity\IndexerEntry'
-            )->findOneBy(array('path' => $path));
-            if (empty($indexerEntry)) {
-                $indexerEntry = \Cx\Core\MediaSource\Model\Entity\IndexerEntry();
-            }
-            $indexerEntry->setPath($path);
-            $indexerEntry->setIndexer();
-            $indexerEntry->setContent(
-                $this->getText($mediaSource, $file->getPath())
+        if (!empty($oldPath)) {
+            $indexerEntry = $repo->findOneBy(
+                array('path' => $oldPath)
             );
-            $indexerEntry->setTimestamp(\DateTime('now'));
-            $em->persist($indexerEntry);
+        } else {
+            $indexerEntry = $repo->findOneBy(
+                array('path' => $path)
+            );
         }
+
+        if (!$indexerEntry) {
+            $indexerEntry = new \Cx\Core\MediaSource\Model\Entity\IndexerEntry();
+        }
+        $indexerEntry->setPath($path);
+        $indexerEntry->setIndexer($this->getName());
+        if (!empty($tmpPath)) {
+            $content = $this->getText($tmpPath);
+        } else if (!empty($oldPath)) {
+            $content = $this->getText($oldPath);
+        } else {
+            $content = $this->getText($path);
+        }
+        $indexerEntry->setContent(
+            $content
+        );
+        $indexerEntry->setLastUpdate(new \DateTime('now'));
+
+        $em->persist($indexerEntry);
+
 
         $em->flush();
     }
@@ -125,13 +136,14 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
      * @throws \Doctrine\ORM\OptimisticLockException
      * @return void
      */
-    protected function clearIndex($path = '')
+    public function clearIndex($path = '')
     {
         $em = $this->cx->getDb()->getEntityManager();
         $indexerEntryRepo = $em->getRepository(
-            $this->getNamespace() . '\Model\Entity\IndexerEntry'
+            '\Cx\Core\MediaSource\Model\Entity\IndexerEntry'
         );
         if (!empty($path)) {
+
             $indexerEntries = $indexerEntryRepo->findBy(
                 array('path' => $path, 'indexer' => $this->getName())
             );
@@ -140,8 +152,9 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
                 array('indexer' => $this->getName())
             );
         }
+
         foreach ($indexerEntries as $indexerEntry) {
-            $em->delete($indexerEntry);
+            $em->remove($indexerEntry);
         }
         $em->flush();
     }
@@ -162,10 +175,12 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
         $query = $qb->select(array('ie'))->from(
             'Cx\Core\MediaSource\Model\Entity\IndexerEntry', 'ie'
         )->where(
+            $qb->expr()->like('ie.path', ':path')
+        )->andWhere(
             $qb->expr()->like(
                 'ie.content', $qb->expr()->literal('%'.$searchterm.'%')
             )
-        )->andWhere('ie.path = :path')->setParameter('path', $path)->getQuery();
+        )->setParameter('path', $path)->getQuery();
 
         return $query->getOneOrNullResult();
     }
@@ -173,11 +188,10 @@ abstract class Indexer extends \Cx\Model\Base\EntityBase
     /**
      * Get text from an indexed file
      *
-     * @param $mediaSource \Cx\Core\MediaSource\Model\Entity\MediaSource
      * @param $filepath    string path to file
      *
      * @return string
      */
-    abstract protected function getText($mediaSource, $filepath);
+    abstract protected function getText($filepath);
 
 }

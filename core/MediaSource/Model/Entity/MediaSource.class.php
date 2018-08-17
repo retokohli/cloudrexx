@@ -312,11 +312,11 @@ class MediaSource extends DataSource {
     public function getFileSystemMatches($searchterm, $path)
     {
         $config = \Env::get('config');
-        $fullPath = $this->getDirectory()[0] . '/' . $path;
+        $fullPath = $this->getDirectory()[0] . $path;
         $fileList = array();
         $searchResult = array();
 
-        if (filetype($path) == 'dir') {
+        if (is_dir($fullPath)) {
             $fileList = $this->getFileSystem()->getFileList($path);
         } else {
             $fileEntry = $this->getFileSystem()->getFileFromPath($fullPath);
@@ -324,31 +324,30 @@ class MediaSource extends DataSource {
         }
 
         $files = $this->getAllFilesAsObject($fileList, $fullPath, array());
-
         foreach ($files as $file) {
             $fileInformation = array();
             $filePath = $file->getPath() . '/' . $file->getFullName();
             $fileWebPath = $file->getPath() . '/' . $file->getFullName();
-
-            if (strpos($file->getName(), $searchterm) === false) {
-                continue;
-            }
-
             $content = '';
             if ($this->isIndexActivated) {
                 $indexer = $this->getComponentController()->getIndexer(
                     $file->getExtension()
                 );
-
                 if (!empty($indexer)) {
                     $match = $indexer->getMatch($searchterm, $filePath);
-
-                    $content = substr(
-                        $match->getContent(), 0, $config[
-                        'searchDescriptionLength'
-                        ]
-                    ).'...';
+                    if (!empty($match)) {
+                        $content = substr(
+                            $match->getContent(), 0, $config[
+                            'searchDescriptionLength'
+                            ]
+                        ).'...';
+                    }
                 }
+            }
+
+            if (strpos(strtolower($file->getName()), strtolower($searchterm))
+                === false && empty($content)) {
+                continue;
             }
 
             $fileInformation['Score'] = 100;
@@ -359,17 +358,27 @@ class MediaSource extends DataSource {
             $fileInformation['Component'] = $this->getHumanName();
             array_push($searchResult, $fileInformation);
         }
-
         return $searchResult;
     }
 
+    /**
+     * Returns an array with all file paths of all files in this directory,
+     * including files located in another directory.
+     *
+     * @param $fileList array  all files and directorys
+     * @param $path     string path from this directory
+     * @param $result   array  existing result
+     *
+     * @return array
+     */
     protected function getAllFilesAsObject($fileList, $path, $result)
     {
-        foreach ($fileList as $fileEntryKey =>$fileListEntry) {
-            $newPath = $path . '/' . $fileEntryKey;
+        foreach ($fileList as $fileEntryKey => $fileListEntry) {
+            $newPath = $path  . $fileEntryKey;
             if (is_dir($newPath)) {
+                $newPath = $path . $fileEntryKey;
                 $result = $this->getAllFilesAsObject(
-                    $fileListEntry, $newPath, $result
+                    $fileListEntry, $newPath .'/', $result
                 );
             } else if (is_file($newPath)) {
                 $file = new \Cx\Core\MediaSource\Model\Entity\LocalFile(

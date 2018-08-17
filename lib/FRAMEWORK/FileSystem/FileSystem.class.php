@@ -247,6 +247,7 @@ class FileSystem
         }
         if (copy($orgPath.$orgFileName, $newPath.$newFileName)) {
             \Cx\Lib\FileSystem\FileSystem::makeWritable($newPath.$newFileName);
+            $this->addIndex($newPath, $newFileName);
         } else {
             $newFileName = 'error';
         }
@@ -290,6 +291,7 @@ class FileSystem
 
         if ($_FTPCONFIG['is_activated'] && empty(self::$connection))
             self::init();
+        $this->deleteIndex($path, $dirName);
         $webPath=$this->checkWebPath($webPath);
         $directory = @opendir($path.$dirName);
         $file = @readdir($directory);
@@ -321,6 +323,7 @@ class FileSystem
                 return 'error';
             }
         }
+
         return '';
     }
 
@@ -328,20 +331,24 @@ class FileSystem
     function delFile($path, $webPath, $fileName)
     {
         global $_FTPCONFIG;
-
         if ($_FTPCONFIG['is_activated'] && empty(self::$connection))
             self::init();
         $webPath = $this->checkWebPath($webPath);
         $delFile = $_FTPCONFIG['path'].$webPath.$fileName;
         if ($_FTPCONFIG['is_activated']) {
-            if (@ftp_delete(self::$connection, $delFile)) return $delFile;
+            if (@ftp_delete(self::$connection, $delFile)) {
+                $this->deleteIndex($path, $fileName);
+                return $delFile;
+            }
             return 'error';
         } else {
             @unlink($path.$fileName);
             // unlink() clears the file status cache automatically
             //clearstatcache();
-            if (@file_exists($path.$fileName)) return 'error';
+
+            if (@file_exists($path.$fileName))  return 'error';
         }
+        $this->deleteIndex($path, $fileName);
         return $fileName;
     }
 
@@ -445,6 +452,7 @@ class FileSystem
                 $exte   = (!empty($exte)) ? '.' . $exte : '';
                 $part   = substr($newFileName, 0, strlen($newFileName) - strlen($exte));
                 $newFileName  = $part . '_' . (time()) . $exte;
+
             }
             if ($_FTPCONFIG['is_activated']) {
                 if (ftp_rename(self::$connection, $_FTPCONFIG['path'].$webPath.$oldFileName, $_FTPCONFIG['path'].$webPath.$newFileName)) {
@@ -455,6 +463,7 @@ class FileSystem
                     $status = $newFileName;
                 }
             }
+            $this->updateIndex($path, $status, $oldFileName);
         } else {
             $status = $oldFileName;
         }
@@ -466,6 +475,7 @@ class FileSystem
     {
         global $_FTPCONFIG;
 
+        $this->updateIndex($path, $newDirName, $oldDirName);
         if ($_FTPCONFIG['is_activated'] && empty(self::$connection))
             self::init();
         $webPath = $this->checkWebPath($webPath);
@@ -509,6 +519,66 @@ class FileSystem
             }
         }
         return false;
+    }
+
+    /**
+     * Call MediaSource event delete
+     *
+     * @param $path string path to file or directory
+     * @param $name string name of file or directory
+     *
+     * @throws \Cx\Core\Event\Controller\EventManagerException
+     * @return void
+     */
+    protected function deleteIndex($path, $name)
+    {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'MediaSource:Remove', array(
+            'path' => $path,
+            'name' => $name
+            )
+        );
+    }
+
+    /**
+     * Call MediaSource event delete
+     *
+     * @param $path    string path to file or directory
+     * @param $name    string name of file or directory
+     * @param $oldname string old name of file or directory
+     *
+     * @throws \Cx\Core\Event\Controller\EventManagerException
+     * @return void
+     */
+    protected function updateIndex($path, $name, $oldname)
+    {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'MediaSource:Edit', array(
+            'path' => $path . $name,
+            'oldPath' => $path . $oldname,
+            )
+        );
+    }
+
+    /**
+     * Call MediaSource event add
+     *
+     * @param $path string path to file or directory
+     * @param $name string name of file or directory
+     *
+     * @throws \Cx\Core\Event\Controller\EventManagerException
+     * @return void
+     */
+    protected function addIndex($path, $name)
+    {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'MediaSource:Add', array(
+            'path' => $path . $name
+            )
+        );
     }
 
 

@@ -60,7 +60,23 @@ class ComponentController
      */
     public function registerEvents() {
         $eventHandlerInstance = $this->cx->getEvents();
+        $mediaSourceEventListener = new \Cx\Core\MediaSource\Model\Event\MediaSourceEventListener($this->cx);
         $eventHandlerInstance->addEvent('mediasource.load');
+        $eventHandlerInstance->addEvent('MediaSource:Remove');
+        $eventHandlerInstance->addEventListener(
+            'MediaSource:Remove',
+            $mediaSourceEventListener
+        );
+        $eventHandlerInstance->addEvent('MediaSource:Add');
+        $eventHandlerInstance->addEventListener(
+            'MediaSource:Add',
+            $mediaSourceEventListener
+        );
+        $eventHandlerInstance->addEvent('MediaSource:Edit');
+        $eventHandlerInstance->addEventListener(
+            'MediaSource:Edit',
+            $mediaSourceEventListener
+        );
     }
 
     public function getControllerClasses() {
