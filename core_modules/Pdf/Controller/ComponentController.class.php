@@ -141,4 +141,29 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'fileName' => $fileName . '.pdf'
         );
     }
+
+    /**
+     * Do something after all active components are loaded
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     */
+    public function postComponentLoad()
+    {
+        if (!defined('_MPDF_TTFONTPATH' && '_MPDF_SYSTEM_TTFONTS')) {
+            define(
+                '_MPDF_TTFONTPATH',
+                ltrim(
+                    $this->cx->getWebsiteImagesWebPath(),
+                    '/'
+                ) . '/Pdf/ttfonts/'
+            );
+            define(
+                '_MPDF_SYSTEM_TTFONTS',
+                ltrim(
+                    $this->cx->getLibraryFolderName(),
+                    '/'
+                ) . '/mpdf/ttfonts/'
+            );
+        }
+    }
 }
