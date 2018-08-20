@@ -70,6 +70,22 @@ class PdfDocument extends \mPDF
      */
     public function __construct($orientation = 'P', $format = 'A4')
     {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        if (!defined('_MPDF_TTFONTPATH' && '_MPDF_SYSTEM_TTFONTS')) {
+            $imagesWebPath = ltrim(
+                $cx->getWebsiteImagesWebPath(),
+                '/'
+            );
+            define(
+                '_MPDF_TTFONTPATH',
+                $imagesWebPath . '/Pdf/ttfonts/'
+            );
+            define(
+                '_MPDF_SYSTEM_TTFONTS',
+                $imagesWebPath . '/Pdf/ttfonts/'
+            );
+        }
         parent::__construct('', $format, 0, '', 15, 15, 16, 16, 9, 9, $orientation);
     }
 
