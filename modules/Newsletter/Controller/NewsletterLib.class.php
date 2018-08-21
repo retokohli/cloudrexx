@@ -956,17 +956,21 @@ class NewsletterLib
         $dateTime->modify('-' . $confirmLinkHour . ' hours');
 
         if ($arrSettings['defUnsubscribe']['setvalue'] == 1) {
-            $objUser = $objDatabase->Execute(
-                'DELETE
-                    userCat,
-                    users
-                FROM '. DBPREFIX .'module_newsletter_user as users
-                    INNER JOIN '. DBPREFIX .'module_newsletter_rel_user_cat as userCat
-                        ON users.id = userCat.user
-                WHERE users.source = "opt-in"
-                AND users.consent IS NULL
-                AND users.emaildate < "'. $dateTime->getTimeStamp() .'"'
-            );
+            $objUser = $objDatabase->Execute('
+                DELETE
+                    `userCat`,
+                    `users`
+                FROM
+                    `' . DBPREFIX . 'module_newsletter_user` AS `users`
+                INNER JOIN
+                    `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS `userCat`
+                ON
+                    `users`.`id` = `userCat`.`user`
+                WHERE
+                    `users`.`source` = "opt-in" AND
+                    `users`.`consent` IS NULL AND
+                    `users`.`emaildate` < "' . $dateTime->getTimeStamp() . '"
+            ');
         } else {
             $objUser = $objDatabase->Execute('
                 UPDATE
