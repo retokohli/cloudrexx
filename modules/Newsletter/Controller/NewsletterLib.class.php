@@ -948,8 +948,9 @@ class NewsletterLib
      */
     public function autoCleanRegisters()
     {
-        $objDatabase     = \Env::get('cx')->getDb()->getAdoDb();
-        $arrSettings     = $this->_getSettings();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objDatabase = $cx->getDb()->getAdoDb();
+        $arrSettings = $this->_getSettings();
         $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
         $dateTime        = new \DateTime('now');
         $dateTime->modify('-' . $confirmLinkHour . ' hours');
