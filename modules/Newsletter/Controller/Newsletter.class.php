@@ -170,10 +170,10 @@ class Newsletter extends NewsletterLib
             UPDATE
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat`
             SET
+                `source` = "opt-in",
                 `consent` = "' . $currentTime . '"
             WHERE
-                `user` = "' . contrexx_raw2db($userId) . '" AND
-                `source` = "opt-in"' .
+                `user` = "' . contrexx_raw2db($userId) . '"' . 
                 $catConsentQuery . '
         ');
 
@@ -186,19 +186,17 @@ class Newsletter extends NewsletterLib
 
         // Update a consent and status value in module_newsletter_user table based
         // on recipient email id when user confirms a subscription.
-        if (!$categoryId) {
-            $objResult = $objDatabase->Execute('
-                UPDATE
-                    `' . DBPREFIX . 'module_newsletter_user`
-                SET
-                    `status` = 1,
-                    `source` = "opt-in",
-                    `consent` = "' . $currentTime . '"
-                WHERE
-                    `email` = "' . contrexx_raw2db($userEmail) . '" AND
-                    `consent` IS NULL
-            ');
-        }
+        $objResult = $objDatabase->Execute('
+            UPDATE
+                `' . DBPREFIX . 'module_newsletter_user`
+            SET
+                `status` = 1,
+                `source` = "opt-in",
+                `consent` = "' . $currentTime . '"
+            WHERE
+                `email` = "' . contrexx_raw2db($userEmail) . '" AND
+                `consent` IS NULL
+        ');
 
         if ($objResult !== false && !$status) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
