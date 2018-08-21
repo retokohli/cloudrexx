@@ -111,8 +111,10 @@ class Newsletter extends NewsletterLib
             ? contrexx_input2int($_GET['category']) : 0; // Get when user confirm a mailing permission link
         $code            = isset($_REQUEST['code'])
             ? contrexx_addslashes($_REQUEST['code']) : '';
-        $currentTime     = date('Y-m-d H:i:s', time());
-        $count           = 0;
+        $count       = 0;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
+        $currentTime = $dateTime->format('Y-m-d H:i:s');
         $status          = $categoryId ? 1 : 0;
         $catConsentQuery = ' AND `consent` IS NULL';
         $userCodeQuery   = $categoryId
@@ -168,8 +170,10 @@ class Newsletter extends NewsletterLib
             SET
                 `consent` = "' . $currentTime . '"
             where
-                `user` = "' . contrexx_raw2db($userId) . '"' . $catConsentQuery
-        );
+                `user` = "' . contrexx_raw2db($userId) . '" AND
+                `source` = "opt-in"' .
+                $catConsentQuery . '
+        ');
 
         if ($objUserCat !== false && $status) {
             $this->_objTpl->setVariable(
@@ -185,10 +189,12 @@ class Newsletter extends NewsletterLib
                 UPDATE
                     `' . DBPREFIX . 'module_newsletter_user`
                 SET
-                    `status`  = 1,
+                    `status` = 1,
+                    `source` = "opt-in",
                     `consent` = "' . $currentTime . '"
-                where
-                    `email` = "' . contrexx_raw2db($userEmail) . '"
+                WHERE
+                    `email` = "' . contrexx_raw2db($userEmail) . '" AND
+                    `consent` IS NULL
             ');
         }
 
@@ -515,7 +521,7 @@ class Newsletter extends NewsletterLib
                                 if ($captchaOk && $this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                                     if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                                         if ($recipientId > 0) {
-                                            if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
+                                            if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage, $source)) {
                                                 array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
                                                 $showForm = false;
                                             } else {
@@ -564,7 +570,7 @@ class Newsletter extends NewsletterLib
                                         // himself been unsubscribed from the newsletter system some time in the past. Therefore the user most likey does not want
                                         // to be subscribed to any lists more than to those he just selected
                                         $arrAssociatedLists = array_unique($arrAssociatedLists);
-                                        $this->_setRecipientLists($recipientId, $arrAssociatedLists);
+                                        $this->_setRecipientLists($recipientId, $arrAssociatedLists, $source);
                                         if (!$objRecipient->fields['status']) {
                                             $recipientLanguage = $objRecipient->fields['language'];
 

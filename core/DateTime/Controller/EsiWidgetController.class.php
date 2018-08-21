@@ -76,7 +76,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 true,
                 $langId
             );
-            $template->setVariable($name, $this->getComponent('DateTime')->strftime('%A, %e. %B %Y'));
+            $template->setVariable(
+                $name,
+                \Cx\Core\DateTime\Controller\ComponentController::strftime(
+                    '%A, %e. %B %Y'
+                )
+            );
             $setTimeout = new \DateTime();
             $setTimeout->setTime(23, 59, 59);
             $response->setExpirationDate($setTimeout);

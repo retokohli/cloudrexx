@@ -2911,6 +2911,7 @@ CREATE TABLE `contrexx_module_newsletter_rel_crm_membership_newsletter` (
 CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
   `user` int(11) NOT NULL DEFAULT '0',
   `category` int(11) NOT NULL DEFAULT '0',
+  `source` enum('backend','opt-in','api') NOT NULL DEFAULT 'backend',
   `consent` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`user`,`category`)
 ) ENGINE=InnoDB;
