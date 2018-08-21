@@ -105,23 +105,24 @@ class Newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
-        $userEmail       = isset($_GET['email'])
+        $userEmail = isset($_GET['email'])
             ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
-        $categoryId      = isset($_GET['category'])
-            ? contrexx_input2int($_GET['category']) : 0; // Get when user confirm a mailing permission link
-        $code            = isset($_REQUEST['code'])
+        // Get when user confirms a mailing permission link
+        $categoryId = isset($_GET['category'])
+            ? contrexx_input2int($_GET['category']) : 0;
+        $code = isset($_REQUEST['code'])
             ? contrexx_addslashes($_REQUEST['code']) : '';
-        $count       = 0;
+        $count = 0;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
         $currentTime = $dateTime->format('Y-m-d H:i:s');
-        $status          = $categoryId ? 1 : 0;
+        $status = $categoryId ? 1 : 0;
         $catConsentQuery = ' AND `consent` IS NULL';
-        $userCodeQuery   = $categoryId
+        $userCodeQuery = $categoryId
             ? ' AND `code` = "'. $code .'"' : '';
 
         if (!empty($userEmail)) {
-            $query     = '
+            $query = '
                 SELECT
                     `id`
                 FROM
@@ -139,37 +140,38 @@ class Newsletter extends NewsletterLib
             return;
         }
 
-        // Check a consent is null in module_newsletter_rel_user_cat table when user
-        // clicks a mailing permission link, if null continue code below this condition
+        // Check if consent is null in module_newsletter_rel_user_cat table when user
+        // clicks a mailing permission link. If null: continue code below this condition,
         // otherwise return a error message
         if ($categoryId) {
             $catConsentQuery = ' AND `category` = "'. $categoryId .'" AND `consent` IS NULL';
-            $objUserRel      = $objDatabase->Execute('
+            $objUserRel = $objDatabase->Execute('
                 SELECT
                     `consent`
                 FROM
                     `' . DBPREFIX . 'module_newsletter_rel_user_cat`
                 WHERE
-                    `user` = "' . contrexx_raw2db($userId) . '"' . $catConsentQuery
-            );
+                    `user` = "' . contrexx_raw2db($userId) . '"
+                    ' . $catConsentQuery . '
+            ');
             if ($objUserRel && $objUserRel->RecordCount() == 0) {
                 $this->_objTpl->setVariable(
-                    "NEWSLETTER_MESSAGE",
+                    'NEWSLETTER_MESSAGE',
                     '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>'
                 );
                 return;
             }
         }
 
-        // Update a consent value in module_newsletter_rel_user_cat table based
-        // on recipient id or Update a consent value in module_newsletter_rel_user_cat
+        // Update the consent value in module_newsletter_rel_user_cat table based
+        // on recipient id or update the consent value in module_newsletter_rel_user_cat
         // table based on recipient id and category id when user clicks a mailing permission link
         $objUserCat = $objDatabase->Execute('
             UPDATE
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat`
             SET
                 `consent` = "' . $currentTime . '"
-            where
+            WHERE
                 `user` = "' . contrexx_raw2db($userId) . '" AND
                 `source` = "opt-in"' .
                 $catConsentQuery . '
@@ -177,7 +179,7 @@ class Newsletter extends NewsletterLib
 
         if ($objUserCat !== false && $status) {
             $this->_objTpl->setVariable(
-                "NEWSLETTER_MESSAGE",
+                'NEWSLETTER_MESSAGE',
                 $_ARRAYLANG['TXT_NEWSLETTER_MAILING_CONFIRM_SUCCESSFUL']
             );
         }
