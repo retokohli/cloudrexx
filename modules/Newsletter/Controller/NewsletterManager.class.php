@@ -353,9 +353,9 @@ class NewsletterManager extends NewsletterLib
 
         if (isset($_GET['tpl']) && ($_GET['tpl'] == 'consentMail')) {
             if ($this->sendConsentConfirmationMail()) {
-                self::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS'];
+                static::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS'];
             } else {
-                self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'];
+                static::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'];
             }
         }
 
