@@ -269,9 +269,7 @@ class VotingManager
             $votingTitle=stripslashes($objResult->fields['question']);
             $votingVotes=$objResult->fields['votes'];
             $votingDate=strtotime($objResult->fields['datesec']);
-
-            $dateTime = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('DateTime');
-            $votingDate = $dateTime->strftime('%A, %e. %B %Y', $votingDate);
+            $votingDate = \Cx\Core\DateTime\Controller\ComponentController::strftime('%A, %e. %B %Y', $votingDate);
 
             $images = 1;
             $query="SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
@@ -321,7 +319,7 @@ class VotingManager
                 $votingTitle=stripslashes($objResult->fields['title']);
                 $votingVotes=$objResult->fields['votes'];
                 $votingDate=strtotime($objResult->fields['datesec']);
-                $votingDate = $dateTime->strftime('%A, %e. %B %Y', $votingDate);
+                $votingDate = \Cx\Core\DateTime\Controller\ComponentController::strftime('%A, %e. %B %Y', $votingDate);
                 $votingStatus=$objResult->fields['status'];
 
                 if ($votingStatus==0) {
@@ -689,9 +687,7 @@ class VotingManager
 // TODO: Never used
 //            $votingVotes=$objResult->fields['votes'];
             $votingDate=strtotime($objResult->fields['datesec']);
-
-            $dateTime = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('DateTime');
-            $votingDate = $dateTime->strftime('%A, %e. %B %Y', $votingDate);
+            $votingDate = \Cx\Core\DateTime\Controller\ComponentController::strftime('%A, %e. %B %Y', $votingDate);
 // TODO: Never used
 //            $votingStatus=$objResult->fields['status'];
         } else {
