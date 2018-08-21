@@ -182,18 +182,6 @@ class Livecam extends LivecamLibrary
     }
 
     /**
-     * Get cam
-     *
-     * Get the cam to be used
-     *
-     * @access public
-     */
-    function getCam()
-    {
-        return $this->cam;
-    }
-
-    /**
      * Get page
      *
      * Get the livecam page
