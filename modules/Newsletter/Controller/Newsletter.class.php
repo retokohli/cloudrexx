@@ -122,7 +122,7 @@ class Newsletter extends NewsletterLib
         }
         $userId    = $objResult->fields['id'];
         $emailDate = $cx->getComponent('DateTime')->createDateTimeForDb(
-            $objResult->fields['emaildate']
+            '@' . $objResult->fields['emaildate']
         );
 
         // Checks registered time with current time, if time exceeds
@@ -131,7 +131,7 @@ class Newsletter extends NewsletterLib
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('now');
         $dateTime->modify('-' . $confirmLinkHour . ' hours');
         // If link has expired we drop or deactivate the user
-        if ($emailDate < $dateTime->getTimeStamp()) {
+        if ($emailDate < $dateTime) {
             $this->autoCleanRegisters();
             $this->_objTpl->setVariable(
                 'NEWSLETTER_MESSAGE',
