@@ -116,7 +116,9 @@ class Newsletter extends NewsletterLib
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
             $userId    = $objResult->fields['id'];
-            $emailDate = $objResult->fields['emaildate'];
+            $emailDate = $cx->getComponent('DateTime')->createDateTimeForDb(
+                $objResult->fields['emaildate']
+            );
         }
         if (empty($count)) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
@@ -126,7 +128,7 @@ class Newsletter extends NewsletterLib
         // Checks registered time with current time, if time exceeds
         // configured number of hours user will be removed from a list
         $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
-        $dateTime        = new \DateTime('now');
+        $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('now');
         $dateTime->modify('-' . $confirmLinkHour . ' hours');
         if ($emailDate < $dateTime->getTimeStamp()) {
             if ($arrSettings['defUnsubscribe']['setvalue'] == 1) {
