@@ -976,7 +976,7 @@ class NewsletterLib
                 UPDATE
                     `' . DBPREFIX . 'module_newsletter_user` AS `users`
                 SET
-                    `users`.`status`
+                    `users`.`status` = 0
                 WHERE
                     `users`.`source` = "opt-in" AND
                     `users`.`consent` IS NULL AND
