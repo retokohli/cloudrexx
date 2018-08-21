@@ -6591,6 +6591,7 @@ function MultiAction() {
 
     /**
      * Send a consent confirmation mail to users based on mailing list
+     * @todo: this should be merged with the code to send the default confirm mail
      *
      * @return boolean
      */
