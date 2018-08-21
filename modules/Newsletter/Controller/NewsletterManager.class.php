@@ -6626,7 +6626,7 @@ function MultiAction() {
         ');
 
         if ($objUserRel && $objUserRel->RecordCount() == 0) {
-            return false;
+            return true;
         }
 
         $now = date(ASCMS_DATE_FORMAT);
