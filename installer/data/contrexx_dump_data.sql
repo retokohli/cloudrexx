@@ -2185,7 +2185,7 @@ INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VAL
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (29,2,'Newsletter','core_mail_template_sender','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (29,2,'Newsletter','core_mail_template_subject','[NEWSLETTER_DOMAIN_URL] - Newsletter subscription');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (29,2,'Newsletter','core_mail_template_to','');
-INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Newsletter','core_mail_template_name','Zustimmung Bestätigung');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Newsletter','core_mail_template_name','Zustimmungsbestätigung');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Newsletter','core_mail_template_from','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Newsletter','core_mail_template_sender','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Newsletter','core_mail_template_reply','');
