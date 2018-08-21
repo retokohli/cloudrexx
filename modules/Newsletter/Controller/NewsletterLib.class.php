@@ -967,6 +967,17 @@ class NewsletterLib
                 AND users.consent IS NULL
                 AND users.emaildate < "'. $dateTime->getTimeStamp() .'"'
             );
+        } else {
+            $objUser = $objDatabase->Execute('
+                UPDATE
+                    `' . DBPREFIX . 'module_newsletter_user` AS `users`
+                SET
+                    `users`.`status`
+                WHERE
+                    `users`.`source` = "opt-in" AND
+                    `users`.`consent` IS NULL AND
+                    `users`.`emaildate` < "' . $dateTime->getTimeStamp() . '"
+            ');
         }
     }
 }
