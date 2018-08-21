@@ -115,15 +115,15 @@ class Newsletter extends NewsletterLib
             $query     = "SELECT id,emaildate FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
-            $userId    = $objResult->fields['id'];
-            $emailDate = $cx->getComponent('DateTime')->createDateTimeForDb(
-                $objResult->fields['emaildate']
-            );
         }
         if (empty($count)) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
             return;
         }
+        $userId    = $objResult->fields['id'];
+        $emailDate = $cx->getComponent('DateTime')->createDateTimeForDb(
+            $objResult->fields['emaildate']
+        );
 
         // Checks registered time with current time, if time exceeds
         // configured number of hours user will be removed from a list
