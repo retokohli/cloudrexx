@@ -952,7 +952,7 @@ class NewsletterLib
         $objDatabase = $cx->getDb()->getAdoDb();
         $arrSettings = $this->_getSettings();
         $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
-        $dateTime        = new \DateTime('now');
+        $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('now');
         $dateTime->modify('-' . $confirmLinkHour . ' hours');
 
         if ($arrSettings['defUnsubscribe']['setvalue'] == 1) {
