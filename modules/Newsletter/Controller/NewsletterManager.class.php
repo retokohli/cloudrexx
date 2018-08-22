@@ -4569,20 +4569,14 @@ $WhereStatement = '';
             $this->_objTpl->addBlockfile('NEWSLETTER_USER_FILE', 'module_newsletter_user_import', 'module_newsletter_user_import.html');
 
             if (isset($_POST['imported'])) {
-                $arrStatusMessage = array('error' => array());
+                $arrStatusMessage = array();
                 if (empty($_POST['newsletter_recipient_associated_list'])) {
-                    array_push(
-                        $arrStatusMessage['error'],
-                        $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY']
-                    );
+                    $arrStatusMessage[] = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
                 }
                 if (!isset($_POST['consentConfirm'])) {
-                    array_push(
-                        $arrStatusMessage['error'],
-                        $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR']
-                    );
+                    $arrStatusMessage[] = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR'];
                 }
-                self::$strErrMessage = implode('<br />', $arrStatusMessage['error']);
+                self::$strErrMessage = implode('<br />', $arrStatusMessage);
             }
 
             $objImport->initFileSelectTemplate($objTpl);
