@@ -90,6 +90,12 @@ class ViewGenerator {
      */
     public function __construct($object, $options = array()) {
         $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->cx->getEvents()->triggerEvent(
+            'Html.ViewGenerator:initialize',
+            array(
+                'options' => &$options,
+            )
+        );
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
