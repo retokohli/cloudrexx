@@ -2394,7 +2394,6 @@ END;
                 ));
                 $this->_objTpl->parse($langBlock);
             }
-            $objResult->MoveNext();
         }
 
         // special fields for customer
