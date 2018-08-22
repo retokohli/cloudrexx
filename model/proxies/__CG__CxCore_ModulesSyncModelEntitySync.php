@@ -73,10 +73,10 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'validators', 'virtual');
+            return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'changes', 'originChanges', 'oldHostEntities', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'validators', 'virtual');
+        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations', 'hostEntities', 'changes', 'originChanges', 'oldHostEntities', 'validators', 'virtual');
     }
 
     /**
@@ -211,12 +211,13 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
     /**
      * {@inheritDoc}
      */
-    public function getToUri()
+    public function getToUri($entityIndexData = array (
+))
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getToUri', array());
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getToUri', array($entityIndexData));
 
-        return parent::getToUri();
+        return parent::getToUri($entityIndexData);
     }
 
     /**
@@ -250,6 +251,17 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setActive', array($active));
 
         return parent::setActive($active);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTempActive($tempActive)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setTempActive', array($tempActive));
+
+        return parent::setTempActive($tempActive);
     }
 
     /**
@@ -299,6 +311,17 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
     /**
      * {@inheritDoc}
      */
+    public function removeRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relations)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeRelation', array($relations));
+
+        return parent::removeRelation($relations);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getRelations()
     {
 
@@ -332,6 +355,17 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
     /**
      * {@inheritDoc}
      */
+    public function removeHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntities)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeHostEntity', array($hostEntities));
+
+        return parent::removeHostEntity($hostEntities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getHostEntities()
     {
 
@@ -343,12 +377,155 @@ class Sync extends \Cx\Core_Modules\Sync\Model\Entity\Sync implements \Doctrine\
     /**
      * {@inheritDoc}
      */
+    public function getHostEntitiesIncludingLegacy($cached = true)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getHostEntitiesIncludingLegacy', array($cached));
+
+        return parent::getHostEntitiesIncludingLegacy($cached);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOldHostEntitiesIncludingLegacy($hostEntities)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setOldHostEntitiesIncludingLegacy', array($hostEntities));
+
+        return parent::setOldHostEntitiesIncludingLegacy($hostEntities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOldHostEntitiesIncludingLegacy()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOldHostEntitiesIncludingLegacy', array());
+
+        return parent::getOldHostEntitiesIncludingLegacy();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRemovedHosts($entityIndexData)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getRemovedHosts', array($entityIndexData));
+
+        return parent::getRemovedHosts($entityIndexData);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setHostEntities($hostEntities)
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setHostEntities', array($hostEntities));
 
         return parent::setHostEntities($hostEntities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addChange', array($change));
+
+        return parent::addChange($change);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeChange(\Cx\Core_Modules\Sync\Model\Entity\Change $changes)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeChange', array($changes));
+
+        return parent::removeChange($changes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getChanges()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getChanges', array());
+
+        return parent::getChanges();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setChanges($changes)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setChanges', array($changes));
+
+        return parent::setChanges($changes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addOriginChange(\Cx\Core_Modules\Sync\Model\Entity\Change $originChanges)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addOriginChange', array($originChanges));
+
+        return parent::addOriginChange($originChanges);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeOriginChange(\Cx\Core_Modules\Sync\Model\Entity\Change $originChanges)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeOriginChange', array($originChanges));
+
+        return parent::removeOriginChange($originChanges);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOriginChanges()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOriginChanges', array());
+
+        return parent::getOriginChanges();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function calculateRelations($spooler, $eventType, $entityClassName, $entityIndexData, $entity)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'calculateRelations', array($spooler, $eventType, $entityClassName, $entityIndexData, $entity));
+
+        return parent::calculateRelations($spooler, $eventType, $entityClassName, $entityIndexData, $entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRelatedHosts($entityIndexData)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getRelatedHosts', array($entityIndexData));
+
+        return parent::getRelatedHosts($entityIndexData);
     }
 
     /**

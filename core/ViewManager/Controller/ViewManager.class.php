@@ -117,6 +117,16 @@ class ViewManager
         'headlines8.html',
         'headlines9.html',
         'headlines10.html',
+        'headlines11.html',
+        'headlines12.html',
+        'headlines13.html',
+        'headlines14.html',
+        'headlines15.html',
+        'headlines16.html',
+        'headlines17.html',
+        'headlines18.html',
+        'headlines19.html',
+        'headlines20.html',
         'events.html',
         'events2.html',
         'events3.html',
@@ -127,6 +137,16 @@ class ViewManager
         'events8.html',
         'events9.html',
         'events10.html',
+        'events11.html',
+        'events12.html',
+        'events13.html',
+        'events14.html',
+        'events15.html',
+        'events16.html',
+        'events17.html',
+        'events18.html',
+        'events19.html',
+        'events20.html',
         'javascript.js',
         'buildin_style.css',
         'directory.html',
@@ -191,6 +211,31 @@ class ViewManager
      */
     protected $em;
 
+    /**
+     * Access id to view the viewManager section
+     */
+    const VIEW_MANAGER_ACCESS_ID = 21;
+
+    /**
+     * Access id to activate/deactivate themes
+     */
+    const ENABLE_THEMES_ACCESS_ID = 46;
+
+    /**
+     * Access id to add/edit themes
+     */
+    const EDIT_THEMES_ACCESS_ID = 47;
+
+    /**
+     * Access id to import and export themes
+     */
+    const THEMES_IMPORT_EXPORT_ACCESS_ID = 102;
+
+    /**
+     * Access id to use template editor
+     */
+    const TEMPLATE_EDITOR_ACCESS_ID = 204;
+
     function __construct()
     {
         global  $_ARRAYLANG, $objDatabase;
@@ -250,12 +295,20 @@ class ViewManager
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_TEMPLATE_EDITOR']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>"
-        );
+        $navigation = '';
+        if (\Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static', true)) {
+            $navigation .= "<a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW']."</a>";
+        }
+        if (   \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)
+            || \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)
+        ) {
+            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_TEMPLATE_EDITOR']."</a>";
+        }
+        if (\Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static', true)) {
+            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>";
+        }
 
+        $objTemplate->setVariable("CONTENT_NAVIGATION", $navigation);
     }
 
     /**
@@ -317,7 +370,7 @@ class ViewManager
     function viewManager() {
        global $_ARRAYLANG, $objTemplate, $objDatabase;
 
-       \Permission::checkAccess(47, 'static');
+       \Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static');
 
        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_overview', 'skins_overview.html');
 
@@ -355,6 +408,14 @@ class ViewManager
                 $this->parseThemesData($theme, $subType);
             }
         }
+
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'view_manager_access'          => \Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static', true),
+            'enable_theme_access'          => \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static', true),
+            'edit_theme_access'            => \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true),
+            'theme_import_export_access'   => \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true),
+            'theme_template_editor_access' => \Permission::checkAccess(self::TEMPLATE_EDITOR_ACCESS_ID, 'static', true),
+        ), 'viewManager');
 
        $objTemplate->setGlobalVariable(array(
             'TXT_DELETE'                         => $_ARRAYLANG['TXT_DELETE'],
@@ -465,11 +526,11 @@ class ViewManager
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_settings', 'skins_settings.html');
         $tpl = isset($_REQUEST['tpl']) ? $_REQUEST['tpl'] : '';
         switch ($tpl) {
-            case 'examples':
-                $this->examples();
-                break;
             case 'manage':
                 $this->manage();
+                break;
+            case 'examples':
+                $this->examples();
                 break;
             default :
                 $this->_activate();
@@ -484,14 +545,19 @@ class ViewManager
     }
 
     /**
-     * show the overview page
-     * @access   public
+     * Show the Template Manager (advanced HTML/CSS/JS editor)
      */
     private function overview()
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        if (   !\Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)
+            && \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)
+        ) {
+            $this->import();
+            return;
+        }
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         \JS::activate("cx");
         \JS::activate("jqueryui");
@@ -625,6 +691,9 @@ CODE;
             'TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT' => $_ARRAYLANG['TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT'],
         ));
 
+        if (!\Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_import_navigation');
+        }
     }
 
     /**
@@ -636,7 +705,7 @@ CODE;
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(102, 'static');
+        \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static');
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_import', 'skins_import.html');
         $this->pageTitle = $_ARRAYLANG['TXT_THEME_IMPORT'];
@@ -682,16 +751,19 @@ CODE;
             'THEMES_UPLOADER_ID'     => $uploader->getId(),
         ));
 
+        if (!\Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_manage_theme');
+        }
     }
 
     /**
-     * set up Import/Export page
-     * call specific function depending on $_GET
+     * Export theme as ZIP archive
+     *
      * @access private
      */
     private function manage()
     {
-        \Permission::checkAccess(102, 'static');
+        \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static');
 
         //check GETs for action
         $themeId = isset($_GET['export']) ? contrexx_input2raw($_GET['export']) : 0;
@@ -1168,7 +1240,7 @@ CODE;
             }
 
             $localFile  = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativePath, $this->fileSystem);
-            $filePath   = $localFile->getFileSystem()->getFullPath($localFile);
+            $filePath   = $localFile->getFileSystem()->getFullPath($localFile) . $localFile->getFullName();
             $removePath = preg_replace('/'. preg_quote($relativePath, '/') .'$/', '', $filePath);
 
             if ($archive->add($filePath, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
@@ -1242,7 +1314,7 @@ CODE;
     {
         global $objDatabase, $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(46, 'static');
+        \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static');
 
         $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_activate', 'skins_activate.html');
         $this->pageTitle = $_ARRAYLANG['TXT_OVERVIEW'];
@@ -1255,7 +1327,6 @@ CODE;
             'TXT_ACTIVE_PRINT_TEMPLATE'    => $_ARRAYLANG['TXT_ACTIVE_PRINT_TEMPLATE'],
             'TXT_SAVE'                     => $_ARRAYLANG['TXT_SAVE'],
             'TXT_THEME_ACTIVATE_INFO'      => $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'],
-            'TXT_THEME_ACTIVATE_INFO_BODY' => $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'],
             'TXT_ACTIVE_MOBILE_TEMPLATE'   => $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'],
             'TXT_ACTIVE_APP_TEMPLATE'      => $_ARRAYLANG['TXT_APP'],
         ));
@@ -1338,7 +1409,7 @@ CODE;
     {
         global $_ARRAYLANG, $_CONFIG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static');
 
         // initialize variables
         $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_examples', 'skins_examples.html');
@@ -1368,7 +1439,7 @@ CODE;
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $this->webPath = $this->arrWebPaths[0];
 
@@ -1395,6 +1466,9 @@ CODE;
         ));
 
         $this->checkTable($this->oldTable);
+        if (!\Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_import_navigation');
+        }
 //      $this->newdir();
     }
 
@@ -1416,7 +1490,7 @@ CODE;
     {
         global $_ARRAYLANG;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $themeName          = !empty($_POST['dbName']) && !stristr($_POST['dbName'], '..') ? contrexx_input2raw($_POST['dbName']) : null;
         $copyFromTheme      = !empty($_POST['fromTheme']) && !stristr($_POST['fromTheme'], '..') ? contrexx_input2raw($_POST['fromTheme']) : null;
@@ -1609,7 +1683,7 @@ CODE;
      */
     function update()
     {
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
         $themesPage = !empty($_POST['themesPage']) &&  !stristr($_POST['themesPage'], '..') ? contrexx_input2raw($_POST['themesPage']) : null;
@@ -2001,10 +2075,23 @@ CODE;
         $components = $objSystemComponent->findAll();
         $componentFiles = array();
         foreach ($components as $component) {
-           $componentDirectory = $component->getDirectory() . '/View/Template/Frontend';
-            if (file_exists($componentDirectory)) {
-                foreach (glob("$componentDirectory/*") as $componentFile) {
-                   $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+            foreach (array('Template/Frontend', 'Style') as $offset) {
+                $componentDirectory = $cx->getClassLoader()->getFilePath(
+                    $component->getDirectory(false) . '/View/' . $offset
+                );
+                if (file_exists($componentDirectory)) {
+                    foreach (glob("$componentDirectory/*") as $componentFile) {
+                        if (
+                            substr($componentFile, -3, 3) == 'css' &&
+                            substr($componentFile, -12, 12) != 'Frontend.css'
+                        ) {
+                            continue;
+                        }
+                        if (!isset($componentFiles[$component->getType()])) {
+                            $componentFiles[$component->getType()] = array();
+                        }
+                        $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+                    }
                 }
             }
         }
@@ -2115,7 +2202,10 @@ CODE;
                 if (in_array($fileName, $this->filenames)) {
                     $iconSrc = '../core/ViewManager/View/Media/Config.png';
                 } else {
-                    $iconSrc = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($this->fileSystem->getFullPath($localFile)) . '.png';
+                    $iconSrc  = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath(); 
+                    $iconSrc .= \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon(
+                        $this->fileSystem->getFullPath($localFile) . $localFile->getFullName()
+                    ) . '.png';
                 }
 
                 $icon    = "<img height='16' width='16' alt='icon' src='" . $iconSrc . "' class='icon'>";
@@ -2154,11 +2244,53 @@ CODE;
         } else {
             \JS::activate('ace');
 
-            $contenthtml = htmlspecialchars(
-                preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $this->fileSystem->readFile($file))
-            );
+            // fetch content from file
+            $content = $this->fileSystem->readFile($file);
+
+            // replace placeholder format
+            $content = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $content);
+
+            // escape special characters
+            $contenthtml = htmlspecialchars($content);
+
+            // check if file contains invalid characters
+            if (
+                strlen($content) &&
+                !strlen($contenthtml)
+            ) {
+                // replace invalid code unit sequences with a Unicode
+                // Replacement Character U+FFFD
+                $contenthtml = htmlspecialchars($content, ENT_SUBSTITUTE);
+
+
+                $invalidFileMessage = sprintf(
+                    $_ARRAYLANG['TXT_VIEWMANAGER_INVALID_FILE_ENCODING_MSG'],
+                    contrexx_raw2xhtml($file)
+                );
+                $confirmFileStorage = $invalidFileMessage . sprintf(
+                    $_ARRAYLANG['TXT_VIEWMANAGER_CONFIRM_INVALID_FILE_ENCODING'],
+                    contrexx_raw2xhtml($file)
+                );
+
+                // add warning box regarding done replacement
+                $objTemplate->setVariable(array(
+                    'VIEWMANAGER_INVALID_FILE_ENCODING' => $invalidFileMessage,
+                    'VIEWMANAGER_STORE_INVALID_ENCODING' => $confirmFileStorage,
+                ));
+                $objTemplate->parse('viewmanager_invalid_encoding');
+
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'fileEncodingIsInvalid', true, 'ViewManager'
+                );
+            } else {
+                $objTemplate->hideBlock('viewmanager_invalid_encoding');
+            }
+
             $objTemplate->setVariable('CONTENT_HTML', $contenthtml);
-            $pathInfo =  pathinfo($this->fileSystem->getFullPath($file), PATHINFO_EXTENSION);
+            $pathInfo = pathinfo(
+                $this->fileSystem->getFullPath($file) . $file->getFullName(),
+                PATHINFO_EXTENSION
+            );
             $mode = 'html';
 
             switch($pathInfo) {
@@ -2298,14 +2430,18 @@ CODE;
             return false;
         }
 
+        $offset = 'Template/Frontend';
+        if (substr($path, -3, 3) == 'css') {
+            $offset = 'Style';
+        }
         //get the Core Modules File path
         if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', $path)) {
-            return \Env::get('cx')->getCoreModuleFolderName() .'/'.$moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+            return \Env::get('cx')->getCoreModuleFolderName() .'/'.$moduleName . ($loadFromComponentDir ? '/View' : '') .'/'.$offset.'/' . $fileName;
         }
 
         //get the Modules File path
         if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', $path)) {
-            return \Env::get('cx')->getModuleFolderName() .'/'. $moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+            return \Env::get('cx')->getModuleFolderName() .'/'. $moduleName . ($loadFromComponentDir ? '/View' : '') .'/'.$offset.'/' . $fileName;
         }
 
         return false;

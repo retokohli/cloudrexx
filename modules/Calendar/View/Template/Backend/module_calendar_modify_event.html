@@ -771,13 +771,10 @@
             cx.jQuery('.event_minimized_block').find('input').trigger('keyup');
         }
     }
-
     cx.ready(function() {
         cx.jQuery("#calendar_event_invite_crm_memberships").chosen({ width: '250px' });
     });
 </script>
-
-
 <form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']); {CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS} return formCheck();">
     <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
     <input type="hidden" name="copy" value="{CALENDAR_EVENT_COPY}" />
@@ -828,7 +825,8 @@
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_CATEGORY} <font color="#ff0000">*</font></td>
                 <td>
-                    <select id="category" name="category" style="width: 258px">
+          <select multiple="multiple" id="category" name="category_ids[]"
+                  style="width: 258px">
                         {CALENDAR_EVENT_CATEGORIES}
                     </select>
                 </td>
@@ -880,7 +878,7 @@
                         <td valign="top">{TXT_CALENDAR_EVENT_DESCRIPTION}</td>
                     </tr>
                     <tr class="row1">
-                        <td>
+                        <td style="padding:0 3px 0 0">
                             {CALENDAR_EVENT_DESCRIPTION}
                         </td>
                     </tr>

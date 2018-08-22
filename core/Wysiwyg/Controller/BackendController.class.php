@@ -69,7 +69,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     * @param array $cmd CMD separated by slashes
     * @global array $_ARRAYLANG Language data
     */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         global $_ARRAYLANG;
 
         // Parse entity view generation pages
@@ -289,11 +289,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
-     * This method defines the option to generate the backend view (list and form)
+     * This function returns the ViewGeneration options for a given entityClass
      *
-     * @global array $_ARRAYLANG Language data
-     * @param string $entityClassName contains the FQCN from entity
-     * @return array array containing the options
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
+     * @return array with options
      */
     protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
         global $_ARRAYLANG;

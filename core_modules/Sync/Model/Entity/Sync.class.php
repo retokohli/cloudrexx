@@ -66,24 +66,29 @@ class Sync extends \Cx\Model\Base\EntityBase {
     protected $active;
 
     /**
-     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
+     * @var \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
     protected $dataAccess;
 
     /**
-     * @var Cx\Core_Modules\Sync\Model\Entity\Relation
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $relations;
 
     /**
-     * @var Cx\Core_Modules\Sync\Model\Entity\HostEntity
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $hostEntities;
 
     /**
-     * @var Cx\Core_Modules\Sync\Model\Entity\Change
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $changes;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    protected $originChanges;
     
     protected $oldHostEntities = array();
 
@@ -92,6 +97,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
         $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->hostEntities = new \Doctrine\Common\Collections\ArrayCollection();
         $this->changes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->originChanges = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -197,7 +203,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
     /**
      * Add relation
      *
-     * @param Cx\Core_Modules\Sync\Model\Entity\Relation $relation
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Relation $relation
      */
     public function addRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relation)
     {
@@ -205,9 +211,19 @@ class Sync extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Remove relations
+     *
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Relation $relations
+     */
+    public function removeRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relations)
+    {
+        $this->relations->removeElement($relations);
+    }
+
+    /**
      * Get relations
      *
-     * @return Doctrine\Common\Collections\Collection $relations
+     * @return \Doctrine\Common\Collections\Collection $relations
      */
     public function getRelations()
     {
@@ -227,7 +243,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
     /**
      * Add hostEntity
      *
-     * @param Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity
+     * @param \Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity
      */
     public function addHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity)
     {
@@ -235,9 +251,19 @@ class Sync extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Remove hostEntities
+     *
+     * @param \Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntities
+     */
+    public function removeHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntities)
+    {
+        $this->hostEntities->removeElement($hostEntities);
+    }
+
+    /**
      * Get hostEntities
      *
-     * @return Doctrine\Common\Collections\Collection $hostEntities
+     * @return \Doctrine\Common\Collections\Collection $hostEntities
      */
     public function getHostEntities()
     {
@@ -364,7 +390,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
     /**
      * Add change
      *
-     * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Change $change
      */
     public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
     {
@@ -372,9 +398,19 @@ class Sync extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Remove changes
+     *
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Change $changes
+     */
+    public function removeChange(\Cx\Core_Modules\Sync\Model\Entity\Change $changes)
+    {
+        $this->changes->removeElement($changes);
+    }
+
+    /**
      * Get changes
      *
-     * @return Doctrine\Common\Collections\Collection $changes
+     * @return \Doctrine\Common\Collections\Collection $changes
      */
     public function getChanges()
     {
@@ -389,6 +425,39 @@ class Sync extends \Cx\Model\Base\EntityBase {
     public function setChanges($changes)
     {
         $this->changes[] = $changes;
+    }
+
+    /**
+     * Add originChanges
+     *
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Change $originChanges
+     * @return Sync
+     */
+    public function addOriginChange(\Cx\Core_Modules\Sync\Model\Entity\Change $originChanges)
+    {
+        $this->originChanges[] = $originChanges;
+
+        return $this;
+    }
+
+    /**
+     * Remove originChanges
+     *
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Change $originChanges
+     */
+    public function removeOriginChange(\Cx\Core_Modules\Sync\Model\Entity\Change $originChanges)
+    {
+        $this->originChanges->removeElement($originChanges);
+    }
+
+    /**
+     * Get originChanges
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getOriginChanges()
+    {
+        return $this->originChanges;
     }
     
     public function calculateRelations($spooler, $eventType, $entityClassName, $entityIndexData, $entity) {
@@ -459,6 +528,11 @@ class Sync extends \Cx\Model\Base\EntityBase {
     
     protected function calculateContent($change) {
         $entity = $change->getEntity();
+        // Entity is not set on all changesets
+        if (!$entity) {
+            return $change->getContents();
+        }
+
         // customizing for current calendar:
         if (
             get_class($entity) == 'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
@@ -476,18 +550,10 @@ class Sync extends \Cx\Model\Base\EntityBase {
                 
                 // from CalendarEventManager:
                 $fullyBooked = true;
+                $calendarEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($entity->getId());
                 if (
-                    (
-                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
-                        !$event->registrationExternalFullyBooked
-                    ) ||
-                    (
-                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL &&
-                        (
-                            empty($event->numSubscriber) ||
-                            !\FWValidator::isEmpty($event->getFreePlaces())
-                        )
-                    )
+                    empty($calendarEvent->numSubscriber) ||
+                    !\FWValidator::isEmpty($calendarEvent->getFreePlaces())
                 ) {
                     $fullyBooked = false;
                 }

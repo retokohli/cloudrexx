@@ -85,6 +85,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     protected $objForm = null;
 
     /**
+     * Contains the form fields as key and their slug field's id as value
+     * @var array
+     */
+    protected $formSlugFields = null;
+
+    /**
      * Constructor
      */
     function __construct($name)
@@ -97,9 +103,22 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         parent::getFrontendLanguages();
     }
 
+    /**
+     * Reset fetch entry list
+     *
+     * Use this method to reset the fetch entry list before calling
+     * {@see MediaDirectoryEntry::getEntries} again, unless any
+     * previously loaded entries shall kept loaded.
+     */
+    public function resetEntries() {
+        $this->arrEntries = array();
+        $this->recordCount = 0;
+    }
+
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
+
         $this->intEntryId = intval($intEntryId);
         $this->intLevelId = intval($intLevelId);
         $this->intCatId = intval($intCatId);
@@ -118,20 +137,18 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         $strWhereEntryId = '';
         $strWhereLevel = '';
-        $strFromLevel = '';
+        $strJoinLevel = '';
         $strWhereActive = '';
         $strWhereTerm = '';
         $strWhereLangId = '';
         $strWhereFormId = '';
-        $strFromCategory = '';
+        $strJoinCategory = '';
         $strWhereCategory = '';
         $strOrder = "rel_inputfield.`value` ASC";
+        $strSlugField = '';
+        $strJoinSlug = '';
 
-        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
-            $langId = FRONTEND_LANG_ID;
-        } else {
-            $langId = LANG_ID;
-        }
+        $langId = static::getOutputLocale()->getId();
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && !empty($strSearchTerm)) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
@@ -153,13 +170,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if(!empty($this->intLevelId)) {
-            $strWhereLevel = "AND ((level.`level_id` = ".$this->intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
-            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
+            $strWhereLevel = "AND (level.`level_id` = ".$this->intLevelId.")";
+            $strJoinLevel = "INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level ON level.`entry_id` = entry.`id`";
         }
 
         if(!empty($this->intCatId)) {
-            $strWhereCategory = "AND ((category.`category_id` = ".$this->intCatId.") AND (category.`entry_id` = entry.`id`)) ";
-            $strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
+            $strWhereCategory = "AND (category.`category_id` = ".$this->intCatId.")";
+            $strJoinCategory = "INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category ON category.`entry_id` = entry.`id`";
         }
 
         if(!empty($this->bolLatest)) {
@@ -221,8 +238,15 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if($objInit->mode == 'frontend') {
-            if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
-                $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
+            // only list entries in their primary (or translated) locale
+            if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
+                if ($this->arrSettings['settingsTranslationStatus']) {
+                    // only list entries in their translated locale
+                    $strWhereLangId = 'AND entry.`translation_status` REGEXP "(^|,)' . $langId . '(,|$)"';
+                } else {
+                    // only list entries in their primary locale
+                    $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
+                }
             }
         }
 
@@ -239,6 +263,33 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strWhereDuration = "AND (`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '" . time() . "' AND `duration_end` > '" . time() . "'))) ";
         } else {
             $strWhereDuration = null;
+        }
+
+        if ($this->arrSettings['usePrettyUrls']) {
+            $strSlugField = ",
+                rel_slug_inputfield.`value` AS `slug`,
+                rel_slug_inputfield.`field_id` AS `slug_field_id`
+            ";
+            $strJoinSlug = "
+            LEFT JOIN
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_slug_inputfield
+            ON
+                rel_slug_inputfield.`entry_id` = entry.`id`
+                AND rel_slug_inputfield.`lang_id` = ".$langId."
+                AND (rel_slug_inputfield.`field_id` = (
+                    SELECT 
+                        slug_inputfield.`id` 
+                    FROM
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_inputfield
+                    WHERE
+                        slug_inputfield.`context_type` = 'slug'
+                        AND slug_inputfield.`form` = rel_slug_inputfield.`form_id`
+                    ORDER BY
+                        FIELD(slug_inputfield.`context_type`, 'slug') DESC
+                    LIMIT 1
+                    )
+                )
+            ";
         }
 
         $query = "
@@ -264,14 +315,20 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 entry.`duration_notification` AS `duration_notification`,
                 entry.`translation_status` AS `translation_status`,
                 entry.`ready_to_confirm` AS `ready_to_confirm`,
+                rel_inputfield.`field_id` AS `field_id`,
                 rel_inputfield.`value` AS `value`
+                ".$strSlugField."
             FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
+            INNER JOIN
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
-                ".$strFromCategory."
-                ".$strFromLevel."
+            ON
+                rel_inputfield.`entry_id` = entry.`id`
+            ".$strJoinSlug."
+            ".$strJoinCategory."
+            ".$strJoinLevel."
             WHERE
-                (rel_inputfield.`entry_id` = entry.`id`)
+                rel_inputfield.`entry_id` = entry.`id`
                 ".$strWhereFirstInputfield."
                 ".$strWhereTerm."
                 ".$strWhereUnconfirmed."
@@ -291,44 +348,42 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             ".$strLimit."
             ".$strOffset."
         ";
+
         $objEntries = $objDatabase->Execute($query);
 
         $totalRecords =$objDatabase->Execute("SELECT FOUND_ROWS() AS found_rows");
-
-        $arrEntries = array();
 
         if ($objEntries !== false) {
             while (!$objEntries->EOF) {
                 $arrEntry = array();
                 $arrEntryFields = array();
 
-                if(array_key_exists($objEntries->fields['id'], $arrEntries)) {
-                    $arrEntries[intval($objEntries->fields['id'])]['entryFields'][] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
-                } else {
-                    $arrEntryFields[] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
+                $arrEntryFields[] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
 
-                    $arrEntry['entryId'] = intval($objEntries->fields['id']);
-                    $arrEntry['entryOrder'] = intval($objEntries->fields['order']);
-                    $arrEntry['entryFormId'] = intval($objEntries->fields['form_id']);
-                    $arrEntry['entryFields'] = $arrEntryFields;
-                    $arrEntry['entryCreateDate'] = intval($objEntries->fields['create_date']);
-                    $arrEntry['entryValdateDate'] = intval($objEntries->fields['validate_date']);
-                    $arrEntry['entryAddedBy'] = intval($objEntries->fields['added_by']);
-                    $arrEntry['entryHits'] = intval($objEntries->fields['hits']);
-                    $arrEntry['entryPopularHits'] = intval($objEntries->fields['popular_hits']);
-                    $arrEntry['entryPopularDate'] = intval($objEntries->fields['popular_date']);
-                    $arrEntry['entryLastIp'] = htmlspecialchars($objEntries->fields['last_ip'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrEntry['entryConfirmed'] = intval($objEntries->fields['confirmed']);
-                    $arrEntry['entryActive'] = intval($objEntries->fields['active']);
-                    $arrEntry['entryDurationType'] = intval($objEntries->fields['duration_type']);
-                    $arrEntry['entryDurationStart'] = intval($objEntries->fields['duration_start']);
-                    $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
-                    $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
-                    $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
-                    $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
+                $arrEntry['entryId'] = intval($objEntries->fields['id']);
+                $arrEntry['entryOrder'] = intval($objEntries->fields['order']);
+                $arrEntry['entryFormId'] = intval($objEntries->fields['form_id']);
+                $arrEntry['entryFields'] = $arrEntryFields;
+                $arrEntry['entryCreateDate'] = intval($objEntries->fields['create_date']);
+                $arrEntry['entryValdateDate'] = intval($objEntries->fields['validate_date']);
+                $arrEntry['entryAddedBy'] = intval($objEntries->fields['added_by']);
+                $arrEntry['entryHits'] = intval($objEntries->fields['hits']);
+                $arrEntry['entryPopularHits'] = intval($objEntries->fields['popular_hits']);
+                $arrEntry['entryPopularDate'] = intval($objEntries->fields['popular_date']);
+                $arrEntry['entryLastIp'] = htmlspecialchars($objEntries->fields['last_ip'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrEntry['entryConfirmed'] = intval($objEntries->fields['confirmed']);
+                $arrEntry['entryActive'] = intval($objEntries->fields['active']);
+                $arrEntry['entryDurationType'] = intval($objEntries->fields['duration_type']);
+                $arrEntry['entryDurationStart'] = intval($objEntries->fields['duration_start']);
+                $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
+                $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
+                $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
+                $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
+                $arrEntry['slug_field_id'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug_field_id'] : 0;
+                $arrEntry['slug'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug'] : '';
+                $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
 
-                    $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
-                }
+                $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
 
                 $objEntries->MoveNext();
             }
@@ -338,11 +393,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $this->setCurrentFetchedEntryDataObject($this);
     }
 
-    public function findOneBySlug($slug) {
-        return $this->findOneByName($this->getNameFromSlug($slug));
-    }
-
-    public function findOneByName($name, $formId = null, $catId = null, $levelId = null, $autoload = false) {
+    public function findOneBySlug($slug, $formId = null, $catId = null, $levelId = null, $autoload = false) {
 		$strWhereLevel = '';
 		$strFromLevel = '';
 		$strWhereLangId = '';
@@ -364,8 +415,15 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         	$strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
         }
 
+        // only find entry by its primary (or translated) locale
         if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
-            $strWhereLangId = "AND (entry.`lang_id` = ".FRONTEND_LANG_ID.") ";
+            if ($this->arrSettings['settingsTranslationStatus']) {
+                // only find entry by its translated locale
+                $strWhereLangId = 'AND entry.`translation_status` REGEXP "(^|,)' . static::getOutputLocale()->getId() . '(,|$)"';
+            } else {
+                // only find entry by its primary locale
+                $strWhereLangId = "AND (entry.`lang_id` = ". static::getOutputLocale()->getId() .") ";
+            }
         }
 
         $query = "
@@ -380,9 +438,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             WHERE
                     entry.`active` = 1
                 AND entry.`confirmed` = 1
-                AND inputfield.`context_type` = 'title'
+                AND inputfield.`context_type` = 'slug'
                 AND (entry.`duration_type` = 1 OR (entry.`duration_type` = 2 AND (entry.`duration_start` < '" . time() . "' AND entry.`duration_end` > '" . time() . "')))
-                AND rel_inputfield.`value` = '".contrexx_raw2db($name)."'
+                AND rel_inputfield.`value` = '".contrexx_raw2db($slug)."'
                 ".$strWhereCategory."
                 ".$strWhereLevel."
                 ".$strWhereLangId."
@@ -418,7 +476,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         return $this->strBlockName;
     }
 
-    function listEntries($objTpl, $intView, $googleMapPlaceholder = null)
+    function listEntries($objTpl, $intView, $templateKey = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
@@ -649,6 +707,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             }
                         }
 
+                        if (!isset($arrAlphaGroups[$strAlphaIndex])) {
+                            $arrAlphaGroups[$strAlphaIndex] = array();
+                        }
+
                         $arrAlphaGroups[$strAlphaIndex][] = $arrEntry;
                     }
 
@@ -787,12 +849,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             case 4:
                 //Google Map
 
-                if (!isset($googleMapPlaceholder)) {
-                    $googleMapPlaceholder = $this->moduleLangVar.'_GOOGLE_MAP';
+                if (!isset($templateKey)) {
+                    $templateKey = $this->moduleLangVar.'_GOOGLE_MAP';
                 }
 
                 // abort in case the relevant placeholder is missing in the template
-                if (!$objTpl->placeholderExists($googleMapPlaceholder)) {
+                if (!$objTpl->placeholderExists($templateKey)) {
                     break;
                 }
 
@@ -883,18 +945,20 @@ JSCODE;
                 }
 
                 $objTpl->setVariable(array(
-                    $googleMapPlaceholder => $objGoogleMap->getMap()
+                    $templateKey => $objGoogleMap->getMap()
                 ));
 
                 break;
 
             case 5:
-                // Frontend View: related entries
+                // Frontend View: related entries / previous entry / next entry
+                $varPrefixLC = '_' . strtolower($templateKey);
+                $varPrefixUC = '_' . strtoupper($templateKey);
                 foreach ($this->arrEntries as $key => $arrEntry) {
                     if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                         $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
-                        $objInputfields->moduleNameLC .= '_related';
-                        $objInputfields->moduleLangVar .= '_RELATED';
+                        $objInputfields->moduleNameLC .= $varPrefixLC;
+                        $objInputfields->moduleLangVar .= $varPrefixUC;
                         $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
 
                         if(intval($arrEntry['entryAddedBy']) != 0) {
@@ -914,24 +978,24 @@ JSCODE;
                             }
                         } catch (MediaDirectoryEntryException $e) {}
                         $objTpl->setVariable(array(
-                            $this->moduleLangVar.'_RELATED_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
-                            $this->moduleLangVar.'_RELATED_ENTRY_ID' =>  $arrEntry['entryId'],
-                            $this->moduleLangVar.'_RELATED_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
-                            $this->moduleLangVar.'_RELATED_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
-                            $this->moduleLangVar.'_RELATED_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
-                            $this->moduleLangVar.'_RELATED_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
-                            $this->moduleLangVar.'_RELATED_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-                            $this->moduleLangVar.'_RELATED_ENTRY_HITS' =>  $arrEntry['entryHits'],
-                            $this->moduleLangVar.'_RELATED_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
-                            $this->moduleLangVar.'_RELATED_ENTRY_DETAIL_URL' => $strDetailUrl,
-                            'TXT_'.$this->moduleLangVar.'_RELATED_ENTRY_DETAIL' =>  $_ARRAYLANG['TXT_MEDIADIR_DETAIL'],
+                            $this->moduleLangVar . $varPrefixUC . '_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_ID' =>  $arrEntry['entryId'],
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_DETAIL_URL' => $strDetailUrl,
+                            'TXT_'.$this->moduleLangVar . $varPrefixUC . '_ENTRY_DETAIL' =>  $_ARRAYLANG['TXT_MEDIADIR_DETAIL'],
                         ));
 
                         foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
                             $intPos = $key+1;
 
                             $objTpl->setVariable(array(
-                                'MEDIADIR_RELATED_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
+                                $this->moduleLangVar . $varPrefixUC . '_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
                             ));
                         }
 
@@ -1101,41 +1165,49 @@ JSCODE;
     /**
      * Update the entries while activating the new language.
      *
-     * @return null
+     * @param   array
      */
-    public function updateEntries()
-    {
-        global $objDatabase, $_LANGID;
+    public function updateEntries($usedLocaleIds = array()) {
+        $db = $this->cx->getDb()->getAdoDb();
+        foreach ($this->arrFrontendLanguages as $arrLocale) {
+            $sourceLocaleId = static::getSourceLocaleIdForTargetLocale($arrLocale['id'], $usedLocaleIds);
+            $objEntries = $db->Execute('
+                SELECT t1.* 
+                FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1
+                WHERE
+                    `lang_id` = ' . $sourceLocaleId . '
+                 OR `lang_id` =  "
+                        SELECT
+                            first_rel_inputfield.`lang_id` AS `id`
+                        FROM
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
+                        LEFT JOIN
+                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
+                        ON
+                            first_rel_inputfield.`field_id` = inputfield.`id`
+                        WHERE
+                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
+                        AND
+                            (first_rel_inputfield.`form_id` = t1.`form_id`)
+                        AND
+                            (first_rel_inputfield.`value` != "")
+                        LIMIT 1"
+                GROUP BY `field_id`, `entry_id`, `form_id`
+                ORDER BY `entry_id`'
+            );
 
-        $objEntries = $objDatabase->Execute('SELECT t1.* FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1 WHERE `lang_id` = '.$_LANGID.' OR `lang_id` =  "SELECT
-                                            first_rel_inputfield.`lang_id` AS `id`
-                                        FROM
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
-                                        LEFT JOIN
-                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
-                                        ON
-                                            first_rel_inputfield.`field_id` = inputfield.`id`
-                                        WHERE
-                                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
-                                        AND
-                                            (first_rel_inputfield.`form_id` = t1.`form_id`)
-                                        AND
-                                            (first_rel_inputfield.`value` != "")
-                                        LIMIT 1" GROUP BY `field_id`, `entry_id`, `form_id`  ORDER BY `entry_id`'
-                        );
-
-        if ($objEntries !== false) {
+            if ($objEntries === false) {
+                continue;
+            }
             while (!$objEntries->EOF) {
-                foreach ($this->arrFrontendLanguages as $lang) {
-                    $objDatabase->Execute('
-                        INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
-                            SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
-                                `lang_id`="' . contrexx_raw2db($lang['id']) . '",
-                                `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
-                                `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
-                                `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
-                    );
-                }
+                $db->Execute('
+                    INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
+                        SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
+                            `lang_id`="' . contrexx_raw2db($arrLocale['id']) . '",
+                            `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
+                            `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
+                            `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
+                );
                 $objEntries->MoveNext();
             }
         }
@@ -1143,7 +1215,7 @@ JSCODE;
 
     function saveEntry($arrData, $intEntryId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         $objFWUser = \FWUser::getFWUserObject();
         $translationStatus = isset($arrData['translationStatus']) ? $arrData['translationStatus'] : array();
@@ -1151,10 +1223,13 @@ JSCODE;
         //get data
         $intId = intval($intEntryId);
         $intFormId = intval($arrData['formId']);
-        $strCreateDate = mktime();
-        $strUpdateDate = mktime();
+        $strCreateDate = time();
+        $strUpdateDate = time();
         $intUserId = intval($objFWUser->objUser->getId());
-        $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strLastIp = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
         $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
 
 
@@ -1203,11 +1278,11 @@ JSCODE;
                 $intActive = 1;
                 $intShowIn = 2;
                 $intDurationType = $this->arrSettings['settingsEntryDisplaydurationType'];
-                $intDurationStart = mktime();
+                $intDurationStart = time();
                 $intDurationEnd = mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear);
             }
 
-            $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
+            $strValidateDate = $intConfirmed == 1 ? time() : 0;
 
             //insert new entry
             $objResult = $objDatabase->Execute("
@@ -1217,7 +1292,7 @@ JSCODE;
                        `validate_date`='".$strValidateDate."',
                        `update_date`='".$strValidateDate."',
                        `added_by`='".$intUserId."',
-                       `lang_id`='".$_LANGID."',
+                       `lang_id`='" . static::getOutputLocale()->getId() . "',
                        `hits`='0',
                        `last_ip`='".$strLastIp."',
                        `confirmed`='".$intConfirmed."',
@@ -1257,7 +1332,7 @@ JSCODE;
 
             $arrAdditionalQuery[] = " `updated_by`='".$intUserId."'";
 
-            if(intval($arrData['userId']) != 0) {
+            if (isset($arrData['userId']) && intval($arrData['userId']) != 0) {
                 $arrAdditionalQuery[] = "`added_by`='".intval($arrData['userId'])."'";
             }
 
@@ -1266,7 +1341,7 @@ JSCODE;
             }
 
             $strAdditionalQuery = join(",", $arrAdditionalQuery);
-            $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
+            $strValidateDate = $intConfirmed == 1 ? time() : 0;
 
             $objUpdateEntry = $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
@@ -1289,6 +1364,9 @@ JSCODE;
         //////////////////////
 
         $error = false;
+        $titleData = array();
+
+        $outputLocaleId = static::getOutputLocale()->getId();
 
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
@@ -1340,9 +1418,24 @@ JSCODE;
                 continue;
             }
 
+            if (($arrInputfield['context_type'] == 'title' || empty($titleData)) && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
+                $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+            }
+
+            // slugify slug value
+            if ($arrInputfield['context_type'] == 'slug' && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
+                $slugValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+                array_walk(
+                    $slugValues,
+                    array($this, 'slugify'),
+                    $titleData
+                );
+                $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] = $slugValues;
+            }
+
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (   empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
-                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$_LANGID]
+                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$outputLocaleId]
             ) {
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id='".intval($arrInputfield['id'])."'");
                 if (!$objResult) {
@@ -1396,11 +1489,14 @@ JSCODE;
                     if ($arrInputfield['type_dynamic'] == 1) {
                         $arrDefault = array();
                         foreach ($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0] as $intKey => $arrValues) {
-                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID][$intKey];
+                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId][$intKey];
                             $arrOldDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]['old'][$intKey];
                             $arrNewValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
                             foreach ($arrValues as $strKey => $strMasterValue) {
-                                if ($intLangId == $_LANGID) {
+                                if ($intLangId == $outputLocaleId) {
+                                    if (!isset($arrDefault[$intKey])) {
+                                        $arrDefault[$intKey] = array();
+                                    }
                                     if ($arrNewDefault[$strKey] != $strMasterValue) {
                                         if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
                                             $arrDefault[$intKey][$strKey] = $strMasterValue;
@@ -1412,6 +1508,9 @@ JSCODE;
                                     }
                                 } else {
                                     if ($arrNewValues[$strKey] == '') {
+                                        if (!isset($arrDefault[$intKey])) {
+                                            $arrDefault[$intKey] = array();
+                                        }
                                         $arrDefault[$intKey][$strKey] = $strMasterValue;
                                     } else {
                                         $arrDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId];
@@ -1425,14 +1524,14 @@ JSCODE;
                         // attribute's VALUE of certain frontend language ($intLangId) is empty
                         empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
                         // or the process is parsing the user's current interface language
-                        || $intLangId == $_LANGID
+                        || $intLangId == $outputLocaleId
                     ) {
                         $strMaster =
                             (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
                               ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
                               : null);
-                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
-                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
+                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$outputLocaleId]
                                             : '';
                         if ($strNewDefault != $strMaster) {
                             $strDefault = $strMaster;
@@ -1560,7 +1659,10 @@ JSCODE;
         $strPopularDate = $this->arrEntries[intval($intEntryId)]['entryPopularDate'];
         $intPopularDays = intval($this->arrSettings['settingsPopularNumRestore']);
         $strLastIp      = $this->arrEntries[intval($intEntryId)]['entryLastIp'];
-        $strNewIp       = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strNewIp       = contrexx_addslashes(
+            $cx->getComponent('Stats')->getCounterInstance()->getUniqueUserId()
+        );
 
         $strToday  = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $tempDays  = date("d",$strPopularDate);
@@ -1628,6 +1730,9 @@ JSCODE;
         return $strDropdownUsers;
     }
 
+    /**
+     * Parse template blocks mediadir_category or mediadir_level
+     */
     public function parseCategoryLevels($intType, $intEntryId=null, $objTpl) {
         $categoryId = null;
         $levelId = null;
@@ -1646,6 +1751,13 @@ JSCODE;
         }
 
         if ($objCategoriesLevels !== false && $objCategoriesLevels->RecordCount() > 0) {
+            // check if any thumbnail placeholders are present in the template
+            $placeholders = $objTpl->getPlaceholderList('mediadir_' . strtolower($list));
+            $hasThumbnailPlaceholders = !empty(preg_grep('/^' . $this->moduleLangVar . '_ENTRY_' . $list . '_THUMBNAIL_FORMAT_' . '/', $placeholders));
+            if ($hasThumbnailPlaceholders) {
+                $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+            }
+
             while(!$objCategoriesLevels->EOF) {
                 // assign ID to related variable based on the requested type (category or level)
                 if ($intType == 1) {
@@ -1654,12 +1766,34 @@ JSCODE;
                     $levelId = $objCategoriesLevels->fields['elm_id'];
                 }
 
+                $picture = contrexx_raw2xhtml($objCategoriesLevels->fields['elm_picture']);
                 $objTpl->setVariable(array(
                     $this->moduleLangVar . '_ENTRY_' . $list . '_ID'        => $objCategoriesLevels->fields['elm_id'],
                     $this->moduleLangVar . '_ENTRY_' . $list . '_NAME'      => contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']),
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId),
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId, true).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId, true),
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE'   => '<img src="'.$picture.'" border="0" alt="'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'" />',
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_PICTURE_SOURCE' => $picture,
                 ));
+
+                // parse thumbnails
+                if ($hasThumbnailPlaceholders && !empty($picture)) {
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($picture, PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($picture, PATHINFO_BASENAME);
+                    $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                        $objTpl->setVariable(
+                            $this->moduleLangVar . '_ENTRY_' . $list . '_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
+                    }
+                }
+
                 $objTpl->parse('mediadir_' . strtolower($list));
                 $objCategoriesLevels->MoveNext();
             }
@@ -1670,48 +1804,82 @@ JSCODE;
 
 
     protected function getCategories($intEntryId = null) {
-        global $objDatabase, $_LANGID;
+        switch ($this->arrSettings['settingsCategoryOrder']) {
+            case 0:
+                // custom order
+                $sortOrder = 'cat_image.`order` ASC';
+                break;
+
+            case 1:
+            case 2:
+            default:
+                // alphabetical order
+                $sortOrder = 'cat_name.`category_name` ASC';
+                break;
+        }
+
         $query = "SELECT
             cat_rel.`category_id` AS `elm_id`,
+            cat_image.`picture` AS `elm_picture`,
             cat_name.`category_name` AS `elm_name`
           FROM
             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS cat_rel
           INNER JOIN
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_categories AS cat_image
+          ON
+            cat_image.`id` = cat_rel.`category_id`
+          INNER JOIN
             ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names AS cat_name
           ON
-            cat_rel.`category_id` = cat_name.`category_id`
+            cat_name.`category_id` = cat_image.`id`
           WHERE
             cat_rel.`entry_id` = ?
           AND
             cat_name.`lang_id` = ?
           ORDER BY
-            cat_name.`category_name` ASC
-          ";
+            ". $sortOrder;
 
-        return $objDatabase->Execute($query, array($intEntryId, $_LANGID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
     protected function getLevels($intEntryId = null) {
-        global $objDatabase, $_LANGID;
+        switch ($this->arrSettings['settingsLevelOrder']) {
+            case 0:
+                // custom order
+                $sortOrder = 'level_image.`order` ASC';
+                break;
+
+            case 1:
+            case 2:
+            default:
+                // alphabetical order
+                $sortOrder = 'level_name.`level_name` ASC';
+                break;
+        }
+
         $query = "SELECT
             level_rel.`level_id` AS `elm_id`,
+            level_image.`picture` AS `elm_picture`,
             level_name.`level_name` AS `elm_name`
           FROM
             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level_rel
           INNER JOIN
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_levels AS level_image
+          ON
+            level_image.`id` = level_rel.`level_id`
+          INNER JOIN
             ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_name
           ON
-            level_rel.`level_id` = level_name.`level_id`
+            level_name.`level_id` = level_image.`id`
           WHERE
             level_rel.`entry_id` = ?
           AND
             level_name.`lang_id` = ?
           ORDER BY
-            level_name.`level_name` ASC
-          ";
+            ". $sortOrder;
 
-        return $objDatabase->Execute($query, array($intEntryId, $_LANGID));
+        return $this->cx->getDb()->getAdoDb()->Execute($query, array($intEntryId, static::getOutputLocale()->getId()));
     }
 
 
@@ -1798,37 +1966,65 @@ JSCODE;
      */
     public function searchResultsForSearchModule($searchTerm)
     {
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-
-        // only list results in case the associated page of the module is active
-        $page = $pageRepo->findOneBy(array(
-            'module' => 'MediaDir',
-            'lang'   => FRONTEND_LANG_ID,
-            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-        ));
-
-        //If page is not exists or page is inactive then return empty result
-        if (!$page || !$page->isActive()) {
-            return array();
-        }
-
         //get the config site values
         \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
         $coreListProtectedPages   = \Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages','Config');
         $searchVisibleContentOnly = \Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly','Config');
+
         //get the config otherConfigurations value
         \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
         $searchDescriptionLength  = \Cx\Core\Setting\Controller\Setting::getValue('searchDescriptionLength','Config');
 
-        $hasPageAccess = true;
-        $isNotVisible = ($searchVisibleContentOnly == 'on') && !$page->isVisible();
-        if ($coreListProtectedPages == 'off' && $page->isFrontendProtected()) {
-            $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+        // fetch data about existing application pages of this component
+        $cmds = array();
+        $em = $this->cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $pages = $pageRepo->getAllFromModuleCmdByLang($this->moduleName);
+        foreach ($pages as $pagesOfLang) {
+            foreach ($pagesOfLang as $page) {
+                $cmds[] = $page->getCmd();
+            }
         }
 
-        //If the page is invisible and frontend access is denied then return empty result
-        if ($isNotVisible || !$hasPageAccess) {
+        // check if an application page is published
+        $cmds = array_unique($cmds);
+        foreach ($cmds as $idx => $cmd) {
+            // fetch application page with specific CMD from current locale
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmd, FRONTEND_LANG_ID);
+
+            // skip if page does not exist in current locale or has not been
+            // published
+            if (
+                !$page ||
+                !$page->isActive()
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+
+            // skip invisible page (if excluded from search)
+            if (
+                $searchVisibleContentOnly == 'on' &&
+                !$page->isVisible()
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+
+            // skip protected page (if excluded from search)
+            if (
+                $coreListProtectedPages == 'off' &&
+                $page->isFrontendProtected() &&
+                $page->getComponent('Session')->getSession() &&
+                !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+        }
+
+        // abort in case no valid application page is published
+        if (empty($cmds)) {
             return array();
         }
 
@@ -1851,6 +2047,10 @@ JSCODE;
                 $pageUrlResult = $this->getDetailUrlOfEntry($entry, true);
             } catch (MediaDirectoryEntryException $e) {
                 // if entry has no page to be listed on, then dont show it in the result
+                continue;
+            }
+
+            if (!$pageUrlResult) {
                 continue;
             }
 
@@ -1895,10 +2095,13 @@ JSCODE;
             }
 
             $results[] = array(
-                'Score'   => 100,
-                'Title'   => html_entity_decode(contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET),
-                'Content' => $content,
-                'Link'    => $pageUrlResult->toString()
+                'Score'     => 100,
+                'Title'     => html_entity_decode(
+                    contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET
+                ),
+                'Content'   => $content,
+                'Link'      => (string) $pageUrlResult,
+                'Component' => $this->moduleName,
             );
         }
         return $results;

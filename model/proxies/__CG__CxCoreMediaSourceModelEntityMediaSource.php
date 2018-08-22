@@ -73,10 +73,10 @@ class MediaSource extends \Cx\Core\MediaSource\Model\Entity\MediaSource implemen
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
+            return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'systemComponentController', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
+        return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'systemComponentController', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
     }
 
     /**
@@ -306,6 +306,17 @@ class MediaSource extends \Cx\Core\MediaSource\Model\Entity\MediaSource implemen
     /**
      * {@inheritDoc}
      */
+    public function getSystemComponentController()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSystemComponentController', array());
+
+        return parent::getSystemComponentController();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function get($elementId = NULL, $filter = array (
 ), $order = array (
 ), $limit = 0, $offset = 0, $fieldList = array (
@@ -418,6 +429,28 @@ class MediaSource extends \Cx\Core\MediaSource\Model\Entity\MediaSource implemen
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOptions', array());
 
         return parent::getOptions();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addDataAccess', array($dataAccesses));
+
+        return parent::addDataAccess($dataAccesses);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeDataAccess', array($dataAccesses));
+
+        return parent::removeDataAccess($dataAccesses);
     }
 
     /**

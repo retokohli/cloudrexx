@@ -211,7 +211,7 @@ class CalendarLibrary
      * 
      * @param string $tplPath Template path
      */
-    function __construct($tplPath){                                                                      
+    public function __construct($tplPath = '') {
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
@@ -413,25 +413,6 @@ class CalendarLibrary
         
         static::$settings[$this->moduleTablePrefix] = $arrSettings;
         $this->arrSettings = $arrSettings;
-    }
-    
-    /**
-     * Used to bulid the option menu from the array
-     * 
-     * @param type    $arrOptions  options value for the select menu
-     * @param integer $intSelected selected option in the select menu
-     * 
-     * @return string drop down options
-     */
-    function buildDropdownmenu($arrOptions, $intSelected=null)
-    {
-        $strOptions = '';
-        foreach ($arrOptions as $intValue => $strName) {
-            $checked = $intValue==$intSelected ? 'selected="selected"' : '';
-            $strOptions .= "<option value='".$intValue."' ".$checked.">".htmlspecialchars($strName, ENT_QUOTES, CONTREXX_CHARSET)."</option>";
-        }
-
-        return $strOptions;
     }
     
     /**
@@ -890,7 +871,7 @@ EOF;
         if ($eventName == 'clearEsiCache') {
             $this->cx->getEvents()->triggerEvent(
                 'clearEsiCache',
-                array('Widget', $this->getHeadlinePlaceholders())
+                array('Widget', static::getHeadlinePlaceholders())
             );
             return;
         }
@@ -1022,10 +1003,10 @@ EOF;
      *
      * @return array
      */
-    public function getHeadlinePlaceholders()
+    public static function getHeadlinePlaceholders()
     {
         $placeholders = array();
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 21; $i++) {
             $id = '';
             if ($i > 1) {
                 $id = $i;

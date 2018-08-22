@@ -274,7 +274,7 @@ class NewsletterLib
     static function _addRecipient(
         $email, $uri, $sex, $salutation, $title, $lastname, $firstname, $position, $company, $industry_sector,
         $address, $zip, $city, $country, $phone_office, $phone_private, $phone_mobile, $fax, $notes, $birthday, $status,
-        $arrLists, $language
+        $arrLists, $language, $source
     ) {
         global $objDatabase;
 
@@ -284,7 +284,7 @@ class NewsletterLib
                 `lastname`, `firstname`, `position`, `company`, `industry_sector`,
                 `address`, `zip`, `city`, `country_id`, `phone_office`, `phone_private`,
                 `phone_mobile`, `fax`, `notes`, `birthday`, `status`,
-                `emaildate`, `language`
+                `emaildate`, `language`, `source`
             ) VALUES (
                 '".self::_emailCode()."',
                 '".contrexx_addslashes($email)."',
@@ -307,45 +307,122 @@ class NewsletterLib
                 '".contrexx_addslashes($fax)."',
                 '".contrexx_addslashes($notes)."',
                 '".contrexx_addslashes($birthday)."',
-                ".intval($status).",
-                ".time().",
-                ".intval($language)."
+                '".intval($status)."',
+                '".time()."',
+                '".intval($language)."',
+                '". $source ."'
             )")
         ) {
             return false;
         }
-        return self::_setRecipientLists($objDatabase->Insert_ID(), $arrLists);
+        return static::_setRecipientLists(
+            $objDatabase->Insert_ID(),
+            $arrLists,
+            $source
+        );
     }
 
 
     function _updateRecipient(
         $recipientAttributeStatus, $id, $email, $uri, $sex, $salutation, $title, $lastname, $firstname, $position, $company, $industry_sector,
         $address, $zip, $city, $country, $phone_office, $phone_private, $phone_mobile, $fax, $notes, $birthday, $status,
-        $arrLists, $language
+        $arrLists, $language, $source
     ) {
         global $objDatabase;
 
         $query = \SQL::update('module_newsletter_user', array(
             'email' => contrexx_addslashes($email),
-            'uri' => array('val' => contrexx_addslashes($uri), 'omitEmpty' => !$recipientAttributeStatus['recipient_website']['active']),
-            'sex' => array('val' => contrexx_addslashes($sex), 'omitEmpty' => !$recipientAttributeStatus['recipient_sex']['active']),
-            'salutation' => array('val' => contrexx_addslashes($salutation), 'omitEmpty' => !$recipientAttributeStatus['recipient_salutation']['active']),
-            'title' => array('val' => contrexx_addslashes($title), 'omitEmpty' => !$recipientAttributeStatus['recipient_title']['active']),
-            'lastname' => array('val' => contrexx_addslashes($lastname), 'omitEmpty' => !$recipientAttributeStatus['recipient_lastname']['active']),
-            'firstname' => array('val' => contrexx_addslashes($firstname), 'omitEmpty' => !$recipientAttributeStatus['recipient_firstname']['active']),
-            'position' => array('val' => contrexx_addslashes($position), 'omitEmpty' => !$recipientAttributeStatus['recipient_position']['active']),
-            'company' => array('val' => contrexx_addslashes($company), 'omitEmpty' => !$recipientAttributeStatus['recipient_company']['active']),
-            'industry_sector' => array('val' => contrexx_addslashes($industry_sector), 'omitEmpty' => !$recipientAttributeStatus['recipient_industry']['active']),
-            'address' => array('val' => contrexx_addslashes($address), 'omitEmpty' => !$recipientAttributeStatus['recipient_address']['active']),
-            'zip' => array('val' => contrexx_addslashes($zip), 'omitEmpty' => !$recipientAttributeStatus['recipient_zip']['active']),
-            'city' => array('val' => contrexx_addslashes($city), 'omitEmpty' => !$recipientAttributeStatus['recipient_city']['active']),
-            'country_id' => array('val' => contrexx_addslashes($country), 'omitEmpty' => !$recipientAttributeStatus['recipient_country']['active']),
-            'phone_office' => array('val' => contrexx_addslashes($phone_office), 'omitEmpty' => !$recipientAttributeStatus['recipient_phone']['active']),
-            'phone_private' => array('val' => contrexx_addslashes($phone_private), 'omitEmpty' => !$recipientAttributeStatus['recipient_private']['active']),
-            'phone_mobile' => array('val' => contrexx_addslashes($phone_mobile), 'omitEmpty' => !$recipientAttributeStatus['recipient_mobile']['active']),
-            'fax' => array('val' => contrexx_addslashes($fax), 'omitEmpty' => !$recipientAttributeStatus['recipient_fax']['active']),
+            'uri' => array(
+                'val'       => contrexx_addslashes($uri),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_website']) ||
+                               !$recipientAttributeStatus['recipient_website']['active']
+            ),
+            'sex' => array(
+                'val'       => contrexx_addslashes($sex),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_sex']) ||
+                               !$recipientAttributeStatus['recipient_sex']['active']
+            ),
+            'salutation' => array(
+                'val'       => contrexx_addslashes($salutation),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_salutation']) ||
+                               !$recipientAttributeStatus['recipient_salutation']['active']
+            ),
+            'title' => array(
+                'val'       => contrexx_addslashes($title),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_title']) ||
+                               !$recipientAttributeStatus['recipient_title']['active']
+            ),
+            'lastname' => array(
+                'val'       => contrexx_addslashes($lastname),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_lastname']) ||
+                               !$recipientAttributeStatus['recipient_lastname']['active']
+            ),
+            'firstname' => array(
+                'val'       => contrexx_addslashes($firstname),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_firstname']) ||
+                               !$recipientAttributeStatus['recipient_firstname']['active']
+            ),
+            'position' => array(
+                'val'       => contrexx_addslashes($position),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_position']) ||
+                               !$recipientAttributeStatus['recipient_position']['active']
+            ),
+            'company' => array(
+                'val'       => contrexx_addslashes($company),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_company']) ||
+                               !$recipientAttributeStatus['recipient_company']['active']
+            ),
+            'industry_sector' => array(
+                'val'       => contrexx_addslashes($industry_sector),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_industry']) ||
+                               !$recipientAttributeStatus['recipient_industry']['active']
+            ),
+            'address' => array(
+                'val'       => contrexx_addslashes($address), 
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_address']) ||
+                               !$recipientAttributeStatus['recipient_address']['active']
+            ),
+            'zip' => array(
+                'val'       => contrexx_addslashes($zip),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_zip']) ||
+                               !$recipientAttributeStatus['recipient_zip']['active']
+            ),
+            'city' => array(
+                'val'       => contrexx_addslashes($city),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_city']) ||
+                               !$recipientAttributeStatus['recipient_city']['active']
+            ),
+            'country_id' => array(
+                'val'       => contrexx_addslashes($country),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_country']) ||
+                               !$recipientAttributeStatus['recipient_country']['active']
+            ),
+            'phone_office' => array(
+                'val'       => contrexx_addslashes($phone_office),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_phone']) ||
+                               !$recipientAttributeStatus['recipient_phone']['active']
+            ),
+            'phone_private' => array(
+                'val'       => contrexx_addslashes($phone_private),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_private']) ||
+                               !$recipientAttributeStatus['recipient_private']['active']
+            ),
+            'phone_mobile' => array(
+                'val'       => contrexx_addslashes($phone_mobile),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_mobile']) ||
+                               !$recipientAttributeStatus['recipient_mobile']['active']
+            ),
+            'fax' => array(
+                'val'       => contrexx_addslashes($fax),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_fax']) ||
+                               !$recipientAttributeStatus['recipient_fax']['active']
+            ),
             'notes' => (!$notes ? '' : contrexx_addslashes($notes)),
-            'birthday' => array('val' => contrexx_addslashes($birthday), 'omitEmpty' => !$recipientAttributeStatus['recipient_birthday']['active']),
+            'birthday' => array(
+                'val'       => contrexx_addslashes($birthday),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_birthday']) ||
+                               !$recipientAttributeStatus['recipient_birthday']['active']
+            ),
             'status' => intval($status),
             'language' => intval($language)
         ))."WHERE id=".$id;
@@ -353,7 +430,7 @@ class NewsletterLib
         if (!$objDatabase->Execute($query)) {
             return false;
         }
-        return $this->_setRecipientLists($id, $arrLists);
+        return static::_setRecipientLists($id, $arrLists, $source);
     }
 
 
@@ -362,49 +439,47 @@ class NewsletterLib
      * present in the array
      * @param   integer   $recipientId      The recipient ID
      * @param   array     $arrLists         The array of list IDs to subscribe
+     * @param string $source One of "opt-in", "backend", "api"
      * @return  boolean                     True on success, false otherwise
      * @static
      */
-    static function _setRecipientLists($recipientId, $arrLists)
+    static function _setRecipientLists($recipientId, $arrLists, $source)
     {
         global $objDatabase;
 
-        if (!$objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat
-             WHERE user=$recipientId"))
+        // delete
+        if ($objDatabase->Execute('
+            DELETE FROM
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+            WHERE
+                `user` = ' . $recipientId . ' AND
+                `category` NOT IN (' . implode(', ', $arrLists) . ')
+        ') === false) {
             return false;
-        foreach ($arrLists as $listId) {
-            if (!$objDatabase->Execute("
-                INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (
-                    `user`, `category`
-                ) VALUES (
-                    $recipientId, $listId
-                )")
-            ) {
-                return false;
-            }
+        }
+
+        // insert missing relations
+        if ($objDatabase->Execute('
+            INSERT IGNORE INTO
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+                (
+                    `user`,
+                    `category`,
+                    `source`
+                )
+            SELECT
+                ' . $recipientId . ' as `user`,
+                `id` as `category`,
+                "' . $source . '" as `source`
+            FROM
+                `' . DBPREFIX . 'module_newsletter_category`
+            WHERE
+                `id` IN (' . implode(', ', $arrLists) . ')
+        ') === false) {
+            return false;
         }
         return true;
     }
-
-
-    function _addRecipient2List($recipientId, $listId)
-    {
-        global $objDatabase;
-
-        $objRelList = $objDatabase->Execute("SELECT 1 FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId." AND category = ".$listId);
-        if ($objRelList !== false) {
-            if ($objRelList->RecordCount() == 0) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (`user`, `category`) VALUES (".$recipientId.", ".$listId.")") !== false) {
-                    return true;
-                }
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
 
     static function _emailCode()
     {
@@ -786,6 +861,11 @@ class NewsletterLib
     protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $realUser)
     {
         global $objDatabase;
+
+        $arrSettings = static::_getSettings();
+        if (!$arrSettings['statistics']['setvalue']) {
+            return $MailHtmlContent;
+        }
 
         $result = $MailHtmlContent;
         $matches = NULL;
