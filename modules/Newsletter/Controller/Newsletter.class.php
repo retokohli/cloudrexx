@@ -105,19 +105,38 @@ class Newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
+        $arrSettings = $this->_getSettings();
         $userEmail   = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
         $count       = 0;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
         $currentTime = $dateTime->format('Y-m-d H:i:s');
         if (!empty($userEmail)) {
-            $query     = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
+            $query     = "SELECT id,emaildate FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
-            $userId    = $objResult->fields['id'];
         }
         if (empty($count)) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
+            return;
+        }
+        $userId    = $objResult->fields['id'];
+        $emailDate = $cx->getComponent('DateTime')->createDateTimeForDb(
+            '@' . $objResult->fields['emaildate']
+        );
+
+        // Checks registered time with current time, if time exceeds
+        // configured number of hours user will be removed from a list
+        $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
+        $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('now');
+        $dateTime->modify('-' . $confirmLinkHour . ' hours');
+        // If link has expired we drop or deactivate the user
+        if ($emailDate < $dateTime) {
+            $this->autoCleanRegisters();
+            $this->_objTpl->setVariable(
+                'NEWSLETTER_MESSAGE',
+                '<span class="text-danger">'. $_ARRAYLANG['TXT_NEWSLETTER_NOT_CONFIRM_MSG'] .'</span>'
+            );
             return;
         }
 
@@ -180,8 +199,6 @@ class Newsletter extends NewsletterLib
                         $userSex = '';
                         break;
                 }
-
-                $arrSettings = $this->_getSettings();
 
                 $url = $_SERVER['SERVER_NAME'];
                 $arrMailTemplate = array(
