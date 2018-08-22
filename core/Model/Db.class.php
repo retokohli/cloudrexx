@@ -143,10 +143,13 @@ namespace Cx\Core\Model {
          * @return  \Cx\Core\Model\Db   Instance based on existing database connection
          */
         public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser,
-                                                      \PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em
+                                                      \PDO $pdo, \ADODB_pdo $adoDb, \Cx\Core\Model\Controller\EntityManager $em
         ) {
             // Bind database connection
-            $db = new static($dbConnection, $dbUser);
+
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cacheDriver = $cx->getComponent('Cache')->getCacheDriver();
+            $db = new static($dbInfo, $dbUser, $cacheDriver);
             $db->setPdoConnection($pdo);
             $db->setAdoDb($adoDb);
             $db->setEntityManager($em);
@@ -303,12 +306,12 @@ namespace Cx\Core\Model {
             $config->setProxyNamespace('Cx\Model\Proxies');
 
             /**
-             * This should be set to true if workbench is present and active.
-             * Just checking for workbench.config is not really a good solution.
-             * Since ConfigurationFactory used by EM caches auto generation
-             * config value, there's no possibility to set this later.
+             * We set this to false as we only generate proxies by hand.
+             * Use one of the following commands to do so:
+             * ./cx workbench database update
+             * ./cx workbench doctrine orm:generate-proxies
              */
-            $config->setAutoGenerateProxyClasses(file_exists(ASCMS_DOCUMENT_ROOT.'/workbench.config'));
+            $config->setAutoGenerateProxyClasses(false);
 
             $connectionOptions = array(
                 'pdo'       => $this->getPdoConnection(),
@@ -354,24 +357,21 @@ namespace Cx\Core\Model {
 
             // Note that LANG_ID and other language constants/variables
             // have not been set yet!
-            // $langCode = \FWLanguage::getLanguageCodeById(LANG_ID);
-            // \DBG::log("LANG_ID ".LANG_ID.", language code: $langCode");
-            // -> LOG: LANG_ID LANG_ID, language code:
             $translatableDriverImpl = $config->newDefaultAnnotationDriver(
                 $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Translatable/Entity'
             );
-            // RK: Note:
-            // In this Doctrine version, it is present as:
             $this->translationListener = new \Gedmo\Translatable\TranslatableListener();
-            // current translation locale should be set from session
-            // or hook later into the listener,
-            // but *before the entity manager is flushed*
-// TODO: Set default locale from the default language?
-            //$this->translationListener->setDefaultLocale('de_ch');
-            // Set the current locale (e.g. from the active language)
-            // wherever that's required.
-            //$translationListener->setTranslatableLocale('de_ch');
             $this->translationListener->setAnnotationReader($translatableDriverImpl);
+
+            // Current language for backend mode is set in
+            // \Cx\Core\LanguageManager\Controller\ComponentController::postResolve()
+            // Current language for frontend mode is set in
+            // \Cx\Core\Routing\Resolver::resolve()
+            // Current language for command mode is set in
+            // \Cx\Core\Core\Controller\Cx::loadContrexx()
+
+            // We don't want automatic fallbacks as we want to control them.
+            $this->translationListener->setTranslationFallback(false);
             $evm->addEventSubscriber($this->translationListener);
 
             // RK: Note:
@@ -395,8 +395,21 @@ namespace Cx\Core\Model {
 
             //resolve enum, set errors
             $conn = $em->getConnection();
-            $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-            $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
+            foreach (array('enum', 'timestamp') as $type) {
+                \Doctrine\DBAL\Types\Type::addType(
+                    $type,
+                    'Cx\Core\Model\Model\Entity\\' . ucfirst($type) . 'Type'
+                );
+                $conn->getDatabasePlatform()->registerDoctrineTypeMapping(
+                    $type,
+                    $type
+                );
+            }
+            $conn->getDatabasePlatform()->registerDoctrineTypeMapping(
+                'set',
+                'string'
+            );
+            \Cx\Core\Model\Controller\YamlDriver::registerKnownEnumTypes($conn);
 
             $this->em = $em;
             return $this->em;
