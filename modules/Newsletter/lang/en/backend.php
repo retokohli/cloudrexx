@@ -510,6 +510,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'] = 'Don\'t send campaign
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'] = 'Enable statistics';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'] = 'Please note that the information tracked by this metric could contain personal data which is prohibited by law in most countries without explicit consent of the affected person.';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'] = 'Do you want to delete the tracked data?';
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_VALIDITY_HOUR'] = 'Registration confirmation link validity in hours';
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_KEY']                 = 'Key';
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONSENT_CONFIRM_KEY'] = 'consent_confirmation_email';
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'E-Mailing permission confirm code';

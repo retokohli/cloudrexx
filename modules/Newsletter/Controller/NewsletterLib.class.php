@@ -945,4 +945,45 @@ class NewsletterLib
         return $Text;
     }
 
+    /**
+     * Auto clean a registers
+     */
+    public function autoCleanRegisters()
+    {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objDatabase = $cx->getDb()->getAdoDb();
+        $arrSettings = $this->_getSettings();
+        $confirmLinkHour = $arrSettings['confirmLinkHour']['setvalue'];
+        $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('now');
+        $dateTime->modify('-' . $confirmLinkHour . ' hours');
+
+        if ($arrSettings['defUnsubscribe']['setvalue'] == 1) {
+            $objUser = $objDatabase->Execute('
+                DELETE
+                    `userCat`,
+                    `users`
+                FROM
+                    `' . DBPREFIX . 'module_newsletter_user` AS `users`
+                INNER JOIN
+                    `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS `userCat`
+                ON
+                    `users`.`id` = `userCat`.`user`
+                WHERE
+                    `users`.`source` = "opt-in" AND
+                    `users`.`consent` IS NULL AND
+                    `users`.`emaildate` < "' . $dateTime->getTimeStamp() . '"
+            ');
+        } else {
+            $objUser = $objDatabase->Execute('
+                UPDATE
+                    `' . DBPREFIX . 'module_newsletter_user` AS `users`
+                SET
+                    `users`.`status` = 0
+                WHERE
+                    `users`.`source` = "opt-in" AND
+                    `users`.`consent` IS NULL AND
+                    `users`.`emaildate` < "' . $dateTime->getTimeStamp() . '"
+            ');
+        }
+    }
 }
