@@ -52,8 +52,6 @@ function votingShowCurrent($page_content){
     $objTpl->setErrorHandling(PEAR_ERROR_DIE);
     $objTpl->setTemplate($page_content);
 
-    $dateTime = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('DateTime');
-
     if (!isset($_GET['vid'])) {
         $_GET['vid'] = '';
     }
@@ -163,7 +161,7 @@ function votingShowCurrent($page_content){
             $votingTitle=stripslashes($objResult->fields['title']);
             $votingVotes=$objResult->fields['votes'];
             $votingDate=strtotime($objResult->fields['datesec']);
-            $votingDate = $dateTime->strftime('%A, %e. %B %Y', $votingDate);
+            $votingDate = \Cx\Core\DateTime\Controller\ComponentController::strftime('%A, %e. %B %Y', $votingDate);
 
             if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
             $objTpl->setVariable(array(
@@ -183,7 +181,7 @@ function votingShowCurrent($page_content){
             $votingTitle       = stripslashes($objResult->fields['question']);
             $votingVotes       = $objResult->fields['votes'];
             $votingDate           = strtotime($objResult->fields['datesec']);
-            $votingDate           = $dateTime->strftime('%A, %e. %B %Y', $votingDate);
+            $votingDate           = \Cx\Core\DateTime\Controller\ComponentController::strftime('%A, %e. %B %Y', $votingDate);
             $votingStatus       = $objResult->fields['status'];
             $votingMethod       = $objResult->fields['submit_check'];
             $additional_fields = _create_additional_input_fields($objResult);
@@ -295,7 +293,7 @@ function votingShowCurrent($page_content){
             $votingTitle=stripslashes($objResult->fields['title']);
             $votingVotes=$objResult->fields['votes'];
             $votingDate=strtotime($objResult->fields['datesec']);
-            $votingDate = $dateTime->strftime('%A, %e. %B %Y', $votingDate);
+            $votingDate = \Cx\Core\DateTime\Controller\ComponentController::strftime('%A, %e. %B %Y', $votingDate);
 
             if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
             $objTpl->setVariable(array(
