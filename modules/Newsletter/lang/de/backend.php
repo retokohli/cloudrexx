@@ -511,3 +511,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'] = 'Bitte beachten Sie, dass mit
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'] = 'Möchten Sie die bisher erfassten Statistik-Daten löschen?';
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_VALIDITY_HOUR'] = 'Gültigkeitsdauer von Anmelde-Links in Stunden';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT'] = 'Zustimmung';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_BACKEND'] = 'Manuell hinzugefügt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_API'] = 'Via API hinzugefügt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Opt-In';

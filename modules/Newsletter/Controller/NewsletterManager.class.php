@@ -4190,7 +4190,7 @@ $WhereStatement = '';
 
     function edituserSort()
     {
-        global $_CONFIG;
+        global $_CONFIG, $_ARRAYLANG;
 
         $output = array(
             'recipient_count'   => 0,
@@ -4253,28 +4253,12 @@ $WhereStatement = '';
                     'country_'.$user['country_id'])->getName();
 
             $consentValue = '';
-            if (empty($listId)) {
-                switch ($user['source']) {
-                    case 'backend':
-                        $consentValue = 'Manually added';
-                        break;
-                    case 'api':
-                        $consentValue = 'Added via API';
-                        break;
-                    case 'opt-in':
-                        $consentValue = 'External';
-                        if (!empty($user['consent'])) {
-                            $consentValue = $this->getUserDateTime($user['consent']);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            if (!empty($user['consent'])) {
+                $consentValue = $this->getUserDateTime($user['consent']);
             } else {
-                $consentValue = 'External';
-                if (!empty($user['consent'])) {
-                    $consentValue = $this->getUserDateTime($user['consent']);
-                }
+                $langVarName = 'TXT_NEWSLETTER_CONSENT_SOURCE_';
+                $langVarName .= str_replace('-', '_', strtoupper($user['source']));
+                $consentValue = $_ARRAYLANG[$langVarName];
             }
 
             $output['user'][] = array(
