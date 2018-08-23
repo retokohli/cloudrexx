@@ -315,14 +315,18 @@ class NewsletterLib
         ) {
             return false;
         }
-        return self::_setRecipientLists($objDatabase->Insert_ID(), $arrLists);
+        return static::_setRecipientLists(
+            $objDatabase->Insert_ID(),
+            $arrLists,
+            $source
+        );
     }
 
 
     function _updateRecipient(
         $recipientAttributeStatus, $id, $email, $uri, $sex, $salutation, $title, $lastname, $firstname, $position, $company, $industry_sector,
         $address, $zip, $city, $country, $phone_office, $phone_private, $phone_mobile, $fax, $notes, $birthday, $status,
-        $arrLists, $language
+        $arrLists, $language, $source
     ) {
         global $objDatabase;
 
@@ -426,7 +430,7 @@ class NewsletterLib
         if (!$objDatabase->Execute($query)) {
             return false;
         }
-        return $this->_setRecipientLists($id, $arrLists);
+        return static::_setRecipientLists($id, $arrLists, $source);
     }
 
 
@@ -435,49 +439,47 @@ class NewsletterLib
      * present in the array
      * @param   integer   $recipientId      The recipient ID
      * @param   array     $arrLists         The array of list IDs to subscribe
+     * @param string $source One of "opt-in", "backend", "api"
      * @return  boolean                     True on success, false otherwise
      * @static
      */
-    static function _setRecipientLists($recipientId, $arrLists)
+    static function _setRecipientLists($recipientId, $arrLists, $source)
     {
         global $objDatabase;
 
-        if (!$objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat
-             WHERE user=$recipientId"))
+        // delete
+        if ($objDatabase->Execute('
+            DELETE FROM
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+            WHERE
+                `user` = ' . $recipientId . ' AND
+                `category` NOT IN (' . implode(', ', $arrLists) . ')
+        ') === false) {
             return false;
-        foreach ($arrLists as $listId) {
-            if (!$objDatabase->Execute("
-                INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (
-                    `user`, `category`
-                ) VALUES (
-                    $recipientId, $listId
-                )")
-            ) {
-                return false;
-            }
+        }
+
+        // insert missing relations
+        if ($objDatabase->Execute('
+            INSERT IGNORE INTO
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+                (
+                    `user`,
+                    `category`,
+                    `source`
+                )
+            SELECT
+                ' . $recipientId . ' as `user`,
+                `id` as `category`,
+                "' . $source . '" as `source`
+            FROM
+                `' . DBPREFIX . 'module_newsletter_category`
+            WHERE
+                `id` IN (' . implode(', ', $arrLists) . ')
+        ') === false) {
+            return false;
         }
         return true;
     }
-
-
-    function _addRecipient2List($recipientId, $listId)
-    {
-        global $objDatabase;
-
-        $objRelList = $objDatabase->Execute("SELECT 1 FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId." AND category = ".$listId);
-        if ($objRelList !== false) {
-            if ($objRelList->RecordCount() == 0) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat (`user`, `category`) VALUES (".$recipientId.", ".$listId.")") !== false) {
-                    return true;
-                }
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
 
     static function _emailCode()
     {
