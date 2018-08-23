@@ -41,7 +41,6 @@ namespace Cx\Core_Modules\IndexerPdf\Model\Entity;
  * @package     MediaSource
  */
 class IndexerPdf extends \Cx\Core\MediaSource\Model\Entity\Indexer
-
 {
     /**
      * TODO: What is that?
@@ -63,10 +62,27 @@ class IndexerPdf extends \Cx\Core\MediaSource\Model\Entity\Indexer
     protected function getText($filepath)
     {
 // TODO: Assuming an empty path to binary
+        $content = '';
+        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'config');
+        $url = \Cx\Core\Setting\Controller\Setting::getValue('url_pdftotext');
+        // URL should at least be "localhost"
+        if (strlen($url) > 8) {
+            $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
+            $request->addUpload(
+                'pdffile', $filepath/*, $filepath, 'application/pdf'*/);
+//\DBG::log("IndexerPdf::getText($filepath): Sending PDF...");
+            // send() throw()s on error
+            $content = $request->send()->getBody();
+        } else {
+//\DBG::log("IndexerPdf::getText($filepath): Exec pdftotext...");
 // TODO: Assuming pdftext is present
-        $output = null;
-        exec('pdftotext ' . $filepath . ' -', $output);
-        $content = join(' ', $output);
+            $status = null;
+            exec('pdftotext ' . $filepath . ' -', $content, $status);
+            if ($status === 0) {
+                $content = join(' ', $content);
+            }
+        }
+//\DBG::log("IndexerPdf::getText($filepath): Content: $content");
         $content = preg_replace('/\\s+/', ' ', $content);
         return $content;
     }

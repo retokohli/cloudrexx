@@ -1,6 +1,4 @@
 <?php
-declare(strict_types = 1);
-
 /**
  * Cloudrexx
  *
@@ -26,48 +24,39 @@ declare(strict_types = 1);
  * our trademarks remain entirely with us.
  */
 
-namespace Cx\Core_Modules\IndexerDocx\Controller;
+namespace Cx\Core_Modules\IndexerPdf\Controller;
 
 /**
- * ComponentController
+ * BackendController
  * @copyright   Comvation AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_module_indexerdocx
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController
+class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
 {
     /**
-     * Register this Indexer
-     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * Return available commands
+     * @return  array
      */
-    public function postComponentLoad()
+    public function getCommands()
     {
-        $this->getComponent('MediaSource')->registerIndexer(
-            new \Cx\Core_Modules\IndexerDocx\Model\Entity\IndexerDocx());
+        return [];
+    }
 
-// TEST ONLY CODE HERE -- remove when done
-\DBG::activate(DBG_PHP);
-\DBG::log("Docx ComponentController::postComponentLoad()");
-/**
- * Events:
- *  'MediaSource:Remove'
- *  'MediaSource:Add'
- *  'MediaSource:Edit'
- */
-
-//phpinfo();die();
-
-// Docx -- OK
-//        $this->cx->getEvents()->triggerEvent('MediaSource:Edit',
-//            ['path' => $this->cx->getWebsiteDocumentRootPath() . '/sample.docx']);
-
-// Pdf -- OK
-//        $this->cx->getEvents()->triggerEvent('MediaSource:Edit',
-//            ['path' => $this->cx->getWebsiteDocumentRootPath()
-////            . '/Hätti sötti müessti aß àèé.pdf');
-//            . '/test.pdf'
-//            ]);
+    /**
+     * Set up the backend view
+     * @param   \Cx\Core\Html\Sigma $template
+     * @param   array               $cmd
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd,
+        &$isSingle = false)
+    {
+        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'config');
+        \Cx\Core\Setting\Controller\Setting::storeFromPost();
+        \Cx\Core\Setting\Controller\Setting::show($template,
+            $this->cx->getBackendFolderName() . '/' . $this->getName(), '', '',
+            'TXT_CORE_MODULE_INDEXERPDF_');
     }
 
 }
