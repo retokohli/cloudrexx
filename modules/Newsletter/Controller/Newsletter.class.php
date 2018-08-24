@@ -117,7 +117,6 @@ class Newsletter extends NewsletterLib
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
         $currentTime = $dateTime->format('Y-m-d H:i:s');
-        $status = $categoryId ? 1 : 0;
         $catConsentQuery = ' AND `consent` IS NULL';
         $userCodeQuery = $categoryId
             ? ' AND `code` = "'. $code .'"' : '';
@@ -131,7 +130,7 @@ class Newsletter extends NewsletterLib
                     `' . DBPREFIX . 'module_newsletter_user`
                 WHERE
                     `email`  = "' . contrexx_raw2db($userEmail) . '" AND
-                    `status` = "' . $status . '"' .
+                    `status` = "' . ((bool) $categoryId) . '"' .
                     $userCodeQuery;
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
@@ -197,7 +196,7 @@ class Newsletter extends NewsletterLib
                 $catConsentQuery . '
         ');
 
-        if ($objUserCat !== false && $status) {
+        if ($objUserCat !== false && $categoryId) {
             $this->_objTpl->setVariable(
                 'NEWSLETTER_MESSAGE',
                 $_ARRAYLANG['TXT_NEWSLETTER_MAILING_CONFIRM_SUCCESSFUL']
@@ -218,7 +217,7 @@ class Newsletter extends NewsletterLib
                 `consent` IS NULL
         ');
 
-        if ($objResult !== false && !$status) {
+        if ($objResult !== false && !$categoryId) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
 
             //send notification
