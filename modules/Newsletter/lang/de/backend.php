@@ -518,4 +518,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONSENT_CONFIRM_KEY'] = 'consent_confirmation_
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'Zustimmungscode für das Senden von E-Mails';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Der Versand der Bestätigungs-E-Mails ist fehlgeschlagen.';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'Die E-Mails wurden erfolgreich gesendet';
-$_ARRAYLANG['TXT_NEWSLETTER_MAIL']                      = 'Zustimmungsbestätigung per E-Mail an nicht bestätigte Benutzer senden';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MAIL_SEND'] = 'Zustimmungsbestätigung per E-Mail an nicht bestätigte Benutzer senden';

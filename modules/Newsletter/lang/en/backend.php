@@ -519,4 +519,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONSENT_CONFIRM_KEY'] = 'consent_confirmation_
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'E-Mailing permission confirm code';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Sending the confirmation e-mails has failed!';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'The email was successfully sent to subscribed users';
-$_ARRAYLANG['TXT_NEWSLETTER_MAIL']                      = 'Send consent confirm email to users';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MAIL_SEND']                      = 'Send consent confirm email to users';
