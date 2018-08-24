@@ -6693,10 +6693,13 @@ function MultiAction() {
         $now = date(ASCMS_DATE_FORMAT);
         while (!$objUserRel->EOF) {
             $sex = '';
-            if ($objUserRel->fields['sex'] == 'm') {
-                $sex = 'Male';
-            } elseif ($objUserRel->fields['sex'] == 'f') {
-                $sex = 'Female';
+            switch ($objUserRel->fields['sex']) {
+                case 'm':
+                    $sex = 'MALE';
+                    break;
+                case 'f':
+                    $sex = 'FEMALE';
+                    break;
             }
 
             $arrMailTemplate = array(
@@ -6708,7 +6711,7 @@ function MultiAction() {
                 'sender'       => $arrSettings['sender_name']['setvalue'],
                 'reply'        => $arrSettings['reply_mail']['setvalue'],
                 'substitution' => array(
-                    'NEWSLETTER_USER_SEX'             => $sex,
+                    'NEWSLETTER_USER_SEX'             => $_ARRAYLANG['TXT_NEWSLETTER_' . $sex],
                     'NEWSLETTER_USER_TITLE'           => $objUserRel->fields['title'],
                     'NEWSLETTER_USER_FIRSTNAME'       => $objUserRel->fields['firstname'],
                     'NEWSLETTER_USER_LASTNAME'        => $objUserRel->fields['lastname'],
