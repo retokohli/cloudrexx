@@ -6672,7 +6672,8 @@ function MultiAction() {
                 `u`.`title`,
                 `u`.`firstname`,
                 `u`.`lastname`,
-                `u`.`language`
+                `u`.`language`,
+                `r`.`name`
             FROM
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS r
             INNER JOIN
@@ -6712,6 +6713,7 @@ function MultiAction() {
                     'NEWSLETTER_USER_FIRSTNAME'       => $objUserRel->fields['firstname'],
                     'NEWSLETTER_USER_LASTNAME'        => $objUserRel->fields['lastname'],
                     'NEWSLETTER_USER_EMAIL'           => $objUserRel->fields['email'],
+                    'NEWSLETTER_LIST_NAME'            => $objUserRel->fields['name'],
                     'NEWSLETTER_CONSENT_CONFIRM_CODE' =>
                         ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] .
                         CONTREXX_SCRIPT_PATH . '?section=Newsletter&cmd=confirm&email=' .
