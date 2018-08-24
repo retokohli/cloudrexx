@@ -59,6 +59,7 @@ class IndexerPdf extends \Cx\Core\MediaSource\Model\Entity\Indexer
      * @param   $filepath
      * @return  string
      */
+// TODO: This is supposed to be a string, right?
     protected function getText($filepath)
     {
 // TODO: Assuming an empty path to binary
