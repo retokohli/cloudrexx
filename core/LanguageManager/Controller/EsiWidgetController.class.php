@@ -64,7 +64,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
     {
         if ($name == 'locale_navbar') {
 
-            $currentPage = $this->cx->getPage();
+            $currentPage = $params['page'];
+
             $listProtectedPages = \Cx\Core\Setting\Controller\Setting::getValue(
                 'coreListProtectedPages',
                 'Config'
@@ -93,28 +94,14 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 }
                 $template->setVariable(
                     array(
-                    'PAGE_LINK' => contrexx_raw2xhtml(
-                        \Cx\Core\Routing\Url::fromPage($langPage)->toString()
-                    ),
-                    'PAGE_TITLE' => contrexx_raw2xhtml($langPage->getTitle()),
-                    'LOCALE' => $lang,
-                    'LANGUAGE_CODE' => $params['locale']->getShortForm(),
+                        'PAGE_LINK' => contrexx_raw2xhtml(
+                            \Cx\Core\Routing\Url::fromPage($langPage)->toString()
+                        ),
+                        'PAGE_TITLE' => contrexx_raw2xhtml($langPage->getTitle()),
+                        'LOCALE' => $lang,
+                        'LANGUAGE_CODE' => $params['locale']->getShortForm(),
                     )
                 );
-
-                $page = $params['page'];
-                if (!$page) {
-                    return;
-                }
-
-                $locale = $this->cx->getDb()->getEntityManager()->getRepository(
-                    '\Cx\Core\Locale\Model\Entity\Locale'
-                )->findOneByCode($lang);
-
-                // return early and don't set variable if locale doesn't exist
-                if (!$locale) {
-                    return;
-                }
 
                 if ($lang == $params['locale']->getShortForm()) {
                     $template->touchBlock('current_locale');
