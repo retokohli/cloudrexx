@@ -6690,7 +6690,6 @@ function MultiAction() {
             return true;
         }
 
-        $now = date(ASCMS_DATE_FORMAT);
         while (!$objUserRel->EOF) {
             $sex = '';
             switch ($objUserRel->fields['sex']) {
@@ -6723,7 +6722,6 @@ function MultiAction() {
                         urlencode($objUserRel->fields['email']) . '&code='. $objUserRel->fields['code'] .
                         '&category=' . $categoryId,
                     'NEWSLETTER_DOMAIN_URL'           => $_CONFIG['domainUrl'],
-                    'NEWSLETTER_CURRENT_DATE'         => $now,
                 ),
             );
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
