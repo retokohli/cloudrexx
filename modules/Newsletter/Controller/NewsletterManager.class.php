@@ -6705,7 +6705,7 @@ function MultiAction() {
             $arrMailTemplate = array(
                 'key'          => 'consent_confirmation_email',
                 'section'      => 'Newsletter',
-                'lang_id'      => FRONTEND_LANG_ID,
+                'lang_id'      => $objUserRel->fields['language'] ? $objUserRel->fields['language'] : FRONTEND_LANG_ID,
                 'to'           => $objUserRel->fields['email'],
                 'from'         => $arrSettings['sender_mail']['setvalue'],
                 'sender'       => $arrSettings['sender_name']['setvalue'],
