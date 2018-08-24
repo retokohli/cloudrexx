@@ -6666,20 +6666,22 @@ function MultiAction() {
         }
         $objUserRel = $objDatabase->Execute('
             SELECT
-                `code`,
-                `email`,
-                `sex`,
-                `title`,
-                `firstname`,
-                `lastname`
+                `u`.`code`,
+                `u`.`email`,
+                `u`.`sex`,
+                `u`.`title`,
+                `u`.`firstname`,
+                `u`.`lastname`,
+                `u`.`language`
             FROM
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS r
-            JOIN
+            INNER JOIN
                 `' . DBPREFIX . 'module_newsletter_user` AS u
+            ON
+                u.`id` = r.`user`
             WHERE
                 r.`category` = "' . $categoryId . '" AND
                 r.`consent` IS NULL AND
-                u.`id` = r.`user` AND
                 u.`status` = 1
         ');
 
