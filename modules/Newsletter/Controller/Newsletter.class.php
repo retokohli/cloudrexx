@@ -112,7 +112,7 @@ class Newsletter extends NewsletterLib
         $categoryId = isset($_GET['category'])
             ? contrexx_input2int($_GET['category']) : 0;
         $code = isset($_REQUEST['code'])
-            ? contrexx_addslashes($_REQUEST['code']) : '';
+            ? contrexx_input2db($_REQUEST['code']) : '';
         $count       = 0;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
@@ -130,7 +130,7 @@ class Newsletter extends NewsletterLib
                 FROM
                     `' . DBPREFIX . 'module_newsletter_user`
                 WHERE
-                    `email`  = "' . $userEmail . '" AND
+                    `email`  = "' . contrexx_raw2db($userEmail) . '" AND
                     `status` = "' . $status . '"' .
                     $userCodeQuery;
             $objResult = $objDatabase->Execute($query);
