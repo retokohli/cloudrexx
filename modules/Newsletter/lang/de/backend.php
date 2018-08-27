@@ -518,3 +518,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'Zustimmungs-URL für 
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Der Versand der Bestätigungs-E-Mails ist fehlgeschlagen.';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'Die E-Mails wurden erfolgreich gesendet';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MAIL_SEND'] = 'Zustimmungsbestätigung per E-Mail an nicht bestätigte Teilnehmer senden';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'] = 'Die Bestätigungsmail konnte folgenden Teilnehmnern nicht zugestellt werden:<br />%s';

@@ -519,3 +519,4 @@ $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'E-Mailing permission 
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Sending the confirmation e-mails has failed!';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'The email was successfully sent to subscribed users';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MAIL_SEND']                      = 'Send consent confirm email to users';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'] = 'Confirm mail to the following recipients could not be sent:<br />%s';

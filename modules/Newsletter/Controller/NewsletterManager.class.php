@@ -6689,6 +6689,7 @@ function MultiAction() {
             return true;
         }
 
+        $notSentTo = array();
         while (!$objUserRel->EOF) {
             $sex = '';
             switch ($objUserRel->fields['sex']) {
@@ -6715,22 +6716,32 @@ function MultiAction() {
                     'NEWSLETTER_USER_LASTNAME'        => $objUserRel->fields['lastname'],
                     'NEWSLETTER_USER_EMAIL'           => $objUserRel->fields['email'],
                     'NEWSLETTER_LIST_NAME'            => $objUserRel->fields['name'],
-                    'NEWSLETTER_CONSENT_CONFIRM_CODE' =>
-                        ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] .
-                        CONTREXX_SCRIPT_PATH . '?section=Newsletter&cmd=confirm&email=' .
-                        urlencode($objUserRel->fields['email']) . '&code='. $objUserRel->fields['code'] .
-                        '&category=' . $categoryId,
+                    'NEWSLETTER_CONSENT_CONFIRM_CODE' => \Cx\Core\Routing\Url::fromDocumentRoot(
+                        array(
+                            'section' => 'Newsletter',
+                            'cmd' => 'confirm',
+                            'email' => urlencode($objUserRel->fields['email']),
+                            'code' => $objUserRel->fields['code'],
+                            'category' => $categoryId,
+                        )
+                    )->toString(),
                     'NEWSLETTER_DOMAIN_URL'           => $_CONFIG['domainUrl'],
                 ),
             );
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
-                return false;
+                $notSentTo[] = $objUserRel->fields['email'];
             }
 
             $objUserRel->MoveNext();
         }
+        if (count($notSentTo)) {
+            static::$strErrMessage = printf(
+                $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'],
+                implode('<br />', $notSentTo)
+            );
+        }
 
-        return true;
+        return empty($notSentTo);
     }
 }
 
