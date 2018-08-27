@@ -62,6 +62,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Returns the description for a command provided by this component
+     * @param string $command The name of the command to fetch the description from
+     * @param boolean $short Wheter to return short or long description
+     * @return string Command description
+     */
+    public function getCommandDescription($command, $short = false) {
+        switch ($command) {
+            case 'Newsletter':
+                $desc = 'Group-based newsletter system';
+                if ($short) {
+                    return $desc;
+                }
+                $desc .= PHP_EOL . PHP_EOL . 'autoclean' . "\t" . 'Cleanup unsuccessul registrations';
+                return $desc;
+                break;
+        }
+    }
+
+    /**
      * Execute api command
      *
      * @param string $command Name of command to execute
