@@ -355,7 +355,7 @@ class NewsletterManager extends NewsletterLib
             if ($this->sendConsentConfirmationMail()) {
                 static::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS'];
             } else {
-                static::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'];
+                static::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] . static::$strErrMessage;
             }
         }
 
@@ -6741,7 +6741,7 @@ function MultiAction() {
             $objUserRel->MoveNext();
         }
         if (count($notSentTo)) {
-            static::$strErrMessage = printf(
+            static::$strErrMessage = ' ' . sprintf(
                 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'],
                 implode('<br />', $notSentTo)
             );
