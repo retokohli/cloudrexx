@@ -6671,17 +6671,21 @@ function MultiAction() {
                 `u`.`title`,
                 `u`.`firstname`,
                 `u`.`lastname`,
-                `r`.`name`
+                `c`.`name`
             FROM
-                `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS r
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS `r`
             INNER JOIN
-                `' . DBPREFIX . 'module_newsletter_user` AS u
+                `' . DBPREFIX . 'module_newsletter_user` AS `u`
             ON
-                u.`id` = r.`user`
+                `u`.`id` = `r`.`user`
+            INNER JOIN
+                `' . DBPREFIX . 'module_newsletter_category` AS `c`
+            ON
+                `c`.`id` = `r`.`category`
             WHERE
-                r.`category` = "' . $categoryId . '" AND
-                r.`consent` IS NULL AND
-                u.`status` = 1
+                `r`.`category` = "' . $categoryId . '" AND
+                `r`.`consent` IS NULL AND
+                `u`.`status` = 1
         ');
 
         if ($objUserRel && $objUserRel->RecordCount() == 0) {
