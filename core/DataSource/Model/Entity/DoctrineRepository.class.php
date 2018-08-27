@@ -88,9 +88,9 @@ class DoctrineRepository extends DataSource {
 
         // $elementId
         if (isset($elementId) && count($elementId)) {
-            $meta = $em->getClassMetadata($this->getIdentifier());
-            $identifierField = $meta->getSingleIdentifierFieldName();
-            $criteria[$identifierField] = current($elementId);
+            foreach ($elementId as $field=>$id) {
+                $criteria[$field] = $id;
+            }
         }
 
         // $order
