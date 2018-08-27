@@ -6671,7 +6671,6 @@ function MultiAction() {
                 `u`.`title`,
                 `u`.`firstname`,
                 `u`.`lastname`,
-                `u`.`language`,
                 `r`.`name`
             FROM
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS r
@@ -6704,7 +6703,10 @@ function MultiAction() {
             $arrMailTemplate = array(
                 'key'          => 'consent_confirmation_email',
                 'section'      => 'Newsletter',
-                'lang_id'      => $objUserRel->fields['language'] ? $objUserRel->fields['language'] : FRONTEND_LANG_ID,
+                'lang_id'      => $this->getUsersPreferredLanguageId(
+                    $objUserRel->fields['email'],
+                    static::USER_TYPE_NEWSLETTER
+                ),
                 'to'           => $objUserRel->fields['email'],
                 'from'         => $arrSettings['sender_mail']['setvalue'],
                 'sender'       => $arrSettings['sender_name']['setvalue'],
