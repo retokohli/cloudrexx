@@ -117,7 +117,6 @@ class Newsletter extends NewsletterLib
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
         $currentTime = $dateTime->format('Y-m-d H:i:s');
-        $catConsentQuery = ' AND `consent` IS NULL';
         $userCodeQuery = $categoryId
             ? ' AND `code` = "'. $code .'"' : '';
 
@@ -162,17 +161,22 @@ class Newsletter extends NewsletterLib
         // Check if consent is null in module_newsletter_rel_user_cat table when user
         // clicks a mailing permission link. If null: continue code below this condition,
         // otherwise return a error message
+        $catConsentQuery = ' AND `source` = "opt-in"';
         if ($categoryId) {
-            $catConsentQuery = ' AND `category` = "'. $categoryId .'" AND `consent` IS NULL';
+            $catConsentQuery = ' AND `category` = "'. $categoryId .'"';
             $objUserRel = $objDatabase->Execute('
                 SELECT
                     `consent`
                 FROM
                     `' . DBPREFIX . 'module_newsletter_rel_user_cat`
                 WHERE
-                    `user` = "' . contrexx_raw2db($userId) . '"
+                    `user` = "' . contrexx_raw2db($userId) . ' AND
+                    `consent` IS NULL"
                     ' . $catConsentQuery . '
             ');
+            // we show an error message if the user already gave consent in
+            // order to make it impossible to find registered addresses by
+            // try and error.
             if ($objUserRel && $objUserRel->RecordCount() == 0) {
                 $this->_objTpl->setVariable(
                     'NEWSLETTER_MESSAGE',
@@ -189,10 +193,10 @@ class Newsletter extends NewsletterLib
             UPDATE
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat`
             SET
-                `source` = "opt-in",
                 `consent` = "' . $currentTime . '"
             WHERE
-                `user` = "' . contrexx_raw2db($userId) . '"' . 
+                `user` = "' . contrexx_raw2db($userId) . '" AND
+                `consent` IS NULL' . 
                 $catConsentQuery . '
         ');
 
