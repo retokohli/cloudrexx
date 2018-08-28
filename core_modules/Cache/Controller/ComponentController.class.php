@@ -74,13 +74,27 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Core\Controller\Cx $cx The instance of \Cx\Core\Core\Controller\Cx
      */
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
+        global $argv;
+
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $this->cache = new \Cx\Core_Modules\Cache\Controller\Cache();
         } else { // load CacheLib for other modes than frontend
             //- ATTENTION: never load CacheManager here, because it uses not yet defined constants which will cause a fatal error
             $this->cache = new \Cx\Core_Modules\Cache\Controller\CacheLib();
         }
-        $this->cacheDriver = $this->cache->getDoctrineCacheDriver();
+        // disable user cache when calling Cache command from CLI
+        if (
+            $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_COMMAND &&
+            php_sapi_name() == 'cli' &&
+            isset($argv) &&
+            count($argv) > 2 &&
+            $argv[1] == 'Cache'
+        ) {
+            // do not activate db cache
+            $this->cacheDriver = new \Doctrine\Common\Cache\ArrayCache();
+        } else {
+            $this->cacheDriver = $this->cache->getDoctrineCacheDriver();
+        }
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $this->cache->deactivateNotUsedOpCaches();
         } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
