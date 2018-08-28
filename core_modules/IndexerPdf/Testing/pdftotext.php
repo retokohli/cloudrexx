@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This is a dummy endpoint for testing the "pdftotext" request
  */

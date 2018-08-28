@@ -54,14 +54,13 @@ class IndexerDocx extends \Cx\Core\MediaSource\Model\Entity\Indexer
      */
     protected function getText($filepath)
     {
-//\DBG::log("filepath $filepath");
         if (!extension_loaded('zip')) {
             return false;
         }
 // TODO: Assuming \ZipArchive is present
         $zip = new \ZipArchive();
 // TODO: Caller SHOULD check the return value: Empty results need not be stored.
-// TODO: Should it throw() instead?
+// (in fact, existing records SHOULD be deleted)
         if ($zip->open($filepath) !== true) {
             return '';
         }
@@ -83,15 +82,12 @@ class IndexerDocx extends \Cx\Core\MediaSource\Model\Entity\Indexer
         }
         $content = '';
         try {
-//\DBG::log("read tmpfile");
             $tmpFile = new \Cx\Lib\FileSystem\File(
                 $tmpFolderPath . '/'. $uniqFolderName . '/'
                 . $fileFolderName . '/' . $fileName);
             $content = $tmpFile->getData();
 // TODO: Should not be necessary, as delDir() operates recursively:
-//\DBG::log("delete tmpfile");
 //            $tmpFile->delete();
-//\DBG::log("delete filefolder");
 //            $filesystem->delDir(
 //                $tmpFolderPath, $tmpFolderWebPath,
 //                $uniqFolderName . '/' . $fileFolderName);
@@ -102,13 +98,11 @@ class IndexerDocx extends \Cx\Core\MediaSource\Model\Entity\Indexer
 //                $tmpFolderPath, $tmpFolderWebPath,
 //                $uniqFolderName)
 //);
-//\DBG::log("delete done.");
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }
         $content = trim(preg_replace('/\\s\\s+/', ' ',
             strip_tags(str_replace('<', ' <', $content))));
-//\DBG::log("content: $content");
         return $content;
     }
 

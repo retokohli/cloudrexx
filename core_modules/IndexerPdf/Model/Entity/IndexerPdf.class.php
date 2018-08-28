@@ -62,7 +62,6 @@ class IndexerPdf extends \Cx\Core\MediaSource\Model\Entity\Indexer
 // TODO: This is supposed to be a string, right?
     protected function getText($filepath)
     {
-// TODO: Assuming an empty path to binary
         $content = '';
         \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'config');
         $url = \Cx\Core\Setting\Controller\Setting::getValue('url_pdftotext');
@@ -71,19 +70,19 @@ class IndexerPdf extends \Cx\Core\MediaSource\Model\Entity\Indexer
             $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
             $request->addUpload(
                 'pdffile', $filepath/*, $filepath, 'application/pdf'*/);
-//\DBG::log("IndexerPdf::getText($filepath): Sending PDF...");
-            // send() throw()s on error
-            $content = $request->send()->getBody();
+            try {
+                $content = $request->send()->getBody();
+            } catch(\Exception $e) {
+            }
         } else {
-//\DBG::log("IndexerPdf::getText($filepath): Exec pdftotext...");
 // TODO: Assuming pdftext is present
+// TODO: Assuming an empty path to binary
             $status = null;
             exec('pdftotext ' . $filepath . ' -', $content, $status);
             if ($status === 0) {
                 $content = join(' ', $content);
             }
         }
-//\DBG::log("IndexerPdf::getText($filepath): Content: $content");
         $content = preg_replace('/\\s+/', ' ', $content);
         return $content;
     }

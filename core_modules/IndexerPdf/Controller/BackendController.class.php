@@ -36,15 +36,6 @@ namespace Cx\Core_Modules\IndexerPdf\Controller;
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
 {
     /**
-     * Return available commands
-     * @return  array
-     */
-    public function getCommands()
-    {
-        return [];
-    }
-
-    /**
      * Set up the backend view
      * @param   \Cx\Core\Html\Sigma $template
      * @param   array               $cmd
@@ -52,6 +43,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd,
         &$isSingle = false)
     {
+// TODO: Should this view be linked in the backend navigation?  Where?
         \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'config');
         \Cx\Core\Setting\Controller\Setting::storeFromPost();
         \Cx\Core\Setting\Controller\Setting::show($template,
