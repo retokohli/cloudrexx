@@ -106,13 +106,31 @@ class Newsletter extends NewsletterLib
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $arrSettings = $this->_getSettings();
-        $userEmail   = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
+        $userEmail = isset($_GET['email'])
+            ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
+        // Get when user confirms a mailing permission link
+        $categoryId = isset($_GET['category'])
+            ? contrexx_input2int($_GET['category']) : 0;
+        $code = isset($_REQUEST['code'])
+            ? contrexx_input2db($_REQUEST['code']) : '';
         $count       = 0;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
         $currentTime = $dateTime->format('Y-m-d H:i:s');
+        $userCodeQuery = $categoryId
+            ? ' AND `code` = "'. $code .'"' : '';
+
         if (!empty($userEmail)) {
-            $query     = "SELECT id,emaildate FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
+            $query = '
+                SELECT
+                    `id`,
+                    `emaildate`
+                FROM
+                    `' . DBPREFIX . 'module_newsletter_user`
+                WHERE
+                    `email`  = "' . contrexx_raw2db($userEmail) . '" AND
+                    `status` = "' . ((bool) $categoryId) . '"' .
+                    $userCodeQuery;
             $objResult = $objDatabase->Execute($query);
             $count     = $objResult->RecordCount();
         }
@@ -140,8 +158,37 @@ class Newsletter extends NewsletterLib
             return;
         }
 
-        // Update a consent value in module_newsletter_rel_user_cat table based
-        // on recipient id.
+        // Check if consent is null in module_newsletter_rel_user_cat table when user
+        // clicks a mailing permission link. If null: continue code below this condition,
+        // otherwise return a error message
+        $catConsentQuery = ' AND `source` = "opt-in"';
+        if ($categoryId) {
+            $catConsentQuery = ' AND `category` = "'. $categoryId .'"';
+            $objUserRel = $objDatabase->Execute('
+                SELECT
+                    `consent`
+                FROM
+                    `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+                WHERE
+                    `user` = "' . contrexx_raw2db($userId) . ' AND
+                    `consent` IS NULL"
+                    ' . $catConsentQuery . '
+            ');
+            // we show an error message if the user already gave consent in
+            // order to make it impossible to find registered addresses by
+            // try and error.
+            if ($objUserRel && $objUserRel->RecordCount() == 0) {
+                $this->_objTpl->setVariable(
+                    'NEWSLETTER_MESSAGE',
+                    '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>'
+                );
+                return;
+            }
+        }
+
+        // Update the consent value in module_newsletter_rel_user_cat table based
+        // on recipient id or update the consent value in module_newsletter_rel_user_cat
+        // table based on recipient id and category id when user clicks a mailing permission link
         $objUserCat = $objDatabase->Execute('
             UPDATE
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat`
@@ -149,12 +196,19 @@ class Newsletter extends NewsletterLib
                 `consent` = "' . $currentTime . '"
             WHERE
                 `user` = "' . contrexx_raw2db($userId) . '" AND
-                `source` = "opt-in" AND
-                `consent` IS NULL
+                `consent` IS NULL' . 
+                $catConsentQuery . '
         ');
 
+        if ($objUserCat !== false && $categoryId) {
+            $this->_objTpl->setVariable(
+                'NEWSLETTER_MESSAGE',
+                $_ARRAYLANG['TXT_NEWSLETTER_MAILING_CONFIRM_SUCCESSFUL']
+            );
+        }
+
         // Update a consent and status value in module_newsletter_user table based
-        // on recipient email id.
+        // on recipient email id when user confirms a subscription.
         $objResult = $objDatabase->Execute('
             UPDATE
                 `' . DBPREFIX . 'module_newsletter_user`
@@ -166,7 +220,8 @@ class Newsletter extends NewsletterLib
                 `email` = "' . contrexx_raw2db($userEmail) . '" AND
                 `consent` IS NULL
         ');
-        if ($objResult !== false) {
+
+        if ($objResult !== false && !$categoryId) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
 
             //send notification
