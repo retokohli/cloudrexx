@@ -45,29 +45,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $this->getComponent('MediaSource')->registerIndexer(
             new \Cx\Core_Modules\IndexerDocx\Model\Entity\IndexerDocx());
-
-// TEST ONLY CODE HERE -- remove when done
-\DBG::activate(DBG_PHP);
-\DBG::log("Docx ComponentController::postComponentLoad()");
-/**
- * Events:
- *  'MediaSource:Remove'
- *  'MediaSource:Add'
- *  'MediaSource:Edit'
- */
-
-//phpinfo();die();
-
-// Docx -- OK
-//        $this->cx->getEvents()->triggerEvent('MediaSource:Edit',
-//            ['path' => $this->cx->getWebsiteDocumentRootPath() . '/sample.docx']);
-
-// Pdf -- OK
-//        $this->cx->getEvents()->triggerEvent('MediaSource:Edit',
-//            ['path' => $this->cx->getWebsiteDocumentRootPath()
-////            . '/Hätti sötti müessti aß àèé.pdf');
-//            . '/test.pdf'
-//            ]);
     }
 
 }
