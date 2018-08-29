@@ -654,29 +654,6 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         }
     }
 
-    /**
-     * Returns all available title options by default
-     *
-     * This is method used to implement the title in other components such as crm
-     *
-     * @param  string   $id     if set, only the matching title will be returned
-     * @return array            all available titles
-     */
-    function getCoreAttributeTitle($id = '') {
-        $id = ($id !== 0) ? $id : 'undefined';
-
-        $titles = array();
-        foreach ($this->arrAttributes as $key => $attribute) {
-            if (preg_match('/^title_' . $id . '/', $key)) {
-                if ($id) {
-                    return $attribute;
-                }
-                $titles[$key] = $attribute;
-            }
-        }
-        return $titles;
-    }
-
     function loadCustomAttributes()
     {
         global $objDatabase;

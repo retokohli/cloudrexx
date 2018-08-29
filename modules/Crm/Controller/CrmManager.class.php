@@ -1221,12 +1221,12 @@ class CrmManager extends CrmLibrary
                 $langName = \FWLanguage::getLanguageParameter($langId, 'name');
                 $langName ? $objTpl->touchBlock("contactLang") : $objTpl->hideBlock("contactLang");
 
-                // load the title profile attributes from access user
-                $profileAttribute = new \User_Profile_Attribute();
-                $salutation = $profileAttribute->getCoreAttributeTitle($custDetails['salutation']);
+                $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById('title_' . $custDetails['salutation']);
+                if (!$objAttribute->EOF) {
+                    $salutationLabel = $objAttribute->getName();
+                }
                 $objTpl->setVariable(array(
-                        'CRM_CONTACT_SALUTATION'    => isset($salutation['names'][BACKEND_LANG_ID])
-                            ? $salutation['names'][BACKEND_LANG_ID] : $salutation['names'][LANG_ID],
+                        'CRM_CONTACT_SALUTATION'    => $salutationLabel,
                         'CRM_CONTACT_NAME'          => contrexx_raw2xhtml($custDetails['customer_name']),
                         'CRM_CONTACT_FAMILY_NAME'   => contrexx_raw2xhtml($custDetails['contact_familyname']),
                         'CRM_CONTACT_ROLE'          => contrexx_raw2xhtml($custDetails['contact_role']),
@@ -2480,17 +2480,18 @@ END;
             $objUser = false;
         }
 
-        // load the title profile attributes from access user
-        $profileAttribute = new \User_Profile_Attribute();
-        $salutations = $profileAttribute->getCoreAttributeTitle();
-        foreach ($salutations as $salutation) {
-            $this->_objTpl->setVariable(array(
-                'SALUTATION_SELECT'     =>  ($salutation['value'] == $this->contact->salutation) ? 'selected=selected' : '',
-                'SALUTATION_ID'         =>  $salutation['value'],
-                'TXT_SALUTATION_NAME'   =>  isset($salutation['names'][BACKEND_LANG_ID])
-                    ? $salutation['names'][BACKEND_LANG_ID] : $salutation['names'][LANG_ID],
-            ));
-            $this->_objTpl->parse("crmContactSalutationOptions");
+        $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById('title');
+        if (!$objAttribute->EOF) {
+            $titleKeys = $objAttribute->getChildren();
+            foreach ($titleKeys as $title) {
+                $value = $objAttribute->getById($title)->getMenuOptionValue();
+                $this->_objTpl->setVariable(array(
+                    'SALUTATION_SELECT'     =>  $value == $this->contact->salutation ? 'selected=selected' : '',
+                    'SALUTATION_ID'         =>  $value,
+                    'TXT_SALUTATION_NAME'   =>  $objAttribute->getById($title)->getName(),
+                ));
+                $this->_objTpl->parse("crmContactSalutationOptions");
+            }
         }
 
         $this->_objTpl->setVariable(array(
