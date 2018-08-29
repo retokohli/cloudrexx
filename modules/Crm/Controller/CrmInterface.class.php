@@ -365,7 +365,11 @@ class CrmInterface extends CrmLibrary
             $where[] = " (c.customer_type = '".intval($_GET['customer_type'])."')";
         }
         if (isset($_GET['filter_membership']) && !empty($_GET['filter_membership'])) {
-            $where[] = " mem.membership_id = '".intval($_GET['filter_membership'])."'";
+            $where[] = " mem.membership_id IN(" . 
+                implode(
+                    ',', 
+                    contrexx_input2int($_GET['filter_membership'])
+                ) . ')';
         }
 
         if (isset($_GET['term']) && !empty($_GET['term'])) {

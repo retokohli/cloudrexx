@@ -577,7 +577,7 @@ class CrmManager extends CrmLibrary
             's_postal_code'       => isset($_REQUEST['s_postal_code']) ? $_REQUEST['s_postal_code'] : '',
             's_notes'             => isset($_REQUEST['s_notes']) ? $_REQUEST['s_notes'] : '',
             'customer_type'       => isset($_REQUEST['customer_type']) ? $_REQUEST['customer_type'] : '',
-            'filter_membership'   => isset($_REQUEST['filter_membership']) ? $_REQUEST['filter_membership'] : '',
+            'filter_membership'   => isset($_REQUEST['filter_membership']) ? $_REQUEST['filter_membership'] : array(),
             'term'                => isset($_REQUEST['term']) ? contrexx_input2raw($_REQUEST['term']) : '',
             'sorto'               => isset($_REQUEST['sorto']) ? $_REQUEST['sorto'] : '',
             'sortf'               => isset($_REQUEST['sortf']) ? $_REQUEST['sortf'] : 0,
@@ -597,9 +597,14 @@ class CrmManager extends CrmLibrary
 
         if (isset($searchFields['advanced-search'])) {
             $searchLink .= "&s_name={$searchFields['s_name']}&s_email={$searchFields['s_email']}&s_address={$searchFields['s_address']}&s_city={$searchFields['s_city']}&s_postal_code={$searchFields['s_postal_code']}&s_notes={$searchFields['s_notes']}";
-            }
+        }
 
-        $searchLink .= "&customer_type={$searchFields['customer_type']}&term={$searchFields['term']}&filter_membership={$searchFields['filter_membership']}";
+        $membershipLink = '';
+        foreach ($searchFields['filter_membership'] as $membershipFilter) {
+            $membershipLink .= '&filter_membership[]=' . $membershipFilter;
+        }
+
+        $searchLink .= "&customer_type={$searchFields['customer_type']}&term={$searchFields['term']}" . $membershipLink;
 
         $sortLink = "&sorto={$searchFields['sorto']}&sortf={$searchFields['sortf']}";
 
@@ -740,7 +745,7 @@ class CrmManager extends CrmLibrary
         $this->getCustomerTypeDropDown($this->_objTpl, isset($_GET['customer_type']) ? $_GET['customer_type'] : 0, 'customerTypes', array('is_hide' => true));
 
         $this->membership = new \Cx\Modules\Crm\Model\Entity\Membership();
-        $this->getOverviewMembershipDropdown($this->_objTpl, $this->membership, isset($_GET['filter_membership']) ? $_GET['filter_membership'] : 0, 'memberships', array('is_hide' => true));
+        $this->getOverviewMembershipDropdown($this->_objTpl, $this->membership, isset($_GET['filter_membership']) ? $_GET['filter_membership'] : array(), 'memberships', array('is_hide' => true));
 
         $this->_objTpl->setGlobalVariable('TXT_CRM_DOWNLOAD_VCARD', $_ARRAYLANG['TXT_CRM_DOWNLOAD_VCARD']);
 
@@ -1094,7 +1099,7 @@ class CrmManager extends CrmLibrary
             $membershipLink = array();
             if ($objMembership) {
                 while (!$objMembership->EOF) {
-                    $membershipLink[] = "<a href='?cmd=".$this->moduleName."&act=customers&filter_membership={$objMembership->fields['membership_id']}'>". contrexx_raw2xhtml($objMembership->fields['membership']) ."</a>";
+                    $membershipLink[] = "<a href='?cmd=".$this->moduleName."&act=customers&filter_membership[]={$objMembership->fields['membership_id']}'>". contrexx_raw2xhtml($objMembership->fields['membership']) ."</a>";
                     $objMembership->MoveNext();
                 }
             }
@@ -2411,15 +2416,18 @@ END;
 
         // special fields for contacts
         foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLang) {
-            $this->_objTpl->setVariable(array(
-                    'TXT_LANG_ID'    =>  (int) $frontendLang['id'],
-                    'TXT_LANG_NAME'     =>  contrexx_raw2xhtml($frontendLang['name']),
-                    'TXT_LANG_SELECT'   =>  ($frontendLang['id'] == $this->contact->contact_language) ? "selected=selected" : "",
-            ));
+            $langBlocks = array('showAddtionalContactLanguages' . $contactType);
             if($contactType == 1){
-                $this->_objTpl->parse("ContactLanguages");
+                $langBlocks[] = ('ContactLanguages');
             }
-            $this->_objTpl->parse("showAddtionalContactLanguages" . $contactType);
+            foreach($langBlocks as $langBlock) {
+                $this->_objTpl->setVariable(array(
+                        'TXT_LANG_ID'    =>  (int) $frontendLang['id'],
+                        'TXT_LANG_NAME'     =>  contrexx_raw2xhtml($frontendLang['name']),
+                        'TXT_LANG_SELECT'   =>  ($frontendLang['id'] == $this->contact->contact_language) ? "selected=selected" : "",
+                ));
+                $this->_objTpl->parse($langBlock);
+            }
         }
 
         // special fields for customer
@@ -5509,7 +5517,11 @@ END;
             $where[] = " (c.customer_type = '".intval($_REQUEST['customer_type'])."')";
         }
         if (isset($_REQUEST['filter_membership']) && !empty($_REQUEST['filter_membership'])) {
-            $where[] = " mem.membership_id = '".intval($_REQUEST['filter_membership'])."'";
+            $where[] = " mem.membership_id IN(" . 
+                implode(
+                    ',', 
+                    contrexx_input2int($_REQUEST['filter_membership'])
+                ) . ")";
         }
 
         if (isset($_REQUEST['term']) && !empty($_REQUEST['term'])) {
