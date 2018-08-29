@@ -1098,7 +1098,7 @@ class CrmManager extends CrmLibrary
                     $objMembership->MoveNext();
                 }
             }
-            if(isset($custDetails['contact_amount'])){
+            if (isset($custDetails['contact_amount'])) {
                 $objTpl->setVariable(
                     array(
                         'CRM_CONTACT_AMOUNT' => $custDetails['contact_amount'],
@@ -1108,7 +1108,7 @@ class CrmManager extends CrmLibrary
             } else {
                 $objTpl->hideBlock('contactAmount');
             }
-            if(isset($custDetails['updated_date'])){
+            if (isset($custDetails['updated_date'])) {
                 $objTpl->setVariable(
                     array(
                         'CRM_CONTACT_LAST_UPDATE' => $custDetails['updated_date'],
@@ -1118,11 +1118,11 @@ class CrmManager extends CrmLibrary
             } else {
                 $objTpl->hideBlock('contactLastUpdate');
             }
-            if(isset($custDetails['updated_date'])){
+            if (isset($custDetails['updated_notes'])) {
                 $objTpl->setVariable(
                     array(
-                        'CRM_CONTACT_NOTES' => $custDetails['notes'],
-                        'TXT_CRM_CONTACT_NOTES' => $_ARRAYLANG['TXT_DESCRIPTION'],
+                        'CRM_CONTACT_NOTES' => contrexx_raw2xhtml($custDetails['notes']),
+                        'TXT_CRM_CONTACT_NOTES' => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
                     )
                 );
             } else {
