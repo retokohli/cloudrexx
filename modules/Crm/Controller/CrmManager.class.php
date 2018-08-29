@@ -1103,7 +1103,36 @@ class CrmManager extends CrmLibrary
                     $objMembership->MoveNext();
                 }
             }
-
+            if ($settings['contact_amount_enabled'] && isset($custDetails['contact_amount'])) {
+                $objTpl->setVariable(
+                    array(
+                        'CRM_CONTACT_AMOUNT' => $custDetails['contact_amount'],
+                        'TXT_CRM_AMOUNT' => $_ARRAYLANG['TXT_CRM_AMOUNT'],
+                    )
+                );
+            } else {
+                $objTpl->hideBlock('contactAmount');
+            }
+            if (isset($custDetails['updated_date'])) {
+                $objTpl->setVariable(
+                    array(
+                        'CRM_CONTACT_LAST_UPDATE' => $custDetails['updated_date'],
+                        'TXT_CRM_CONTACT_LAST_UPDATE' => $_ARRAYLANG['TXT_CRM_LASTUPDATE'],
+                    )
+                );
+            } else {
+                $objTpl->hideBlock('contactLastUpdate');
+            }
+            if (isset($custDetails['notes'])) {
+                $objTpl->setVariable(
+                    array(
+                        'CRM_CONTACT_NOTES' => contrexx_raw2xhtml($custDetails['notes']),
+                        'TXT_CRM_CONTACT_NOTES' => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
+                    )
+                );
+            } else {
+                $objTpl->hideBlock('contactNotes');
+            }
             if ($custDetails['contact_type'] == 1) {
                 $custDetails['cType'] ? $objTpl->touchBlock('companyCustomerType') : $objTpl->hideBlock('companyCustomerType');
                 $custDetails['industry_name'] ? $objTpl->touchBlock('companyIndustryType') : $objTpl->hideBlock('companyIndustryType');
@@ -1225,7 +1254,6 @@ class CrmManager extends CrmLibrary
 
             $objTpl->setVariable(array(
                     'CRM_CONTACT_NAME'        => ($custDetails['contact_type'] == 1) ? contrexx_raw2xhtml($custDetails['customer_name']) : contrexx_raw2xhtml($custDetails['customer_name']." ".$custDetails['contact_familyname']),
-                    'CRM_CONTACT_DESCRIPTION' => html_entity_decode($custDetails['notes'], ENT_QUOTES, CONTREXX_CHARSET),
                     'EDIT_LINK'               => ($custDetails['contact_type'] != 1) ? "index.php?cmd=Crm&redirect=showcustdetail&act=customers&tpl=managecontact&amp;type=contact&amp;id=$contactId&redirect=".base64_encode("&act=customers&tpl=showcustdetail&id=$contactId") : "index.php?cmd=Crm&amp;act=customers&tpl=managecontact&amp;id=$contactId&redirect=".base64_encode("&act=customers&tpl=showcustdetail&id=$contactId"),
             ));
         }
@@ -1245,7 +1273,6 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_CONTACT_WEBSITE'     => $_ARRAYLANG['TXT_CRM_WEBSITE'],
                 'TXT_CRM_SOCIAL_NETWORK'      => $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
                 'TXT_CRM_CONTACT_ADDRESSES'   => $_ARRAYLANG['TXT_CRM_TITLE_ADDRESS'],
-                'TXT_CRM_CONTACT_DESCRIPTION' => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
                 'TXT_CRM_IMAGE_DELETE'        => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
                 'TXT_CRM_IMAGE_EDIT'          => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
                 'TXT_CRM_TASKS'               => $_ARRAYLANG['TXT_CRM_TASKS'],
