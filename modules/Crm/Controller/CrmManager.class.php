@@ -1103,7 +1103,7 @@ class CrmManager extends CrmLibrary
                     $objMembership->MoveNext();
                 }
             }
-            if (isset($custDetails['contact_amount'])) {
+            if ($settings['contact_amount_enabled'] && isset($custDetails['contact_amount'])) {
                 $objTpl->setVariable(
                     array(
                         'CRM_CONTACT_AMOUNT' => $custDetails['contact_amount'],
@@ -1123,7 +1123,7 @@ class CrmManager extends CrmLibrary
             } else {
                 $objTpl->hideBlock('contactLastUpdate');
             }
-            if (isset($custDetails['updated_notes'])) {
+            if (isset($custDetails['notes'])) {
                 $objTpl->setVariable(
                     array(
                         'CRM_CONTACT_NOTES' => contrexx_raw2xhtml($custDetails['notes']),
