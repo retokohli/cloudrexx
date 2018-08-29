@@ -61,9 +61,10 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit;
+        global $objDatabase, $objInit;
 
         $intId = intval($arrInputfield['id']);
+        $langId = static::getOutputLocale()->getId();
 
         switch ($intView) {
             default:
@@ -90,11 +91,11 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                     $arrValue = null;
                 }
 
-                $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $strOptions = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrOptions = explode(",", $strOptions);
 
                 if(!empty($arrInputfield['info'][0])){
-                    $strInfoValue = empty($arrInputfield['info'][$_LANGID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$_LANGID].'"';
+                    $strInfoValue = empty($arrInputfield['info'][$langId]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$langId].'"';
                     $strInfoClass = 'mediadirInputfieldHint';
                 } else {
                     $strInfoValue = null;
@@ -139,7 +140,7 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                 break;
             case 2:
                 //search View
-                $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $strOptions = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrOptions = explode(",", $strOptions);
 
                 $arrSelected = isset($_GET[$intId]) ? $_GET[$intId] : array();
@@ -197,19 +198,19 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
         //explode elements
         $arrElements = explode(",", $strValue);
 
-        //open <ul> list
-        $strValue = '<ul class="'.$this->moduleNameLC.'InputfieldCheckbox">';
-
-        //make element list
-        foreach ($arrElements as $intKey => $strElement) {
-            $strElement = $strElement-1;
-            $strValue .= '<li>'.$arrValues[$strElement].'</li>';
-        }
-
-        //close </ul> list
-        $strValue .= '</ul>';
-
         if($arrElements[0] != null) {
+            //open <ul> list
+            $strValue = '<ul class="'.$this->moduleNameLC.'InputfieldCheckbox">';
+
+            //make element list
+            foreach ($arrElements as $intKey => $strElement) {
+                $strElement = $strElement-1;
+                $strValue .= '<li>'.$arrValues[$strElement].'</li>';
+            }
+
+            //close </ul> list
+            $strValue .= '</ul>';
+
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {

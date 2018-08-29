@@ -455,6 +455,7 @@ class CrmLibrary
 
         $objResult = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleNameLC}_task_types` ORDER BY `sorting`");
 
+        $sorto = 'ASC';
         if (isset($_GET['sortf']) && isset($_GET['sorto'])) {
             $sortf = ($_GET['sortf'] == 1)? 'name':'sorting';
             $sorto = ($_GET['sorto'] == 'ASC')? 'DESC' : 'ASC';
@@ -1432,7 +1433,11 @@ class CrmLibrary
             $where[] = " (c.customer_type = '".intval($filter['customer_type'])."')";
         }
         if (isset($filter['filter_membership']) && !empty($filter['filter_membership'])) {
-            $where[] = " mem.membership_id = '".intval($filter['filter_membership'])."'";
+            $where[] = " mem.membership_id IN(" . 
+                implode(
+                    ',', 
+                    contrexx_input2int($filter['filter_membership'])
+                ) . ")";
         }
 
         $orderBy = '';
@@ -1464,6 +1469,7 @@ class CrmLibrary
                 $filter['term'] = '"'.$filter['term'].'*"';
                 break;
             }
+            $genderQuery = '';
             if (!empty($gender)) {
                 $genderQuery = "OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE id = c.id AND gender = '".$gender."' LIMIT 1)";
             }
@@ -1490,7 +1496,7 @@ class CrmLibrary
             $filters = " WHERE ".implode(' AND ', $where);
         }
 
-        $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
+        $sortingFields = array("c.customer_name", "activities", "c.added_date", "c.contact_familyname",);
         $sortOrder = (isset ($filter['sorto'])) ? (((int) $filter['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
         $sortField = (isset ($filter['sortf']) && $filter['sortf'] != '' && in_array($sortingFields[$filter['sortf']], $sortingFields)) ? $sortingFields[$filter['sortf']] : 'c.id';
 
@@ -2235,7 +2241,7 @@ class CrmLibrary
      *
      * @return null
      */
-    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = 0, $block = "memberships", $options = array())
+    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = array(), $block = "memberships", $options = array())
     {
         $data = array(
                 'status = 1'
@@ -2249,7 +2255,7 @@ class CrmLibrary
                 $objTpl->setVariable(array(
                         "CRM_MEMBERSHIP_ID"         => (int) $result->fields['id'],
                         "CRM_MEMBERSHIP_VALUE"      => contrexx_raw2xhtml($result->fields['value']),
-                        "CRM_MEMBERSHIP_SELECTED"   => ($result->fields['id'] == $selected) ? "selected='selected'" : '',
+                        "CRM_MEMBERSHIP_SELECTED"   => (in_array($result->fields['id'], $selected)) ? "selected='selected'" : '',
                 ));
                 $objTpl->parse($block);
                 $result->MoveNext();
@@ -2979,7 +2985,14 @@ class CrmLibrary
             $objImage = new \ImageManager();
         }
         if (empty($arrSettings)) {
-            $arrSettings = array();
+            $arrSettings = array(
+                'profile_thumbnail_pic_width'   => array(),
+                'profile_thumbnail_pic_height'  => array(),
+                'profile_thumbnail_scale_color' => array(),
+                'profile_thumbnail_method'      => array(),
+                'max_profile_pic_width'         => array(),
+                'max_profile_pic_height'        => array(),
+            );
             $arrSettings['profile_thumbnail_pic_width']['value'] = 80;
             $arrSettings['profile_thumbnail_pic_height']['value'] = 60;
             $arrSettings['profile_thumbnail_scale_color']['value'] = '';
@@ -3101,7 +3114,7 @@ class CrmLibrary
             $uploader->setData($data);
 
             if (empty($buttonText)) {
-                $buttonText = $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'];
+                $buttonText = $_ARRAYLANG['TXT_CRM_UPLOAD_FILES'];
             }
             return $uploader->getXHtml($buttonText);
         } catch (Exception $e) {
@@ -3117,10 +3130,10 @@ class CrmLibrary
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $session = $cx->getComponent('Session')->getSession();
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        $tempPath = $session->getTempPath();
+        $tempWebPath = $session->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not get temporary session folder');
 
@@ -3389,10 +3402,7 @@ class CrmLibrary
      *
      * @param String $query
      *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     *
-     * @return true
+     * @return integer
      */
     function countRecordEntries($query)
     {
@@ -3400,6 +3410,10 @@ class CrmLibrary
 
         $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
                                                     FROM    ('.$query.') AS num');
+
+        if (!$objEntryResult) {
+            return 0;
+        }
 
         return intval($objEntryResult->fields['numberOfEntries']);
     }

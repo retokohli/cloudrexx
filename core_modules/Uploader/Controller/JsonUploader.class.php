@@ -100,11 +100,12 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
     {
         global $_ARRAYLANG;
         $id = null;
+        $session = $this->cx->getComponent('Session')->getSession();
         if (isset($params['get']['id']) && preg_match('/^[a-z0-9]+$/i', $params['get']['id'])
         ) {
             $id = ($params['get']['id']);
             $uploadedFileCount = isset($params['get']['uploadedFileCount']) ? intval($params['get']['uploadedFileCount']) : 0;
-            $path = $_SESSION->getTempPath() . '/'.$id.'/';
+            $path = $session->getTempPath() . '/'.$id.'/';
             $tmpPath = $path;
         } elseif (isset($params['post']['path'])) {
             $path_part = explode("/", $params['post']['path'], 2);
@@ -113,7 +114,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $path = $mediaSourceManager->getMediaTypePathsbyNameAndOffset($path_part[0],0)
                 . '/' . $path_part[1];
 
-            $tmpPath = $_SESSION->getTempPath();
+            $tmpPath = $session->getTempPath();
         } else {
             return array(
                 'OK' => 0,
@@ -128,7 +129,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         }
         $uploader = UploaderController::handleRequest(
             array(
-                'allow_extensions' => is_array($allowedExtensions) ? explode(', ', $allowedExtensions) : $allowedExtensions,
+                'allow_extensions' => $allowedExtensions,
                 'target_dir' => $path,
                 'tmp_dir' => $tmpPath
             )
@@ -202,7 +203,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $file = false;
             foreach($files as $fileInfo){
                 if ($fileInfo->isFile()) {
-                    $file = $fileInfo->getRealPath();
+                    $file = str_replace(DIRECTORY_SEPARATOR, '/', $fileInfo->getRealPath());
                     break;
                 }
             }

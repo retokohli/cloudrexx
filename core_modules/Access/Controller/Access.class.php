@@ -207,7 +207,25 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         // filter out special placeholders that identify allowed filter attributes
         $attributeFilterPlaceholders = preg_grep('/^' . $filterAttributePlaceholderPrefix . '/', $placeholders);
         $allowedFilterAttributes = preg_filter('/^' . $filterAttributePlaceholderPrefix . '/', '', $attributeFilterPlaceholders);
-        
+
+        // verify that attributes are valid
+        $objFWUser = \FWUser::getFWUserObject();
+        foreach ($allowedFilterAttributes as $idx => $attributeId) {
+            $objAttribute = $objFWUser->objUser->objAttribute->getById(strtolower($attributeId));
+
+            // unkown attribute -> drop it from filter
+            if ($objAttribute->EOF) {
+                unset($allowedFilterAttributes[$idx]);
+                continue;
+            }
+
+            // user does not have read access to attribute -> drop it from filter
+            if (!$objAttribute->checkReadPermission()) {
+                unset($allowedFilterAttributes[$idx]);
+                continue;
+            }
+        }
+
         // add filter join methods (OR and AND) to allowed filter attributes
         $allowedFilterAttributes = array_merge($allowedFilterAttributes, array('AND', 'OR', '=', '<', '>', '!=', '<', '>', 'REGEXP', 'LIKE'));
 
@@ -224,6 +242,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
 
+        $userFilter = array('AND' => array());
         $userFilter['AND'][] = array('active' => true);
 
         if (isset($_REQUEST['profile_filter']) && is_array($_REQUEST['profile_filter'])) {
@@ -324,6 +343,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $settingsDone = false;
         $objFWUser->objUser->loadNetworks();
 
+        $act = isset($_GET['act']) ? $_GET['act'] : '';
         if (isset($_POST['access_delete_account'])) {
             // delete account
             \Cx\Core\Csrf\Controller\Csrf::check_code();
@@ -419,7 +439,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $msg = implode('<br />', $result);
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
-        } elseif ($_GET['act'] == 'disconnect') {
+        } elseif ($act == 'disconnect') {
             $objFWUser->objUser->getNetworks()->deleteNetwork($_GET['provider']);
             $currentUrl = clone \Env::get('Resolver')->getUrl();
             $currentUrl->setParams(array(
@@ -842,7 +862,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 '[[ACTIVATION_LINK]]',
                 '[[HOST_LINK]]',
                 '[[SENDER]]',
-                '[[LINK]]'
+                '[[LINK]]',
+                '[[YEAR]]',
             );
             $replaceTextTerms = array(
                 $_CONFIG['domainUrl'],
@@ -850,7 +871,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 $objUserMail->getSenderName(),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             $replaceHtmlTerms = array(
                 $_CONFIG['domainUrl'],
@@ -858,7 +880,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 contrexx_raw2xhtml($objUserMail->getSenderName()),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             if ($mail2load == 'reg_confirm') {
                 $imagePath = 'http://'.$_CONFIG['domainUrl']
