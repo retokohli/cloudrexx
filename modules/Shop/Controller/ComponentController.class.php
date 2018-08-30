@@ -48,16 +48,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('Backend');
     }
 
-     /**
-     * Load your component.
+    /**
+    * Load your component. It is needed for this request.
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
+     * This loads your Frontend or BackendController depending on the
+     * mode Cx runs in. For modes other than frontend and backend, nothing is done.
+    *
+    * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
+    */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $subMenuTitle, $intAccessIdOffset, $objTemplate;
+        $knownModes = array(
+            \Cx\Core\Core\Controller\Cx::MODE_BACKEND => 'Backend',
+        );
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $page->setContent(Shop::getPage($page->getContent()));
@@ -84,13 +89,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
-                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
-                $objTemplate = $this->cx->getTemplate();
-
-                \Permission::checkAccess($intAccessIdOffset+13, 'static');
-                $subMenuTitle = $_CORELANG['TXT_SHOP_ADMINISTRATION'];
-                $objShopManager = new ShopManager();
-                $objShopManager->getPage();
+                // Has to be optimized when frontend controller is used
+                // Find long controller name for short controller name
+                $controllerShort = $knownModes[$this->cx->getMode()];
+                if (!in_array($controllerShort, $this->getControllerClasses())) {
+                    // No such controller for this component
+                    return;
+                }
+                // Find controller instance
+                $controller = $this->getController($controllerShort);
+                if (!$controller) {
+                    // Controller is listed in controller classes but could not be
+                    // instanciated. There's something wrong there...
+                    return;
+                }
+                // Get content
+                $controller->getPage($page);
                 break;
         }
     }
