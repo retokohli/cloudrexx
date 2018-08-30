@@ -71,12 +71,7 @@ class LegacyDatabaseRepository extends DataSource {
         $fieldList = array()
     ) {
         $tableName = DBPREFIX . $this->getIdentifier();
-
-        // $elementId
         $whereList = array();
-        if (isset($elementId)) {
-            $whereList[] = '`id` = "' . contrexx_raw2db($elementId) . '"';
-        }
 
         // $filter
         if (count($filter)) {
@@ -86,6 +81,14 @@ class LegacyDatabaseRepository extends DataSource {
                 }
                 $whereList[] = '`' . contrexx_raw2db($field) . '` = "' . contrexx_raw2db($value) . '"';
             }
+        }
+
+        // $elementId
+        foreach ($elementId as $field => $value) {
+            if (count($fieldList) && !in_array($field, $fieldList)) {
+                continue;
+            }
+            $whereList[] = '`' . contrexx_raw2db($field) . '` = "' . contrexx_raw2db($value) . '"';
         }
 
         // $order
