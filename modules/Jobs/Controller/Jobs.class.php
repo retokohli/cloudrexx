@@ -170,7 +170,8 @@ class Jobs extends JobsLibrary
                                date,
                                changelog,
                                title,
-                               author
+                               author,
+                               paid
                           FROM ".DBPREFIX."module_jobs
                          WHERE status = 1
                            AND id = $id
@@ -231,6 +232,22 @@ class Jobs extends JobsLibrary
                     'JOBS_WORKLOC' => $workloc,
                     'JOBS_WORKLOAD'=> $workload,
                     'JOBS_WORK_START' => $work_start));
+
+                if ($this->_objTpl->blockExists('job_paid')) {
+                    if ($objResult->fields['paid']) {
+                        $this->_objTpl->touchBlock('job_paid');
+                    } else {
+                        $this->_objTpl->hideBlock('job_paid');
+                    }
+                }
+                if ($this->_objTpl->blockExists('job_not_paid')) {
+                    if ($objResult->fields['paid']) {
+                        $this->_objTpl->hideBlock('job_not_paid');
+                    } else {
+                        $this->_objTpl->touchBlock('job_not_paid');
+                    }
+                }
+
                 $objResult->MoveNext();
             }
         } else {
@@ -320,7 +337,8 @@ class Jobs extends JobsLibrary
                          n.title AS title,
                          n.workload AS workload,
                          n.author AS author,
-                         nc.name AS name
+                         nc.name AS name,
+                         n.paid
                     FROM ".DBPREFIX."module_jobs AS n,
                          ".DBPREFIX."module_jobs_categories AS nc
                          ". $locationFilter."
@@ -388,6 +406,21 @@ class Jobs extends JobsLibrary
                     'JOBS_AUTHOR'       => stripslashes($objResult->fields['author']),
                     'JOBS_WORKLOAD' => stripslashes($objResult->fields['workload'])
                 ));
+
+                if ($this->_objTpl->blockExists('job_paid')) {
+                    if ($objResult->fields['paid']) {
+                        $this->_objTpl->touchBlock('job_paid');
+                    } else {
+                        $this->_objTpl->hideBlock('job_paid');
+                    }
+                }
+                if ($this->_objTpl->blockExists('job_not_paid')) {
+                    if ($objResult->fields['paid']) {
+                        $this->_objTpl->hideBlock('job_not_paid');
+                    } else {
+                        $this->_objTpl->touchBlock('job_not_paid');
+                    }
+                }
 
                 $this->_objTpl->parse("row");
                 $i++;
