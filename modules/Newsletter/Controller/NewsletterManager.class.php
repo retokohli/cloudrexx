@@ -3561,15 +3561,15 @@ class NewsletterManager extends NewsletterLib
             $subject,
         );
 
-        // Replace the links in the content
-        $content_text = str_replace($search, $replace, $content_text);
+        // add content to template
+        $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
 
-        // replace the links in the template
-        $TemplateSource = str_replace($search, $replace, $TemplateSource);
+        // Replace the links in the content
+        $NewsletterBody = str_replace($search, $replace, $NewsletterBody);
 
         // i believe this replaces image paths...
         $allImg = array();
-        preg_match_all('/src="([^"]*)"/', $content_text, $allImg, PREG_PATTERN_ORDER);
+        preg_match_all('/src="([^"]*)"/', $NewsletterBody, $allImg, PREG_PATTERN_ORDER);
         $size = sizeof($allImg[1]);
 
         $i = 0;
@@ -3583,17 +3583,17 @@ class NewsletterManager extends NewsletterLib
                 $ReplaceWith = $URLforReplace;
             }
 
-            $content_text = str_replace(
+            $NewsletterBody = str_replace(
                 '"'.$URLforReplace.'"',
                 '"'. contrexx_raw2encodedUrl($ReplaceWith) .'"',
-                $content_text
+                $NewsletterBody
             );
             $i++;
         }
 
         // Set HTML height and width attributes for img-tags
         $allImgsWithHeightOrWidth = array();
-        preg_match_all('/<img[^>]*style=(["\'])[^\1]*(?:width|height):\s*[^;\1]+;?\s*[^\1]*\1[^>]*>/', $content_text, $allImgsWithHeightOrWidth);
+        preg_match_all('/<img[^>]*style=(["\'])[^\1]*(?:width|height):\s*[^;\1]+;?\s*[^\1]*\1[^>]*>/', $NewsletterBody, $allImgsWithHeightOrWidth);
         foreach ($allImgsWithHeightOrWidth as $img) {
             $htmlHeight = $this->getAttributeOfTag($img, 'img', 'height');
             $htmlWidth = $this->getAttributeOfTag($img, 'img', 'width');
@@ -3617,10 +3617,9 @@ class NewsletterManager extends NewsletterLib
             if (empty($htmlWidth) && !empty($cssWidth)) {
                 $img = $this->setAttributeOfTag($img, 'img', 'width', $cssWidth);
             }
-            $content_text = str_replace($imgOrig, $img, $content_text);
+            $NewsletterBody = str_replace($imgOrig, $img, $NewsletterBody);
         }
 
-        $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
         return $NewsletterBody;
     }
 
