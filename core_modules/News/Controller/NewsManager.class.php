@@ -688,7 +688,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'NEWS_CHANGELOG'         => date(ASCMS_DATE_FORMAT, $news['changelog']),
                     'NEWS_LIST_PARSING'      => $paging,
                     'NEWS_CLASS'             => $class,
-                    'NEWS_CATEGORY'          => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
+                    'NEWS_CATEGORY'          => $news['lang'][$selectedInterfaceLanguage]['catname'],
                     'NEWS_STATUS'            => $news['status'],
                     'NEWS_STATUS_PICTURE'    => $statusPicture,
                     'NEWS_LANGUAGES'         => $langString,
@@ -849,7 +849,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'NEWS_USER'             => $author,
                     'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $news['changelog']),
                     'NEWS_CLASS'            => $class,
-                    'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
+                    'NEWS_CATEGORY'         => $news['lang'][$selectedInterfaceLanguage]['catname'],
                     'NEWS_STATUS'           => $news['status'],
                     'NEWS_STATUS_PICTURE'   => $statusPicture,
                     'NEWS_LANGUAGES'        => $langString,
@@ -2935,8 +2935,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // Change sorting
-        if (is_array($_POST['newsCatSorting']) && !empty($_POST['newsCatSorting'])) {
-            $newSorting = $_POST['newsCatSorting'];
+        $newSorting = isset($_POST['newsCatSorting']) ? contrexx_input2raw($_POST['newsCatSorting']) : array();
+        if (is_array($newSorting) && !empty($newSorting)) {
             asort($newSorting);
             foreach($newSorting as $catId => $catSort) {
                 $this->objNestedSet->moveTree($catId, $this->objNestedSet->getParent($catId)->id, NESE_MOVE_BELOW);
@@ -4910,6 +4910,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $userId        = $objUser->getId();
 
             if ($userName) {
+                $userAttr[$i] = array();
                 $userAttr[$i]['id']    = $userId;
                 $userAttr[$i]['label'] = \FWUser::getParsedUserTitle($userId, '', true);
                 $userAttr[$i]['value'] = \FWUser::getParsedUserTitle($userId);
