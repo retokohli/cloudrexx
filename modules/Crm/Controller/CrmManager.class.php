@@ -1222,6 +1222,7 @@ class CrmManager extends CrmLibrary
                 $langName ? $objTpl->touchBlock("contactLang") : $objTpl->hideBlock("contactLang");
 
                 $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById('title_' . $custDetails['salutation']);
+                $salutationLabel = '';
                 if (!$objAttribute->EOF) {
                     $salutationLabel = $objAttribute->getName();
                 }
