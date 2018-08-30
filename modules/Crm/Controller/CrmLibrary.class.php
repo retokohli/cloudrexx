@@ -2380,6 +2380,7 @@ class CrmLibrary
             'firstname'    => array(0 => $this->contact->customerName),
             'lastname'     => array(0 => $this->contact->family_name),
             'gender'       => array(0 => $gender),
+            'title'        => array(0 => $this->contact->salutation),
             'designation'  => array(0 => $this->contact->contact_title),
             'website'      => array(0 => $website),
             'company'      => array(0 => $company),
@@ -2794,6 +2795,7 @@ class CrmLibrary
                 $this->contact->customerName   = !empty ($arrFormData['firstname'][0]) ? contrexx_input2raw($arrFormData['firstname'][0]) : '';
                 $this->contact->family_name    = !empty ($arrFormData['lastname'][0]) ? contrexx_input2raw($arrFormData['lastname'][0]) : '';
                 $this->contact->contact_title  = !empty ($arrFormData['designation'][0]) ? contrexx_input2raw($arrFormData['designation'][0]) : '';
+                $this->contact->salutation     = !empty ($arrFormData['title'][0]) ? contrexx_input2raw($arrFormData['title'][0]) : 0;
                 $this->contact->contact_language = !empty ($frontendLanguage) ? (int) $frontendLanguage : $_LANGID;
                 $this->contact->contact_gender = !empty ($arrFormData['gender'][0]) ? ($arrFormData['gender'][0] == 'gender_female' ? 1 : ($arrFormData['gender'][0] == 'gender_male' ? 2 : '')) : '';
 

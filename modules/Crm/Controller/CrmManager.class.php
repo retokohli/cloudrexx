@@ -1220,7 +1220,14 @@ class CrmManager extends CrmLibrary
                 $langId = $custDetails['contact_language'];
                 $langName = \FWLanguage::getLanguageParameter($langId, 'name');
                 $langName ? $objTpl->touchBlock("contactLang") : $objTpl->hideBlock("contactLang");
+
+                $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById('title_' . $custDetails['salutation']);
+                $salutationLabel = '';
+                if (!$objAttribute->EOF) {
+                    $salutationLabel = $objAttribute->getName();
+                }
                 $objTpl->setVariable(array(
+                        'CRM_CONTACT_SALUTATION'    => $salutationLabel,
                         'CRM_CONTACT_NAME'          => contrexx_raw2xhtml($custDetails['customer_name']),
                         'CRM_CONTACT_FAMILY_NAME'   => contrexx_raw2xhtml($custDetails['contact_familyname']),
                         'CRM_CONTACT_ROLE'          => contrexx_raw2xhtml($custDetails['contact_role']),
@@ -1272,6 +1279,7 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_CONTACT_PHONE'       => $_ARRAYLANG['TXT_CRM_PHONE'],
                 'TXT_CRM_CONTACT_WEBSITE'     => $_ARRAYLANG['TXT_CRM_WEBSITE'],
                 'TXT_CRM_SOCIAL_NETWORK'      => $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
+                'TXT_CRM_SALUTATION'          => $_ARRAYLANG['TXT_CRM_SALUTATION'],
                 'TXT_CRM_CONTACT_ADDRESSES'   => $_ARRAYLANG['TXT_CRM_TITLE_ADDRESS'],
                 'TXT_CRM_IMAGE_DELETE'        => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
                 'TXT_CRM_IMAGE_EDIT'          => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
@@ -2042,6 +2050,7 @@ END;
         $this->contact->contactType      = $contactType;
         $this->contact->companySize      = isset($_POST['companySize']) ? contrexx_input2raw($_POST['companySize']) : 0;
         $this->contact->contact_gender   = isset($_POST['contact_gender']) ? (int) $_POST['contact_gender'] : 0;
+        $this->contact->salutation       = isset($_POST['salutation']) ? (int) $_POST['salutation'] : 0;
         $this->contact->emailDelivery    = empty($_POST) || isset($_POST['emailDelivery']) ? 1 : 0;
 
         $accountUserID                   = (isset($_POST['contactId'])) ? intVal($_POST['contactId']) : 0;
@@ -2472,6 +2481,20 @@ END;
             $objUser = false;
         }
 
+        $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById('title');
+        if (!$objAttribute->EOF) {
+            $titleKeys = $objAttribute->getChildren();
+            foreach ($titleKeys as $title) {
+                $value = $objAttribute->getById($title)->getMenuOptionValue();
+                $this->_objTpl->setVariable(array(
+                    'SALUTATION_SELECT'     =>  $value == $this->contact->salutation ? 'selected=selected' : '',
+                    'SALUTATION_ID'         =>  $value,
+                    'TXT_SALUTATION_NAME'   =>  $objAttribute->getById($title)->getName(),
+                ));
+                $this->_objTpl->parse("crmContactSalutationOptions");
+            }
+        }
+
         $this->_objTpl->setVariable(array(
             'CRM_ADDRESS_HEADER_CLASS'      => $showAddress ? 'header-collapse' : 'header-expand',
             'CRM_ADDRESS_BLOCK_DISPLAY'     => $showAddress ? 'table-row-group' : 'none',
@@ -2574,6 +2597,7 @@ END;
                 'TXT_CRM_CUSTOMERTYPE'        =>    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                 'TXT_CRM_SOCIAL_NETWORK'      =>    $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
                 'TXT_CRM_GENDER'              =>    $_ARRAYLANG['TXT_CRM_GENDER'],
+                'TXT_CRM_SALUTATION'          =>    $_ARRAYLANG['TXT_CRM_SALUTATION'],
                 'TXT_CRM_NOT_SPECIFIED'       =>    $_ARRAYLANG['TXT_CRM_NOT_SPECIFIED'],
                 'TXT_CRM_GENDER_MALE'         =>    $_ARRAYLANG['TXT_CRM_GENDER_MALE'],
                 'TXT_CRM_GENDER_FEMALE'       =>    $_ARRAYLANG['TXT_CRM_GENDER_FEMALE'],
