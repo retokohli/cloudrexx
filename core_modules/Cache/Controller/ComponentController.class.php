@@ -302,6 +302,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Set the cache driver to use
+     *
+     * @param   $driver \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
+     */
+    public function setCacheDriver($driver)
+    {
+        $this->cacheDriver = $driver;
+    }
+
+    /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
      * @param string $originalUrl URL of the page that ESI is parsed for
