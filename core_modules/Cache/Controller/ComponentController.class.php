@@ -426,9 +426,8 @@ Cache clear all';
     protected function clearCacheCommand($type, $options = '') {
         $types = array('user', 'page', 'esi', 'proxy', 'opcode');
         if ($type == 'all') {
-            foreach ($types as $type) {
-                $this->commandClearCache($type);
-            }
+            $this->clearCache();
+            $this->clearCache(CacheLib::CACHE_ENGINE_MEMCACHED);
             return;
         }
         if (!in_array($type, $types)) {
