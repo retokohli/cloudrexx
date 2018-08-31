@@ -942,16 +942,15 @@ class Newsletter extends NewsletterLib
         } else {
             $newLists = array_diff($arrAssociatedLists, $arrPreAssociatedActiveLists);
             if (!empty($newLists)) {
-                $newsletterKey = 'notify_subscription_list_additional';
-                $substitution['NEWSLETTER_LISTS'] = array();
+                // Send consent mail if no consent for this list has been given
+                // If user already gave consent: NOOP
                 foreach ($newLists as $listId) {
-                    $listName = $this->getListNameById($listId);
-                    if ($listName) {
-                        $substitution['NEWSLETTER_LISTS'][] = array(
-                          'NEWSLETTER_LIST' => contrexx_raw2xhtml($listName),
-                        );
-                    }
+                    $this->sendConsentConfirmationMail(
+                        $listId,
+                        $recipientEmail
+                    );
                 }
+                return;
             }
         }
         if (empty($newsletterKey)) {
