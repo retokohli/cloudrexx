@@ -352,7 +352,8 @@ class NewsletterManager extends NewsletterLib
         $rowNr = 0;
 
         if (isset($_GET['tpl']) && ($_GET['tpl'] == 'consentMail')) {
-            if ($this->sendConsentConfirmationMail()) {
+            $categoryId = isset($_GET['id']) ? contrexx_input2int($_GET['id']) : 0;
+            if ($this->sendConsentConfirmationMail($categoryId)) {
                 static::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS'];
             } else {
                 static::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] . static::$strErrMessage;
@@ -6655,11 +6656,10 @@ function MultiAction() {
      *
      * @return boolean
      */
-    public function sendConsentConfirmationMail()
+    public function sendConsentConfirmationMail($categoryId)
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $categoryId  = isset($_GET['id']) ? contrexx_input2int($_GET['id']) : 0;
         $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         $arrSettings = $this->_getSettings();
 
