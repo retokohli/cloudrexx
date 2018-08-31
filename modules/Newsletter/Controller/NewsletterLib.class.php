@@ -990,9 +990,10 @@ class NewsletterLib
     /**
      * Send a consent confirmation mail to users based on mailing list
      * @param int $categoryId Category to send mail for
+     * @param string $email (optional) Only sends the mail to this user
      * @return boolean False if something went wrong, true otherwise
      */
-    public function sendConsentConfirmationMail($categoryId)
+    public function sendConsentConfirmationMail($categoryId, $email = '')
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -1001,6 +1002,11 @@ class NewsletterLib
 
         if (!$categoryId) {
             return false;
+        }
+        $userQuery = '';
+        if (!empty($email)) {
+            $userQuery = ' AND
+                `u`.`email` = "' . contrexx_raw2db($email) . '"';
         }
         $objUserRel = $objDatabase->Execute('
             SELECT
@@ -1024,7 +1030,7 @@ class NewsletterLib
             WHERE
                 `r`.`category` = "' . $categoryId . '" AND
                 `r`.`consent` IS NULL AND
-                `u`.`status` = 1
+                `u`.`status` = 1' . $userQuery . '
         ');
 
         if ($objUserRel && $objUserRel->RecordCount() == 0) {
@@ -1043,7 +1049,7 @@ class NewsletterLib
             WHERE
                 `r`.`category` = "' . $categoryId . '" AND
                 `r`.`consent` IS NULL AND
-                `u`.`status` = 1
+                `u`.`status` = 1' . $userQuery . '
         ');
 
         $notSentTo = array();
