@@ -6695,6 +6695,21 @@ function MultiAction() {
             return true;
         }
 
+        $objDatabase->Execute('
+            UPDATE
+                `' . DBPREFIX . 'module_newsletter_user` AS `u`
+            INNER JOIN
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS `r`
+            ON
+                `u`.`id` = `r`.`user`
+            SET
+                `u`.`emaildate` = "' . time() . '"
+            WHERE
+                `r`.`category` = "' . $categoryId . '" AND
+                `r`.`consent` IS NULL AND
+                `u`.`status` = 1
+        ');
+
         $notSentTo = array();
         while (!$objUserRel->EOF) {
             $sex = '';
