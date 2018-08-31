@@ -326,7 +326,7 @@ class NewsletterLib
     function _updateRecipient(
         $recipientAttributeStatus, $id, $email, $uri, $sex, $salutation, $title, $lastname, $firstname, $position, $company, $industry_sector,
         $address, $zip, $city, $country, $phone_office, $phone_private, $phone_mobile, $fax, $notes, $birthday, $status,
-        $arrLists, $language, $source
+        $arrLists, $language, $source, $setTime = false
     ) {
         global $objDatabase;
 
@@ -430,7 +430,7 @@ class NewsletterLib
         if (!$objDatabase->Execute($query)) {
             return false;
         }
-        return static::_setRecipientLists($id, $arrLists, $source);
+        return static::_setRecipientLists($id, $arrLists, $source, $setTime);
     }
 
 
@@ -440,10 +440,11 @@ class NewsletterLib
      * @param   integer   $recipientId      The recipient ID
      * @param   array     $arrLists         The array of list IDs to subscribe
      * @param string $source One of "opt-in", "backend", "api"
+     * @param boolean $setTime (optional) if set to true, consent is stored as confirmed
      * @return  boolean                     True on success, false otherwise
      * @static
      */
-    static function _setRecipientLists($recipientId, $arrLists, $source)
+    static function _setRecipientLists($recipientId, $arrLists, $source, $setTime = false)
     {
         global $objDatabase;
 
@@ -459,18 +460,26 @@ class NewsletterLib
         }
 
         // insert missing relations
+        $currentTime = 'NULL';
+        if ($setTime) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
+            $currentTime = '"' . $dateTime->format('Y-m-d H:i:s') . '"';
+        }
         if ($objDatabase->Execute('
             INSERT IGNORE INTO
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat`
                 (
                     `user`,
                     `category`,
-                    `source`
+                    `source`,
+                    `consent`
                 )
             SELECT
-                ' . $recipientId . ' as `user`,
-                `id` as `category`,
-                "' . $source . '" as `source`
+                ' . $recipientId . ' AS `user`,
+                `id` AS `category`,
+                "' . $source . '" AS `source`,
+                ' . $currentTime . ' AS `consent`
             FROM
                 `' . DBPREFIX . 'module_newsletter_category`
             WHERE
