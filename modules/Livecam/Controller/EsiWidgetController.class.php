@@ -77,8 +77,8 @@ class EsiWidgetController
             $url = $requestLivecam->getUrl();
             $url->setQueryVariables(
                 array(
-                'package_name' => array('HTTP_Request2', 'Net_URL2'),
-                'status'       => 'Open'
+                    'package_name' => array('HTTP_Request2', 'Net_URL2'),
+                    'status'       => 'Open'
                 )
             );
             $url->setQueryVariable('cmd', 'display');

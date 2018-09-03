@@ -47,14 +47,17 @@ namespace Cx\Modules\Livecam\Controller;
 class ComponentController
     extends \Cx\Core\Core\Model\Entity\SystemComponentController
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getControllerClasses()
     {
-        // Return an empty array here to let the component handler know that
-        // there does not exist a backend, nor a frontend controller of this
-        // component.
         return array('EsiWidget');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getControllersAccessableByJson()
     {
         return array('EsiWidgetController');
