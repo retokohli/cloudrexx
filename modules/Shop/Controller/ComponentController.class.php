@@ -67,9 +67,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
-        $knownModes = array(
-            \Cx\Core\Core\Controller\Cx::MODE_BACKEND => 'Backend',
-        );
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $page->setContent(Shop::getPage($page->getContent()));
