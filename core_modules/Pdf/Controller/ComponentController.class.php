@@ -149,11 +149,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postComponentLoad()
     {
-        if (!defined('_MPDF_TTFONTPATH' && '_MPDF_SYSTEM_TTFONTS')) {
+        if (!defined('_MPDF_TTFONTPATH' && '_MPDF_SYSTEM_TTFONTS' && '_MPDF_SYSTEM_TTFONTS_CONFIG')) {
             define(
                 '_MPDF_TTFONTPATH',
                 ltrim(
-                    $this->cx->getWebsiteImagesWebPath(),
+                    $this->cx->getSystemFolders()[10],
                     '/'
                 ) . '/Pdf/ttfonts/'
             );
@@ -163,6 +163,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $this->cx->getLibraryFolderName(),
                     '/'
                 ) . '/mpdf/ttfonts/'
+            );
+            define(
+                '_MPDF_SYSTEM_TTFONTS_CONFIG', 'core_modules/Pdf/Controller/clx_config.php'
             );
         }
     }
