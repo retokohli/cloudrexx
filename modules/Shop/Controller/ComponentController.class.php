@@ -45,20 +45,25 @@ namespace Cx\Modules\Shop\Controller;
  * @subpackage  module_shop
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+
+    /**
+     * Return a list of Controller Classes.
+     * @return array
+     */
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
         return array('Backend');
     }
 
     /**
-    * Load your component. It is needed for this request.
+     * Load your component. It is needed for this request.
      *
      * This loads your Frontend or BackendController depending on the
-     * mode Cx runs in. For modes other than frontend and backend, nothing is done.
-    *
-    * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
-    */
+     * mode Cx runs in. For modes other than frontend and backend, nothing is
+     * done. This method is overwritten because the frontend view is loaded
+     * without frontend controller and directly with the ShopManager
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
+     */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $knownModes = array(
             \Cx\Core\Core\Controller\Cx::MODE_BACKEND => 'Backend',
