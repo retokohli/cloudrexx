@@ -50,7 +50,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Return a list of Controller Classes.
      * @return array
      */
-    public function getControllerClasses() {
+    public function getControllerClasses()
+    {
         return array('Backend');
     }
 
@@ -64,7 +65,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
      */
-    public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function load(\Cx\Core\ContentManager\Model\Entity\Page $page)
+    {
         $knownModes = array(
             \Cx\Core\Core\Controller\Cx::MODE_BACKEND => 'Backend',
         );
