@@ -111,7 +111,7 @@ class Newsletter extends NewsletterLib
         // Get when user confirms a mailing permission link
         $categoryId = isset($_GET['category'])
             ? contrexx_input2int($_GET['category']) : 0;
-        $code = isset($_GET['code']) ? contrexx_raw2db($_GET['code']) : '';
+        $code = isset($_GET['code']) ? contrexx_input2int($_GET['code']) : '';
         $count = 0;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
@@ -548,7 +548,7 @@ class Newsletter extends NewsletterLib
                                             }
                                         } else {
                                             if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage, $source)) {
-                                                if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
+                                                if ($this->_sendAuthorizeEmail(contrexx_input2raw($recipientEmail), $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
                                                     array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
                                                     $showForm = false;
                                             } else {
@@ -595,7 +595,7 @@ class Newsletter extends NewsletterLib
 
                                             // Important: We do not update the recipient's profile data here by the reason that we can't verify the recipient's identity at this point!
 
-                                            if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
+                                            if ($this->_sendAuthorizeEmail(contrexx_input2raw($recipientEmail), $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
                                                 // Important: We must output the same status message as if the user has been newly added!
                                                 //            This shall prevent email-address-crawling-bots from detecting existing e-mail accounts.
                                                 array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
@@ -605,7 +605,7 @@ class Newsletter extends NewsletterLib
                                                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
                                             }
                                         } else {
-                                            $this->sendSubscriptionNotificationMail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists);
+                                            $this->sendSubscriptionNotificationMail(contrexx_input2raw($recipientEmail), $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists);
                                             array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
                                             $showForm = false;
                                         }
