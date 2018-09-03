@@ -89,22 +89,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
-                // Has to be optimized when frontend controller is used
-                // Find long controller name for short controller name
-                $controllerShort = $knownModes[$this->cx->getMode()];
-                if (!in_array($controllerShort, $this->getControllerClasses())) {
-                    // No such controller for this component
-                    return;
-                }
-                // Find controller instance
-                $controller = $this->getController($controllerShort);
-                if (!$controller) {
-                    // Controller is listed in controller classes but could not be
-                    // instanciated. There's something wrong there...
-                    return;
-                }
-                // Get content
-                $controller->getPage($page);
+                parent::load($page);
                 break;
         }
     }
