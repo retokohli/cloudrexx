@@ -44,14 +44,8 @@ namespace Cx\Modules\Shop\Controller;
  * @package     cloudrexx
  * @subpackage  coremodule_shop
  */
-class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
-
-    /**
-     * Template object
-     */
-    protected $template;
-
-
+class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
+{
     /**
      * This is called by the ComponentController and does all the repeating work
      *
