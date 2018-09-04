@@ -68,12 +68,12 @@ class EsiWidgetController
 
             // Take default livecam 1 when no cmd is set
             if (empty($camId)) {
-                $camSettings = $camSettings[1];
+                $camId = 1;
             }
 
             // Get image with http_request2
             $requestLivecam = new \HTTP_Request2(
-                $camSettings['currentImagePath']
+                $camSettings[$camId]['currentImagePath']
             );
             $url = $requestLivecam->getUrl();
             $url->setQueryVariables(
