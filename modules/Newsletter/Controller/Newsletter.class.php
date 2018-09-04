@@ -110,7 +110,14 @@ class Newsletter extends NewsletterLib
             ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
         // Get when user confirms a mailing permission link
         $categoryId = isset($_GET['category'])
-            ? contrexx_input2int($_GET['category']) : 0;
+            ? contrexx_input2raw($_GET['category']) : '';
+        $categoryIds = array();
+        if (!empty($categoryId)) {
+            $categoryIds = array_map(
+                'contrexx_raw2db',
+                explode('/', urldecode($categoryId))
+            );
+        }
         $code = isset($_GET['code']) ? contrexx_input2db($_GET['code']) : '';
         $count = 0;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -126,7 +133,7 @@ class Newsletter extends NewsletterLib
                     `' . DBPREFIX . 'module_newsletter_user`
                 WHERE
                     `email`  = "' . contrexx_raw2db($userEmail) . '" AND
-                    `status` = "' . ((bool) $categoryId) . '" AND
+                    `status` = "' . ((bool) count($categoryIds)) . '" AND
                     `code`   = "' . $code . '"
             ';
             $objResult = $objDatabase->Execute($query);
@@ -160,8 +167,8 @@ class Newsletter extends NewsletterLib
         // clicks a mailing permission link. If null: continue code below this condition,
         // otherwise return a error message
         $catConsentQuery = ' AND `source` = "opt-in"';
-        if ($categoryId) {
-            $catConsentQuery = ' AND `category` = "'. $categoryId .'"';
+        if (count($categoryIds)) {
+            $catConsentQuery = ' AND `category` IN(' . implode(', ', $categoryIds) . ')';
             $objUserRel = $objDatabase->Execute('
                 SELECT
                     `consent`
@@ -198,7 +205,7 @@ class Newsletter extends NewsletterLib
                 $catConsentQuery . '
         ');
 
-        if ($objUserCat !== false && $categoryId) {
+        if ($objUserCat !== false && count($categoryIds)) {
             $this->_objTpl->setVariable(
                 'NEWSLETTER_MESSAGE',
                 $_ARRAYLANG['TXT_NEWSLETTER_MAILING_CONFIRM_SUCCESSFUL']
@@ -219,7 +226,7 @@ class Newsletter extends NewsletterLib
                 `consent` IS NULL
         ');
 
-        if ($objResult !== false && !$categoryId) {
+        if ($objResult !== false && !count($categoryIds)) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
 
             //send notification
