@@ -944,12 +944,10 @@ class Newsletter extends NewsletterLib
             if (!empty($newLists)) {
                 // Send consent mail if no consent for this list has been given
                 // If user already gave consent: NOOP
-                foreach ($newLists as $listId) {
-                    $this->sendConsentConfirmationMail(
-                        $listId,
-                        $recipientEmail
-                    );
-                }
+                $this->sendConsentConfirmationMail(
+                    $newLists,
+                    $recipientEmail
+                );
                 return;
             }
         }

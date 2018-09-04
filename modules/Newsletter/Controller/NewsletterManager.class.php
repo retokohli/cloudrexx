@@ -353,7 +353,7 @@ class NewsletterManager extends NewsletterLib
 
         if (isset($_GET['tpl']) && ($_GET['tpl'] == 'consentMail')) {
             $categoryId = isset($_GET['id']) ? contrexx_input2int($_GET['id']) : 0;
-            if ($this->sendConsentConfirmationMail($categoryId)) {
+            if ($this->sendConsentConfirmationMail(array($categoryId))) {
                 static::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS'];
             } else {
                 static::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] . static::$strErrMessage;

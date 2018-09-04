@@ -998,20 +998,17 @@ class NewsletterLib
 
     /**
      * Send a consent confirmation mail to users based on mailing list
-     * @param int $categoryId Category to send mail for
+     * @param array $categoryIds Category to send mail for
      * @param string $email (optional) Only sends the mail to this user
      * @return boolean False if something went wrong, true otherwise
      */
-    public function sendConsentConfirmationMail($categoryId, $email = '')
+    public function sendConsentConfirmationMail($categoryIds, $email = '')
     {
         global $_ARRAYLANG, $_CONFIG;
 
         $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         $arrSettings = $this->_getSettings();
 
-        if (!$categoryId) {
-            return false;
-        }
         $userQuery = '';
         if (!empty($email)) {
             $userQuery = ' AND
@@ -1025,6 +1022,7 @@ class NewsletterLib
                 `u`.`title`,
                 `u`.`firstname`,
                 `u`.`lastname`,
+                `c`.`id`,
                 `c`.`name`
             FROM
                 `' . DBPREFIX . 'module_newsletter_rel_user_cat` AS `r`
@@ -1037,7 +1035,10 @@ class NewsletterLib
             ON
                 `c`.`id` = `r`.`category`
             WHERE
-                `r`.`category` = "' . $categoryId . '" AND
+                `r`.`category` IN(' . implode(
+                    ', ',
+                    array_map('contrexx_raw2db', $categoryIds)
+                ) . ') AND
                 `r`.`consent` IS NULL AND
                 `u`.`status` = 1' . $userQuery . '
         ');
@@ -1056,11 +1057,15 @@ class NewsletterLib
             SET
                 `u`.`emaildate` = "' . time() . '"
             WHERE
-                `r`.`category` = "' . $categoryId . '" AND
+                `r`.`category` IN(' . implode(
+                    ', ',
+                    array_map('contrexx_raw2db', $categoryIds)
+                ) . ') AND
                 `r`.`consent` IS NULL AND
                 `u`.`status` = 1' . $userQuery . '
         ');
 
+        $mailData = array();
         $notSentTo = array();
         while (!$objUserRel->EOF) {
             $sex = '';
@@ -1073,41 +1078,73 @@ class NewsletterLib
                     break;
             }
 
+            $email = $objUserRel->fields['email'];
+            if (!isset($mailData[$email])) {
+                $mailData[$email] = array();
+            }
+            if (!isset($mailData[$email]['categories'])) {
+                $mailData[$email]['categories'] = array(
+                    $objUserRel->fields['id'] => $objUserRel->fields['name'],
+                );
+            } else {
+                $mailData[$email]['categories'][
+                    $objUserRel->fields['id']
+                ] = $objUserRel->fields['name'];
+            }
+            $mailData[$email]['data'] = array(
+                'lang_id' => $this->getUsersPreferredLanguageId(
+                    $email,
+                    static::USER_TYPE_NEWSLETTER
+                ),
+                'sex' => $sex,
+                'title' => $objUserRel->fields['title'],
+                'firstname' => $objUserRel->fields['firstname'],
+                'lastname' => $objUserRel->fields['lastname'],
+                'code' => $objUserRel->fields['code'],
+            );
+            $objUserRel->MoveNext();
+        }
+
+        foreach ($mailData as $email=>$data) {
             $arrMailTemplate = array(
                 'key'          => 'consent_confirmation_email',
                 'section'      => 'Newsletter',
-                'lang_id'      => $this->getUsersPreferredLanguageId(
-                    $objUserRel->fields['email'],
-                    static::USER_TYPE_NEWSLETTER
-                ),
-                'to'           => $objUserRel->fields['email'],
+                'lang_id'      => $data['data']['lang_id'],
+                'to'           => $email,
                 'from'         => $arrSettings['sender_mail']['setvalue'],
                 'sender'       => $arrSettings['sender_name']['setvalue'],
                 'reply'        => $arrSettings['reply_mail']['setvalue'],
                 'substitution' => array(
-                    'NEWSLETTER_USER_SEX'             => $_ARRAYLANG['TXT_NEWSLETTER_' . $sex],
-                    'NEWSLETTER_USER_TITLE'           => $objUserRel->fields['title'],
-                    'NEWSLETTER_USER_FIRSTNAME'       => $objUserRel->fields['firstname'],
-                    'NEWSLETTER_USER_LASTNAME'        => $objUserRel->fields['lastname'],
-                    'NEWSLETTER_USER_EMAIL'           => $objUserRel->fields['email'],
-                    'NEWSLETTER_LIST_NAME'            => $objUserRel->fields['name'],
+                    'NEWSLETTER_USER_SEX' => $_ARRAYLANG[
+                        'TXT_NEWSLETTER_' . $data['data']['sex']
+                    ],
+                    'NEWSLETTER_USER_TITLE' => $data['data']['title'],
+                    'NEWSLETTER_USER_FIRSTNAME' => $data['data']['firstname'],
+                    'NEWSLETTER_USER_LASTNAME' => $data['data']['lastname'],
+                    'NEWSLETTER_USER_EMAIL' => $data['data']['email'],
                     'NEWSLETTER_CONSENT_CONFIRM_CODE' => \Cx\Core\Routing\Url::fromDocumentRoot(
                         array(
                             'section' => 'Newsletter',
                             'cmd' => 'confirm',
-                            'email' => urlencode($objUserRel->fields['email']),
-                            'code' => $objUserRel->fields['code'],
-                            'category' => $categoryId,
+                            'email' => urlencode($email),
+                            'code' => $data['data']['code'],
+                            'category' => implode(
+                                '/',
+                                array_keys($data['categories'])
+                            ),
                         )
                     )->toString(),
-                    'NEWSLETTER_DOMAIN_URL'           => $_CONFIG['domainUrl'],
+                    'NEWSLETTER_DOMAIN_URL' => $_CONFIG['domainUrl'],
                 ),
             );
+            foreach ($data['categories'] as $catId=>$catName) {
+                $arrMailTemplate['substitution']['NEWSLETTER_LISTS'][] = array(
+                    'NEWSLETTER_LIST' => contrexx_raw2xhtml($catName),
+                );
+            }
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
                 $notSentTo[] = $objUserRel->fields['email'];
             }
-
-            $objUserRel->MoveNext();
         }
         if (count($notSentTo)) {
             static::$strErrMessage = ' ' . sprintf(
