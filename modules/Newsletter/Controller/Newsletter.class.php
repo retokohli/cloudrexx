@@ -111,7 +111,7 @@ class Newsletter extends NewsletterLib
         // Get when user confirms a mailing permission link
         $categoryId = isset($_GET['category'])
             ? contrexx_input2int($_GET['category']) : 0;
-        $code = isset($_GET['code']) ? contrexx_input2int($_GET['code']) : '';
+        $code = isset($_GET['code']) ? contrexx_input2db($_GET['code']) : '';
         $count = 0;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb('');
