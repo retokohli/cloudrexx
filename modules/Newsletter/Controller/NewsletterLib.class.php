@@ -1135,6 +1135,7 @@ class NewsletterLib
                         )
                     )->toString(),
                     'NEWSLETTER_DOMAIN_URL' => $_CONFIG['domainUrl'],
+                    'NEWSLETTER_LISTS' => array(),
                 ),
             );
             foreach ($data['categories'] as $catId=>$catName) {
