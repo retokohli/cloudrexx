@@ -37,14 +37,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // auto-hide language dropdown and navigation on click anywhere else
     document.getElementsByTagName("body")[0].onclick = function(e) {
-        if (e.path.indexOf(document.getElementById("metanavigation")) > -1) {
+        if (
+            e.path != undefined &&
+            e.path.indexOf(document.getElementById("metanavigation")) > -1
+        ) {
             return;
         }
         document.querySelector("#metanavigation>ul>li>ul").style.display = "";
-        if (e.path.indexOf(document.querySelector(".content_wrapper.left")) > -1) {
+        if (
+            e.path != undefined &&
+            e.path.indexOf(document.querySelector(".content_wrapper.left")) > -1
+        ) {
             return;
         }
-        if (e.path.indexOf(document.getElementById("header")) > -1) {
+        if (
+            e.path != undefined &&
+            e.path.indexOf(document.getElementById("header")) > -1
+        ) {
             return;
         }
         document.querySelector(".content_wrapper.left").classList.remove(showClass);
