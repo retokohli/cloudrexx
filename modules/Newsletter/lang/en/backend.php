@@ -284,6 +284,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'] = "General";
 $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'] = "Unsubscribe";
 $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_PROFILE'] = "Modify profile";
 $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'] = "This placeholder is not available in the browser-view of a newsletter.";
+$_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_FOR_CRM'] = "This placeholder is not available for crm contacts";
 $_ARRAYLANG['TXT_NEWSLETTER_SHOW_LAST_SENT_EMAIL'] = "Show last sent e-mail";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_LIST'] = "Do you really want to delete the list %s?";
 $_ARRAYLANG['TXT_NEWSLETTER_ID_UC'] = "ID";

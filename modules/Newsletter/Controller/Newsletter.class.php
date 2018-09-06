@@ -1163,7 +1163,13 @@ class Newsletter extends NewsletterLib
             $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
             $crmUser->load($crmId);
 
-            // TODO: implement salutation as soon as available
+            $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute
+                ->getById('title_' . $crmUser->salutation);
+            $salutation = '';
+            if (!$objAttribute->EOF) {
+                $salutation = $objAttribute->getName();
+            }
+
             $gender = $crmUser->contact_gender == 1
                 ? 'gender_female'
                 : ($crmUser->contact_gender == 2
@@ -1182,9 +1188,7 @@ class Newsletter extends NewsletterLib
             $city                      = $crmUser->city;
             $website                   = $crmUser->url;
             $phoneOffice               = $crmUser->phone;
-            $phonePrivate              = $crmUser->phone;
-            $phoneMobile               = $crmUser->phone;
-            $fax                       = $crmUser->phone;
+
         } else {
             // no user found by the specified e-mail address, therefore we will unset any profile specific data to prevent leaking any privacy data
             $email  = '';

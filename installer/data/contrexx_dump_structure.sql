@@ -2908,7 +2908,7 @@ CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
   `link_id` int(11) unsigned NOT NULL,
   `email_id` int(11) unsigned NOT NULL,
   `recipient_id` int(11) unsigned NOT NULL,
-  `recipient_type` enum('access','newsletter') NOT NULL,
+  `recipient_type` enum('access','newsletter','crm') NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `link_id` (`link_id`,`email_id`,`recipient_id`,`recipient_type`),
   KEY `email_id` (`email_id`)
