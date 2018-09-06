@@ -1121,7 +1121,7 @@ class NewsletterLib
                     'NEWSLETTER_USER_TITLE' => $data['data']['title'],
                     'NEWSLETTER_USER_FIRSTNAME' => $data['data']['firstname'],
                     'NEWSLETTER_USER_LASTNAME' => $data['data']['lastname'],
-                    'NEWSLETTER_USER_EMAIL' => $data['data']['email'],
+                    'NEWSLETTER_USER_EMAIL' => $email,
                     'NEWSLETTER_CONSENT_CONFIRM_CODE' => \Cx\Core\Routing\Url::fromDocumentRoot(
                         array(
                             'section' => 'Newsletter',
