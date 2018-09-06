@@ -2573,6 +2573,7 @@ namespace Cx\Core\Core\Controller {
                 $this->getModuleFolderName(),
                 $this->getThemesFolderName(),
                 static::FOLDER_NAME_TEMP,
+                static::FOLDER_NAME_COMMAND_MODE,
             );
         }
 
