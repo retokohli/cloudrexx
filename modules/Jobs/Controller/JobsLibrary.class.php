@@ -236,6 +236,9 @@ class JobsLibrary
         return $this->arrSettings;
     }
 
+    /**
+     * Clear page and esi cache of this component
+     */
     protected function clearCache() {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $cx->getEvents()->triggerEvent(
