@@ -26,16 +26,31 @@
  */
 
 /**
- *
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core
  */
 
 namespace Cx\Core\Html\Controller;
 
 /**
+ * Creates a table view
  *
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core
  */
 class TableGenerator extends \BackendTable
 {
+    /**
+     * Overwrites the constructor to convert the $attr array into a dataset to
+     * flip it and show the attributes besides the values.
+     *
+     * @param $attrs   array attributes and values
+     * @param $options array options for view generator
+     */
     public function __construct($attrs = array(), $options = array())
     {
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
