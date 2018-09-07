@@ -1083,6 +1083,7 @@ class Newsletter extends NewsletterLib
             \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
             exit();
         }
+        $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
 
         // Get user details.
         $query = '
@@ -1159,9 +1160,7 @@ class Newsletter extends NewsletterLib
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
             //$unsubscribe = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'unsubscribe', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
             //$profile     = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'profile', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
-        } elseif (!empty($crmId)) {
-            $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
-            $crmUser->load($crmId);
+        } elseif ($crmUser->load($crmId)) {
 
             $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute
                 ->getById('title_' . $crmUser->salutation);
@@ -1270,7 +1269,7 @@ class Newsletter extends NewsletterLib
         if (is_object($objUser) && $objUser->getId()) {
             $userId = $objUser->getId();
             $userType = self::USER_TYPE_ACCESS;
-        } elseif (!empty($crmId)) {
+        } elseif ($crmUser->load($crmId)) {
             $userId = $crmId;
             $userType = self::USER_TYPE_CRM;
         } else {
