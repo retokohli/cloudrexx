@@ -524,3 +524,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_CONSENT'] = 'Consent';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_BACKEND'] = 'Manually added';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_API'] = 'Added via API';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Opt-In';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'] = 'Tells whether the recipient gave his consent. <ul><li><img src="/core/Core/View/Media/icons/led_green.gif" alt="Green" /> means that the recipient gave consent by double-opt-in.</li><li><img src="/core/Core/View/Media/icons/led_orange.gif" alt="Orange" /> means that the recipient has either been added manually using the back-end console or that he has been imported via API.</li></ul><br />
+If the recipients are filtered by list, the second icon shows the consent for this list.<br /><br />
+Hover over an icon to see detailed information.';

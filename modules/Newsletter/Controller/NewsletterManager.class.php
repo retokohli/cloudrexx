@@ -4203,7 +4203,7 @@ $WhereStatement = '';
 
     function edituserSort()
     {
-        global $_CONFIG, $_ARRAYLANG;
+        global $_CONFIG;
 
         $output = array(
             'recipient_count'   => 0,
@@ -4265,13 +4265,15 @@ $WhereStatement = '';
                 : \FWUser::getFWUserObject()->objUser->objAttribute->getById(
                     'country_'.$user['country_id'])->getName();
 
-            $consentValue = '';
-            if (!empty($user['consent'])) {
-                $consentValue = $this->getUserDateTime($user['consent']);
-            } else {
-                $langVarName = 'TXT_NEWSLETTER_CONSENT_SOURCE_';
-                $langVarName .= str_replace('-', '_', strtoupper($user['source']));
-                $consentValue = $_ARRAYLANG[$langVarName];
+            $consentValue = $this->parseConsentView(
+                $user['source'],
+                $user['consent']
+            );
+            if (!empty($user['cat_source'])) {
+                $consentValue .= ' / ' . $this->parseConsentView(
+                    $user['cat_source'],
+                    $user['cat_consent']
+                );
             }
 
             $output['user'][] = array(
@@ -4298,6 +4300,31 @@ $WhereStatement = '';
         die(json_encode($output));
     }
 
+    /**
+     * Parses the consent icons
+     * @param string $source Either "backend", "api" or "opt-in"
+     * @param string $consent Date parseable by DateTime or empty string
+     * @return string HTML content
+     */
+    protected function parseConsentView($source, $consent) {
+        global $_ARRAYLANG;
+
+        if (!empty($consent)) {
+            // show green icon with date as tooltip
+            $consentValue = sprintf(
+                $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'],
+                $this->getUserDateTime($consent)
+            );
+            $consentValue = '<img src="/core/Core/View/Media/icons/led_green.gif" title="' . $consentValue . '" />';
+        } else {
+            // show orange icon with source as tooltip
+            $langVarName = 'TXT_NEWSLETTER_CONSENT_SOURCE_';
+            $langVarName .= str_replace('-', '_', strtoupper($source));
+            $consentValue = $_ARRAYLANG[$langVarName];
+            $consentValue = '<img src="/core/Core/View/Media/icons/led_orange.gif" title="' . $consentValue . '" />';
+        }
+        return $consentValue;
+    }
 
 // TODO: Refactor this method
 // TODO: $emailCount never used!!
@@ -5509,6 +5536,7 @@ $WhereStatement = '';
             'TXT_EXPORT' => $_ARRAYLANG['TXT_EXPORT'],
             'TXT_FUNCTIONS' => $_CORELANG['TXT_FUNCTIONS'],
             'TXT_NEWSLETTER_CONSENT' => $_ARRAYLANG['TXT_NEWSLETTER_CONSENT'],
+            'TXT_NEWSLETTER_CONSENT_TOOLTIP' => $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'],
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWSLETTER_MODIFY_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_RECIPIENT'],

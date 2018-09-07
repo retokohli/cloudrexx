@@ -522,4 +522,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'] = 'Die Bestätigungsmail kon
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT'] = 'Zustimmung';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_BACKEND'] = 'Manuell hinzugefügt';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_API'] = 'Via API hinzugefügt';
-$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Opt-In';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Double-Opt-In am %s';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'] = 'Gibt an, ob der Teilnehmer seine Zustimmung gegeben hat. <ul><li><img src="/core/Core/View/Media/icons/led_green.gif" alt="Grün" /> bedeutet, dass der Teilnehmer seine Zustimmung per Double-Opt-In bestätigt hat.</li><li><img src="/core/Core/View/Media/icons/led_orange.gif" alt="Orange" /> bedeutet, dass der Teilnehmer manuell über die Administrationskonsole erfasst, oder via API importiert wurde.</li></ul><br />
+Wenn nach Verteilerliste gefilter wird, wird zudem nachfolgend die Zustimmung zu der entsprechenden Liste aufgeführt.<br /><br />
+Fahren Sie mit der Maus über die Symbole um detailliertere Informationen zu erhalten.';
