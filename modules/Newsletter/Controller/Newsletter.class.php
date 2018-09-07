@@ -1360,6 +1360,11 @@ class Newsletter extends NewsletterLib
                 if ($objUser !== false) {
                     $recipientId = $objUser->getId();
                 }
+            } elseif ($recipientType == NewsletterLib::USER_TYPE_CRM) {
+                $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                if (!$crmUser->load($recipientId)) {
+                    $recipientId = null;
+                }
             } elseif ($recipientType == NewsletterLib::USER_TYPE_NEWSLETTER) {
                 $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
                 $recipientId = null;
