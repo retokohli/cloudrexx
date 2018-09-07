@@ -5627,20 +5627,23 @@ $WhereStatement = '';
             }
         }
 
+        array_push(
+            $arrRecipientFields['newsletter'],
+            '`nu`.`source`',
+            '`nu`.`consent`'
+        );
         if (!empty($newsletterListId)) {
             array_push(
                 $arrRecipientFields['newsletter'],
-                '`nu` . `source`',
-                '`rc` . `consent`'
+                '`rc`.`source` AS `cat_source`',
+                '`rc`.`consent` AS `cat_consent`'
             );
-        } else {
             array_push(
-                $arrRecipientFields['newsletter'],
-                '`nu` . `source`',
-                '`nu` . `consent`'
+                $arrRecipientFields['access'],
+                "'' AS `cat_source`",
+                "'' AS `cat_consent`"
             );
         }
-
         array_push(
             $arrRecipientFields['access'],
             "'' AS `source`",
