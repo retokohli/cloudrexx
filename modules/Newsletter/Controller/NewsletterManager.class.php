@@ -5207,6 +5207,25 @@ $WhereStatement = '';
 
         $arrLists = self::getLists();
         $listNr = 0;
+        $query = '
+            SELECT
+                `category`,
+                `source`,
+                `consent`
+            FROM
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+            WHERE
+                `user` = ' . $recipientId . '
+        ';
+        $consentResult = $objDatabase->Execute($query);
+        $consent = array();
+        while (!$consentResult->EOF) {
+            $consent[$consentResult->fields['category']] = array(
+                'source' => $consentResult->fields['source'],
+                'consent' => $consentResult->fields['consent'],
+            );
+            $consentResult->MoveNext();
+        }
         foreach ($arrLists as $listId => $arrList) {
             $column = $listNr % 3;
             $this->_objTpl->setVariable(array(
@@ -5215,6 +5234,14 @@ $WhereStatement = '';
                 'NEWSLETTER_SHOW_RECIPIENTS_OF_LIST_TXT' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], contrexx_raw2xhtml($arrList['name'])),
                 'NEWSLETTER_LIST_ASSOCIATED' => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
             ));
+            if (isset($consent[$listId])) {
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_CONSENT' => $this->parseConsentView(
+                        $consent[$listId]['source'],
+                        $consent[$listId]['consent']
+                    ),
+                ));
+            }
             $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
             $listNr++;
         }
