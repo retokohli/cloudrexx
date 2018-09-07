@@ -335,7 +335,9 @@ class Jobs extends JobsLibrary
         $query = "SELECT n.date AS date,
                          n.id AS docid,
                          n.title AS title,
+                         n.workloc AS workloc,
                          n.workload AS workload,
+                         n.work_start AS work_start,
                          n.author AS author,
                          nc.name AS name,
                          n.paid
@@ -395,6 +397,13 @@ class Jobs extends JobsLibrary
 
                 $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', FRONTEND_LANG_ID, array('id' => $objResult->fields['docid']));
 
+                $work_start = stripslashes($objResult->fields['work_start']);
+                if (empty($work_start) or time() >= $work_start) {
+                    $work_start = $_ARRAYLANG['TXT_JOBS_WORK_START_NOW'];
+                } else {
+                    $work_start = date('d.m.Y', $work_start);
+                }
+
                 $this->_objTpl->setVariable(array(
                     'JOBS_STYLE'      => $class,
                     'JOBS_ID'            => $objResult->fields['docid'],
@@ -404,7 +413,9 @@ class Jobs extends JobsLibrary
                     'JOBS_TITLE'        => contrexx_raw2xhtml($objResult->fields['title']),
                     'JOBS_LINK_SRC'     => $detailUrl->toString(),
                     'JOBS_AUTHOR'       => stripslashes($objResult->fields['author']),
-                    'JOBS_WORKLOAD' => stripslashes($objResult->fields['workload'])
+                    'JOBS_WORKLOC'      => stripslashes($objResult->fields['workloc']),
+                    'JOBS_WORKLOAD' => stripslashes($objResult->fields['workload']),
+                    'JOBS_WORK_START'   => $work_start,
                 ));
 
                 if ($this->_objTpl->blockExists('job_paid')) {
