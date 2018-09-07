@@ -213,7 +213,9 @@ class Jobs extends JobsLibrary
                 }
 
                 if(!empty($link)) {
-                    $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
+                    $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                    $domain = $domainRepo->getMainDomain()->getName();
+                    $url = str_replace("%URL%",urlencode($domain.$_SERVER['REQUEST_URI']),$url);
                     $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
                     $footnotelink = "<a href='$url'>$link</a>";
 			        $footnotelinkSrc = $url;
