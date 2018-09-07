@@ -2908,7 +2908,7 @@ CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
   `link_id` int(11) unsigned NOT NULL,
   `email_id` int(11) unsigned NOT NULL,
   `recipient_id` int(11) unsigned NOT NULL,
-  `recipient_type` enum('access','newsletter') NOT NULL,
+  `recipient_type` enum('access','newsletter','crm') NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `link_id` (`link_id`,`email_id`,`recipient_id`,`recipient_type`),
   KEY `email_id` (`email_id`)
@@ -2921,7 +2921,7 @@ CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
 CREATE TABLE `contrexx_module_newsletter_rel_crm_membership_newsletter` (
   `membership_id` int(10) unsigned NOT NULL,
   `newsletter_id` int(10) unsigned NOT NULL,
-  `type` enum('include', 'exclude') NOT NULL,
+  `type` enum('associate', 'include', 'exclude') NOT NULL,
   UNIQUE KEY `uniq` (`membership_id`,`newsletter_id`,`type`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
@@ -2958,7 +2958,7 @@ CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
   `newsletter` int(11) NOT NULL DEFAULT '0',
   `email` varchar(255) NOT NULL DEFAULT '',
   `sendt` tinyint(1) NOT NULL DEFAULT '0',
-  `type` enum('access','newsletter','core') NOT NULL DEFAULT 'newsletter',
+  `type` enum('access','newsletter','core','crm') NOT NULL DEFAULT 'newsletter',
   `code` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_email` (`newsletter`,`email`),
