@@ -154,7 +154,8 @@ class JobsLibrary
                          j.workload AS workload,
                          j.workloc AS workloc,
                          j.author AS author,
-                         jc.name AS name
+                         jc.name AS name,
+                         j.paid
                     FROM `' . DBPREFIX . 'module_jobs` AS j,
                          `' . DBPREFIX . 'module_jobs_categories` AS jc
                     WHERE j.status  = 1 '
@@ -179,6 +180,22 @@ class JobsLibrary
                     'JOBS_LINK_SRC'  => $detailUrl->toString(),
                     'JOBS_WORKLOC'   => contrexx_raw2xhtml($objResult->fields['workloc']),
                 ));
+
+                if ($objTemplate->blockExists('job_paid')) {
+                    if ($objResult->fields['paid']) {
+                        $objTemplate->touchBlock('job_paid');
+                    } else {
+                        $objTemplate->hideBlock('job_paid');
+                    }
+                }
+                if ($objTemplate->blockExists('job_not_paid')) {
+                    if ($objResult->fields['paid']) {
+                        $objTemplate->hideBlock('job_not_paid');
+                    } else {
+                        $objTemplate->touchBlock('job_not_paid');
+                    }
+                }
+
                 $objTemplate->parse('jobs_list');
                 $objResult->MoveNext();
             }
