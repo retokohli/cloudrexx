@@ -569,6 +569,7 @@ class JobsManager extends JobsLibrary
             if (!empty($_POST['jobsTitle'])) {
                 $this->insert();
                 $this->createRSS();
+                $this->clearCache();
             }
         }
 
@@ -619,6 +620,8 @@ class JobsManager extends JobsLibrary
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
+
+            $this->clearCache();
         }
 
         if (is_array($_POST['selectedId'])) {
@@ -638,6 +641,8 @@ class JobsManager extends JobsLibrary
                 }
             }
         }
+
+        $this->clearCache();
     }
 
 
@@ -862,6 +867,8 @@ class JobsManager extends JobsLibrary
             'paid' => array('val' => $paid, 'omitEmpty' => true),
         ))." WHERE id = $id;";
 
+        $this->clearCache();
+
         if (!$objDatabase->Execute($query) or $dberr) {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
         } else {
@@ -903,6 +910,8 @@ class JobsManager extends JobsLibrary
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
                     }
                 }
+
+                $this->clearCache();
             }
         }
     }
@@ -973,6 +982,7 @@ class JobsManager extends JobsLibrary
                                             WHEN `name` = "sourceOfJobs"        THEN "' . contrexx_raw2db($settings['sourceOfJobs']) . '" 
                                             WHEN `name` = "listingLimit"        THEN "' . contrexx_raw2db($settings['listingLimit']) . '"
                                        END)';
+            $this->clearCache();
             if ($objDatabase->Execute($query)) {
                 $this->strOkMessage  = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
@@ -1163,6 +1173,7 @@ class JobsManager extends JobsLibrary
              } else {
                  $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
              }
+            $this->clearCache();
         }
 
         // Modify a new category
@@ -1184,6 +1195,7 @@ class JobsManager extends JobsLibrary
                     $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                 }
             }
+            $this->clearCache();
         }
 
         $query = "SELECT `catid`,
@@ -1236,6 +1248,7 @@ class JobsManager extends JobsLibrary
                     $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                 }
             }
+            $this->clearCache();
         }
     }
 
@@ -1281,6 +1294,7 @@ class JobsManager extends JobsLibrary
              } else {
                  $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
              }
+            $this->clearCache();
         }
 
         // Modify a new category
@@ -1300,6 +1314,7 @@ class JobsManager extends JobsLibrary
                     $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                 }
             }
+            $this->clearCache();
         }
 
         $query = "SELECT `id`,
@@ -1345,7 +1360,7 @@ class JobsManager extends JobsLibrary
             } else {
                 $this->strErrMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']."<br />";
             }
-
+            $this->clearCache();
         }
         unset($locId);
         if (is_array($_POST['selectedId'])) {
@@ -1358,6 +1373,7 @@ class JobsManager extends JobsLibrary
                     $this->strErrMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']."<br />";
                 }
             }
+            $this->clearCache();
         }
     }
 
@@ -1410,5 +1426,4 @@ class JobsManager extends JobsLibrary
         $rssFeed->xmlType = "fulltext";
         $rssFeed->createXML();
     }
-
 }
