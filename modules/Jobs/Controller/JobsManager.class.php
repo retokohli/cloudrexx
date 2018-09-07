@@ -342,17 +342,8 @@ class JobsManager extends JobsLibrary
                 $this->_objTpl->hideBlock('jobs_overview_show_hot_offer');
             }
             if ($objResult->fields['paid']) {
-                // get (customized) icon path
-                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                $jobs = $cx->getComponent('Jobs');
-                $componentDir = $jobs->getDirectory(true, true);
-                $iconPath =  $componentDir . '/View/Media/Money.png';
-                $cl = $cx->getClassLoader();
-                $customizedIconPath = $cl->getWebFilePath($iconPath);
-
                 $this->_objTpl->setVariable(array(
                     'TXT_JOBS_PAID_LABEL'   => $_ARRAYLANG['TXT_JOBS_PAID_LABEL'],
-                    'JOBS_PAID_ICON'        => $customizedIconPath,
                 ));
                 $this->_objTpl->touchBlock('jobs_overview_paid');
             } else {
