@@ -61,7 +61,7 @@ class BackendTable extends HTML_Table {
      */
     protected $hasMasterTableHeader = false;
 
-    public function __construct($attrs = array(), $options = array()) {
+    public function __construct($attrs = array(), $options = array(), $detail = false) {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -108,6 +108,12 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+                    if ($detail && $header == 'key') {
+                        if (isset($_ARRAYLANG[$data])) {
+                            $data = $_ARRAYLANG[$data];
+                        }
+                    }
+
                     if (!empty($sortingKey) && $header === $sortingKey) {
                         //Add the additional attribute id, for getting the updated sort order after the row sorting
                         $this->updateRowAttributes($row, array('id' => 'sorting' . $entity . '_' . $data), true);
@@ -433,6 +439,9 @@ class BackendTable extends HTML_Table {
         if (!$virtual && isset($functions['edit']) && $functions['edit']) {
             return true;
         }
+        if (!$virtual && isset($functions['show']) && $functions['show']) {
+            return true;
+        }
         if (!$virtual && isset($functions['delete']) && $functions['delete']) {
             return true;
         }
@@ -445,12 +454,19 @@ class BackendTable extends HTML_Table {
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
         $editUrl = clone $baseUrl;
+        $showUrl = clone $baseUrl;
         $params = $editUrl->getParamArray();
+        $showParams = $showUrl->getParamArray();
         $editId = '';
+        $showId = '';
         if (!empty($params['editid'])) {
             $editId = $params['editid'] . ',';
         }
+        if (!empty($showParams['showId'])) {
+            $showId = $showParams['showId'] . ',';
+        }
         $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
+        $showId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
 
         /* We use json to do the action callback. So all callbacks are functions in the json controller of the
          * corresponding component. The 'else if' is for backwards compatibility so you can declare the function
@@ -468,16 +484,26 @@ class BackendTable extends HTML_Table {
                 array(
                     'rowData' => $rowData,
                     'editId' => $editId,
+                    'showId' => $showId,
                 )
             );
             if ($jsonResult['status'] == 'success') {
                 $code .= $jsonResult["data"];
             }
         } else if (isset($functions['actions']) && is_callable($functions['actions'])) {
-            $code .= $functions['actions']($rowData, $editId);
+            $code .= $functions['actions']($rowData, $editId, $showId);
         }
 
         if(!$virtual){
+            if (isset($functions['show']) && $functions['show']) {
+                $showUrl->setParam('showid', $showId);
+                //remove the parameter 'vg_increment_number' from editUrl
+                //if the baseUrl contains the parameter 'vg_increment_number
+                if (isset($params['vg_increment_number'])) {
+                    \Html::stripUriParam($showUrl, 'vg_increment_number');
+                }
+                $code .= '<a href="' . $showUrl . '" class="show" title="'.$_ARRAYLANG['TXT_CORE_RECORD_SHOW_TITLE'].'"></a>';
+            }
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl->setParam('editid', $editId);
                 //remove the parameter 'vg_increment_number' from editUrl

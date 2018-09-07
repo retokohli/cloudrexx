@@ -658,6 +658,13 @@ class ViewGenerator {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
+
+        $entityId = $this->getEntryId();
+
+	    if(!empty($_GET['showid'])) {
+	        return $this->renderFormForEntry(3, true);
+	    }
+
         $template = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
         $template->loadTemplateFile('TableView.html');
         $template->setGlobalVariable($_ARRAYLANG);
@@ -814,10 +821,11 @@ class ViewGenerator {
      * This function will render the form for a given entry by id. If id is null, an empty form will be loaded
      *
      * @access protected
-     * @param int $entityId id of the entity
+     * @param int  $entityId id of the entity
+     * @param bool $readOnly if entity is only readable
      * @return string rendered view
      */
-    protected function renderFormForEntry($entityId) {
+    protected function renderFormForEntry($entityId, $readOnly = false) {
         global $_CORELANG;
 
         $renderArray=array('vg_increment_number' => $this->viewId);
@@ -870,12 +878,13 @@ class ViewGenerator {
                     // fetch default value of entity's field
                     if ($entityObject->getFieldValue($object, $field) !== null) {
                         $renderArray[$field] = $entityObject->getFieldValue($object, $field);
+
                         continue;
                     }
                     $renderArray[$field] = '';
                 }
                 // This is necessary to load default values set by constructor
-                $this->object = new $entityClassWithNS(); 
+                $this->object = new $entityClassWithNS();
                 $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
@@ -967,7 +976,15 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions);
+
+        if ($readOnly) {
+            $title = sprintf($_CORELANG['TXT_CORE_SHOW_ENTITY'], $entityTitle);
+            unset($renderArray['vg_increment_number']);
+            $this->formGenerator = new \Cx\Core\Html\Controller\TableGenerator($renderArray, $this->options);
+        } else {
+            $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions);
+        }
+
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
