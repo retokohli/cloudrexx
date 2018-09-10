@@ -59,6 +59,7 @@ class NewsletterLib
     const USER_TYPE_NEWSLETTER = 'newsletter';
     const USER_TYPE_ACCESS = 'access';
     const USER_TYPE_CORE = 'core';
+    const USER_TYPE_CRM = 'crm';
 
     public $_arrRecipientTitles = null;
 
@@ -143,6 +144,7 @@ class NewsletterLib
      *
      * If the user's preferred language can not be found, the default language
      * ID is returned.
+     * For crm email addresses this will be the system default language by now
      * @param string $email E-mail address of the user
      * @param string $type User type (see constants)
      * @return integer Language ID
@@ -150,7 +152,7 @@ class NewsletterLib
     public function getUsersPreferredLanguageId($email, $type) {
         global $objDatabase;
 
-        $userLanguage = \FWLanguage::getDefaultLangId();
+        $userLanguage = \FWLanguage::getDefaultLangId(); // used also for crm
         switch ($type) {
             case self::USER_TYPE_CORE:
             case self::USER_TYPE_ACCESS:
@@ -184,7 +186,6 @@ class NewsletterLib
         }
         return $userLanguage;
     }
-
 
     /**
      * Return the count of recipients of a list
@@ -867,7 +868,7 @@ class NewsletterLib
         return true;
     }
 
-    protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $realUser)
+    protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $recipientType)
     {
         global $objDatabase;
 
@@ -919,11 +920,25 @@ class NewsletterLib
                     // replace href attribute
                     if (isset($arrLinks[$linkId])) {
 // TODO: use new URL-format
+                        $shortType = '';
+                        switch ($recipientType) {
+                            case NewsletterLib::USER_TYPE_ACCESS:
+                            case NewsletterLib::USER_TYPE_CORE:
+                                $shortType = 'r';
+                                break;
+                            case NewsletterLib::USER_TYPE_NEWSLETTER:
+                                $shortType = 'm';
+                                break;
+                            case NewsletterLib::USER_TYPE_CRM:
+                                $shortType = 'c';
+                                break;
+                        }
+
                         $arrParameters = array(
                             'section'               => 'Newsletter',
                             'n'                     => $MailId,
                             'l'                     => $linkId,
-                            ($realUser ? 'r' : 'm') => $UserId,
+                            $shortType              => $UserId,
                         );
                         $protocol = null;
                         if (\Env::get('config')['forceProtocolFrontend'] != 'none') {
