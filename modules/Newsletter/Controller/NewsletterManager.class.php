@@ -4265,6 +4265,17 @@ $WhereStatement = '';
                 : \FWUser::getFWUserObject()->objUser->objAttribute->getById(
                     'country_'.$user['country_id'])->getName();
 
+            $consentValue = $this->parseConsentView(
+                $user['source'],
+                $user['consent']
+            );
+            if (!empty($user['cat_source'])) {
+                $consentValue .= ' / ' . $this->parseConsentView(
+                    $user['cat_source'],
+                    $user['cat_consent']
+                );
+            }
+
             $output['user'][] = array(
                 'id'        => $user['id'],
                 'status'    => $user['status'],
@@ -4277,7 +4288,8 @@ $WhereStatement = '';
                 'city'      => empty($user['city']) ? '-' : $user['city'],
                 'country'   => $country,
                 'emaildate' => date(ASCMS_DATE_FORMAT, $user['emaildate']),
-                'type'      => $type
+                'type'      => $type,
+                'consent'   => $consentValue,
             );
             $arrSettings = $this->_getSettings();
             if ($arrSettings['statistics']['setvalue']) {
@@ -4288,6 +4300,31 @@ $WhereStatement = '';
         die(json_encode($output));
     }
 
+    /**
+     * Parses the consent icons
+     * @param string $source Either "backend", "api" or "opt-in"
+     * @param string $consent Date parseable by DateTime or empty string
+     * @return string HTML content
+     */
+    protected function parseConsentView($source, $consent) {
+        global $_ARRAYLANG;
+
+        if (!empty($consent)) {
+            // show green icon with date as tooltip
+            $consentValue = sprintf(
+                $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'],
+                $this->getUserDateTime($consent)
+            );
+            $consentValue = '<img src="/core/Core/View/Media/icons/led_green.gif" title="' . $consentValue . '" />';
+        } else {
+            // show orange icon with source as tooltip
+            $langVarName = 'TXT_NEWSLETTER_CONSENT_SOURCE_';
+            $langVarName .= str_replace('-', '_', strtoupper($source));
+            $consentValue = $_ARRAYLANG[$langVarName];
+            $consentValue = '<img src="/core/Core/View/Media/icons/led_orange.gif" title="' . $consentValue . '" />';
+        }
+        return $consentValue;
+    }
 
 // TODO: Refactor this method
 // TODO: $emailCount never used!!
@@ -5170,6 +5207,25 @@ $WhereStatement = '';
 
         $arrLists = self::getLists();
         $listNr = 0;
+        $query = '
+            SELECT
+                `category`,
+                `source`,
+                `consent`
+            FROM
+                `' . DBPREFIX . 'module_newsletter_rel_user_cat`
+            WHERE
+                `user` = ' . $recipientId . '
+        ';
+        $consentResult = $objDatabase->Execute($query);
+        $consent = array();
+        while (!$consentResult->EOF) {
+            $consent[$consentResult->fields['category']] = array(
+                'source' => $consentResult->fields['source'],
+                'consent' => $consentResult->fields['consent'],
+            );
+            $consentResult->MoveNext();
+        }
         foreach ($arrLists as $listId => $arrList) {
             $column = $listNr % 3;
             $this->_objTpl->setVariable(array(
@@ -5178,6 +5234,14 @@ $WhereStatement = '';
                 'NEWSLETTER_SHOW_RECIPIENTS_OF_LIST_TXT' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], contrexx_raw2xhtml($arrList['name'])),
                 'NEWSLETTER_LIST_ASSOCIATED' => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
             ));
+            if (isset($consent[$listId])) {
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_CONSENT' => $this->parseConsentView(
+                        $consent[$listId]['source'],
+                        $consent[$listId]['consent']
+                    ),
+                ));
+            }
             $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
             $listNr++;
         }
@@ -5497,7 +5561,9 @@ $WhereStatement = '';
             'TXT_ADD' => $_ARRAYLANG['TXT_ADD'],
             'TXT_IMPORT' => $_ARRAYLANG['TXT_IMPORT'],
             'TXT_EXPORT' => $_ARRAYLANG['TXT_EXPORT'],
-            'TXT_FUNCTIONS' => $_CORELANG['TXT_FUNCTIONS']
+            'TXT_FUNCTIONS' => $_CORELANG['TXT_FUNCTIONS'],
+            'TXT_NEWSLETTER_CONSENT' => $_ARRAYLANG['TXT_NEWSLETTER_CONSENT'],
+            'TXT_NEWSLETTER_CONSENT_TOOLTIP' => $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'],
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWSLETTER_MODIFY_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_RECIPIENT'],
@@ -5616,7 +5682,30 @@ $WhereStatement = '';
             }
         }
 
-        $query = sprintf('
+        array_push(
+            $arrRecipientFields['newsletter'],
+            '`nu`.`source`',
+            '`nu`.`consent`'
+        );
+        if (!empty($newsletterListId)) {
+            array_push(
+                $arrRecipientFields['newsletter'],
+                '`rc`.`source` AS `cat_source`',
+                '`rc`.`consent` AS `cat_consent`'
+            );
+            array_push(
+                $arrRecipientFields['access'],
+                "'' AS `cat_source`",
+                "'' AS `cat_consent`"
+            );
+        }
+        array_push(
+            $arrRecipientFields['access'],
+            "'' AS `source`",
+            "'' AS `consent`"
+        );
+
+        $query   = sprintf('
             (
                 SELECT SQL_CALC_FOUND_ROWS
                 %2$s
@@ -6648,6 +6737,22 @@ function MultiAction() {
         );
 
         return str_replace($search, $replace, $content);
+    }
+
+    /**
+     * Get a user dateTime in H:i:s d.m.Y format from db data
+     *
+     * @param string $userDateTime DateTime from a db
+     * @return string Return a formatted dateTime as string
+     */
+    public function getUserDateTime($userDateTime)
+    {
+        $cx                  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $dateTime            = $cx->getComponent('DateTime');
+        $createDateTimeForDb = $dateTime->createDateTimeForDb($userDateTime);
+        $db2User             = $dateTime->db2user($createDateTimeForDb);
+
+        return $db2User->format('H:i:s d.m.Y');
     }
 }
 
