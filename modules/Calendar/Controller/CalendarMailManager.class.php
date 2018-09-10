@@ -587,11 +587,9 @@ class CalendarMailManager extends CalendarLibrary {
                 $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
                 $excludeQuery = '';
                 if($objEvent->excludedCrmGroups) {
-                    $excludeQuery = 'AND `crm_contact`.`id` NOT IN (
-                                   SELECT m.`contact_id`
-                                    FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
-                                        WHERE m.`membership_id` IN (' . join(',', $objEvent->excludedCrmGroups) . ')
-                            )';
+                    $excludeQuery = '
+                        AND `crm_contact_membership`.`membership_id` NOT IN (' . join(',', $objEvent->excludedCrmGroups) . ')
+                        AND `crm_company_membership`.`membership_id` NOT IN (' . join(',', $objEvent->excludedCrmGroups) . ')';
                 }
                 $result = $db->Execute('
                     SELECT
@@ -616,12 +614,12 @@ class CalendarMailManager extends CalendarLibrary {
                         // only select users of which the associated CRM Person or CRM Company has the selected CRM membership
                     'WHERE
                        `crm_contact`.`contact_type` = 2
-                        AND(
+                        AND
                              (   
                              `crm_contact_membership`.`membership_id` IN (' . join(',', $objEvent->invitedCrmGroups) . ')
                               OR `crm_company_membership`.`membership_id` IN (' . join(',', $objEvent->invitedCrmGroups) . ')
                               ) ' . $excludeQuery .'
-                        )'
+                              '
                 );
                 if ($result !== false) {
                     $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
