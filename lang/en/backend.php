@@ -1376,6 +1376,7 @@ $_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'] = "Couldn't save entry, no such ent
 $_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'] = "Could not save the '%s', because the function '%s' was not found. Please contact your System-Administrator";
 $_ARRAYLANG['TXT_CORE_RECORD_CLASS_NOT_FOUND'] = "Could not save the '%s', because the class was not found. Please contact your System-Administrator";
 $_ARRAYLANG['TXT_CORE_RECORD_UNKNOWN_ERROR'] = "Couldn't save entry, please check your input and try it again";
+$_ARRAYLANG['TXT_CORE_RECORD_RELATION_LIMITED'] = 'The output was limited due to a high count of related entries.';
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';
 $_ARRAYLANG['TXT_ACTIVATED'] = "Activated";
 $_ARRAYLANG['TXT_DEACTIVATED'] = "Deactivated";

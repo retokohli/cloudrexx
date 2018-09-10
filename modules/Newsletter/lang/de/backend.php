@@ -509,3 +509,20 @@ $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'] = 'Kein Versand an Mitg
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'] = 'Statistik aktivieren';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'] = 'Bitte beachten Sie, dass mit der Aktivierung dieser Option u.U. personenbezogene Daten erfasst werden, was in den meisten Ländern ohne ausdrückliche Einwilligung der betroffenen Person rechtlich untersagt ist.';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'] = 'Möchten Sie die bisher erfassten Statistik-Daten löschen?';
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_VALIDITY_HOUR'] = 'Gültigkeitsdauer von Double-Opt-In-Bestätigungsmails in Stunden';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM']        = 'Der Teilnehmer hat dem Empfang von E-Mail-Kampagnen der ausgewählten Listen zugestimmt.';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM_IMPORT'] = 'Die zu importierenden Teilnehmer haben dem Empfang von E-Mail-Kampagnen der ausgewählten Listen zugestimmt.';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR']  = 'Bitte bestätigen Sie, dass Sie über die Zustimmung zum Versand von E-Mail-Kampagnen an den Teilnehmer verfügen.';
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_KEY']                 = 'Schlüssel';
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'Zustimmungs-URL für das Senden von E-Mails';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Der Versand der Bestätigungs-E-Mails ist fehlgeschlagen.';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'Die E-Mails wurden erfolgreich gesendet';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MAIL_SEND'] = 'Zustimmungsbestätigung per E-Mail an nicht bestätigte Teilnehmer senden';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'] = 'Die Bestätigungsmail konnte folgenden Teilnehmern nicht zugestellt werden:<br /><br />%s';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT'] = 'Zustimmung';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_BACKEND'] = 'Manuell hinzugefügt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_API'] = 'Via API hinzugefügt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Double-Opt-In am %s';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'] = 'Gibt an, ob der Teilnehmer seine Zustimmung gegeben hat. <ul><li><img src="/core/Core/View/Media/icons/led_green.gif" alt="Grün" /> bedeutet, dass der Teilnehmer seine Zustimmung per Double-Opt-In bestätigt hat.</li><li><img src="/core/Core/View/Media/icons/led_orange.gif" alt="Orange" /> bedeutet, dass der Teilnehmer manuell über die Administrationskonsole erfasst, oder via API importiert wurde.</li></ul><br />
+Wenn nach Verteilerliste gefilter wird, wird zudem nachfolgend die Zustimmung zu der entsprechenden Liste aufgeführt.<br /><br />
+Fahren Sie mit der Maus über die Symbole um detailliertere Informationen zu erhalten.';

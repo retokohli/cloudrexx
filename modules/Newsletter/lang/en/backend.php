@@ -510,3 +510,20 @@ $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'] = 'Don\'t send campaign
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'] = 'Enable statistics';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'] = 'Please note that the information tracked by this metric could contain personal data which is prohibited by law in most countries without explicit consent of the affected person.';
 $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'] = 'Do you want to delete the tracked data?';
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_VALIDITY_HOUR'] = 'Double-opt-in confirmation mail validity in hours';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM']        = 'This recipient gave his consent to receive email campaigns of the selected lists.';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CONFIRM_IMPORT'] = 'The to be imported recipients gave their consent to receive email campaigns of the selected lists.';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MESSAGE_ERROR']  = 'Please confirm that the recipients gave their consent to receive email campaigns of the selected lists.';
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_KEY']                 = 'Key';
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CONFIRM_ACTION']      = 'E-Mailing permission confirm URL';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Sending the confirmation e-mails has failed!';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'The email was successfully sent to subscribed users';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MAIL_SEND']                      = 'Send consent confirm email to users';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'] = 'Confirm mail to the following recipients could not be sent:<br /><br />%s';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT'] = 'Consent';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_BACKEND'] = 'Manually added';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_API'] = 'Added via API';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Opt-In';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'] = 'Tells whether the recipient gave his consent. <ul><li><img src="/core/Core/View/Media/icons/led_green.gif" alt="Green" /> means that the recipient gave consent by double-opt-in.</li><li><img src="/core/Core/View/Media/icons/led_orange.gif" alt="Orange" /> means that the recipient has either been added manually using the back-end console or that he has been imported via API.</li></ul><br />
+If the recipients are filtered by list, the second icon shows the consent for this list.<br /><br />
+Hover over an icon to see detailed information.';

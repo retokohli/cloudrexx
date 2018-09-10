@@ -90,6 +90,12 @@ class ViewGenerator {
      */
     public function __construct($object, $options = array()) {
         $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->cx->getEvents()->triggerEvent(
+            'Html.ViewGenerator:initialize',
+            array(
+                'options' => &$options,
+            )
+        );
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
@@ -1113,7 +1119,9 @@ class ViewGenerator {
                         \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'], $name, $methodName), \Message::CLASS_ERROR);
                         continue;
                     }
-                    $entity->$methodName($associatedEntity);
+                    if (!empty($value['mappedBy'])) {
+                        $entity->$methodName($associatedEntity);
+                    }
 
                     // Linking 2: link the main entity to its associated entity. This should normally be done by
                     // 'Linking 1' but because not all components have implemented this, we do it here by ourselves
@@ -1131,7 +1139,7 @@ class ViewGenerator {
             }
         }
 
-        if($entityId != 0) { // edit case
+        if ($entityId != 0) { // edit case
             // update the main entry in doctrine so we can store it over doctrine to database later
             $this->savePropertiesToClass($entity, $entityClassMetadata);
             $param = 'editid';
@@ -1155,7 +1163,7 @@ class ViewGenerator {
         } else if ($entity instanceof \Cx\Model\Base\EntityBase) {
             /* We try to store the prepared em. This may fail if (for example) we have a one to many association which
                can not be null but was not set in the post request. This cases should be caught here. */
-            try{
+            try {
                 // persist main entity. This must be done first, otherwise saving oneToManyAssociated entities won't work
                 $em->persist($entity);
                 // now we can persist the associated entities. We need to do this, because otherwise it will fail,
