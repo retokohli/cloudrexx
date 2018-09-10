@@ -3117,10 +3117,29 @@ EOF;
 
         if (!empty($newsCategories) && $objTpl->blockExists($templateBlockPrefix . 'news_category_list')) {
             foreach ($newsCategories as $catId => $catTitle) {
+
+                $url = null;
+                try {
+                    $url = \Cx\Core\Routing\Url::fromModuleAndCmd('News', $catId, '', array(), '', false);
+                } catch (\Cx\Core\Routing\UrlException $e) {}
+                if (!$url) {
+                    try {
+                        $url = \Cx\Core\Routing\Url::fromModuleAndCmd('News', '', '', array(), '', false);
+                    } catch (\Cx\Core\Routing\UrlException $e) {}
+                }
+
                 $objTpl->setVariable(array(
                     $templateVariablePrefix . 'NEWS_CATEGORY_TITLE'   => contrexx_raw2xhtml($catTitle),
-                    $templateVariablePrefix . 'NEWS_CATEGORY_ID'      => contrexx_input2int($catId)
+                    $templateVariablePrefix . 'NEWS_CATEGORY_ID'      => contrexx_input2int($catId),
+                    $templateVariablePrefix . 'NEWS_CATEGORY_URL'      => contrexx_raw2xhtml($url),
                 ));
+                if ($objTpl->blockExists($templateBlockPrefix . 'news_category_url')) {
+                    if ($url) {
+                        $objTpl->touchBlock($templateBlockPrefix . 'news_category_url');
+                    } else {
+                        $objTpl->hideBlock($templateBlockPrefix . 'news_category_url');
+                    }
+                }
                 $objTpl->parse($templateBlockPrefix . 'news_category');
             }
         }
