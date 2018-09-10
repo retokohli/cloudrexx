@@ -244,7 +244,12 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 } elseif (!empty($objResult->fields['teaser_image_path'])) {
                     $image = $objResult->fields['teaser_image_path'];
                 } else {
-                    $image = ASCMS_CORE_MODULE_WEB_PATH.'/News/View/Media/pixel.gif';
+                    // get (customized) default image
+                    $news = $cx->getComponent('News');
+                    $componentDir = $news->getDirectory();
+                    $defaultImage = $componentDir . '/View/Media/pixel.gif';
+                    $cl = $cx->getClassLoader();
+                    $image = $cl->getWebFilePath($defaultImage);
                 }
                 $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
                 $this->arrTeasers[$objResult->fields['id']] = array(
