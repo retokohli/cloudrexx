@@ -3082,7 +3082,7 @@ EOF;
             if ($objTpl->placeholderExists($templateVariablePrefix . 'NEWS_TEXT_SHORT')) {
                 // cut html in length by maximum 250 output characters
                 $shortText = $text;
-                \FWValidator::cutHtmlByDisplayLength($shortText, 250, ' ...');
+                \FWValidator::cutHtmlByDisplayLength($shortText, 200, ' ...');
 
                 $objTpl->setVariable(
                     $templateVariablePrefix . 'NEWS_TEXT_SHORT', $shortText
