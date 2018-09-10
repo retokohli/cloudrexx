@@ -218,6 +218,11 @@ namespace Cx\Core\Core\Controller {
         protected $toolbox = null;
 
         /**
+         * @param \Cx\Core\View\Model\Entity\Theme Current theme
+         */
+        protected $theme = null;
+
+        /**
          * Cloudrexx event manager
          * @var \Cx\Core\Event\Controller\EventManager
          */
@@ -2360,7 +2365,7 @@ namespace Cx\Core\Core\Controller {
             $this->getResponse()->setParsedContent($endcode);
         }
 
-        /* GETTERS */
+        /* SETTERS AND GETTERS */
 
         /**
          * Returns the mode this instance of Cx is in
@@ -2368,6 +2373,22 @@ namespace Cx\Core\Core\Controller {
          */
         public function getMode() {
             return $this->mode;
+        }
+
+        /**
+         * Sets the current theme
+         * @param \Cx\Core\View\Model\Entity\Theme $theme Current theme
+         */
+        public function setTheme(\Cx\Core\View\Model\Entity\Theme $theme) {
+            $this->currentTheme = $theme;
+        }
+
+        /**
+         * Returns the current theme
+         * @return \Cx\Core\View\Model\Entity\Theme Current theme
+         */
+        public function getTheme() {
+            return $this->currentTheme;
         }
 
         /**
