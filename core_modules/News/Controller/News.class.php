@@ -125,7 +125,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         default:
             if (substr($_REQUEST['cmd'], 0, 7) == 'details') {
                 // cache timeout: this article's end date
-                $details  = $this->getDetails($expirationDate);
+                $categoryId = intval(substr($_REQUEST['cmd'], 7));
+                $details  = $this->getDetails($expirationDate, $categoryId);
                 $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
                 $response->setExpirationDate($expirationDate);
                 return $details;
@@ -150,18 +151,29 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
      * Gets the news details
      *
      * @param  string $expirationDate Expiration date
+     * @param  integer $categoryId ID of category to output the latest news
+     *                             article from, in case the URL-argument
+     *                             newsid is not set and the placeholder
+     *                             NEWS_LIST_LATEST is present in the
+     *                             application template.
      * @return string parsed content
      */
-    private function getDetails(&$expirationDate = null)
+    private function getDetails(&$expirationDate = null, $categoryId = 0)
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        if (empty($_GET['newsid'])) {
+        if (!empty($_GET['newsid'])) {
+            $newsid = intval($_GET['newsid']);
+        } elseif ($this->_objTpl->placeholderExists('NEWS_LIST_LATEST')) {
+            try {
+                $newsid = $this->getIdOfLatestNewsArticle($categoryId);
+            } catch (NewsLibraryException $e) {}
+        }
+
+        if (empty($newsid)) {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
             exit;
         }
-
-        $newsid = intval($_GET['newsid']);
 
         $whereStatus    = '';
         $newsAccess     = \Permission::checkAccess(10, 'static', true);
