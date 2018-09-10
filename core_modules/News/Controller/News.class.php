@@ -337,9 +337,15 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if ($this->_objTpl->blockExists('news_image')) {
                 $this->_objTpl->parse('news_image');
             }
+            if ($this->_objTpl->blockExists('news_no_image')) {
+                $this->_objTpl->hideBlock('news_no_image');
+            }
         } else {
             if ($this->_objTpl->blockExists('news_image')) {
                 $this->_objTpl->hideBlock('news_image');
+            }
+            if ($this->_objTpl->blockExists('news_no_image')) {
+                $this->_objTpl->touchBlock('news_no_image');
             }
         }
 
@@ -1076,9 +1082,15 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     if ($this->_objTpl->blockExists('news_image')) {
                         $this->_objTpl->parse('news_image');
                     }
+                    if ($this->_objTpl->blockExists('news_no_image')) {
+                        $this->_objTpl->hideBlock('news_no_image');
+                    }
                 } else {
                     if ($this->_objTpl->blockExists('news_image')) {
                         $this->_objTpl->hideBlock('news_image');
+                    }
+                    if ($this->_objTpl->blockExists('news_no_image')) {
+                        $this->_objTpl->touchBlock('news_no_image');
                     }
                 }
 
