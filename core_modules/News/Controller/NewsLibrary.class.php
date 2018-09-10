@@ -3075,6 +3075,20 @@ EOF;
             $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
             \LinkGenerator::parseTemplate($text);
             $objTpl->setVariable($templateVariablePrefix . 'NEWS_TEXT', $text);
+
+            // parse short html version of news text,
+            // but only if placeholder is present, as the parsing costs
+            // a lot of time
+            if ($objTpl->placeholderExists($templateVariablePrefix . 'NEWS_TEXT_SHORT')) {
+                // cut html in length by maximum 250 output characters
+                $shortText = $text;
+                \FWValidator::cutHtmlByDisplayLength($shortText, 250, ' ...');
+
+                $objTpl->setVariable(
+                    $templateVariablePrefix . 'NEWS_TEXT_SHORT', $shortText
+                );
+            }
+
             if ($objTpl->blockExists($templateBlockPrefix . 'news_text')) {
                 $objTpl->parse($templateBlockPrefix . 'news_text');
             }
