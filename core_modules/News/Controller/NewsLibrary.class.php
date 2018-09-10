@@ -3158,8 +3158,16 @@ EOF;
             if ($objTpl->blockExists($templateBlockPrefix . 'news_image')) {
                 $objTpl->parse($templateBlockPrefix . 'news_image');
             }
-        } elseif ($objTpl->blockExists($templateBlockPrefix . 'news_image')) {
-            $objTpl->hideBlock($templateBlockPrefix . 'news_image');
+            if ($objTpl->blockExists($templateBlockPrefix . 'news_no_image')) {
+                $objTpl->hideBlock($templateBlockPrefix . 'news_no_image');
+            }
+        } else {
+            if ($objTpl->blockExists($templateBlockPrefix . 'news_image')) {
+                $objTpl->hideBlock($templateBlockPrefix . 'news_image');
+            }
+            if ($objTpl->blockExists($templateBlockPrefix . 'news_no_image')) {
+                $objTpl->touchBlock($templateBlockPrefix . 'news_no_image');
+            }
         }
 
         self::parseImageBlock($objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail', $templatePrefix);
