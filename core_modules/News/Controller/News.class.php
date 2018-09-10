@@ -280,6 +280,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
            'NEWS_SOURCE'         => $newsSource,
            'NEWS_URL'            => $newsUrl,
+           'NEWS_LINK1_SRC'      => $url1,
+           'NEWS_LINK2_SRC'      => $url2,
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
            'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
