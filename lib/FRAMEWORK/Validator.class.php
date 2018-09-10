@@ -517,7 +517,7 @@ class FWValidator
 
         // repeat above procedere until the length of the raw output
         // of the cut html reaches the set max length
-        } while ($plaintextLength  < $maxLength);
+        } while ($plaintextLength < $maxLength);
 
         // now cut the html to the determined length
         $cutHtml = substr($html, 0, $useLength);

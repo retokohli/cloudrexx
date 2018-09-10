@@ -3080,7 +3080,7 @@ EOF;
             // but only if placeholder is present, as the parsing costs
             // a lot of time
             if ($objTpl->placeholderExists($templateVariablePrefix . 'NEWS_TEXT_SHORT')) {
-                // cut html in length by maximum 250 output characters
+                // cut html in length by maximum 200 output characters
                 $shortText = $text;
                 \FWValidator::cutHtmlByDisplayLength($shortText, 200, ' ...');
 
