@@ -3523,4 +3523,48 @@ EOF;
         }
         $template->parse('news_tag_cloud');
     }
+
+    /**
+     * Fetch ID of latest news article. If $categoryId is specified, then
+     * the ID of the latest news article of the category identified by ID
+     * $categoryId is returned.
+     *
+     * @param   integer $categoryId ID of category to fetch the latest news
+     *                              article from
+     * @return  integer ID of latest news article
+     * @throws  NewsLibraryException In case no latest news article was found
+     */
+    protected function getIdOfLatestNewsArticle($categoryId = 0) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+        $categorySelect = '';
+        if ($categoryId) {
+            $categorySelect = 'AND nc.`category_id` = '.intval($categoryId);
+        }
+        $query = '  SELECT      n.id
+                    FROM        '.DBPREFIX.'module_news AS n
+                    INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
+                    INNER JOIN '.DBPREFIX.'module_news_rel_categories AS nc ON nc.`news_id` = n.id
+                    WHERE       status = 1
+                                AND nl.is_active=1
+                                AND nl.lang_id='.FRONTEND_LANG_ID.'
+                                AND (n.startdate<=\''.date('Y-m-d H:i:s').'\' OR n.startdate="0000-00-00 00:00:00")
+                                AND (n.enddate>=\''.date('Y-m-d H:i:s').'\' OR n.enddate="0000-00-00 00:00:00")
+                                ' . $categorySelect
+                               .($this->arrSettings['news_message_protection'] == '1' && !\Permission::hasAllAccess() ? (
+                                    ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
+                                        :   " AND frontend_access_id=0 ")
+                                    :   '')
+                                .' ORDER BY n.date DESC';
+        $result = $db->SelectLimit($query, 1);
+        if (
+            $result === false ||
+            $result->EOF
+        ) {
+            throw new NewsLibraryException('No latest news available');
+        }
+
+        return $result->fields['id'];
+    }
 }
