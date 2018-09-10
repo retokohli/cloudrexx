@@ -184,16 +184,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // Get Top news, News categories, News Archives, recent News Comments
         $widgetNames = array(
-            'TOP_NEWS_FILE' => array(
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
-            ),
-            'NEWS_CATEGORIES' => array(
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_QUERY
-            ),
-            'NEWS_ARCHIVES' => array(
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
-            ),
-            'NEWS_RECENT_COMMENTS_FILE' => array(),
+            'TOP_NEWS_FILE' => 
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER,
+            'NEWS_CATEGORIES' => 
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_QUERY,
+            'NEWS_ARCHIVES' => 
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER,
+            'NEWS_RECENT_COMMENTS_FILE' => 0,
         );
         foreach ($widgetNames as $widgetName => $esiVariables) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -204,13 +201,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // set common esi variables
             $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL |
+                $esiVariables
             );
-
-            // set widget specific esi variables
-            foreach ($esiVariables as $esiVariable) {
-                $widget->setEsiVariable($esiVariable);
-            }
 
             $widgetController->registerWidget(
                 $widget
