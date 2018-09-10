@@ -3002,6 +3002,14 @@ EOF;
            $templateVariablePrefix . 'HEADLINE_AUTHOR'   => contrexx_raw2xhtml($author),
         ));
 
+        if ($objTpl->blockExists($templateBlockPrefix . 'news_url')) {
+            if (empty($newsUrl)) {
+                $objTpl->hideBlock($templateBlockPrefix . 'news_url');
+            } else {
+                $objTpl->touchBlock($templateBlockPrefix . 'news_url');
+            }
+        }
+
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $objTpl->blockExists($templateBlockPrefix . 'news_use_teaser_text')) {
             $objTpl->hideBlock($templateBlockPrefix . 'news_use_teaser_text');
         }
