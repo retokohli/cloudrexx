@@ -86,9 +86,13 @@ class ViewGenerator {
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
      * @param array $options component options
+     *
+     * @global array $_ARRAYLANG array containing the language variables
      * @throws ViewGeneratorException if there is any error in try catch statement
      */
     public function __construct($object, $options = array()) {
+        global $_ARRAYLANG;
+
         $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->cx->getEvents()->triggerEvent(
             'Html.ViewGenerator:initialize',
@@ -139,7 +143,15 @@ class ViewGenerator {
                     $this->options['functions']['allowAdd'] != false
                 )
             ) {
-                $this->saveEntry($entityWithNS);
+                $showSuccessMessage = $this->saveEntry($entityWithNS);
+                if ($showSuccessMessage) {
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);
+                }
+                $param = 'add';
+                $actionUrl = clone $this->cx->getRequest()->getUrl();
+                $actionUrl->setParam($param, null);
+                \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+
             }
 
             // execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -156,7 +168,14 @@ class ViewGenerator {
                     )
                 )
             ) {
-                $this->saveEntry($entityWithNS);
+                $showSuccessMessage = $this->saveEntry($entityWithNS);
+                if ($showSuccessMessage) {
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);
+                }
+                $param = 'editid';
+                $actionUrl = clone $this->cx->getRequest()->getUrl();
+                $actionUrl->setParam($param, null);
+                \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
 
             // execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -705,7 +724,26 @@ class ViewGenerator {
             );
             $renderObject = $this->listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options);
+            if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                $entityClassWithNS = $this->object->getDataType();
+            } else {
+                $entityClassWithNS = get_class($this->object);
+            }
+            if ($_POST['saveEntry']) {
+                foreach ($renderObject as $rowname => $rows) {
+                    foreach ($rows as $header => $data) {
+                        $attr[$header] = $_POST[$header . '-' . $rowname];
+                        // So that the data is already displayed correctly after the update
+                      //  $newRenderArray = $renderObject->toArray();
+                    //    $newRenderArray[$rowname][$header] = $_POST[$header . '-' . $rowname];
+                    //    $renderObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($newRenderArray);
+                    }
+                    $entries[$rowname] = $attr;
+                }
+                $this->saveEntries($entityClassWithNS, $entries);
+            }
+
+            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS);
             $template->setVariable(array(
                 'TABLE' => $backendTable,
                 'PAGING' => $this->listingController,
@@ -1012,18 +1050,43 @@ class ViewGenerator {
     }
 
     /**
+     * @param string $entityWithNS class name with namespace
+     * @param array  $entities     array with all entities and their content
+     *
+     * @global array $_ARRAYLANG   array containing the language variables
+     */
+    protected function saveEntries($entityWithNS, $entities)
+    {
+        global $_ARRAYLANG;
+        foreach ($entities as $entityId=>$entityData) {
+            $showSuccessMessage = $this->saveEntry($entityWithNS, $entityId, $entityData);
+            if (!$showSuccessMessage) {
+                return;
+            }
+        }
+        \Message::add($_ARRAYLANG['TXT_CORE_RECORDS_UPDATED_SUCCESSFUL']);
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
+        \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+    }
+
+    /**
      * This function saves an entity to the database
      *
      * @param string $entityWithNS class name including namespace
+     * @oaram int    $entityId     id of entity
+     * @param array  $entityData   custom post data to save
      * @access protected
      * @global array $_ARRAYLANG array containing the language variables
+     * @return bool $showSuccessMessage if the save was successful
      */
-    protected function saveEntry($entityWithNS) {
+    protected function saveEntry($entityWithNS, $entityId, $entityData) {
         global $_ARRAYLANG;
 
         $em = $this->cx->getDb()->getEntityManager();
         // if entityId is a number the user edited an existing entry. If it is null we create a new one
-        $entityId = contrexx_input2raw($this->getEntryId());
+        if (empty($entityId)) {
+            $entityId = contrexx_input2raw($this->getEntryId());
+        }
         $this->renderFormForEntry($entityId);
 
         // if the form is not valid in any case, we stay in this view and do not save anything, because we can not be
@@ -1139,17 +1202,7 @@ class ViewGenerator {
             }
         }
 
-        if ($entityId != 0) { // edit case
-            // update the main entry in doctrine so we can store it over doctrine to database later
-            $this->savePropertiesToClass($entity, $entityClassMetadata);
-            $param = 'editid';
-            $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'];
-        } else { // add case
-            // save main formular class data to its class over $_POST
-            $this->savePropertiesToClass($entity, $entityClassMetadata);
-            $param = 'add';
-            $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'];
-        }
+        $this->savePropertiesToClass($entity, $entityClassMetadata, $entityData);
 
         $showSuccessMessage = false;
         if ($entity instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
@@ -1194,13 +1247,7 @@ class ViewGenerator {
             \DBG::msg('Unkown entity model '.get_class($entity).'! Trying to persist using entity manager...');
         }
 
-        if($showSuccessMessage) {
-            \Message::add($successMessage);
-        }
-        // get the proper action url and redirect the user
-        $actionUrl = clone $this->cx->getRequest()->getUrl();
-        $actionUrl->setParam($param, null);
-        \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+        return $showSuccessMessage;
     }
 
     /**

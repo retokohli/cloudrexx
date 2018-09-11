@@ -49,6 +49,8 @@ class BackendTable extends HTML_Table {
      */
     protected $templateFile = '';
 
+    protected $editable = false;
+
     /**
      * Whether or not the table has a master table header.
      * A master table header is used as a title and is being
@@ -61,13 +63,35 @@ class BackendTable extends HTML_Table {
      */
     protected $hasMasterTableHeader = false;
 
-    public function __construct($attrs = array(), $options = array()) {
+    public function __construct($attrs = array(), $options = array(), $entityClass = '') {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        try {
+            $entityObject = \Env::get('em')->getClassMetadata($entityClass);
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            return;
+        }
+
+        $entityColumnNames = $entityObject->getColumnNames();
+        $primaryKeyNames = $entityObject->getIdentifierFieldNames();
+        foreach($entityColumnNames as $column) {
+            $field = $entityObject->getFieldName($column);
+            if (in_array($field, $primaryKeyNames)) {
+                continue;
+            }
+            $fieldDefinition = $entityObject->getFieldMapping($field);
+            $options[$field]['type'] = $fieldDefinition['type'];
+        }
+
+
+        if (!empty($options['functions']['editable'])) {
+            $this->editable = true;
+        }
         $this->templateFile = empty($options['template']) || !file_exists($options['template'])
-                  ? $cx->getCodeBaseCorePath().'/Html/View/Template/Generic/Table.html'
-                  : $options['template'];
+            ? $cx->getCodeBaseCorePath().'/Html/View/Template/Generic/Table.html'
+            : $options['template'];
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $this->hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -108,6 +132,31 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+
+                    $type = null;
+
+                    if (!empty($options[$header]['type'])) {
+                        $type = $options[$header]['type'];
+                    }
+
+                    if (is_object($data)) {
+                        if ($data instanceof \Cx\Model\Base\EntityBase) {
+                            $type = 'Cx\Model\Base\EntityBase';
+                        } elseif ($data instanceof \Doctrine\Common\Collections\Collection) {
+                            continue;
+                        } else {
+                            $type = get_class($data);
+                        }
+                    }
+                    $fieldOptions = array();
+                    if (isset($options['fields']) && isset($options['fields'][$header])) {
+                        $fieldOptions = $options['fields'][$header];
+                    }
+
+                    if (!empty($fieldOptions['type'])) {
+                        $type = $fieldOptions['type'];
+                    }
+
                     if (!empty($sortingKey) && $header === $sortingKey) {
                         //Add the additional attribute id, for getting the updated sort order after the row sorting
                         $this->updateRowAttributes($row, array('id' => 'sorting' . $entity . '_' . $data), true);
@@ -120,6 +169,14 @@ class BackendTable extends HTML_Table {
                         !$options['fields'][$header]['showOverview']
                     ) {
                         continue;
+                    }
+
+                    if (isset($options['fields'][$header]['editable'])) {
+
+                        $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, true);
+                        $data = $formGenerator->getDataElement($header, $header .'-'. $rowname, $type, 0, $data, $options, 0);
+
+                        $encode = false;
                     }
 
                     if (!empty($sortField) && $header === $sortField) {
@@ -588,10 +645,13 @@ class BackendTable extends HTML_Table {
      * Returns the table structure as HTML
      * Override in order to use Sigma for parsing
      * @access  public
+     * @global  array $_ARRAYLANG array containing the language variables
      * @return  string
      */
     function toHtml()
     {
+        global $_ARRAYLANG;
+
         $strHtml = '';
         $tabs = $this->_getTabs();
         $tab = $this->_getTab();
@@ -692,6 +752,15 @@ class BackendTable extends HTML_Table {
                 }
             }
         }
+
+        if ($this->editable) {
+            $template->setVariable('FORM_ACTION', clone \Env::get('cx')->getRequest()->getUrl());
+            $template->setVariable('TXT_SAVE', $_ARRAYLANG['TXT_SAVE_CHANGES']);
+
+            $template->touchBlock('form_open');
+            $template->touchBlock('form_close');
+        }
+
         return $template->get();
     }
 }
