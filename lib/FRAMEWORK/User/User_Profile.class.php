@@ -366,15 +366,20 @@ class User_Profile
 
                     case 'title':
                     case 'country':
-                        $callBack = function ($condition) {
-                            if (preg_match('#([0-9]+)#', $condition, $pattern)) {
-                                return $pattern[0];
-                            } else {
-                                return 0;
-                            }
-                        };
-                        $arrConditions[] = '(tblP.`'.$attribute.'` = '.(is_array($condition) ? implode(' OR tblP.`'.$attribute.'` = ',
-                            array_map($callBack, $condition))
+                        $arrConditions[] = '(tblP.`'.$attribute.'` = '.(is_array($condition)
+                            ? implode(
+                                ' OR tblP.`'.$attribute.'` = ',
+                                array_map(
+                                    function ($condition) {
+                                        if (preg_match('#([0-9]+)#', $condition, $pattern)) {
+                                            return $pattern[0];
+                                        } else {
+                                            return 0;
+                                        }
+                                    },
+                                    $condition
+                                )
+                            )
                             : (preg_match('#([0-9]+)#', $condition, $pattern) ? $pattern[0] : 0)).')';
                         break;
 
