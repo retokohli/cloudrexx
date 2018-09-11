@@ -218,11 +218,6 @@ namespace Cx\Core\Core\Controller {
         protected $toolbox = null;
 
         /**
-         * @param \Cx\Core\View\Model\Entity\Theme Current theme
-         */
-        protected $theme = null;
-
-        /**
          * Cloudrexx event manager
          * @var \Cx\Core\Event\Controller\EventManager
          */
@@ -2373,33 +2368,6 @@ namespace Cx\Core\Core\Controller {
          */
         public function getMode() {
             return $this->mode;
-        }
-
-        /**
-         * Sets the current theme
-         * @param \Cx\Core\View\Model\Entity\Theme $theme Current theme
-         */
-        public function setTheme(\Cx\Core\View\Model\Entity\Theme $theme) {
-            $this->currentTheme = $theme;
-        }
-
-        /**
-         * Returns the current theme
-         * @return \Cx\Core\View\Model\Entity\Theme Current theme
-         */
-        public function getTheme() {
-            if ($this->currentTheme) {
-                return $this->currentTheme;
-            }
-            $themesRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-            $init = \Env::get('init');
-            if (!$init) {
-                return null;
-            }
-            $this->currentTheme = $themesRepository->findById(
-                $init->getCurrentThemeId()
-            );
-            return $this->currentTheme;
         }
 
         /**

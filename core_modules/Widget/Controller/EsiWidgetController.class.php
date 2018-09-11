@@ -328,7 +328,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             'theme' => function($themeId) {
                 $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
                 $theme = $themeRepo->findById($themeId);
-                $this->cx->setTheme($theme);
+                $this->cx->getResponse()->setTheme($theme);
                 return $theme;
             },
             'channel' => function($channel) {

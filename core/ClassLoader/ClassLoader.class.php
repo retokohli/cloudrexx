@@ -517,7 +517,10 @@ class ClassLoader {
         if (
             $this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND &&
             !$theme &&
-            !$this->cx->getTheme()
+            (
+                !$this->cx->getResponse() ||
+                !$this->cx->getResponse()->getTheme()
+            )
         ) {
             return false;
         }
@@ -534,7 +537,7 @@ class ClassLoader {
 
         // check if frontend theme has been loaded yet
         if (!$theme) {
-            $theme = $this->cx->getTheme();
+            $theme = $this->cx->getResponse()->getTheme();
         }
         if (!$theme) {
             return false;
