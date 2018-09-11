@@ -553,10 +553,12 @@ class PodcastLib
     {
         global $objDatabase;
 
-        $catCallBack = function($cat) {
-            return intval($cat) > 0;
-        };
-        $arrCategories = array_filter($arrCategories, $catCallBack);
+        $arrCategories = array_filter(
+            $arrCategories,
+            function ($cat) {
+                return intval($cat) > 0;
+            }
+        );
         $query = "  UPDATE  `".DBPREFIX."module_podcast_settings`
                     SET `setvalue` = '".implode(',', $arrCategories)."'
                     WHERE `setname` = 'latest_media_categories'";

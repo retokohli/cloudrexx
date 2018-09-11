@@ -872,10 +872,13 @@ class PodcastManager extends PodcastLib
         foreach ($arrCategories as $categoryId => $arrCategory) {
             $column = $categoryNr % 3;
             $arrCatLangIds = $this->_getLangIdsOfCategory($categoryId);
-            $catLangCallBack = function (&$cat, $k, $arrLanguages) {
-                $cat = $arrLanguages[$cat]["lang"];
-            };
-            array_walk($arrCatLangIds, $catLangCallBack, $arrLanguages);
+            array_walk(
+                $arrCatLangIds,
+                function (&$cat, $k, $arrLanguages) {
+                    $cat = $arrLanguages[$cat]['lang'];
+                },
+                $arrLanguages
+            );
             $arrCategory['title'] .= ' ('.implode(', ', $arrCatLangIds).')';
             $this->_objTpl->setVariable(array(
                 'PODCAST_CATEGORY_ID'                   => $categoryId,
