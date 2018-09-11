@@ -383,6 +383,13 @@ class CalendarEvent extends CalendarLibrary
     public $invitedCrmGroups = array();
 
     /**
+     * Event excluded CRM groups
+     *
+     * @var array
+     */
+    public $excludedCrmGroups = array();
+
+    /**
      * Event invited mail
      *
      * @access public
@@ -717,6 +724,12 @@ class CalendarEvent extends CalendarLibrary
     public $registrationExternalFullyBooked;
 
     /**
+     * Contains the last error message until its fetch using getErrorMessage()
+     * @var string
+     */
+    protected $errorMessage = '';
+
+    /**
      * Constructor
      *
      * Loads the event object of given id
@@ -786,6 +799,7 @@ class CalendarEvent extends CalendarLibrary
                          event.google AS google,
                          event.invited_groups AS invited_groups,
                          event.invited_crm_groups AS invited_crm_groups,
+                         event.excluded_crm_groups AS excluded_crm_groups,
                          event.invited_mails AS invited_mails,
                          event.invitation_sent AS invitation_sent,
                          event.invitation_email_template AS invitation_email_template,
@@ -965,6 +979,7 @@ class CalendarEvent extends CalendarLibrary
 
                 $this->invitedGroups = preg_grep('/^$/', explode(',', $objResult->fields['invited_groups']), PREG_GREP_INVERT);
                 $this->invitedCrmGroups = preg_grep('/^$/', explode(',', $objResult->fields['invited_crm_groups']), PREG_GREP_INVERT);
+                $this->excludedCrmGroups = preg_grep('/^$/', explode(',', $objResult->fields['excluded_crm_groups']), PREG_GREP_INVERT);
                 $this->invitedMails =  htmlentities($objResult->fields['invited_mails'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->registration = intval($objResult->fields['registration']);
                 $this->registrationForm = intval($objResult->fields['registration_form']);
@@ -1205,6 +1220,7 @@ class CalendarEvent extends CalendarLibrary
         $showIn                    = isset($data['showIn']) ? contrexx_addslashes(contrexx_strip_tags(join(",",$data['showIn']))) : '';
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : '';
         $invitedCrmGroups          = isset($data['calendar_event_invite_crm_memberships']) ? join(',', $data['calendar_event_invite_crm_memberships']) : '';
+        $excludedCrmGroups         = isset($data['calendar_event_excluded_crm_memberships']) ? join(',', $data['calendar_event_excluded_crm_memberships']) : '';
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;
         $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : array();
@@ -1228,6 +1244,27 @@ class CalendarEvent extends CalendarLibrary
         $placePhone                = isset($data['placePhone']) ? contrexx_input2raw($data['placePhone']) : '';
         $placeMap                  = isset($data['placeMap']) ? contrexx_input2raw($data['placeMap']) : '';
         $update_invitation_sent    = ($send_invitation == 1);
+
+        $this->get($id);
+        if ($registration_form != $this->registrationForm) {
+            // if we already have registrations: abort!
+            $query = '
+                SELECT
+                    `id`
+                FROM
+                    `' . DBPREFIX . 'module_calendar_registration`
+                WHERE
+                    `event_id` = ' . $this->id . '
+                LIMIT 1
+            ';
+            $result = $objDatabase->Execute($query);
+            if ($result && !$result->EOF) {
+                // Abort!
+                global $_ARRAYLANG;
+                $this->errorMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTER_FORM_EDITED'];
+                return false;
+            }
+        }
 
         if (!empty($placeWebsite)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeWebsite)) {
@@ -1471,6 +1508,7 @@ class CalendarEvent extends CalendarLibrary
             'show_in'                       => $showIn,
             'invited_groups'                => $invited_groups,
             'invited_crm_groups'            => $invitedCrmGroups,
+            'excluded_crm_groups'           => $excludedCrmGroups,
             'invited_mails'                 => $invited_mails,
             'invitation_email_template'     => json_encode($invitationTemplate),
             'registration'                  => $registration,
@@ -1797,6 +1835,7 @@ class CalendarEvent extends CalendarLibrary
         $seriesPatternType              = 0;
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
+        $seriesPatternEndDate           = '';
         $seriesExeptions = '';
 
         if($seriesStatus == 1) {
@@ -2136,8 +2175,8 @@ class CalendarEvent extends CalendarLibrary
     function _handleUpload($id)
     {
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
-        $tmpUploadDir     = $_SESSION->getTempPath().'/'.$id.'/'; //all the files uploaded are in here
+        $session = $cx->getComponent('Session')->getSession();
+        $tmpUploadDir     = $session->getTempPath().'/'.$id.'/'; //all the files uploaded are in here
         $depositionTarget = $this->uploadImgPath; //target folder
         $pic              = '';
 
@@ -2301,6 +2340,7 @@ class CalendarEvent extends CalendarLibrary
             $this->place_website = $place_website;
             $this->place_phone   = $place_phone;
             $this->place_map     = '';
+            $this->google        = true;
         } else {
             $this->org_name   = $place;
             $this->org_street = $place_street;
@@ -2326,46 +2366,33 @@ class CalendarEvent extends CalendarLibrary
         $placeUrl       = '';
         $placeUrlSource = '';
 
-        if (!empty($intMediaDirId)) {
-            $objMediadirEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
-            $objMediadirEntry->getEntries(intval($intMediaDirId));
-
-            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $pages = $pageRepo->findBy(array(
-                'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'])),
-                'lang'   => $_LANGID,
-                'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-                'module' => 'MediaDir',
-            ));
-
-            if(count($pages)) {
-                $strDetailCmd = 'detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId']);
-            } else {
-                $strDetailCmd = 'detail';
-            }
-
-            $pages = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('MediaDir', $strDetailCmd);
-
-            $arrActiveFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
-            if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {
-                $langId = FRONTEND_LANG_ID;
-            } else if (isset($arrActiveFrontendLanguages[BACKEND_LANG_ID]) && isset($pages[BACKEND_LANG_ID])) {
-                $langId = BACKEND_LANG_ID;
-            } else {
-                foreach ($arrActiveFrontendLanguages as $lang) {
-                    if (isset($pages[$lang['id']])) {
-                        $langId = $lang['id'];
-                        break;
-                    }
-                }
-            }
-
-            $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$intMediaDirId}");
-
-            $place          = ($type = 'place') ? $this->place : $this->org_name;
-            $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($place) ? $place : $url) ."</a>";
-            $placeUrlSource = $url;
+        if (empty($intMediaDirId)) {
+            return array('', '');
         }
+
+        $objMediadirEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
+        $objMediadirEntry->getEntries(intval($intMediaDirId));
+
+        // abort in case entry is unknown or invalid
+        if (!$objMediadirEntry->countEntries()) {
+            return array('', '');
+        }
+
+        try {
+            $url = $objMediadirEntry->getDetailUrl();
+        } catch (\Cx\Modules\MediaDir\Controller\MediaDirectoryEntryException $e) {
+            return array('', '');
+        }
+
+        // MediaDir might throw an exception if it doesn't find a detail URL,
+        // however it might also return NULL
+        if (!$url) {
+            return array('', '');
+        }
+
+        $place          = ($type = 'place') ? $this->place : $this->org_name;
+        $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($place) ? $place : $url) ."</a>";
+        $placeUrlSource = $url;
 
         return array($placeUrl, $placeUrlSource);
     }
@@ -2646,5 +2673,23 @@ class CalendarEvent extends CalendarLibrary
         }
 
         return $eventField;
+    }
+
+    /**
+     * Tells whether there's an unread error message
+     * @return boolean True if there's an unread error message, false otherwise
+     */
+    public function hasErrorMessage() {
+        return !empty($this->errorMessage);
+    }
+
+    /**
+     * Returns the current error message or an empty string if there's none
+     * @return string Error message or empty string
+     */
+    public function getErrorMessage() {
+        $msg = $this->errorMessage;
+        $this->errorMessage = '';
+        return $msg;
     }
 }

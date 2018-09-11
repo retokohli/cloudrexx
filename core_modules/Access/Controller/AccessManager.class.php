@@ -752,8 +752,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 WHERE `group_id` = ' . intval($objGroup->getId()) . '
                 LIMIT 1');
             // Fetch the data
-            $toolbarId = $toolbarIdRes->fields;
-            $toolbarId = $toolbarId['toolbar'];
+            $toolbarId = $toolbarIdRes->fields['toolbar'];
             $newToolbarId = $toolbarController->store($newButtons, $toolbarId);
             // Check if a new toolbar has been created or an existing one updated
             if ($newToolbarId !== 0) {
@@ -1503,18 +1502,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
         }
 
-        //Clear cache
-        if ($clearCache) {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            $cx->getEvents()->triggerEvent(
-                'clearEsiCache',
-                array(
-                    'Widget',
-                    $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
-                )
-            );
-        }
-
         return $this->userList();
     }
 
@@ -1983,7 +1970,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (
             (
-                $objUserMail->load($mail2load, $_LANGID) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getFrontendLanguage()
+                ) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getBackendLanguage()
+                ) ||
                 $objUserMail->load($mail2load)
             ) &&
             ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
@@ -1998,12 +1992,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     array(
                         '[[HOST]]',
                         '[[USERNAME]]',
-                        '[[SENDER]]'
+                        '[[SENDER]]',
+                        '[[YEAR]]',
                     ),
                     array(
                         $_CONFIG['domainUrl'],
                         $objUser->getUsername(),
-                        $objUserMail->getSenderName()
+                        $objUserMail->getSenderName(),
+                        date('Y'),
                     ),
                     $objUserMail->getBodyText()
                 );
@@ -2014,12 +2010,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     array(
                         '[[HOST]]',
                         '[[USERNAME]]',
-                        '[[SENDER]]'
+                        '[[SENDER]]',
+                        '[[YEAR]]',
                     ),
                     array(
                         $_CONFIG['domainUrl'],
                         htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                        date('Y'),
                     ),
                     $objUserMail->getBodyHtml()
                 );
@@ -2572,6 +2570,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                             $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                         )
                     );
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Access');
                 } else {
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_FAILED_SAVED'];
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'];
@@ -2579,7 +2578,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
         }
 
-        $curlAvailable = true;
+        $curlAvailable        = true;
+        $socialloginProviders = array();
         try {
             $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
         } catch (\Exception $e) {
@@ -2874,6 +2874,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Access');
             } else {
                 self::$arrStatusMsg['error'][] = $objAttribute->getErrorMsg();
             }
@@ -3157,6 +3158,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Access');
             } else {
                 self::$arrStatusMsg['error'][] = $objAttribute->getErrorMsg();
                 if ($objAttribute->getParent()) {
@@ -3342,7 +3344,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_MAIL_SENDER_ADDRESS'   => htmlentities($objUserMail->getSenderMail(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_SENDER_NAME'      => htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_BODY_TEXT'        => htmlentities($objUserMail->getBodyText(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', $objUserMail->getBodyHtml(), 'fullpage') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', contrexx_raw2xhtml($objUserMail->getBodyHtml()), 'fullpage') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
             'ACCESS_MAIL_HTML_BODY_STAUTS' => $objUserMail->getFormat() != 'text' ? 'block' : 'none',
             'ACCESS_MAIL_TEXT_BODY_STAUTS' => $objUserMail->getFormat() == 'text' ? 'block' : 'none',
             'ACCESS_MAIL_HTML_BODY_CLASS'  => $objUserMail->getFormat() != 'text' ? 'active' : '',

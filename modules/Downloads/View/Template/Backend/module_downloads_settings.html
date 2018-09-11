@@ -71,6 +71,7 @@
 <ul id="tabmenu">
     <li><a id="downloadsTab_settingsSorting" class="{DOWNLOADS_SORTING_TAB_STATUS}" href="javascript:void(0)" onclick="selectTab('settingsSorting')" title="{TXT_DOWNLOADS_SETTINGS_SORTING}">{TXT_DOWNLOADS_SETTINGS_SORTING}</a></li>
     <li><a id="downloadsTab_settingsListing" href="javascript:void(0)" onclick="selectTab('settingsListing')" title="{TXT_DOWNLOADS_SETTINGS_LISTING}">{TXT_DOWNLOADS_SETTINGS_LISTING}</a></li>
+    <li><a id="downloadsTab_settingsSearch" href="javascript:void(0)" onclick="selectTab('settingsSearch')" title="{TXT_DOWNLOADS_SETTINGS_SEARCH}">{TXT_DOWNLOADS_SETTINGS_SEARCH}</a></li>
     <li><a id="downloadsTab_settingsStatistics" href="javascript:void(0)" onclick="selectTab('settingsStatistics')" title="{TXT_DOWNLOADS_SETTINGS_STATISTICS}">{TXT_DOWNLOADS_SETTINGS_STATISTICS}</a></li>
     <li><a id="downloadsTab_settingsAttributes" href="javascript:void(0)" onclick="selectTab('settingsAttributes')" title="{TXT_DOWNLOADS_SETTINGS_ATTRIBUTES}">{TXT_DOWNLOADS_SETTINGS_ATTRIBUTES}</a></li>
     <li><a id="downloadsTab_settingsInterfaces" href="javascript:void(0)" onclick="selectTab('settingsInterfaces')" title="{TXT_DOWNLOADS_INTERFACES}">{TXT_DOWNLOADS_INTERFACES}</a></li>
@@ -197,6 +198,41 @@
         <input type="submit" name="downloads_settings_save" value="{TXT_DOWNLOADS_SAVE}" />
     </div>
 <!-- end div downloadsTab_settingsListing -->
+<!-- start div downloadsTab_settingsSearch -->
+    <div id="settingsSearch" class="downloadsTab" style="display:none;">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads settings">
+            <tbody style="vertical-align:top;">
+                <tr>
+                    <th colspan="2">{TXT_DOWNLOADS_SETTINGS_SEARCH}</th>
+                </tr>
+                <tr class="row3">
+                    <td colspan="2" style="font-weight:bold;">{TXT_DOWNLOADS_INTEGRATE_INTO_SEARCH_COMPONENT}</td>
+                </tr>
+                <tr class="row1">
+                    <td width="50%">
+                    <label for="downloads_settings_integrate_into_search_component">{TXT_DOWNLOADS_INTEGRATE_INTO_SEARCH_COMPONENT_TXT}</label>
+                    </td>
+                    <td style="vertical-align:middle;">
+                    <input type="checkbox" name="downloads_settings_integrate_into_search_component" id="downloads_settings_integrate_into_search_component" {DOWNLOADS_SETTINGS_INTEGRATE_INTO_SEARCH_COMPONENT} value="1" />
+                    </td>
+                </tr>
+                <tr class="row2">
+                    <td width="50%">
+                    <label>{TXT_DOWNLOADS_SEARCH_LINK_METHOD}</label>
+                    </td>
+                    <td style="vertical-align:middle;">
+                    <select name="downloads_settings_global_search_linking" style="width:300px;">
+                    {DOWNLOADS_SETTINGS_SEARCH_LINK_OPTIONS}
+                    </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br />
+        <br />
+        <input type="submit" name="downloads_settings_save" value="{TXT_DOWNLOADS_SAVE}" />
+    </div>
+<!-- end div downloadsTab_settingsSearch -->
 <!-- start div downloadsTab_settingsStatistics -->
     <div id="settingsStatistics" class="downloadsTab" style="display:none;">
         <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads settings">
