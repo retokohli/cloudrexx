@@ -552,7 +552,13 @@ class PodcastLib
     function _setHomecontentCategories($arrCategories)
     {
         global $objDatabase;
-        $arrCategories = array_filter($arrCategories, create_function('$cat', 'return intval($cat) > 0;'));
+
+        $arrCategories = array_filter(
+            $arrCategories,
+            function ($cat) {
+                return intval($cat) > 0;
+            }
+        );
         $query = "  UPDATE  `".DBPREFIX."module_podcast_settings`
                     SET `setvalue` = '".implode(',', $arrCategories)."'
                     WHERE `setname` = 'latest_media_categories'";
@@ -1277,7 +1283,13 @@ EOF;
 
             $column = $categoryNr % 3;
             $arrCatLangIds = $this->_getLangIdsOfCategory($categoryId);
-            array_walk($arrCatLangIds, create_function('&$cat, $k, $arrLanguages', '$cat = $arrLanguages[$cat]["lang"];'), $arrLanguages);
+            array_walk(
+                $arrCatLangIds,
+                function (&$cat, $k, $arrLanguages) {
+                    $cat = $arrLanguages[$cat]['lang'];
+                },
+                $arrLanguages
+            );
             $arrCategory['title'] .= ' ('.implode(', ', $arrCatLangIds).')';
 
             $this->_objTpl->setVariable(array(
