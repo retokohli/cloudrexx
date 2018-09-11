@@ -618,8 +618,7 @@ class CalendarMailManager extends CalendarLibrary {
                              (   
                              `crm_contact_membership`.`membership_id` IN (' . join(',', $objEvent->invitedCrmGroups) . ')
                               OR `crm_company_membership`.`membership_id` IN (' . join(',', $objEvent->invitedCrmGroups) . ')
-                              ) ' . $excludeQuery .'
-                              '
+                              ) ' . $excludeQuery .''
                 );
                 if ($result !== false) {
                     $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
