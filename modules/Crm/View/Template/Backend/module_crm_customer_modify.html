@@ -160,25 +160,25 @@
                             </tr>
                             <tr class="row1">
                                 <td>{TXT_COMPANY_NAME}</td>
-                                <td>
+                                <td colspan="3">
                                     <input type="hidden" id="companyId" name="company" value="{CRM_CONTACT_COMPANY_ID}" />
                                     <input tabindex="6" type="text" id="company" class="selectCustomer" placeholder="{TXT_CRM_FIND_COMPANY_BY_NAME}" value="{CRM_CONTACT_COMPANY}" style="width: 237px;"  />
                                     <span class="delete-customer"></span>
                                 </td>
-                                </tr>
+                            </tr>
                             <tr>
                                 <td style="width:127px;">{TXT_CRM_ROLE}</td>
                                 <td colspan="3"><input tabindex="7" type="text" id="contact_role" name="contact_role" value="{TXT_CON_ROLE}" style="width: 254px;"  /></td>
                             </tr>
+                            <!-- BEGIN customeramount2 -->
 			                <tr>
-                                <!-- BEGIN customeramount2 -->
                                 <td style="width:127px;">{TXT_CRM_AMOUNT}</td>
                                 <td>
                                     <input tabindex="7" type="text" id="contact_amount" name="contact_amount" value="{CRM_CONTACT_AMOUNT}" style="width: 254px;" />
                                 </td>
-                                <!-- END customeramount2 -->
                                 <td colspan="2"></td>
                             </tr>
+                            <!-- END customeramount2 -->
                             <tr>
                                 <td colspan="4"></td>
                             </tr>
@@ -712,14 +712,14 @@
                             </select>
                             </td>
                         </tr>
+                        <!-- BEGIN customeramount1 -->
                         <tr>
-                            <!-- BEGIN customeramount1 -->
                             <td style="width:127px;">{TXT_CRM_AMOUNT}</td>
                             <td><input tabindex="13" type="text" id="contact_amount" name="contact_amount" value="{CRM_CONTACT_AMOUNT}" style="width: 254px;" /></td>
-                            <!-- END customeramount1 -->
+
                             <td colspan="2"></td>
                         </tr>
-
+                        <!-- END customeramount1 -->
                     </table>
                     <br>
                     <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
