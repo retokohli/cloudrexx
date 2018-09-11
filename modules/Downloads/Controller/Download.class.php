@@ -1492,11 +1492,19 @@ class Download {
                 return false;
             }
         }
-        $urlCallBack = function ($value) {
-            return preg_match('#^[a-z]+://$#i', $value);
-        };
 
-        if (($this->type == 'url') && array_search('1', array_map($urlCallBack, $this->sources))) {
+        if (
+            ($this->type == 'url') &&
+            array_search(
+                '1',
+                array_map(
+                    function ($value) {
+                        return preg_match('#^[a-z]+://$#i', $value);
+                    },
+                    $this->sources
+                )
+            )
+        ) {
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'];
             return false;
         }
