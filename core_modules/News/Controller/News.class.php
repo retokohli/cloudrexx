@@ -240,8 +240,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsTeaser         = '';
         $redirect           = $objResult->fields['redirect'];
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
-        $url1               = contrexx_raw2xhtml($objResult->fields['url1']);
-        $url2               = contrexx_raw2xhtml($objResult->fields['url2']);
+        $url1               = $objResult->fields['url1'];
+        $url2               = $objResult->fields['url2'];
         $newsUrl            = '';
         $newsSource         = '';
         $newsLastUpdate     = !empty($lastUpdate)
@@ -292,6 +292,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
            'NEWS_SOURCE'         => $newsSource,
            'NEWS_URL'            => $newsUrl,
+           'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
+           'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
            'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
