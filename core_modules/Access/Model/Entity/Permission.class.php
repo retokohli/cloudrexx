@@ -100,12 +100,12 @@ class Permission extends \Cx\Model\Base\EntityBase {
     protected $validAccessIds   = array();
 
     /**
-     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $readDataAccesses;
 
     /**
-     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     * @var \Doctrine\Common\Collections\Collection
      */
     protected $writeDataAccesses;
 
@@ -256,6 +256,29 @@ class Permission extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Add readDataAccesses
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $readDataAccesses
+     * @return Permission
+     */
+    public function addReadDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $readDataAccesses)
+    {
+        $this->readDataAccesses[] = $readDataAccesses;
+
+        return $this;
+    }
+
+    /**
+     * Remove readDataAccesses
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $readDataAccesses
+     */
+    public function removeReadDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $readDataAccesses)
+    {
+        $this->readDataAccesses->removeElement($readDataAccesses);
+    }
+
+    /**
      * Set the read data access
      *
      * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
@@ -273,6 +296,29 @@ class Permission extends \Cx\Model\Base\EntityBase {
     public function getReadDataAccesses()
     {
         return $this->readDataAccesses;
+    }
+
+    /**
+     * Add writeDataAccesses
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $writeDataAccesses
+     * @return Permission
+     */
+    public function addWriteDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $writeDataAccesses)
+    {
+        $this->writeDataAccesses[] = $writeDataAccesses;
+
+        return $this;
+    }
+
+    /**
+     * Remove writeDataAccesses
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $writeDataAccesses
+     */
+    public function removeWriteDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $writeDataAccesses)
+    {
+        $this->writeDataAccesses->removeElement($writeDataAccesses);
     }
 
     /**
@@ -384,9 +430,13 @@ class Permission extends \Cx\Model\Base\EntityBase {
         }
 
         //check user logged in or not
-        $this->cx->getComponent('Session')->getSession();
         if (!\FWUser::getFWUserObject()->objUser->login()) {
             return false;
+        }
+
+        // admins have all privileges
+        if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+            return true;
         }
 
         //check user's group access

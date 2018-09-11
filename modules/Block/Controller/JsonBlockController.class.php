@@ -252,7 +252,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $cx->parseGlobalPlaceholders($content);
-        $template = new \Cx\Core\Html\Sigma();
+        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
         $template->setTemplate($content);
         $this->getComponent('Widget')->parseWidgets(
             $template,

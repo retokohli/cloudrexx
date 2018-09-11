@@ -235,7 +235,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                     $this,
                     $widgetName,
-                    true
+                    \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
                 );
                 $widget->setEsiVariable(
                     \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
@@ -257,7 +257,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
-                true
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
             );
             $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
@@ -295,8 +295,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $widgetController->registerWidget(
             $widget
         );
-    }
 
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'ACCESS_USER_COUNT'
+        );
+        $widgetController->registerWidget(
+            $widget
+        );
+    }
+    
     /**
      * Do something before main template gets parsed
      *
@@ -350,6 +358,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getUserDataBasedWidgetNames() {
         return array_merge(
             array(
+                'ACCESS_USER_COUNT',
                 'access_currently_online_member_list',
                 'access_last_active_member_list',
                 'access_latest_registered_member_list',
