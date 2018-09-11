@@ -325,10 +325,6 @@ class CalendarMailManager extends CalendarLibrary {
         // fetch published locales of event
         $publishedLanguages = explode(',',$event->showIn);
 
-        // load the title profile attributes from access user
-        $profileAttribute = new \User_Profile_Attribute();
-        $salutations = $profileAttribute->getCoreAttributeTitle();
-
         // send out mail for each recipient
         foreach ($recipients as $recipient) {
             // event invitation
@@ -484,11 +480,12 @@ class CalendarMailManager extends CalendarLibrary {
 
             $salutation = '';
             $salutationId = $recipient->getSalutationId();
-            if (
-                isset($salutationId) &&
-                isset($salutations['title_' . $salutationId])
-            ) {
-                $salutation = $salutations['title_' . $salutationId]['desc'];
+            if (isset($salutationId)) {
+                // load the title profile attributes from access user
+                $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById('title_' . $salutationId);
+                if (!$objAttribute->EOF) {
+                    $salutation = $objAttribute->getName();
+                }
             }
             $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $recipient->getUsername(), $salutation, $recipient->getFirstname(), $recipient->getLastname(), $domain, $date);
 
