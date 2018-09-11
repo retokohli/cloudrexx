@@ -2388,6 +2388,17 @@ namespace Cx\Core\Core\Controller {
          * @return \Cx\Core\View\Model\Entity\Theme Current theme
          */
         public function getTheme() {
+            if ($this->currentTheme) {
+                return $this->currentTheme;
+            }
+            $themesRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+            $init = \Env::get('init');
+            if (!$init) {
+                return null;
+            }
+            $this->currentTheme = $themesRepository->findById(
+                $init->getCurrentThemeId()
+            );
             return $this->currentTheme;
         }
 

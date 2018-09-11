@@ -534,18 +534,10 @@ class ClassLoader {
 
         // check if frontend theme has been loaded yet
         if (!$theme) {
-            if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
-                // check if InitCMS has been initialized yet
-                $objInit = \Env::get('init');
-                if (!$objInit) {
-                    return false;
-                }
-
-                $themesRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-                $theme = $themesRepository->findById($objInit->currentThemesId);
-            } else {
-                $theme = $this->cx->getTheme();
-            }
+            $theme = $this->cx->getTheme();
+        }
+        if (!$theme) {
+            return false;
         }
         $currentThemesPath = $theme->getFoldername();
         if (!$currentThemesPath) {
