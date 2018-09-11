@@ -49,6 +49,9 @@ class BackendTable extends HTML_Table {
      */
     protected $templateFile = '';
 
+    /**
+     * @var bool if table is editable
+     */
     protected $editable = false;
 
     /**
@@ -63,6 +66,13 @@ class BackendTable extends HTML_Table {
      */
     protected $hasMasterTableHeader = false;
 
+    /**
+     * BackendTable constructor.
+     * @param array $attrs        attributes of view generator
+     * @param array $options      options of view generator
+     * @param string $entityClass class name of entity
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
     public function __construct($attrs = array(), $options = array(), $entityClass = '') {
         global $_ARRAYLANG;
 
