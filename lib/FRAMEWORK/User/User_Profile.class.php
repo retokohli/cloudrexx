@@ -227,7 +227,12 @@ class User_Profile
                 $newValue = !isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]);
                 if ($newValue || $value != $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]) {
                     $value = '"' . contrexx_raw2db($value) . '"';
-                    if ($attributeId == 'title' && $value == '"0"') {
+                    if (
+                        $attributeId == 'title' && (
+                            $value == '""' ||
+                            $value == '"0"'
+                        )
+                    ) {
                         $value = 'NULL';
                     }
                     $query = $this->objAttribute->isCoreAttribute($attributeId) ?
