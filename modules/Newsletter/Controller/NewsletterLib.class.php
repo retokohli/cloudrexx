@@ -138,6 +138,51 @@ class NewsletterLib
         return $arrLists;
     }
 
+    /**
+     * Parses the consent icons
+     * @param string $source Either "backend", "api", "opt-in", "undefined"
+     * @param string $consent Date parseable by DateTime or empty string
+     * @return string HTML content
+     */
+    public static function parseConsentView($source, $consent) {
+        global $_ARRAYLANG;
+
+        if (!empty($source)) {
+            if ($source == 'undefined') {
+                $consentValue = '<img src="/core/Core/View/Media/icons/pixel.gif" height="13" width="13" />';
+                return $consentValue;
+            }
+            // show green icon with date as tooltip
+            $consentValue = sprintf(
+                $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'],
+                static::getUserDateTime($consent)
+            );
+            $consentValue = '<img src="/core/Core/View/Media/icons/led_green.gif" title="' . $consentValue . '" />';
+        } else {
+            // show orange icon with source as tooltip
+            $langVarName = 'TXT_NEWSLETTER_CONSENT_SOURCE_';
+            $langVarName .= str_replace('-', '_', strtoupper($source));
+            $consentValue = $_ARRAYLANG[$langVarName];
+            $consentValue = '<img src="/core/Core/View/Media/icons/led_orange.gif" title="' . $consentValue . '" />';
+        }
+        return $consentValue;
+    }
+
+    /**
+     * Get a user dateTime in H:i:s d.m.Y format from db data
+     *
+     * @param string $userDateTime DateTime from a db
+     * @return string Return a formatted dateTime as string
+     */
+    protected static function getUserDateTime($userDateTime)
+    {
+        $cx                  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $dateTime            = $cx->getComponent('DateTime');
+        $createDateTimeForDb = $dateTime->createDateTimeForDb($userDateTime);
+        $db2User             = $dateTime->db2user($createDateTimeForDb);
+
+        return $db2User->format('H:i:s d.m.Y');
+    }
 
     /**
      * Returns the Language ID for a newsletter user
