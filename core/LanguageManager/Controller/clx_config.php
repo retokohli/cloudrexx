@@ -9,30 +9,31 @@
  */
 function getCustomFonts($mPdf) {
     $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-    $dir = ltrim($cx->getSystemFolders()[10], '/') . '/Pdf/ttfonts/';
+    $dir = ltrim($cx::FOLDER_NAME_MEDIA, '/') . '/Pdf/ttfonts/';
     $fileNames = array_diff(scandir($dir), array('..', '.'));
-    $fontNames = array();
+    $fontStyles = array(
+        'Bold' => 'B',
+        'Regular' => 'R',
+        'Italic' => 'I',
+        'BoldItalic' => 'BI'
+    );
+    $newFonts = array();
 
-    foreach ($fileNames as $fileName) {
-        $font = explode('-', $fileName);
-        $fontName = $font[0];
-        $extension = pathinfo($font, PATHINFO_EXTENSION);
-
-        if (array_key_exists($fontName, $mPdf->fontdata)) {
-            continue;
+    foreach ($fileNames as $file)
+    {
+        $splitFont = explode('-', $file);
+        $fontName = $splitFont[0];
+        $splitFontStyle = explode('.', $splitFont[1]);
+        $fontStyle = $splitFontStyle[0];
+        if (!isset($newFonts[strtolower($fontName)])) {
+            $newFonts[strtolower($fontName)] = array();
         }
-        $fontNames[$fontName] = $extension;
-    }
 
-    foreach ($fontNames as $fontName => $extension) {
-        $newFonts = array(
-            'R' => $fontName . '-Regular.' . $extension,
-            'B' => $fontName . '-Bold.' . $extension,
-            'I' => $fontName . '-Italic.' . $extension,
-            'BI' => $fontName . '-BoldItalic.' . $extension,
-        );
-
-        $mPdf->fontdata[strtolower($fontName)] = $newFonts;
+        if (isset($fontStyles[$fontStyle])) {
+            $newFonts[strtolower($fontName)][$fontStyles[$fontStyle]] =
+                $fontName . '-' . $fontStyle . '.ttf';
+        }
     }
+    $mPdf->fontdata += $newFonts;
 }
 getCustomFonts($this);
