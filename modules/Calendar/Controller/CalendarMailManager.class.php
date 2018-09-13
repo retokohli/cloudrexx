@@ -480,11 +480,11 @@ class CalendarMailManager extends CalendarLibrary {
 
             $salutation = '';
             $salutationId = $recipient->getSalutationId();
-            if (isset($salutationId)) {
+            if (!empty($salutationId)) {
                 // load the title profile attributes from access user
                 $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById('title_' . $salutationId);
                 if (!$objAttribute->EOF) {
-                    $salutation = $objAttribute->getName();
+                    $salutation = $objAttribute->getName($langId);
                 }
             }
             $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $recipient->getUsername(), $salutation, $recipient->getFirstname(), $recipient->getLastname(), $domain, $date);
