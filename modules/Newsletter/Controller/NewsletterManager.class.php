@@ -4445,14 +4445,18 @@ $WhereStatement = '';
 
     /**
      * Parses the consent icons
-     * @param string $source Either "backend", "api" or "opt-in"
+     * @param string $source Either "backend", "api", "opt-in", "undefined"
      * @param string $consent Date parseable by DateTime or empty string
      * @return string HTML content
      */
     protected function parseConsentView($source, $consent) {
         global $_ARRAYLANG;
 
-        if (!empty($consent)) {
+        if (!empty($source)) {
+            if ($consent == 'undefined') {
+                $consentValue = '<img src="/core/Core/View/Media/icons/pixel.gif" height="13" width="13" />';
+                return $consentValue;
+            }
             // show green icon with date as tooltip
             $consentValue = sprintf(
                 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'],
@@ -5830,6 +5834,11 @@ $WhereStatement = '';
             '`nu`.`source`',
             '`nu`.`consent`'
         );
+        array_push(
+            $arrRecipientFields['access'],
+            "'undefined' AS `source`",
+            "'undefined' AS `consent`"
+        );
         if (!empty($newsletterListId)) {
             array_push(
                 $arrRecipientFields['newsletter'],
@@ -5838,15 +5847,10 @@ $WhereStatement = '';
             );
             array_push(
                 $arrRecipientFields['access'],
-                "'' AS `cat_source`",
-                "'' AS `cat_consent`"
+                "`cnu`.`source` AS `cat_source`",
+                "`cnu`.`consent` AS `cat_consent`"
             );
         }
-        array_push(
-            $arrRecipientFields['access'],
-            "'' AS `source`",
-            "'' AS `consent`"
-        );
 
         $query   = sprintf('
             (

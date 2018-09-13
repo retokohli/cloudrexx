@@ -2878,6 +2878,8 @@ CREATE TABLE `contrexx_module_newsletter_access_user` (
   `accessUserID` int(5) unsigned NOT NULL,
   `newsletterCategoryID` int(11) NOT NULL,
   `code` varchar(255) NOT NULL DEFAULT '',
+  `source` enum('backend','opt-in','api') NOT NULL DEFAULT 'backend',
+  `consent` timestamp NULL DEFAULT NULL,
   UNIQUE KEY `rel` (`accessUserID`,`newsletterCategoryID`),
   KEY `accessUserID` (`accessUserID`)
 ) ENGINE=InnoDB;
