@@ -147,24 +147,24 @@ class NewsletterLib
     public static function parseConsentView($source, $consent) {
         global $_ARRAYLANG;
 
-        if (!empty($source)) {
-            if ($source == 'undefined') {
-                $consentValue = '<img src="/core/Core/View/Media/icons/pixel.gif" height="13" width="13" />';
-                return $consentValue;
-            }
-            // show green icon with date as tooltip
-            $consentValue = sprintf(
-                $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'],
-                static::getUserDateTime($consent)
-            );
-            $consentValue = '<img src="/core/Core/View/Media/icons/led_green.gif" title="' . $consentValue . '" />';
-        } else {
+        if ($source == 'undefined') {
+            // show empty icon
+            $consentValue = '<img src="/core/Core/View/Media/icons/pixel.gif" height="13" width="13" />';
+            return $consentValue;
+        } else if (empty($source)) {
             // show orange icon with source as tooltip
             $langVarName = 'TXT_NEWSLETTER_CONSENT_SOURCE_';
             $langVarName .= str_replace('-', '_', strtoupper($source));
             $consentValue = $_ARRAYLANG[$langVarName];
             $consentValue = '<img src="/core/Core/View/Media/icons/led_orange.gif" title="' . $consentValue . '" />';
+            return $consentValue;
         }
+        // show green icon with date as tooltip
+        $consentValue = sprintf(
+            $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'],
+            static::getUserDateTime($consent)
+        );
+        $consentValue = '<img src="/core/Core/View/Media/icons/led_green.gif" title="' . $consentValue . '" />';
         return $consentValue;
     }
 
