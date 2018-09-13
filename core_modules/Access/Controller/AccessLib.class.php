@@ -2118,30 +2118,36 @@ JS
                 return;
             }
 
-            // load additional newsletter data
-            $query = '
-                SELECT
-                    `newsletterCategoryID` as `category`,
-                    `source`,
-                    `consent`
-                FROM
-                    `' . DBPREFIX . 'module_newsletter_access_user`
-                WHERE
-                    `accessUserID` = ' . $objUser->getId() . '
-            ';
-            $consentResult = $objDatabase->Execute($query);
             $consent = array();
-            while (!$consentResult->EOF) {
-                $consent[$consentResult->fields['category']] = array(
-                    'source' => $consentResult->fields['source'],
-                    'consent' => $consentResult->fields['consent'],
+            if (
+                \Cx\Core\Core\Controller\Cx::instanciate()->getMode() ==
+                    \Cx\Core\Core\Controller\Cx::MODE_BACKEND &&
+                !empty($objUser->getId())
+            ) {
+                // load additional newsletter data
+                $query = '
+                    SELECT
+                        `newsletterCategoryID` as `category`,
+                        `source`,
+                        `consent`
+                    FROM
+                        `' . DBPREFIX . 'module_newsletter_access_user`
+                    WHERE
+                        `accessUserID` = ' . $objUser->getId() . '
+                ';
+                $consentResult = $objDatabase->Execute($query);
+                while (!$consentResult->EOF) {
+                    $consent[$consentResult->fields['category']] = array(
+                        'source' => $consentResult->fields['source'],
+                        'consent' => $consentResult->fields['consent'],
+                    );
+                    $consentResult->MoveNext();
+                }
+                $_ARRAYLANG += $objInit->getComponentSpecificLanguageData(
+                    'Newsletter',
+                    false
                 );
-                $consentResult->MoveNext();
             }
-            $_ARRAYLANG += $objInit->getComponentSpecificLanguageData(
-                'Newsletter',
-                false
-            );
 
             $row = 0;
             foreach ($arrNewsletterLists as $listId => $arrList) {
@@ -2149,19 +2155,23 @@ JS
                     continue;
                 }
 
-                if (!isset($consent[$listId])) {
-                    $consent[$listId] = array(
-                        'source' => 'undefined',
-                        'consent' => '',
-                    );
+                if (count($consent)) {
+                    if (!isset($consent[$listId])) {
+                        $consent[$listId] = array(
+                            'source' => 'undefined',
+                            'consent' => '',
+                        );
+                    }
+                    $this->_objTpl->setVariable(array(
+                        $this->modulePrefix.'NEWSLETTER_CONSENT' => \Cx\Modules\Newsletter\Controller\NewsletterLib::parseConsentView(
+                            $consent[$listId]['source'],
+                            $consent[$listId]['consent']
+                        ),
+                    ));
                 }
                 $this->_objTpl->setVariable(array(
                     $this->modulePrefix.'NEWSLETTER_ID'        => $listId,
                     $this->modulePrefix.'NEWSLETTER_NAME'      => contrexx_raw2xhtml($arrList['name']),
-                    $this->modulePrefix.'NEWSLETTER_CONSENT'   => \Cx\Modules\Newsletter\Controller\NewsletterLib::parseConsentView(
-                        $consent[$listId]['source'],
-                        $consent[$listId]['consent']
-                    ),
                     $this->modulePrefix.'NEWSLETTER_SELECTED'  => in_array($listId, $arrSubscribedNewsletterListIDs) ? 'checked="checked"' : '',
                     $this->modulePrefix.'NEWSLETTER_ROW_CLASS' => ($row++ % 2) + 1,
                 ));
