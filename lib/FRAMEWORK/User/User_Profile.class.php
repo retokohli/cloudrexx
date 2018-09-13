@@ -226,11 +226,20 @@ class User_Profile
             {
                 $newValue = !isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]);
                 if ($newValue || $value != $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]) {
+                    $value = '"' . contrexx_raw2db($value) . '"';
+                    if (
+                        $attributeId == 'title' && (
+                            $value == '""' ||
+                            $value == '"0"'
+                        )
+                    ) {
+                        $value = 'NULL';
+                    }
                     $query = $this->objAttribute->isCoreAttribute($attributeId) ?
-                        "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = '" . contrexx_raw2db($value) . "' WHERE `user_id` = ".$this->id :
+                        "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = " . $value . " WHERE `user_id` = ".$this->id :
                         ($newValue ?
-                            "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '" . contrexx_raw2db($value) . "')" :
-                            "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '" . contrexx_raw2db($value) . "' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
+                            "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", " . $value . ")" :
+                            "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = " . $value . " WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
                         );
 
                     if ($objDatabase->Execute($query) === false) {
@@ -273,9 +282,7 @@ class User_Profile
     protected function createProfile()
     {
         global $objDatabase;
-
-        if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_user_profile` SET `user_id` = '.$this->id) !== false
-            && $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_user_attribute_value` (`attribute_id`, `user_id`, `history_id`, `value`) VALUES (\'0\', \''.$this->id.'\', \'0\', \'\')') !== false) {
+        if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_user_profile` SET `user_id` = '.$this->id . ', `title` = NULL') !== false) {
             $this->arrLoadedUsers[$this->id]['profile'] = isset($this->arrLoadedUsers[0]['profile']) ? $this->arrLoadedUsers[0]['profile'] : array();
             return true;
         } else {
@@ -364,9 +371,23 @@ class User_Profile
 
                     case 'title':
                     case 'country':
-                        $arrConditions[] = '(tblP.`'.$attribute.'` = '.(is_array($condition) ? implode(' OR tblP.`'.$attribute.'` = ',
-                            array_map(create_function('$condition', 'if (preg_match(\'#([0-9]+)#\', $condition, $pattern)) {return $pattern[0];} else {return 0;}'), $condition))
-                            : (preg_match('#([0-9]+)#', $condition, $pattern) ? $pattern[0] : 0)).')';
+                        $arrConditions[] = '(tblP.`' . $attribute . '` = ' . (
+                            is_array($condition)
+                                ? implode(
+                                    ' OR tblP.`' . $attribute . '` = ',
+                                    array_map(
+                                        function ($condition) {
+                                            if (preg_match('#([0-9]+)#', $condition, $pattern)) {
+                                                return $pattern[0];
+                                            }
+
+                                            return 0;
+                                        },
+                                        $condition
+                                    )
+                                )
+                                : (preg_match('#([0-9]+)#', $condition, $pattern) ? $pattern[0] : 0)
+                        ) . ')';
                         break;
 
                     default:

@@ -85,6 +85,8 @@ CKEDITOR.editorConfig = function( config )
     config.height = 307;
     config.uiColor = '#ececec';
 
+    <?php if (!empty($_GET['locale'])) echo "config.language = '" . preg_replace('/[^a-z]/', '', $_GET['locale']) . "';";?>
+
     config.forcePasteAsPlainText = false;
     config.enterMode = CKEDITOR.ENTER_BR;
     config.shiftEnterMode = CKEDITOR.ENTER_P;
@@ -103,7 +105,7 @@ CKEDITOR.editorConfig = function( config )
 
     config.tabSpaces = 4;
     config.baseHref = '<?php echo \Cx\Core\Routing\Url::fromCapturedRequest('', $cx->getWebsiteOffsetPath(), array())->toString(); ?>';
-    config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
+    config.templates_files = [ '' ];
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getToolbar() ?>;
@@ -113,6 +115,9 @@ CKEDITOR.editorConfig = function( config )
     config.toolbar_FrontendEditingContent = <?php echo $wysiwyg->getToolbar('frontendEditingContent') ?>;
 
     config.toolbar_FrontendEditingTitle = <?php echo $wysiwyg->getToolbar('frontendEditingTitle') ?>;
+
+    // Allow div's within a's
+    CKEDITOR.dtd['a']['div'] = 1;
 
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
@@ -124,11 +129,26 @@ CKEDITOR.editorConfig = function( config )
     ) {
         <?php echo $wysiwyg->getRemovedButtons(); ?>;
     }
+
+    // load custom config from Wysiwyg.yml of webdesign template 
+    <?php
+        try {
+            echo $wysiwyg->getCustomWysiwygEditorConfig($skinId, 1) . "\n";
+        } catch (\Throwable $t) {
+            \DBG::msg($t->getMessage());
+        }
+    ?>
 };
 
 //loading the templates
 CKEDITOR.on('instanceReady',function(){
-    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTempaltes();?>;
+    var loadingTemplates = <?php
+        try {
+            echo $wysiwyg->getWysiwygTemplates($skinId);
+        } catch (\Throwable $t) {
+            \DBG::msg($t->getMessage());
+        }
+    ?>;
     for(var instanceName in CKEDITOR.instances) {
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
 
@@ -213,6 +233,15 @@ if (<?php
     });
 }
 
+// load custom code from Wysiwyg.yml of webdesign template 
+<?php
+    try {
+        echo $wysiwyg->getCustomWysiwygEditorJsCode($skinId) . "\n";
+    } catch (\Throwable $t) {
+        \DBG::msg($t->getMessage());
+    }
+?>
+
 //this script will not be executed at the first round (first wysiwyg call)
 cx.bind("loadingEnd", function(myArgs) {
     if(myArgs.hasOwnProperty('data')) {
@@ -229,7 +258,7 @@ cx.bind("loadingEnd", function(myArgs) {
                     cx.variables.set('bodyClass', data.wysiwygCssReload.bodyClass, 'wysiwyg')
                     cx.variables.set('bodyId', data.wysiwygCssReload.bodyId, 'wysiwyg')
                     var config = {
-                        customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
+                        customConfig: cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
                         removePlugins: 'bbcode'
                     };

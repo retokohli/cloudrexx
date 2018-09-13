@@ -106,22 +106,6 @@ class CalendarRegistration extends CalendarLibrary
     public $type; 
     
     /**
-     * Host name
-     *
-     * @access public
-     * @var string
-     */
-    public $hostName; 
-    
-    /**
-     * User Ip address
-     *
-     * @access public
-     * @var string
-     */
-    public $ipAddress;
-    
-    /**
      * First Export time
      *
      * @access public
@@ -233,8 +217,6 @@ class CalendarRegistration extends CalendarLibrary
                          registration.`event_id` AS `event_id`,
                          registration.`submission_date` AS `submission_date`,
                          registration.`date` AS `date`,
-                         registration.`host_name` AS `host_name`,
-                         registration.`ip_address` AS `ip_address`,
                          registration.`type` AS `type`,
                          registration.`invite_id` AS `invite_id`,
                          registration.`user_id` AS `user_id`,
@@ -255,8 +237,6 @@ class CalendarRegistration extends CalendarLibrary
             $this->userId= intval($objResult->fields['user_id']);        
             $this->langId= intval($objResult->fields['lang_id']);        
             $this->type = intval($objResult->fields['type']);        
-            $this->hostName = htmlentities($objResult->fields['host_name'], ENT_QUOTES, CONTREXX_CHARSET);      
-            $this->ipAddress = htmlentities($objResult->fields['ip_address'], ENT_QUOTES, CONTREXX_CHARSET);        
             $this->firstExport = intval($objResult->fields['first_export']);
             $this->paymentMethod = intval($objResult->fields['payment_method']);
             $this->paid = intval($objResult->fields['paid']);
@@ -411,8 +391,6 @@ class CalendarRegistration extends CalendarLibrary
 
         $paymentMethod = empty($data['paymentMethod']) ? 0 : intval($data['paymentMethod']);
         $paid = empty($data['paid']) ? 0 : intval($data['paid']);
-        $hostName = 0;
-        $ipAddress = 0;
 
         if (!$this->invite) {
             $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
@@ -436,8 +414,6 @@ class CalendarRegistration extends CalendarLibrary
         $formData = array(
             'fields' => array(
                 'date'          => $eventDate,
-                'hostName'      => $hostName,
-                'ipAddress'     => $ipAddress,
                 'type'          => $type,
                 'userId'        => $userId,
                 'langId'        => $this->langId ? $this->langId : FRONTEND_LANG_ID,
@@ -478,8 +454,6 @@ class CalendarRegistration extends CalendarLibrary
                         SET `event_id`         = ' . $eventId . ',
                             `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
                             `date`             = ' . $eventDate . ',
-                            `host_name`        = "' . $hostName . '",
-                            `ip_address`       = "' . $ipAddress . '",
                             `type`             = ' . $type . ',
                             `invite_id`        = ' . $this->invite->getId(). ',
                             `user_id`          = ' . $userId . ',
@@ -518,8 +492,6 @@ class CalendarRegistration extends CalendarLibrary
             $query = 'UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
                          SET `event_id` = '.$eventId.',
                              `date` = '.$eventDate.',
-                             `host_name` = '.$hostName.',
-                             `ip_address` = '.$ipAddress.',
                              `invite_id` = '.$this->invite->getId().',
                              `user_id` = '.$userId.',
                              `type`    = '.$type.',
@@ -673,6 +645,10 @@ class CalendarRegistration extends CalendarLibrary
 
         if (!empty($regId)) {
             $registration = $this->getRegistrationEntity($regId);
+            if (!$registration) {
+                return false;
+            }
+
             //Trigger preRemove event for Registration Entity
             $this->triggerEvent(
                 'model/preRemove', $registration,
@@ -751,19 +727,18 @@ class CalendarRegistration extends CalendarLibrary
         global $objDatabase;
 
         if (!empty($regId)) {
-            $registration = $this
-                ->em
-                ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
-                ->findOneBy(array('id' => $regId));
-            $registration->setType($typeId);
-            $registration->setVirtual(true);
+            $registration = $this->getRegistrationEntity(
+                $regId,
+                array('type', $typeId)
+            );
             //Trigger preUpdate event for Registration Entity
             $this->triggerEvent(
                 'model/preUpdate', $registration,
                 array(
                     'relations' => array(
                         'oneToMany' => 'getRegistrationFormFieldValues',
-                        'manyToOne' => 'getEvent'
+                        'manyToOne' => 'getEvent',
+                        'oneToOne'  => 'getInvite',
                     ),
                     'joinEntityRelations' => array(
                         'getRegistrationFormFieldValues' => array(
@@ -901,15 +876,16 @@ class CalendarRegistration extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
                 ->findOneById($id);
         }
+
+        if (!$registration) {
+            return null;
+        }
+
         if ($registration->getInvite()) {
             $registration->getInvite()->setVirtual(true);
             $this->em->detach($registration->getInvite());
         }
         $registration->setVirtual(true);
-
-        if (!$registration) {
-            return null;
-        }
 
         if (!$formDatas) {
             return $registration;

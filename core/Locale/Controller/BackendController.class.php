@@ -241,6 +241,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     );
                 } catch (\Cx\Core\Locale\Model\Entity\LanguageFileException $e) {
                     \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+                } catch (\InitCMSException $e) {
+                    \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+                    // set language file by default source language
+                    $sourceLang = $this->getLanguageRepository()->find('en');
+                    $this->languageFile = new \Cx\Core\Locale\Model\Entity\SettingsLanguageFile(
+                        $sourceLang,
+                        $destLang,
+                        $componentName,
+                        $frontend,
+                        false
+                    );
                 }
 
                 // check if user changed placeholders
@@ -900,12 +911,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'en',
             false
         );
-        $oldPlaceholders = $init->getComponentSpecificLanguageDataByCode(
-            $this->languageFile->getComponentName(),
-            $this->languageFile->getMode() == 'frontend',
-            $this->languageFile->getDestLang()->getIso1(),
-            false
-        );
+        $oldPlaceholders = array();
+        try {
+            $oldPlaceholders = $init->getComponentSpecificLanguageDataByCode(
+                $this->languageFile->getComponentName(),
+                $this->languageFile->getMode() == 'frontend',
+                $this->languageFile->getDestLang()->getIso1(),
+                false
+            );
+        } catch (\InitCMSException $e) {}
         foreach ($basePlaceholders as $name=>$value) {
             if (!isset($oldPlaceholders[$name])) {
                 $oldPlaceholders[$name] = $value;
@@ -1098,7 +1112,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'Order',
                 'Pdf',
                 'Pim',
-                'Privacy',
                 'Routing',
                 'Security',
                 'Session',

@@ -1223,13 +1223,13 @@ class AccessLib
 function accessSetWebsite(elInput, elDiv, elLink)
 {
     website = elInput.value;
-    newWebsite = prompt('{$_CORELANG['TXT_ACCESS_SET_ADDRESS_OF_WEBSITE']}', (website != '' ? website : 'http://'));
+    newWebsite = prompt('{$_CORELANG['TXT_ACCESS_SET_ADDRESS_OF_WEBSITE']}', (website != '' ? website : 'https://'));
 
     if (typeof(newWebsite) == 'string') {
-        if (newWebsite == 'http://') {
+        if (newWebsite.match(/^https?:\/\/$/)) {
             newWebsite = '';
-        } else if (newWebsite != '' && newWebsite.substring(0, 7) != 'http://') {
-            newWebsite = 'http://'+newWebsite;
+        } else if (newWebsite != '' && !newWebsite.match(/^https?:\/\//)) {
+            newWebsite = 'https://'+newWebsite;
         }
 
         elInput.value = newWebsite;
@@ -2105,7 +2105,7 @@ JS
      */
     protected function parseNewsletterLists($objUser)
     {
-        global $_CONFIG, $objDatabase, $objInit;
+        global $_CONFIG, $objDatabase, $objInit, $_ARRAYLANG;
 
         if (!$this->_objTpl->blockExists('access_newsletter')) return;
 
@@ -2118,12 +2118,57 @@ JS
                 return;
             }
 
+            $consent = array();
+            if (
+                \Cx\Core\Core\Controller\Cx::instanciate()->getMode() ==
+                    \Cx\Core\Core\Controller\Cx::MODE_BACKEND &&
+                !empty($objUser->getId())
+            ) {
+                // load additional newsletter data
+                $query = '
+                    SELECT
+                        `newsletterCategoryID` as `category`,
+                        `source`,
+                        `consent`
+                    FROM
+                        `' . DBPREFIX . 'module_newsletter_access_user`
+                    WHERE
+                        `accessUserID` = ' . $objUser->getId() . '
+                ';
+                $consentResult = $objDatabase->Execute($query);
+                while (!$consentResult->EOF) {
+                    $consent[$consentResult->fields['category']] = array(
+                        'source' => $consentResult->fields['source'],
+                        'consent' => $consentResult->fields['consent'],
+                    );
+                    $consentResult->MoveNext();
+                }
+                $_ARRAYLANG += $objInit->getComponentSpecificLanguageData(
+                    'Newsletter',
+                    false
+                );
+            }
+
             $row = 0;
             foreach ($arrNewsletterLists as $listId => $arrList) {
                 if ($objInit->mode != 'backend' && !$arrList['status'] && !in_array($listId, $arrSubscribedNewsletterListIDs)) {
                     continue;
                 }
 
+                if (count($consent)) {
+                    if (!isset($consent[$listId])) {
+                        $consent[$listId] = array(
+                            'source' => 'undefined',
+                            'consent' => '',
+                        );
+                    }
+                    $this->_objTpl->setVariable(array(
+                        $this->modulePrefix.'NEWSLETTER_CONSENT' => \Cx\Modules\Newsletter\Controller\NewsletterLib::parseConsentView(
+                            $consent[$listId]['source'],
+                            $consent[$listId]['consent']
+                        ),
+                    ));
+                }
                 $this->_objTpl->setVariable(array(
                     $this->modulePrefix.'NEWSLETTER_ID'        => $listId,
                     $this->modulePrefix.'NEWSLETTER_NAME'      => contrexx_raw2xhtml($arrList['name']),

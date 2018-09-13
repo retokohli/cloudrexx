@@ -104,3 +104,25 @@ $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Bei der Entfernung der 
 $_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Beim Speichervorgang der Rubrikzugehörigkeit trat ein Fehler auf";
 $_ARRAYLANG['TXT_SET_NEWS_TITLE_CATEGORY_AND_TEXT_OR_REDIRECT'] = "Es muss zwingend ein Titel, eine Rubrikzugehörigkeit und etwas Inhalt (oder eine Weiterleitung) erfasst werden.";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Nächster Artikel";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Vorangehender Artikel";
+
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Verwandte Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Wählen Sie die Artikel aus, welche verknüpft werden sollen";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Geben Sie mindestens 3 Zeichen ein, um die Suche zu starten.";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Artikel suchen...";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "Keine Artikel gefunden";
+
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Die angegebenen Tags konnten nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Die Zuweisung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Die Entfernung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "Keine Tags zugewiesen";
+
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Verwandte Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Verknüpfte Artikel";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Wählen Sie bestehende Artikel aus, die mit diesem Artikel verknüpft werden sollen.";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Geben Sie mindestens 3 Zeichen des Titels eines Artikels ein";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Suche Artikel";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "Kein Artikel gefunden";
