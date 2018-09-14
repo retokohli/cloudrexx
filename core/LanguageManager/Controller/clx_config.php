@@ -9,18 +9,20 @@
  */
 function getCustomFonts($mPdf) {
     $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-    $dir = ltrim($cx::FOLDER_NAME_MEDIA, '/') . '/Pdf/ttfonts/';
-    $fileNames = array_diff(scandir($dir), array('..', '.'));
     $fontStyles = array(
         'Bold' => 'B',
         'Regular' => 'R',
         'Italic' => 'I',
         'BoldItalic' => 'BI'
     );
-    $newFonts = array();
 
-    foreach ($fileNames as $file)
-    {
+    $dir = ltrim(
+        $cx::FOLDER_NAME_MEDIA,
+        '/'
+    ) . '/Pdf/ttfonts/';
+    $fileNames = array_diff(scandir($dir), array('..', '.'));
+    $newFonts = array();
+    foreach ($fileNames as $file) {
         $splitFont = explode('-', $file);
         $fontName = $splitFont[0];
         $splitFontStyle = explode('.', $splitFont[1]);
