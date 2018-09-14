@@ -2360,7 +2360,7 @@ namespace Cx\Core\Core\Controller {
             $this->getResponse()->setParsedContent($endcode);
         }
 
-        /* GETTERS */
+        /* SETTERS AND GETTERS */
 
         /**
          * Returns the mode this instance of Cx is in
@@ -2573,6 +2573,7 @@ namespace Cx\Core\Core\Controller {
                 $this->getModuleFolderName(),
                 $this->getThemesFolderName(),
                 static::FOLDER_NAME_TEMP,
+                static::FOLDER_NAME_COMMAND_MODE,
             );
         }
 
