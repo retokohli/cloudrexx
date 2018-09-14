@@ -8,7 +8,6 @@
  * @return void
  */
 function getCustomFonts($mPdf) {
-    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
     $fontStyles = array(
         'Bold' => 'B',
         'Regular' => 'R',
@@ -17,7 +16,7 @@ function getCustomFonts($mPdf) {
     );
 
     $dir = ltrim(
-        $cx::FOLDER_NAME_MEDIA,
+        \Cx\Core\Core\Controller\Cx::FOLDER_NAME_MEDIA,
         '/'
     ) . '/Pdf/ttfonts/';
     $fileNames = array_diff(scandir($dir), array('..', '.'));
