@@ -143,17 +143,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something after all active components are loaded
-     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
-     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * https://stackoverflow.com/questions/39120906/mpdf-use-another-font-without-editing-the-package-files
      */
     public function postComponentLoad()
     {
-        if (defined(
-            '_MPDF_TTFONTPATH' &&
-            '_MPDF_SYSTEM_TTFONTS' &&
-            '_MPDF_SYSTEM_TTFONTS_CONFIG'
-        )) {
+        if (
+            defined('_MPDF_TTFONTPATH') ||
+            defined('_MPDF_SYSTEM_TTFONTS_CONFIG')
+        ) {
             return;
         }
         define(
@@ -164,15 +161,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ) . '/Pdf/ttfonts/'
         );
         define(
+            '_MPDF_SYSTEM_TTFONTS_CONFIG',
+            $this->getDirectory() . '/Controller/clx_config.php'
+        );
+        if (
+            defined('_MPDF_SYSTEM_TTFONTS')
+        ) {
+            return;
+        }
+        define(
             '_MPDF_SYSTEM_TTFONTS',
             ltrim(
                 $this->cx->getLibraryFolderName(),
                 '/'
             ) . '/mpdf/ttfonts/'
-        );
-        define(
-            '_MPDF_SYSTEM_TTFONTS_CONFIG',
-            $this->getDirectory() . '/Controller/clx_config.php'
         );
     }
 }
