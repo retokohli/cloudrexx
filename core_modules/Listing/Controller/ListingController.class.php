@@ -355,13 +355,11 @@ class ListingController {
                     $qb->setParameter($i, '%' . $this->filter . '%');
                 }
             }
-            var_dump($this->order);
             foreach ($this->order as $field=>&$order) {
                 $qb->orderBy('x.' . $field, $order);
             }
             $qb->setFirstResult($offset);
             $qb->setMaxResults($this->count ? $this->count : null);
-            var_dump($qb->getQuery()->getDql());
             $entities = $qb->getQuery()->getResult();
 
             $metaData = $em->getClassMetaData($this->entityClass);
