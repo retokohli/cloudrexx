@@ -43,6 +43,7 @@ class Orx extends Composite
         'Doctrine\ORM\Query\Expr\Func',
         'Doctrine\ORM\Query\Expr\Andx',
         'Doctrine\ORM\Query\Expr\Orx',
+        'Doctrine\DBAL\Query\Expression\CompositeExpression',
     );
 
     /**
