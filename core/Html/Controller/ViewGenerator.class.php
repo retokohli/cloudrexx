@@ -1028,12 +1028,12 @@ class ViewGenerator {
 
         // if the form is not valid in any case, we stay in this view and do not save anything, because we can not be
         // sure that everything is alright
-        if(!$this->validateForm()) {
+        if (!$this->validateForm()) {
             return;
         }
 
         // if there are no data submitted, we stay on this view, because we have nothing to save
-        if(!$this->checkBlankPostRequest()){
+        if (!$this->checkBlankPostRequest()){
             return;
         }
 
@@ -1068,6 +1068,84 @@ class ViewGenerator {
         $associatedEntityToPersist = array ();
         $deletedEntities = array();
         foreach ($associationMappings as $name => $value) {
+            if (
+                isset($this->options['fields'][$name]) &&
+                isset($this->options['fields'][$name]['mode']) &&
+                $this->options['fields'][$name]['mode'] == 'associate'
+            ) {
+                $associatedIds = array();
+                if (isset($_POST[$name])) {
+                    $associatedIds = $_POST[$name];
+                }
+                // get currently associated
+                $assocMapping = $entityClassMetadata->getAssociationMapping($name);
+                $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                    $assocMapping['fieldName']
+                );
+                $foreignEntityGetter = 'get' . $methodBaseName;
+                $foreignEntityAdder = 'add' . \Doctrine\Common\Inflector\Inflector::singularize(
+                    $methodBaseName
+                );
+                $foreignEntityRemover = 'remove' . \Doctrine\Common\Inflector\Inflector::singularize(
+                    $methodBaseName
+                );
+                $currentlyAssociated = $entity->$foreignEntityGetter();
+                if (
+                    count($associatedIds) == 0 && 
+                    count($currentlyAssociated) == 0
+                ) {
+                    continue;
+                }
+                // get difflists (add, remove)
+                // add / remove
+                // mark remote entities for persist
+                foreach ($currentlyAssociated as $associatedEntity) {
+                    $indexdata = implode(
+                        '/',
+                        \Cx\Core\Html\Controller\FormGenerator::getEntityIndexData(
+                            $associatedEntity
+                        )
+                    );
+                    if (in_array($indexdata, $associatedIds)) {
+                        // case 1/3: entity is already mapped, noop
+                        // unset matching index of $associatedIds
+                        $key = array_search($indexdata, $associatedIds);
+                        unset($associatedIds[$key]);
+                    } else {
+                        // case 2/3: entity should be unmapped
+                        $entity->$foreignEntityRemover($associatedEntity);
+                        $methodBaseName2 = \Doctrine\Common\Inflector\Inflector::classify(
+                            $value['mappedBy']
+                        );
+                        $method = 'set' . $methodBaseName2;
+                        if (method_exists($associatedEntity, $method)) {
+                            $associatedEntity->$method($entity);
+                        }
+                    }
+                }
+                foreach ($associatedIds as $associatedId) {
+                    // case 3/3: entity should be mapped
+                    // find entity by indexdata
+                    $foreignEntity = \Cx\Core\Html\Controller\FormGenerator::findEntityByIndexData(
+                        $value['targetEntity'],
+                        explode('/', $associatedId)
+                    );
+                    // map both ways
+                    $entity->$foreignEntityAdder($foreignEntity);
+                    // TODO: Check if both ways are necessary
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                        $value['mappedBy']
+                    );
+                    $method = 'set' . $methodBaseName;
+                    if (method_exists($associatedEntity, $method)) {
+                        $associatedEntity->$method($entity);
+                    }
+                    // schedule foreign entity for persist
+                    $associatedEntityToPersist[] = $foreignEntity;
+                }
+                // save
+                continue;
+            }
 
             /* if we can not find the class name or the function to save the association we skip the entry, because there
                is now way to store it without these information */
