@@ -794,6 +794,38 @@ CODE;
     }
 
     /**
+     * Helper function to get a list of all values of identifier fields
+     * @param \Cx\Model\Base\EntityBase $entity Entity to get index data of
+     * @return array List of values
+     */
+    public static function getEntityIndexData($entity) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $entityMetadata = $em->getClassMetadata(get_class($entity));
+        return $entityMetadata->getIdentifierValues($entity);
+    }
+
+    /**
+     * Finds an entity by its index data
+     *
+     * @param string $entityClass Fully qualified class name
+     * @param array $indexData List of index values
+     * @return \Cx\Model\Base\EntityBase The matching entity (or null)
+     */
+    public static function findEntityByIndexData($entityClass, $indexData) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $entityMetadata = $em->getClassMetadata($entityClass);
+        $fieldNames = $entityMetadata->getIdentifierFieldNames();
+        $crit = array();
+        foreach ($fieldNames as $index=>$fieldName) {
+            $crit[$fieldName] = $indexData[$index];
+        }
+        $entityRepository = $em->getRepository($entityClass);
+        return $entityRepository->findOneBy($crit);
+    }
+
+    /**
      * This function returns the HtmlElements to display for 1:n relations
      *
      * @todo this only works with single valued identifiers
