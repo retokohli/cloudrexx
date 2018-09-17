@@ -301,7 +301,7 @@ class FormGenerator {
                     $_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'],
                     'core/Html/lang'
                 );
-                $cx = \Cx\Core\Core\Controller\Instanciate();
+                $cx = \Cx\Core\Core\Controller\Cx::Instanciate();
                 $em = $cx->getDb()->getEntityManager();
                 $localMetaData = $em->getClassMetadata($this->entityClass);
                 if ($em->getClassMetadata($this->entityClass)->isSingleValuedAssociation($name)) {
