@@ -281,11 +281,44 @@ class ViewGenerator {
             }
             $this->options['functions']['paging'] = true;
         }
+        $lcOptions = $this->options['functions'];
+        if (!isset($lcOptions['searching'])) {
+            $lcOptions['searching'] = false;
+        }
+        if ($lcOptions['searching']) {
+            $lcOptions['searchFields'] = array();
+            foreach ($this->options['fields'] as $field=>$fieldOptions) {
+                if (
+                    isset($fieldOptions['allowSearching']) &&
+                    $fieldOptions['allowSearching']
+                ) {
+                    $lcOptions['searchFields'][] = $field;
+                }
+            }
+        } else {
+            $lcOptions['searchFields'] = array();
+        }
+        if (!isset($lcOptions['filterFields'])) {
+            $lcOptions['filterFields'] = false;
+        }
+        if ($lcOptions['filterFields']) {
+            $lcOptions['filterFields'] = array();
+            foreach ($this->options['fields'] as $field=>$fieldOptions) {
+                if (
+                    isset($fieldOptions['allowFiltering']) &&
+                    $fieldOptions['allowFiltering']
+                ) {
+                    $lcOptions['filterFields'][] = $field;
+                }
+            }
+        } else {
+            $lcOptions['filterFields'] = array();
+        }
         $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $renderObject,
             $searchCriteria,
             contrexx_input2raw($this->getVgParam($_GET['term'])),
-            $this->options['functions']
+            $lcOptions
         );
     }
 
