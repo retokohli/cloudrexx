@@ -304,7 +304,7 @@ class FormGenerator {
                 $cx = \Cx\Core\Core\Controller\Cx::Instanciate();
                 $em = $cx->getDb()->getEntityManager();
                 $localMetaData = $em->getClassMetadata($this->entityClass);
-                if ($em->getClassMetadata($this->entityClass)->isSingleValuedAssociation($name)) {
+                if ($localMetaData->isSingleValuedAssociation($name)) {
                     // this case is used to create a select field for 1 to 1 associations
                     $entities = $em->getRepository($associatedClass)->findAll();
                     $foreignMetaData = $em->getClassMetadata($associatedClass);
