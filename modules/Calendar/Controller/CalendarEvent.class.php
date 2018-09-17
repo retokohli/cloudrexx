@@ -2563,68 +2563,68 @@ class CalendarEvent extends CalendarLibrary
      */
     public function getRegistrationMailRecipients()
     {
-        global $objDatabase;
 
         $queryRegistration = '
             SELECT DISTINCT `reg_form_val`.`reg_id`, `reg_form_field`.`type`, 
               `reg_form_val`.`value`, `invite`.`invitee_type`, `invite`.`invitee_id`
-              FROM `' . DBPREFIX . 'module_calendar_event` AS `event`
-                
-                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration` AS `reg`
-                ON `event`.`id` = `reg`.`event_id`
+              FROM `' . DBPREFIX . 'module_calendar_registration` AS `reg`
                 
                 LEFT JOIN `' . DBPREFIX . 'module_calendar_invite` AS `invite`
                 ON `reg`.`invite_id` = `invite`.`id`
                 
-                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form` AS `reg_form`
-                ON `event`.`registration_form` = `reg_form`.`id`
-                
                 LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form_field` as `reg_form_field` 
-                ON `reg_form_field`.`form` = `reg_form`.`id`
+                ON `reg_form_field`.`form` = ' . contrexx_input2int($this->registrationForm) . '
                 
                 LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form_field_value` as `reg_form_val`
                 ON `reg_form_field`.`id` = `reg_form_val`.`field_id` AND `reg_form_val`.`reg_id` = `reg`.`id`
                   
-                WHERE `event`.`id` = ' . $this->id . ' 
+                WHERE `reg`.`event_id` = ' . $this->id . ' 
                 AND `reg`.`type` = 1';
-        $objRegistration = $objDatabase->Execute($queryRegistration);
+        $database = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $objRegistration = $database->Execute($queryRegistration);
 
         $recipientsData = array();
+        $mailRecipients = array();
         if ($objRegistration) {
-            while (!$objRegistration->EOF) {
+            return $mailRecipients;
+        }
+        while (!$objRegistration->EOF) {
 
-                $regId = $objRegistration->fields['reg_id'];
-                $type = $objRegistration->fields['type'];
+            $regId = $objRegistration->fields['reg_id'];
+            $type = $objRegistration->fields['type'];
 
-                if (!isset($recipientsData[$regId])) {
-                    $recipientsData[$regId] = array();
-                }
-
-                $recipientsData[$regId][$type] =
-                    $objRegistration->fields['value'];
-                $recipientsData[$regId]['type'] =
-                    $objRegistration->fields['invitee_type'];
-                $recipientsData[$regId]['invitee_id'] =
-                    $objRegistration->fields['invitee_id'];
-
-                $objRegistration->MoveNext();
+            if (!isset($recipientsData[$regId])) {
+                $recipientsData[$regId] = array();
             }
+
+            $recipientsData[$regId][$type] =
+                $objRegistration->fields['value'];
+            $recipientsData[$regId]['type'] =
+                $objRegistration->fields['invitee_type'];
+            $recipientsData[$regId]['invitee_id'] =
+                $objRegistration->fields['invitee_id'];
+
+            $objRegistration->MoveNext();
         }
 
-        $mailRecipients = array();
+
         foreach ($recipientsData as $recipientData) {
             $lang = null;
 
             // if the recipient is a crm or access user, get its language
             if ($recipientData['type'] == MailRecipient::RECIPIENT_TYPE_CRM_CONTACT) {
                 $contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
-                $contact->load($recipientData['invitee_id']);
-                $lang = $contact->contact_language;
+                if ($contact->load($recipientData['invitee_id'])) {
+                    $lang = $contact->contact_language;
+                }
             } elseif ($recipientData['type'] == MailRecipient::RECIPIENT_TYPE_ACCESS_USER) {
-                $lang =
+                $user =
                     \FWUser::getFWUserObject()->objUser->getUser(
                         $recipientData['invitee_id']
-                    )->getFrontendLanguage();
+                    );
+                if ($user) {
+                    $lang = $user->getFrontendLanguage();
+                }
             }
 
             $recipient = new MailRecipient();

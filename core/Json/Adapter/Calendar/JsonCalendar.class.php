@@ -109,11 +109,17 @@ class JsonCalendar implements JsonAdapter {
     public function getRecipientCount($params = array())
     {
         $event = new \Cx\Modules\Calendar\Controller\CalendarEvent();
-        $event->get(
-            intval($params['get']['id']),
-            null,
-            intval($params['get']['lang_id'])
-        );
+        if (intval($params['get']['id']) != 0) {
+            $event->get(
+                intval($params['get']['id']),
+                null,
+                intval($params['get']['lang_id'])
+            );
+
+            if (empty($event->id)) {
+                return 0;
+            }
+        }
 
         // load current lists of invited people directly from the get params,
         // because they are not necessarily stored in the database yet
