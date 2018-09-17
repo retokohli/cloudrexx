@@ -301,15 +301,17 @@ class FormGenerator {
                     $_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'],
                     'core/Html/lang'
                 );
-                if (\Env::get('em')->getClassMetadata($this->entityClass)->isSingleValuedAssociation($name)) {
+                $cx = \Cx\Core\Core\Controller\Instanciate();
+                $em = $cx->getDb()->getEntityManager();
+                $localMetaData = $em->getClassMetadata($this->entityClass);
+                if ($em->getClassMetadata($this->entityClass)->isSingleValuedAssociation($name)) {
                     // this case is used to create a select field for 1 to 1 associations
-                    $entities = \Env::get('em')->getRepository($associatedClass)->findAll();
-                    $foreignMetaData = \Env::get('em')->getClassMetadata($associatedClass);
+                    $entities = $em->getRepository($associatedClass)->findAll();
+                    $foreignMetaData = $em->getClassMetadata($associatedClass);
                     $primaryKeyName = $foreignMetaData->getSingleIdentifierFieldName();
                     $selected = $foreignMetaData->getFieldValue($value, $primaryKeyName);
                     $arrEntities = array();
-                    $closeMetaData = \Env::get('em')->getClassMetadata($this->entityClass);
-                    $assocMapping = $closeMetaData->getAssociationMapping($name);
+                    $assocMapping = $localMetaData->getAssociationMapping($name);
                     $validator = null;
                     if (!isset($assocMapping['joinColumns'][0]['nullable']) || $assocMapping['joinColumns'][0]['nullable']) {
                         $arrEntities['NULL'] = $_ARRAYLANG['TXT_CORE_NONE'];
@@ -317,7 +319,7 @@ class FormGenerator {
                         $validator = new \Cx\Core\Validate\Model\Entity\RegexValidator('/^(?!null$|$)/');
                     }
                     foreach ($entities as $entity) {
-                        $arrEntities[\Env::get('em')->getClassMetadata($associatedClass)->getFieldValue($entity, $primaryKeyName)] = $entity;
+                        $arrEntities[$em->getClassMetadata($associatedClass)->getFieldValue($entity, $primaryKeyName)] = $entity;
                     }
                     $select = new \Cx\Core\Html\Model\Entity\DataElement(
                         $name,
@@ -345,8 +347,7 @@ class FormGenerator {
                         $values = array();
                         if ($entityId != 0) {
                             // if we edit the main form, we also want to show the existing associated values we already have
-                            $closeMetaData = \Env::get('em')->getClassMetadata($this->entityClass);
-                            $assocMapping = $closeMetaData->getAssociationMapping($name);
+                            $assocMapping = $localMetaData->getAssociationMapping($name);
                             $data = $this->getForeignEntitySelectOptionData($assocMapping, $associatedClass, $entityId, $options, true);
                             $values = $data['all'];
                         }
@@ -376,8 +377,7 @@ class FormGenerator {
                         return $select;
                     } else {
                         // this case is used to list all existing values and show an add button for 1 to many associations
-                        $closeMetaData = \Env::get('em')->getClassMetadata($this->entityClass);
-                        $assocMapping = $closeMetaData->getAssociationMapping($name);
+                        $assocMapping = $localMetaData->getAssociationMapping($name);
                         $mainDiv = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
                         $mainDiv->setAttribute('class', 'entityList');
                         $addButton = new \Cx\Core\Html\Model\Entity\HtmlElement('input');
