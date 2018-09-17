@@ -1114,10 +1114,12 @@ class ViewGenerator {
                     } else {
                         // case 2/3: entity should be unmapped
                         $entity->$foreignEntityRemover($associatedEntity);
-                        $methodBaseName2 = \Doctrine\Common\Inflector\Inflector::classify(
+                        $foreignMethodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
                             $value['mappedBy']
                         );
-                        $method = 'set' . $methodBaseName2;
+                        $method = 'remove' . \Doctrine\Common\Inflector\Inflector::singularize(
+                            $foreignMethodBaseName
+                        );
                         if (method_exists($associatedEntity, $method)) {
                             $associatedEntity->$method($entity);
                         }
@@ -1132,11 +1134,10 @@ class ViewGenerator {
                     );
                     // map both ways
                     $entity->$foreignEntityAdder($foreignEntity);
-                    // TODO: Check if both ways are necessary
-                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                    $foreignMethodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
                         $value['mappedBy']
                     );
-                    $method = 'set' . $methodBaseName;
+                    $method = 'set' . $foreignMethodBaseName;
                     if (method_exists($associatedEntity, $method)) {
                         $associatedEntity->$method($entity);
                     }
