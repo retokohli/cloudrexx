@@ -368,7 +368,6 @@ class FormGenerator {
                                 $option->setAttribute('selected');
                             }
                         }
-                        $select->setAttribute('onkeyup', '');
                         $select->addClass('chzn');
                         $select->setAttribute('multiple');
                         if (isset($options['attributes'])) {
@@ -856,7 +855,6 @@ CODE;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $em = $cx->getDb()->getEntityManager();
         $localEntityMetadata = $em->getClassMetadata($this->entityClass);
-        $localEntityIdentifierField = $localEntityMetadata->getSingleIdentifierFieldName();
         $localEntityRepo = $em->getRepository($this->entityClass);
         $foreignEntityRepo = $em->getRepository($assocMapping['targetEntity']);
         $localEntity = $localEntityRepo->find($entityId);
