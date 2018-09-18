@@ -62,13 +62,15 @@ class EsiWidgetController
     public function parseWidget($name, $template, $response, $params)
     {
         if ($name == 'LIVECAM_CURRENT_IMAGE_B64') {
-            $camId = $params['page']->getCmd();
             $livecam = new \Cx\Modules\Livecam\Controller\LivecamLibrary();
             $camSettings = $livecam->getCamSettings();
 
             // Take default livecam 1 when no cmd is set
-            if (empty($camId)) {
+            if (empty($params['page']->getCmd())
+                || $params['page']['module'] != 'Livecam') {
                 $camId = 1;
+            } else {
+                $camId = $params['page']->getCmd();
             }
 
             // Get image with http_request2
