@@ -66,7 +66,10 @@ class FormGenerator {
      */
     protected $entityClass;
 
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions) {
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions)
+    {
+        global $_ARRAYLANG;
+
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
         static::$formIncrement++;
@@ -92,6 +95,13 @@ class FormGenerator {
                 $options['functions']['formButtons'] == true
             )
         );
+        $hasTabs = false;
+        if (!empty($options['tabs'])) {
+            $hasTabs = true;
+            $tabMenu = new \Cx\Core\Html\Model\Entity\HtmlElement('ul');
+            $tabMenu->setAttribute('id', 'tabmenu');
+            $this->form->addChild($tabMenu);
+        }
         $this->form->setAttribute('id', 'form-' . $this->formId);
         $this->form->setAttribute('class', 'cx-ui');
         $titleElement = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
@@ -103,46 +113,104 @@ class FormGenerator {
             $editIdField->setAttribute('type', 'hidden');
             $this->form->addChild($editIdField);
         }
-        // foreach entity field
-        foreach ($entity as $field=>$value) {
-            $type = null;
-
-            if (!empty($options[$field]['type'])) {
-                $type = $options[$field]['type'];
-            }
-
-            if (is_object($value)) {
-                if ($value instanceof \Cx\Model\Base\EntityBase) {
-                    $type = 'Cx\Model\Base\EntityBase';
-                } elseif ($value instanceof \Doctrine\Common\Collections\Collection) {
-                    continue;
-                } else {
-                    $type = get_class($value);
+        $overviewFields = array_keys($entity);
+        foreach ($options['tabs'] as $tabName=>$tabData) {
+            foreach ($entity as $field => $value) {
+                if (in_array($field, $tabData['fields'])) {
+                    $overviewKey = array_search($field, $overviewFields);
+                    // Remove field from overview tab when it is in another tab
+                    if ($overviewKey !== false) {
+                        unset($overviewFields[$overviewKey]);
+                    } else {
+                        $tabKey = array_search($field, $tabData['fields']);
+                        unset($options['tabs'][$tabName]['fields'][$tabKey]);
+                    }
                 }
             }
-            $length = 0;
-            $value = $entity[$field];
-            $fieldOptions = array();
-            if (isset($options['fields']) && isset($options['fields'][$field])) {
-                $fieldOptions = $options['fields'][$field];
-            }
-            if (!empty($fieldOptions['type'])) {
-                $type = $fieldOptions['type'];
-            }
-            $dataElement = $this->getDataElement($field, $type, $length, $value, $fieldOptions, $entityId);
-            if (empty($dataElement)) {
-                continue;
-            }
-            $dataElement->setAttribute('id', 'form-' . $this->formId . '-' . $field);
-            if ($type == 'hidden') {
-                $element = $dataElement;
-            } else {
-                $element = $this->getDataElementGroup($field, $dataElement, $fieldOptions);
-            }
-            $this->form->addChild($element);
         }
-        if (isset($options['cancelUrl'])) {
-            $this->form->cancelUrl = $options['cancelUrl'];
+
+        $options['tabs']['overview']['fields'] = $overviewFields;
+        $options['tabs'] = array('overview' => $options['tabs']['overview']) + $options['tabs'];
+
+        if (empty($options['tabs']['overview']['header'])) {
+            $options['tabs']['overview']['header'] = $_ARRAYLANG['TXT_CORE_OVERVIEW'];
+        }
+
+        foreach ($options['tabs'] as $tabName=>$tabData) {
+
+            if ($hasTabs) {
+                $tabItem = new \Cx\Core\Html\Model\Entity\HtmlElement('li');
+                $tabLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                $tabHeader = new \Cx\Core\Html\Model\Entity\TextElement($tabData['header']);
+
+                $tabLink->setAttributes(
+                    array(
+                        'id' => 'tabs_' . $tabName,
+                        'onclick' => 'selectTab("'. $tabName .'", true)',
+                    )
+                );
+
+                $tabLink->addChild($tabHeader);
+                $tabItem->addChild($tabLink);
+                $tabMenu->addChild($tabItem);
+            }
+
+            $tab = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+            $tab->setAttributes(
+                array(
+                    'id' => $tabName,
+                    'class' => 'tabs'
+                )
+            );
+
+            // foreach entity field
+            foreach ($entity as $field => $value) {
+                if (!in_array($field, $tabData['fields'])) {
+                    continue;
+                }
+
+                $type = null;
+
+                if (!empty($options[$field]['type'])) {
+                    $type = $options[$field]['type'];
+                }
+
+                if (is_object($value)) {
+                    if ($value instanceof \Cx\Model\Base\EntityBase) {
+                        $type = 'Cx\Model\Base\EntityBase';
+                    } elseif ($value instanceof \Doctrine\Common\Collections\Collection) {
+                        continue;
+                    } else {
+                        $type = get_class($value);
+                    }
+                }
+                $length = 0;
+                $value = $entity[$field];
+                $fieldOptions = array();
+                if (isset($options['fields']) && isset($options['fields'][$field])) {
+                    $fieldOptions = $options['fields'][$field];
+                }
+                if (!empty($fieldOptions['type'])) {
+                    $type = $fieldOptions['type'];
+                }
+                $dataElement = $this->getDataElement($field, $type, $length, $value, $fieldOptions, $entityId);
+                if (empty($dataElement)) {
+                    continue;
+                }
+                $dataElement->setAttribute('id', 'form-' . $this->formId . '-' . $field);
+                if ($type == 'hidden') {
+                    $element = $dataElement;
+                } else {
+                    $element = $this->getDataElementGroup($field, $dataElement, $fieldOptions);
+                }
+                $tab->addChild($element);
+                //$this->form->addChild($element);
+            }
+            if (isset($options['cancelUrl'])) {
+                $this->form->cancelUrl = $options['cancelUrl'];
+            }
+            $this->form->addChild($tab);
         }
     }
 

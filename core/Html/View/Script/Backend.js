@@ -140,6 +140,16 @@ cx.ready(function() {
             sortable.ajaxCall(params);
         }
     });
+
+    // Get fist a element from tabmenu and select tab
+    var firstTab = document.getElementsByClassName('tabs')[0];
+    document.getElementsByTagName('legend')[0].style.display = 'block';
+    if (document.getElementById('tabmenu') != null) {
+        selectTab(firstTab.id, true);
+    } else {
+        firstTab.style.display = 'block';
+    }
+
 });
 
 jQuery(document).ready(function(){
