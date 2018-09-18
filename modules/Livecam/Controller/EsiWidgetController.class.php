@@ -63,7 +63,7 @@ class EsiWidgetController
     {
         if ($name == 'LIVECAM_CURRENT_IMAGE_B64') {
             $camId = $params['page']->getCmd();
-            $livecam = new \Cx\Modules\Livecam\Controller\LivecamLibrary('');
+            $livecam = new \Cx\Modules\Livecam\Controller\LivecamLibrary();
             $camSettings = $livecam->getCamSettings();
 
             // Take default livecam 1 when no cmd is set
