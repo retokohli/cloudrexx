@@ -284,6 +284,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'] = "Allgemein";
 $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'] = "Abmelden";
 $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_PROFILE'] = "Profil bearbeiten";
 $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'] = "Dieser Platzhalter wird in der Browser-Ansicht eines Newsletters nicht angezeigt.";
+$_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_FOR_CRM'] = "Dieser Platzhalter ist für CRM Kontakte nicht verfügbar";
 $_ARRAYLANG['TXT_NEWSLETTER_SHOW_LAST_SENT_EMAIL'] = "Letztes versendetes E-Mail anzeigen";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_LIST'] = "Möchten Sie die Liste %s wirklich löschen?";
 $_ARRAYLANG['TXT_NEWSLETTER_ID_UC'] = "ID";
@@ -493,7 +494,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_NO_LISTS'] = "Keine Verteilerlisten vorhanden.";
 $_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_STATUS'] = 'Der Versand der E-Mail-Kampagne ist abgeschlossen';
 $_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_TO_RECIPIENTS'] = 'Die E-Mail-Kampagne wurde an <strong>%s Teilnehmer</strong> gesendet.';
 $_ARRAYLANG['TXT_NEWSLETTER_MAIL_NOT_SENT_TO_RECIPIENTS'] = 'An <strong>%s Teilnehmer</strong> konnte die E-Mail-Kampagne nicht zugestellt werden.';
-$_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'] = "Die E-Mail-Kampagne kann direkt an die Mitglieder einer Benutzergruppe zugestellt werden.<br /><br /><strong>ACHTUNG:</strong><br />Die Mitglieder einer Benutzergruppen haben sich nicht via Double-Opt-in in eine Verteilerliste eingetragen.<br />Bitte beachten Sie daher, dass die Zustellung einer E-Mail-Kampagne an eine Benutzergruppe in bestimmten Ländern <u>gesetzeswidrig</u> ist.<br />Verwenden Sie die Zustellung an eine Benutzergruppe <u>nicht zu Werbezwecken</u>, sondern nur zum Versand einer wichtigen Mitteilung an Ihre Mitglieder.<br />In einer solch versendeten E-Mail-Kampagne steht den empfängern <u>kein Profil- und Austragungslink</u> zur Verfügung.";
+$_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'] = "Die E-Mail-Kampagne kann direkt an die Mitglieder einer Benutzer- oder CRM-Gruppe zugestellt werden.<br /><br /><strong>ACHTUNG:</strong><br />Die Mitglieder einer Benutzer-/CRM-Gruppe haben sich nicht via Double-Opt-in in eine Verteilerliste eingetragen.<br />Bitte beachten Sie daher, dass die Zustellung einer E-Mail-Kampagne an eine Benutzer-/CRM-Gruppe in bestimmten Ländern <u>gesetzeswidrig</u> ist.<br />Verwenden Sie die Zustellung an eine Benutzer-/CRM-Gruppe <u>nicht zu Werbezwecken</u>, sondern nur zum Versand einer wichtigen Mitteilung an Ihre Mitglieder.<br />In einer solch versendeten E-Mail-Kampagne steht den Empfängern <u>kein Profil- und Austragungslink</u> zur Verfügung.";
 $_ARRAYLANG['TXT_NEWSLETTER_COPY_RECIPIENT'] = "Als Template für neue Benutzer verwenden";
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'] = 'E-Mail Vorlagen';
 $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDERS'] = 'Platzhalter';
@@ -501,6 +502,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'] = 'Allgemein';
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_CODE'] = 'Email Aktivierungscode';
 $_ARRAYLANG['TXT_NEWSLETTER_USER_EDIT_LINK'] = 'Link zu den Einstellungen des aktuellen Benutzers';
 $_ARRAYLANG['TXT_NEWSLETTER_CAPTCHA'] = 'Captcha';
+$_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP'] = 'Zugehörige CRM Kundengruppe';
 $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'] = 'Filterung nach CRM Kundengruppe';
 $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'] = 'Falls Sie Ihre E-Mail Marketing Empfänger auch im CRM abgelegt haben (Verknüpfung mittels Benutzerkonten), dann haben Sie die Möglichkeit den Versand an die ausgewählten Listen (Option: %1$s) und Benutzergruppen (Option: %2$s) über die CRM Kundengruppen zu filtern. Die E-Mail-Kampagne wird dann nur an jene Empfänger der ausgewählten Listen / Benutzergruppen gesendet, welche die entsprechenden Filterkriterien erfüllen.';
 $_ARRAYLANG['TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'] = 'Kundengruppen wählen';
@@ -519,3 +521,10 @@ $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_CANCELED_BY_EMAIL'] = 'Der Versand der Best�
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SUCCESS']           = 'Die E-Mails wurden erfolgreich gesendet';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_MAIL_SEND'] = 'Zustimmungsbestätigung per E-Mail an nicht bestätigte Teilnehmer senden';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'] = 'Die Bestätigungsmail konnte folgenden Teilnehmern nicht zugestellt werden:<br /><br />%s';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT'] = 'Zustimmung';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_BACKEND'] = 'Manuell hinzugefügt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_API'] = 'Via API hinzugefügt';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Double-Opt-In am %s';
+$_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'] = 'Gibt an, ob der Teilnehmer seine Zustimmung gegeben hat. <ul><li><img src="/core/Core/View/Media/icons/led_green.gif" alt="Grün" /> bedeutet, dass der Teilnehmer seine Zustimmung per Double-Opt-In bestätigt hat.</li><li><img src="/core/Core/View/Media/icons/led_orange.gif" alt="Orange" /> bedeutet, dass der Teilnehmer manuell über die Administrationskonsole erfasst, oder via API importiert wurde.</li></ul><br />
+Wenn nach Verteilerliste gefilter wird, wird zudem nachfolgend die Zustimmung zu der entsprechenden Liste aufgeführt.<br /><br />
+Fahren Sie mit der Maus über die Symbole um detailliertere Informationen zu erhalten.';

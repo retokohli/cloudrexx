@@ -112,7 +112,7 @@ class Sitemap
     {
         $list = $this->_arrName[$parcat];
         if (is_array($list)) {
-            while (list($key,$val) = each($list)) {
+            foreach ($list as $key => $val) {
                 $this->_sitemapPageName[$key] = $val;
                 $this->_sitemapPageURL[$key] = $this->_arrUrl[$key];
                 $this->_sitemapPageLevel[$key] = $level;
@@ -139,7 +139,7 @@ class Sitemap
                 $nestedSitemap = $this->_subTagStart.$this->_buildNestedSitemap().$this->_subTagEnd."\n";
                 return preg_replace('/<!-- BEGIN sitemap -->.*<!-- END sitemap -->/', $nestedSitemap, $this->pageContent);
             } else {
-                while (list($key,$val) = each($this->_sitemapPageName)) {
+                foreach ($this->_sitemapPageName as $key => $val) {
                     $lvl = $this->_sitemapPageLevel[$key]+1;
                     $cssStyle = $this->_cssPrefix.$lvl;
                     if ($this->_sitemapPageLevel[$key]!=0){
