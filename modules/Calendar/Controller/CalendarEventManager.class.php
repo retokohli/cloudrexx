@@ -1167,9 +1167,11 @@ class CalendarEventManager extends CalendarLibrary
         ) {
             if ($event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL) {
                 $regLinkSrc = \FWValidator::getUrl($event->registrationExternalLink);
+                $regLinkSrcQueryString = '';
                 $regLinkTarget = '_blank';
             } elseif ($hostUri) {
                 $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$event->id.'&amp;date='.$event->startDate->getTimestamp();
+                $regLinkSrcQueryString = '';
             } else {
                 $params = array(
                     'id'    => $event->id,
@@ -1208,12 +1210,15 @@ class CalendarEventManager extends CalendarLibrary
                     $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_RANDOM] = $inviteRandom;
                 }
 
-                $regLinkSrc = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params)->toString();
+                $regLinkUrl = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params);
+                $regLinkSrc = $regLinkUrl->toString();
+                $regLinkSrcQueryString = $regLinkUrl->getSuggestedParams();
             }
             $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
         } else {
             $regLink          = '<i>' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] . '</i>';
             $regLinkSrc       = '';
+            $regLinkSrcQueryString = '';
             $registrationOpen = false;
         }
 
@@ -1225,6 +1230,7 @@ class CalendarEventManager extends CalendarLibrary
         $objTpl->setVariable(array(
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK'        => $regLink,
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_SRC'    => $regLinkSrc,
+            $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_SRC_QUERY_STRING' => $regLinkSrcQueryString,
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_TARGET' => $regLinkTarget,
         ));
         if ($objTpl->blockExists('calendarEventRegistrationOpen')) {
