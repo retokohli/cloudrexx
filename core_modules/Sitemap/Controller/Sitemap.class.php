@@ -61,12 +61,53 @@ class Sitemap
 
         $this->_objTpl->setTemplate($pageContent);
 
-        if (isset($this->_objTpl->_blocks['sitemap'])) {
-            $sm = new \Cx\Core\PageTree\SitemapPageTree(\Env::get('em'), $license, 0, null, FRONTEND_LANG_ID, null, true, true);
-            $sm->setVirtualLanguageDirectory(\Env::get('virtualLanguageDirectory'));
-            $sm->setTemplate($this->_objTpl);
-            $sm->render();
+        // load default application template if it does not exist
+        // for the specified CMD
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Sitemap');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
         }
+
+        if (!isset($this->_objTpl->_blocks['sitemap'])) {
+            return;
+        }
+
+        $rootNode = null;
+
+        // check if sitemap is limited to a specific branch of the tree
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $page = $cx->getPage();
+        if (!empty($page->getCmd())) {
+            // Try to resolve node placeholder
+            try {
+                $nodePlaceholder = \Cx\Core\Routing\NodePlaceholder::fromPlaceholder(
+                    $page->getCmd()
+                );
+                $rootNode = $nodePlaceholder->getPage()->getNode();
+            } catch (\Cx\Core\Routing\NodePlaceholderException $e) {}
+        }
+
+        // generate sitemap
+        $em = $cx->getDb()->getEntityManager();
+        $sm = new \Cx\Core\PageTree\SitemapPageTree(
+            $em,
+            $license,
+            0,
+            $rootNode,
+            FRONTEND_LANG_ID,
+            null,
+            true,
+            true
+        );
+        $sm->setVirtualLanguageDirectory(\Env::get('virtualLanguageDirectory'));
+        $sm->setTemplate($this->_objTpl);
+        $sm->render();
     }
 
     public function getSitemapContent() {
