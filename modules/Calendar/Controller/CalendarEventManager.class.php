@@ -1496,6 +1496,7 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_START_TIME'     => $this->format2userTime($startDate),
                 $this->moduleLangVar.'_EVENT_START_TIME_MINUTE'=> $this->formatDateTime2user($startDate, 'i'),
                 $this->moduleLangVar.'_EVENT_START_TIME_HOUR'=> $this->formatDateTime2user($startDate, 'H'),
+                $this->moduleLangVar.'_EVENT_START_TIMESTAMP'=> $startDate->getTimestamp(),
                 $this->moduleLangVar.'_EVENT_DATE'           => $this->format2userDate($startDate),
                 $this->moduleLangVar.'_EVENT_END'            => $this->format2userDateTime($endDate),
                 $this->moduleLangVar.'_EVENT_END_DATE'       => $this->format2userDate($endDate),
@@ -1505,6 +1506,7 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_END_TIME'       => $this->format2userTime($endDate),
                 $this->moduleLangVar.'_EVENT_END_TIME_MINUTE'=> $this->formatDateTime2user($endDate, 'i'),
                 $this->moduleLangVar.'_EVENT_END_TIME_HOUR'  => $this->formatDateTime2user($endDate, 'H'),
+                $this->moduleLangVar.'_EVENT_END_TIMESTAMP'  => $endDate->getTimestamp(),
                 $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
                 $this->moduleLangVar.'_EVENT_CATEGORY'       =>
                     implode(', ', $category_names),
