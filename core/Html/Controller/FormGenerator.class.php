@@ -354,6 +354,7 @@ class FormGenerator {
                         if (!count($values)) {
                             $values = array('');
                         }
+                        $_ARRAYLANG += \Env::get('init')->getComponentSpecificLanguageData('Html', false);
                         // get all assigned entities (by ajax?)
                         // add chosen
                         $select = new \Cx\Core\Html\Model\Entity\DataElement(
@@ -369,6 +370,7 @@ class FormGenerator {
                             }
                         }
                         $select->addClass('chzn');
+                        $select->setAttribute('data-placeholder', $_ARRAYLANG['TXT_CORE_HTML_PLEASE_CHOOSE']);
                         $select->setAttribute('multiple');
                         if (isset($options['attributes'])) {
                             $select->setAttributes($options['attributes']);

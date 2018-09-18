@@ -478,7 +478,11 @@
 
         for (i = 0; i < elm.length; i++) {
             if (elm[i].value == '') {
-                elm[i].style.border = "#ff0000 1px solid";
+                var element = cx.jQuery(elm[i]);
+                if (cx.jQuery(elm[i]).next().is(".chosen-container")) {
+                    element = cx.jQuery(elm[i]).next().find("ul.chosen-choices");
+                }
+                element.css("border", "#ff0000 1px solid");
                 document.getElementById('errorMessage').style.display = 'block';
                 status = false;
             } else {
@@ -859,7 +863,7 @@
                 <td valign="top">{TXT_CALENDAR_EVENT_CATEGORY} <font color="#ff0000">*</font></td>
                 <td>
           <select multiple="multiple" id="category" name="category_ids[]"
-                  style="width: 258px">
+                data-placeholder="{TXT_CORE_HTML_PLEASE_CHOOSE}" style="width: 258px">
                         {CALENDAR_EVENT_CATEGORIES}
                     </select>
                 </td>
