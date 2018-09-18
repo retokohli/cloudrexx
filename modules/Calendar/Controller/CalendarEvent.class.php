@@ -2585,7 +2585,7 @@ class CalendarEvent extends CalendarLibrary
 
         $recipientsData = array();
         $mailRecipients = array();
-        if ($objRegistration) {
+        if (!$objRegistration) {
             return $mailRecipients;
         }
         while (!$objRegistration->EOF) {
