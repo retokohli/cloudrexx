@@ -138,7 +138,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //       Proper handling of ResultCache must be implemented.
         $evm->addModelListener(
             'postFlush',
-            'Cx\Core\Model\Entity\EntityBase',
+            'Cx\Core\Core\Model\Entity\EntityBase',
             new \Cx\Core_Modules\Cache\Model\Event\CoreEntityBaseEventListener(
                 $this->cx
             )

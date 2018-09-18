@@ -150,6 +150,7 @@ cx.ready(function() {
         firstTab.style.display = 'block';
     }
 
+    cx.jQuery(".chzn").chosen();
 });
 
 jQuery(document).ready(function(){

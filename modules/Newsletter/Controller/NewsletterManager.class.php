@@ -4408,12 +4408,12 @@ $WhereStatement = '';
                 : \FWUser::getFWUserObject()->objUser->objAttribute->getById(
                     'country_'.$user['country_id'])->getName();
 
-            $consentValue = $this->parseConsentView(
+            $consentValue = static::parseConsentView(
                 $user['source'],
                 $user['consent']
             );
             if (!empty($user['cat_source'])) {
-                $consentValue .= ' / ' . $this->parseConsentView(
+                $consentValue .= ' / ' . static::parseConsentView(
                     $user['cat_source'],
                     $user['cat_consent']
                 );
@@ -4441,32 +4441,6 @@ $WhereStatement = '';
             }
         }
         die(json_encode($output));
-    }
-
-    /**
-     * Parses the consent icons
-     * @param string $source Either "backend", "api" or "opt-in"
-     * @param string $consent Date parseable by DateTime or empty string
-     * @return string HTML content
-     */
-    protected function parseConsentView($source, $consent) {
-        global $_ARRAYLANG;
-
-        if (!empty($consent)) {
-            // show green icon with date as tooltip
-            $consentValue = sprintf(
-                $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'],
-                $this->getUserDateTime($consent)
-            );
-            $consentValue = '<img src="/core/Core/View/Media/icons/led_green.gif" title="' . $consentValue . '" />';
-        } else {
-            // show orange icon with source as tooltip
-            $langVarName = 'TXT_NEWSLETTER_CONSENT_SOURCE_';
-            $langVarName .= str_replace('-', '_', strtoupper($source));
-            $consentValue = $_ARRAYLANG[$langVarName];
-            $consentValue = '<img src="/core/Core/View/Media/icons/led_orange.gif" title="' . $consentValue . '" />';
-        }
-        return $consentValue;
     }
 
 // TODO: Refactor this method
@@ -5379,7 +5353,7 @@ $WhereStatement = '';
             ));
             if (isset($consent[$listId])) {
                 $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_CONSENT' => $this->parseConsentView(
+                    'NEWSLETTER_CONSENT' => static::parseConsentView(
                         $consent[$listId]['source'],
                         $consent[$listId]['consent']
                     ),
@@ -5830,6 +5804,11 @@ $WhereStatement = '';
             '`nu`.`source`',
             '`nu`.`consent`'
         );
+        array_push(
+            $arrRecipientFields['access'],
+            "'undefined' AS `source`",
+            "'undefined' AS `consent`"
+        );
         if (!empty($newsletterListId)) {
             array_push(
                 $arrRecipientFields['newsletter'],
@@ -5838,15 +5817,10 @@ $WhereStatement = '';
             );
             array_push(
                 $arrRecipientFields['access'],
-                "'' AS `cat_source`",
-                "'' AS `cat_consent`"
+                "`cnu`.`source` AS `cat_source`",
+                "`cnu`.`consent` AS `cat_consent`"
             );
         }
-        array_push(
-            $arrRecipientFields['access'],
-            "'' AS `source`",
-            "'' AS `consent`"
-        );
 
         $query   = sprintf('
             (
@@ -6880,22 +6854,6 @@ function MultiAction() {
         );
 
         return str_replace($search, $replace, $content);
-    }
-
-    /**
-     * Get a user dateTime in H:i:s d.m.Y format from db data
-     *
-     * @param string $userDateTime DateTime from a db
-     * @return string Return a formatted dateTime as string
-     */
-    public function getUserDateTime($userDateTime)
-    {
-        $cx                  = \Cx\Core\Core\Controller\Cx::instanciate();
-        $dateTime            = $cx->getComponent('DateTime');
-        $createDateTimeForDb = $dateTime->createDateTimeForDb($userDateTime);
-        $db2User             = $dateTime->db2user($createDateTimeForDb);
-
-        return $db2User->format('H:i:s d.m.Y');
     }
 }
 
