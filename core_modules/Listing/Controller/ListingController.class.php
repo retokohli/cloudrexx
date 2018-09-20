@@ -363,10 +363,10 @@ class ListingController {
             $entities = $qb->getQuery()->getResult();
 
             $metaData = $em->getClassMetaData($this->entityClass);
-            $qb = $em->createQueryBuilder();
-            $this->dataSize = (int) $qb->select(
-                'count(e.' . reset($metaData->getIdentifierFieldNames()) . ')'
-            )->from($this->entityClass, 'e')->getQuery()->getSingleScalarResult();
+            $qb->select(
+                'count(x.' . reset($metaData->getIdentifierFieldNames()) . ')'
+            );
+            $this->dataSize = $qb->getQuery()->getSingleScalarResult();
         }
 
         // return calculated data
