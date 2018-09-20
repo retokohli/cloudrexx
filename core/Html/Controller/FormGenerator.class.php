@@ -122,6 +122,7 @@ class FormGenerator {
                     if ($overviewKey !== false) {
                         unset($overviewFields[$overviewKey]);
                     } else {
+                        // Search duplicated keys and delete them
                         $tabKey = array_search($field, $tabData['fields']);
                         unset($options['tabs'][$tabName]['fields'][$tabKey]);
                     }
@@ -129,7 +130,9 @@ class FormGenerator {
             }
         }
 
+        // add list with all unsigned fields to overview tab
         $options['tabs']['overview']['fields'] = $overviewFields;
+        // move overview tab to first place
         $options['tabs'] = array('overview' => $options['tabs']['overview']) + $options['tabs'];
 
         if (empty($options['tabs']['overview']['header'])) {
