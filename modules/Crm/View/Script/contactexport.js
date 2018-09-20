@@ -154,37 +154,59 @@ $J(function(){
     });
     $J('#frmImport2').bind('submit', function(e) {
         e.preventDefault(); // <-- important
-        elm = $J(this);
-        xhr = $J.ajax({
-            type    :  'post',
-            //dataType:  'json',
-            data    :  $J('#frmImport, #frmImport2').serialize(),
-            url     :  elm.attr('action'),
-            beforeSend: function() {
-                $J('.import_step2 .actions').hide();
-                $J('.import_step2 .ajax_loading').show();
-
-                $J('#step2').fadeOut(function(){
-                    $J('#step3').fadeIn('slow');
-                });
-                refreshIntervalId = self.setInterval(function(){
-                    getUploadProcess();
-                }, 500);
-            },
-            success: function(json) {
-                clearInterval(refreshIntervalId);
-                getUploadProcess();
-                $J("#cancelled").addClass("disabled");
-                $J("#Done").removeClass("disabled");
-                $J("#cancelled").attr("disabled", "disabled");
-                $J("#Done").removeAttr("disabled");
-            }
-        });
-
+        csvImport($J(this));
         // !!! Important !!!
         // always return false to prevent standard browser submit and page navigation
         return false;
     });
+
+    // To import a record from a file
+    function csvImport(elm) {
+        var sendRequest = true;
+        xhr = $J.ajax({
+            type : 'post',
+            data : $J('#frmImport, #frmImport2').serialize(),
+            url  : elm.attr('action'),
+            beforeSend: function() {
+                $J('.import_step2 .actions').hide();
+                $J('.import_step2 .ajax_loading').show();
+                $J('#step2').fadeOut(function(){
+                    $J('#step3').fadeIn('slow');
+                });
+            },
+            success: function(data) {
+                getUploadProcess();
+            }
+        });
+    }
+
+    // To show a upload progress bar when uploading a data
+    function getUploadProcess() {
+        var fileUrl = $J('#fileUri').val();
+        xhr = $J.ajax({
+            dataType: 'json',
+            url     : 'index.php?cmd=Crm&act=settings&tpl=interface&subTpl=getprogress&file=' + fileUrl,
+            success : function (data) {
+                totalRecord = totalRows + 1;
+                var percent = (data.processedRows / totalRecord) * 100;
+                progress(percent, $J('#progressBar'));
+                $J('#progressDetails .processed').text(data.processedRows);
+                $J('#progressDetails .total').text(totalRecord);
+                $J('#progressDetails .imported').text(data.importedRows);
+                $J('#progressDetails .skiped').text(data.skippedRows);
+                $J('#progressDetails').show();
+                if (parseInt(data.processedRows) < parseInt(totalRecord)) {
+                    csvImport($J('#frmImport2'));
+                } else {
+                    $J('#cancelled').addClass('disabled');
+                    $J('#Done').removeClass('disabled');
+                    $J('#cancelled').attr('disabled', 'disabled');
+                    $J('#Done').removeAttr('disabled');
+                }
+            }
+        });
+    }
+
     $J.ajax({
         dataType: "json",
         url     : "index.php?cmd=Crm&act=settings&tpl=interface&subTpl=importoptions",
@@ -199,34 +221,15 @@ $J(function(){
             });
         }
     });
-    $J("#cancelled").live('click', function(){
+    $J('#cancelled').live('click', function(){
         xhr.abort();
-        clearInterval(refreshIntervalId);
-        $J("#cancelled").addClass("disabled");
-        $J("#Done").removeClass("disabled");
-        $J("#cancelled").attr("disabled", "disabled");
-        $J("#Done").removeAttr("disabled");
+        $J('#cancelled').addClass('disabled');
+        $J('#Done').removeClass('disabled');
+        $J('#cancelled').attr('disabled', 'disabled');
+        $J('#Done').removeAttr('disabled');
     });
 });
-function getUploadProcess() {
-    fileUrl = $J('#fileUri').val();
-    if (fileUrl != '') {
-        $J.ajax({
-            dataType: "json",
-            url     : "index.php?cmd=Crm&act=settings&tpl=interface&subTpl=getprogress&file="+fileUrl,
-            success : function (data) {
-                var percent = (data.totalRows / totalRows) * 100;
-                progress(percent, $J('#progressBar'));
-                $J("#progressDetails .processed").text(data.totalRows);
-                $J("#progressDetails .total").text(totalRows);
-                $J("#progressDetails .imported").text(data.importedRows);
-                $J("#progressDetails .skiped").text(data.skippedRows);
-                $J("#progressDetails").show();
-            }
-        });
-    }
 
-}
 function progress(percent, $element) {
     percent = Math.round(percent);
     var progressBarWidth = percent * $element.width() / 100;

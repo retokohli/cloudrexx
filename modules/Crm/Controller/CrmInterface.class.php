@@ -781,7 +781,9 @@ class CrmInterface extends CrmLibrary
         $fileName       = isset ($_POST['fileUri']) ? \FWValidator::getCleanFileName(contrexx_input2raw($_POST['fileUri'])) : '';
         $objFWUser      = \FWUser::getFWUserObject();
 
-        $_SESSION[$fileName] = array();
+        if (empty($_SESSION[$fileName])) {
+            $_SESSION[$fileName] = array();
+        }
 
         $importOptions = array_column($this->getImportOptions(), 'value');
         foreach ($_POST['crm_contact_option_base'] as $colId => $value) {
@@ -793,15 +795,19 @@ class CrmInterface extends CrmLibrary
         if (isset($firstname) || isset($lastname) || isset($company)) {
             $this->contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
 
-            $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
-            $line          = $objCsv->NextLine();
-            $first         = true;
-            $totalLines    = 0;
-            $importedLines = 0;
-            $skipedLines   = 0;
-            while ($line) {
-                session_start();
-                $_SESSION[$fileName]['totalRows'] = $totalLines;
+            $objCsv         = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+            $csv2Array      = $objCsv->Csv2Array();
+            $splittedRows   = array_chunk($csv2Array, 10);
+            $index          = $_SESSION[$fileName]['index'] ?? 0;
+            $first          = $_SESSION[$fileName]['ignoreFirstRow'] ?? true;
+            $processedLines = $_SESSION[$fileName]['processedRows'] ?? 0;
+            $importedLines  = $_SESSION[$fileName]['importedRows'] ?? 0;
+            $skipedLines    = $_SESSION[$fileName]['skippedRows'] ?? 0;
+
+            $lines = $splittedRows[$index];
+            $_SESSION[$fileName]['index'] = $index + 1;
+
+            foreach ($lines as $line) {
                 if (!$first || !$csvIgnoreFirst) {
                     $this->contact->clean();
                     $this->contact->contactType = !empty($line[$firstname]) || !empty($line[$lastname])
@@ -1007,20 +1013,24 @@ class CrmInterface extends CrmLibrary
                             $skipedLines++;
                             $_SESSION[$fileName]['skippedRows'] = $skipedLines;
                         }
+                    } else {
+                        $skipedLines++;
+                        $_SESSION[$fileName]['skippedRows'] = $skipedLines;
                     }
+                } else {
+                    $skipedLines++;
+                    $_SESSION[$fileName]['skippedRows'] = $skipedLines;
                 }
-                $totalLines++;
+                $processedLines++;
+                $_SESSION[$fileName]['processedRows'] = $processedLines;
                 $first = false;
-                $line = $objCsv->NextLine();
-                session_write_close();
-                echo '    ';
             }
-            if (!$line) {
-                echo $json['success'] = 'Record Imported Successfully.';
-            }
+            echo $json['success'] = 'Record Imported Successfully.';
         } else {
             echo $json['error'] = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
         }
+
+        $_SESSION[$fileName]['ignoreFirstRow'] = $first;
 
         exit();
     }
@@ -1178,11 +1188,10 @@ class CrmInterface extends CrmLibrary
         $json = array();
         if (!empty($file)) {
             if (isset($_SESSION[$file])) {
-                $json['totalRows'] = isset ($_SESSION[$file]['totalRows']) ? $_SESSION[$file]['totalRows'] : 0;
-                $json['skippedRows'] = isset ($_SESSION[$file]['skippedRows']) ? $_SESSION[$file]['skippedRows'] : 0;
-                $json['importedRows'] = isset ($_SESSION[$file]['importedRows']) ? $_SESSION[$file]['importedRows'] : 0;
+                $json['processedRows']    = $_SESSION[$file]['processedRows'] ?? 0;
+                $json['skippedRows']      = $_SESSION[$file]['skippedRows'] ?? 0;
+                $json['importedRows']     = $_SESSION[$file]['importedRows'] ?? 0;
                 $json['percentCompleted'] = 100;
-
             } else {
                 $json['error'] = "File import not yet started";
             }
