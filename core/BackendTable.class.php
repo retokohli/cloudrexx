@@ -458,15 +458,10 @@ class BackendTable extends HTML_Table {
         $params = $editUrl->getParamArray();
         $showParams = $showUrl->getParamArray();
         $editId = '';
-        $showId = '';
         if (!empty($params['editid'])) {
             $editId = $params['editid'] . ',';
         }
-        if (!empty($showParams['showId'])) {
-            $showId = $showParams['showId'] . ',';
-        }
         $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
-        $showId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
 
         /* We use json to do the action callback. So all callbacks are functions in the json controller of the
          * corresponding component. The 'else if' is for backwards compatibility so you can declare the function
@@ -484,19 +479,18 @@ class BackendTable extends HTML_Table {
                 array(
                     'rowData' => $rowData,
                     'editId' => $editId,
-                    'showId' => $showId,
                 )
             );
             if ($jsonResult['status'] == 'success') {
                 $code .= $jsonResult["data"];
             }
         } else if (isset($functions['actions']) && is_callable($functions['actions'])) {
-            $code .= $functions['actions']($rowData, $editId, $showId);
+            $code .= $functions['actions']($rowData, $editId);
         }
 
         if(!$virtual){
             if (isset($functions['show']) && $functions['show']) {
-                $showUrl->setParam('showid', $showId);
+                $showUrl->setParam('showid', $editId);
                 //remove the parameter 'vg_increment_number' from editUrl
                 //if the baseUrl contains the parameter 'vg_increment_number
                 if (isset($params['vg_increment_number'])) {
