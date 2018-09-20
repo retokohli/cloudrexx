@@ -208,7 +208,6 @@ class FormGenerator {
                     $element = $this->getDataElementGroup($field, $dataElement, $fieldOptions);
                 }
                 $tab->addChild($element);
-                //$this->form->addChild($element);
             }
             if (isset($options['cancelUrl'])) {
                 $this->form->cancelUrl = $options['cancelUrl'];
