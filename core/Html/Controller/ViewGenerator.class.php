@@ -918,7 +918,6 @@ class ViewGenerator {
                     // fetch default value of entity's field
                     if ($entityObject->getFieldValue($object, $field) !== null) {
                         $renderArray[$field] = $entityObject->getFieldValue($object, $field);
-
                         continue;
                     }
                     $renderArray[$field] = '';
