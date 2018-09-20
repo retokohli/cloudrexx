@@ -77,25 +77,24 @@ class BackendTable extends HTML_Table {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if ($entityClass != 'array') {
+            try {
+                $entityObject = \Env::get('em')->getClassMetadata($entityClass);
 
-        try {
-            $entityObject = \Env::get('em')->getClassMetadata($entityClass);
-        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-            return;
-        }
-
-        $entityColumnNames = $entityObject->getColumnNames();
-        $primaryKeyNames = $entityObject->getIdentifierFieldNames();
-        foreach($entityColumnNames as $column) {
-            $field = $entityObject->getFieldName($column);
-            if (in_array($field, $primaryKeyNames)) {
-                continue;
+                $entityColumnNames = $entityObject->getColumnNames();
+                $primaryKeyNames = $entityObject->getIdentifierFieldNames();
+                foreach ($entityColumnNames as $column) {
+                    $field = $entityObject->getFieldName($column);
+                    if (in_array($field, $primaryKeyNames)) {
+                        continue;
+                    }
+                    $fieldDefinition = $entityObject->getFieldMapping($field);
+                    $options[$field]['type'] = $fieldDefinition['type'];
+                }
+            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+                \Message::add($e->getMessage());
             }
-            $fieldDefinition = $entityObject->getFieldMapping($field);
-            $options[$field]['type'] = $fieldDefinition['type'];
         }
-
-
         if (!empty($options['functions']['editable'])) {
             $this->editable = true;
         }
@@ -133,6 +132,8 @@ class BackendTable extends HTML_Table {
             $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
                           ? $sortBy['pagingPosition']
                           : '';
+            $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, true);
+
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -182,8 +183,6 @@ class BackendTable extends HTML_Table {
                     }
 
                     if (isset($options['fields'][$header]['editable'])) {
-
-                        $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, true);
                         $data = $formGenerator->getDataElement($header, $header .'-'. $rowname, $type, 0, $data, $options, 0);
 
                         $encode = false;
