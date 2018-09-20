@@ -231,7 +231,8 @@ class FormGenerator {
      * This function returns the DataElement
      *
      * @param string $name name of the DataElement
-     * @param string $title title of the DataElement
+     * @param string $title used title instead of name if html tag should not
+     *                      be called like the attribute
      * @param string $type type of the DataElement
      * @param int $length length of the DataElement
      * @param mixed $value value of the DataElement
