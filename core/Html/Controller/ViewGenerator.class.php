@@ -631,7 +631,9 @@ class ViewGenerator {
      * @return int 0 if no entry was found
      */
     protected function getEntryId() {
-        if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
+        if (!isset($_GET['editid']) && !isset($_POST['editid'])
+            && !isset($_GET['showid']) && !isset($_POST['showid'])
+        ) {
             return 0;
         }
         if (isset($_GET['editid'])) {
@@ -639,6 +641,12 @@ class ViewGenerator {
         }
         if (isset($_POST['editid'])) {
             return $this->getVgParam($_POST['editid']);
+        }
+        if (isset($_GET['showid'])) {
+            return $this->getVgParam($_GET['showid']);
+        }
+        if (isset($_POST['showid'])) {
+            return $this->getVgParam($_POST['showid']);
         }
     }
 
@@ -693,9 +701,8 @@ class ViewGenerator {
         }
 
         $entityId = $this->getEntryId();
-
 	    if(!empty($_GET['showid'])) {
-	        return $this->renderFormForEntry(3, true);
+	        return $this->renderFormForEntry($entityId, true);
 	    }
 
         $template = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
