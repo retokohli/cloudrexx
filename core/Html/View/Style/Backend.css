@@ -30,7 +30,7 @@ a.edit {
 }
 
 a.show {
-    background-image: url(../Media/show.gif);
+    background-image: url(/core/Core/View/Media/icons/details.gif);
     display: inline-block;
     height: 16px;
     width: 16px;
