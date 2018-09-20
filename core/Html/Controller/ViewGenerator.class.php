@@ -766,10 +766,6 @@ class ViewGenerator {
                 foreach ($renderObject as $rowname => $rows) {
                     foreach ($rows as $header => $data) {
                         $attr[$header] = $_POST[$header . '-' . $rowname];
-                        // So that the data is already displayed correctly after the update
-                      //  $newRenderArray = $renderObject->toArray();
-                    //    $newRenderArray[$rowname][$header] = $_POST[$header . '-' . $rowname];
-                    //    $renderObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($newRenderArray);
                     }
                     $entries[$rowname] = $attr;
                 }
