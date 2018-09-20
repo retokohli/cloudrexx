@@ -160,7 +160,7 @@ $J(function(){
         return false;
     });
 
-    // To import a record from a file
+    // Initialize the csv import process
     function csvImport(elm) {
         var sendRequest = true;
         xhr = $J.ajax({
@@ -180,7 +180,7 @@ $J(function(){
         });
     }
 
-    // To show a upload progress bar when uploading a data
+    // Display the progress bar with completed percentage
     function getUploadProcess() {
         var fileUrl = $J('#fileUri').val();
         xhr = $J.ajax({
