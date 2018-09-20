@@ -53,8 +53,19 @@ class TableGenerator extends \BackendTable
      */
     public function __construct($attrs = array(), $options = array())
     {
+        global $_ARRAYLANG;
+
+        // Rename Key Fields
+        foreach ($attrs as $rowname=>$row) {
+            $newRowName = $rowname;
+            if (isset($_ARRAYLANG[$rowname])) {
+                $newRowName = $_ARRAYLANG[$rowname];
+            }
+            $rows[$newRowName] = $row;
+        }
+
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
-            array('key' => array_keys($attrs), 'value' => array_values($attrs))
+            array('key' => array_keys($rows), 'value' => array_values($rows))
         );
         $options['fields']['key']['sorting'] = false;
         $options['fields']['value']['sorting'] = false;

@@ -108,12 +108,6 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
-                    if ($detail && $header == 'key') {
-                        if (isset($_ARRAYLANG[$data])) {
-                            $data = $_ARRAYLANG[$data];
-                        }
-                    }
-
                     if (!empty($sortingKey) && $header === $sortingKey) {
                         //Add the additional attribute id, for getting the updated sort order after the row sorting
                         $this->updateRowAttributes($row, array('id' => 'sorting' . $entity . '_' . $data), true);
