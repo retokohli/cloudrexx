@@ -65,11 +65,10 @@ class EsiWidgetController
             $livecam = new \Cx\Modules\Livecam\Controller\LivecamLibrary();
             $camSettings = $livecam->getCamSettings();
             // Take default livecam 1 when no cmd is set
-            if (empty($params['page']->getCmd())
-                || $params['page']->getModule() != 'Livecam'
+            $camId = 1;
+            if (!empty($params['page']->getCmd())
+                && $params['page']->getModule() == 'Livecam'
             ) {
-                $camId = 1;
-            } else {
                 $camId = $params['page']->getCmd();
             }
 
