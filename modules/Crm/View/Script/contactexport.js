@@ -134,8 +134,10 @@ $J(function(){
                     }
                     if ($J("#mapCSVColumn tr.matched").length) {
                         $J("#import_data").removeClass("disabled");
+                        $J('#import_data').removeAttr('disabled');
                     } else {
                         $J("#import_data").addClass("disabled");
+                        $J('#import_data').attr('disabled', 'disabled');
                     }
                 });
 
@@ -160,34 +162,23 @@ $J(function(){
         return false;
     });
 
-    // Initialize the csv import process
+    // Initialize the csv import process and show progress bar with complete percentage
     function csvImport(elm) {
         var sendRequest = true;
         xhr = $J.ajax({
             type : 'post',
             data : $J('#frmImport, #frmImport2').serialize(),
             url  : elm.attr('action'),
-            beforeSend: function() {
+            dataType : 'json',
+            beforeSend : function() {
                 $J('.import_step2 .actions').hide();
                 $J('.import_step2 .ajax_loading').show();
                 $J('#step2').fadeOut(function(){
                     $J('#step3').fadeIn('slow');
                 });
             },
-            success: function(data) {
-                getUploadProcess();
-            }
-        });
-    }
-
-    // Display the progress bar with completed percentage
-    function getUploadProcess() {
-        var fileUrl = $J('#fileUri').val();
-        xhr = $J.ajax({
-            dataType: 'json',
-            url     : 'index.php?cmd=Crm&act=settings&tpl=interface&subTpl=getprogress&file=' + fileUrl,
-            success : function (data) {
-                totalRecord = totalRows + 1;
+            success : function(data) {
+                var totalRecord = totalRows + 1;
                 var percent = (data.processedRows / totalRecord) * 100;
                 progress(percent, $J('#progressBar'));
                 $J('#progressDetails .processed').text(data.processedRows);
@@ -195,9 +186,10 @@ $J(function(){
                 $J('#progressDetails .imported').text(data.importedRows);
                 $J('#progressDetails .skiped').text(data.skippedRows);
                 $J('#progressDetails').show();
-                if (parseInt(data.processedRows) < parseInt(totalRecord)) {
+                if ((data.processedRows !== 0) && (data.processedRows < totalRecord)) {
                     csvImport($J('#frmImport2'));
                 } else {
+                    $J('#importMsg').text(data.importMsg);
                     $J('#cancelled').addClass('disabled');
                     $J('#Done').removeClass('disabled');
                     $J('#cancelled').attr('disabled', 'disabled');
