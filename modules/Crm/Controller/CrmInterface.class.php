@@ -1029,7 +1029,7 @@ class CrmInterface extends CrmLibrary
                 $line  = $objCsv->NextLine();
                 if ($i == $processRowCnt) {
                     $_SESSION[$fileName]['ignoreFirstRow'] = $first;
-                    $this->sendCsvResponse($fileName, true);
+                    $this->sendCsvImportResponse($fileName, true);
                 }
                 $i++;
             }
@@ -1038,7 +1038,7 @@ class CrmInterface extends CrmLibrary
             $importStatus = false;
         }
 
-        $this->sendCsvResponse($fileName, $importStatus);
+        $this->sendCsvImportResponse($fileName, $importStatus);
     }
 
     /**
@@ -1188,7 +1188,7 @@ class CrmInterface extends CrmLibrary
      * @param string  $fileName     File name
      * @param boolean $importStatus If true set a succcess message otherwise error message
      */
-    public function sendCsvResponse($fileName, $importStatus)
+    public function sendCsvImportResponse($fileName, $importStatus)
     {
         global $_ARRAYLANG;
 
