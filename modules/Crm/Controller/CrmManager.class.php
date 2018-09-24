@@ -2891,9 +2891,6 @@ END;
         case 'getCsvRecord':
                 $this->crmInterfaceController->getCsvRecord();
             break;
-        case 'getprogress':
-                $this->crmInterfaceController->getFileImportProgress();
-            break;
         case 'import':
         default:
                 $this->crmInterfaceController->showImport();
