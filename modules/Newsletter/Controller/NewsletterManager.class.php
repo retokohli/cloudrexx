@@ -3599,7 +3599,8 @@ class NewsletterManager extends NewsletterLib
 
         // lets prepare all links for tracker before we replace placeholders
 // TODO: migrate tracker to new URL-format
-        $content_text = self::prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], $userData['type']);
+        $langId = $this->getRecipientLocaleIdByRecipientId($userData['id'], $userData['type']);
+        $content_text = self::prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], $userData['type'], $langId);
 
         $search = array(
             '[[email]]',

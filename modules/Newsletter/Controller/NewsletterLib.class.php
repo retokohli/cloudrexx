@@ -233,6 +233,59 @@ class NewsletterLib
     }
 
     /**
+     * Returns the Language ID for a newsletter recipient
+     *
+     * If the recipients's preferred language can not be found, the default
+     * language ID is returned.
+     *
+     * @param integer $id   id of the recipient or the linked access/crm user
+     * @param string  $type User type (see constants)
+     * @return integer Language ID
+     */
+    public function getRecipientLocaleIdByRecipientId($id, $type) {
+        global $objDatabase;
+
+        $userLanguage = \FWLanguage::getDefaultLangId();
+        switch ($type) {
+            case self::USER_TYPE_CORE:
+            case self::USER_TYPE_ACCESS:
+                // get user's language by email
+                $user = \FWUser::getFWUserObject()->objUser->getUsers(
+                    array('id' => $id)
+                );
+                if ($user && $user->getFrontendLanguage()) {
+                    $userLanguage = $user->getFrontendLanguage();
+                }
+                break;
+            case self::USER_TYPE_CRM:
+                $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                $crmUser->load($id);
+
+                if ($crmUser && $crmUser->contact_language) {
+                    $userLanguage = $crmUser->contact_language;
+                }
+                break;
+            case self::USER_TYPE_NEWSLETTER:
+            default:
+                // get user's language by email
+                $query = '
+                    SELECT
+                        `language`
+                    FROM
+                        `' . DBPREFIX . 'module_newsletter_user`
+                    WHERE
+                        `id` = \'' . contrexx_raw2db($id) . '\'
+                ';
+                $result = $objDatabase->Execute($query);
+                if (!empty($result->fields['language'])) {
+                    $userLanguage = $result->fields['language'];
+                }
+                break;
+        }
+        return $userLanguage;
+    }
+
+    /**
      * Return the count of recipients of a list
      *
      * @author      Stefan Heinemann <sh@adfinis.com>
@@ -913,7 +966,7 @@ class NewsletterLib
         return true;
     }
 
-    protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $recipientType)
+    protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $recipientType, $langId = null)
     {
         global $objDatabase;
 
@@ -990,7 +1043,7 @@ class NewsletterLib
                             $protocol = \Env::get('config')['forceProtocolFrontend'];
                         }
                         $newUrl = \Cx\Core\Routing\Url::fromDocumentRoot(
-                            $arrParameters, null, $protocol)->toString();
+                            $arrParameters, $langId, $protocol)->toString();
                         $matches[$attrKey][$i] = preg_replace(
                             "/href\s*=\s*(['\"]).*?\\1/i",
                             "href=\"".$newUrl."\"", $matches[$attrKey][$i]);
