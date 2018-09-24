@@ -770,7 +770,7 @@ class CrmInterface extends CrmLibrary
      */
     function saveCsvData()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_LANGID;
 
         $json = array();
 
@@ -795,7 +795,6 @@ class CrmInterface extends CrmLibrary
         $processedLines = $_SESSION[$fileName]['processedRows'] ?? 0;
         $importedLines  = $_SESSION[$fileName]['importedRows'] ?? 0;
         $skipedLines    = $_SESSION[$fileName]['skippedRows'] ?? 0;
-        $importMsg      = '';
         if (isset($firstname) || isset($lastname) || isset($company)) {
             $this->contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
 
@@ -1030,30 +1029,16 @@ class CrmInterface extends CrmLibrary
                 $line  = $objCsv->NextLine();
                 if ($i == $processRowCnt) {
                     $_SESSION[$fileName]['ignoreFirstRow'] = $first;
-                    $json = array(
-                        'processedRows' => $processedLines,
-                        'skippedRows'   => $skipedLines,
-                        'importedRows'  => $importedLines,
-                        'importMsg'     => $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_SUCCESS']
-                    );
-                    echo json_encode($json);
-                    exit();
+                    $this->sendCsvResponse($fileName, true);
                 }
                 $i++;
             }
-            $importMsg = $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_SUCCESS'];
+            $importStatus = true;
         } else {
-            $importMsg = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
+            $importStatus = false;
         }
 
-        $json = array(
-            'processedRows' => $processedLines,
-            'skippedRows'   => $skipedLines,
-            'importedRows'  => $importedLines,
-            'importMsg'     => $importMsg
-        );
-        echo json_encode($json);
-        exit();
+        $this->sendCsvResponse($fileName, $importStatus);
     }
 
     /**
@@ -1195,5 +1180,30 @@ class CrmInterface extends CrmLibrary
 
         return (int) $objResult->fields['id'];
 
+    }
+
+    /**
+     * Send a response for csv import
+     *
+     * @param string  $fileName     File name
+     * @param boolean $importStatus If true set a succcess message otherwise error message
+     */
+    public function sendCsvResponse($fileName, $importStatus)
+    {
+        global $_ARRAYLANG;
+
+        $message = $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_SUCCESS'];
+        if (!$importStatus) {
+            $message = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
+        }
+
+        $json = array(
+            'processedRows' => $_SESSION[$fileName]['processedRows'] ?? 0,
+            'skippedRows'   => $_SESSION[$fileName]['skippedRows'] ?? 0,
+            'importedRows'  => $_SESSION[$fileName]['importedRows'] ?? 0,
+            'importMsg'     => $message
+        );
+        echo json_encode($json);
+        exit();
     }
 }
