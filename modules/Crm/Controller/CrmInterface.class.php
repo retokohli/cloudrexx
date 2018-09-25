@@ -815,18 +815,18 @@ class CrmInterface extends CrmLibrary
 
             $i = 1;
             while ($line) {
-                if ($i <= $processedLines) {
-                    $i++;
-                    $line = $objCsv->NextLine();
-                    continue;
-                }
-
                 if (!$this->checkMemoryLimit()) {
                     $this->sendCsvImportResponse(
                         $fileName,
                         'error',
                         $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_MEMORY_ERROR']
-                    );
+                        );
+                }
+
+                if ($i <= $processedLines) {
+                    $i++;
+                    $line = $objCsv->NextLine();
+                    continue;
                 }
 
                 if (!$first || !$csvIgnoreFirst) {
@@ -1215,8 +1215,6 @@ class CrmInterface extends CrmLibrary
      */
     public function sendCsvImportResponse($fileName, $importStatus, $importMsg)
     {
-        global $_ARRAYLANG;
-
         $json = array(
             'status'        => $importStatus,
             'message'       => $importMsg,
