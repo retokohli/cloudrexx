@@ -3702,8 +3702,8 @@ class NewsletterManager extends NewsletterLib
 
         // Set HTML height and width attributes for img-tags
         $allImgsWithHeightOrWidth = array();
-        preg_match_all('/<img[^>]*style=(["\'])[^\1]*(?:width|height):\s*[^;\1]+;?\s*[^\1]*\1[^>]*>/', $NewsletterBody, $allImgsWithHeightOrWidth);
-        foreach ($allImgsWithHeightOrWidth as $img) {
+        preg_match_all('/<img[^>]+>/', $NewsletterBody, $allImgsWithHeightOrWidth);
+        foreach ($allImgsWithHeightOrWidth[0] as $img) {
             $htmlHeight = $this->getAttributeOfTag($img, 'img', 'height');
             $htmlWidth = $this->getAttributeOfTag($img, 'img', 'width');
             // no need to proceed if attributes are already set
@@ -3712,7 +3712,19 @@ class NewsletterManager extends NewsletterLib
             }
 
             $cssHeight = $this->getCssAttributeOfTag($img, 'img', 'height');
+            if (strpos($cssHeight, 'px') !== false) {
+                $cssHeight = str_replace('px', '', $cssHeight);
+            } else {
+                $cssHeight = '';
+            }
+
             $cssWidth = $this->getCssAttributeOfTag($img, 'img', 'width');
+            if (strpos($cssWidth, 'px') !== false) {
+                $cssWidth = str_replace('px', '', $cssWidth);
+            } else {
+                $cssWidth = '';
+            }
+
             // no need to proceed if we have no values to set
             if (empty($cssHeight) && empty($cssWidth)) {
                 continue;
@@ -3760,7 +3772,7 @@ class NewsletterManager extends NewsletterLib
         $count = 0;
         $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=(["\']))[^\2]*/', '\1' . $attributeValue, $html, -1, $count);
         if ($count == 0) {
-            $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*)(\/?>)/U', '\1 ' . $attributeName . '="' . $attributeValue . '"\s\2', $html);
+            $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*)(\/?>)/U', '\1 ' . $attributeName . '="' . $attributeValue . '" \2', $html);
         }
         return $html;
     }
