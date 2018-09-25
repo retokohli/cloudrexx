@@ -1227,9 +1227,11 @@ class CrmInterface extends CrmLibrary
     }
 
     /**
-     * Check memory limit
+     * This method checks the required memory is available for the import process
+     * if not then it will try to increase the memory limit.
      *
-     * @return boolean
+     * @return boolean True if memory limit is greater than required memory,
+     *                 otherwise false if unable to set a memory limit
      */
     public function checkMemoryLimit()
     {
