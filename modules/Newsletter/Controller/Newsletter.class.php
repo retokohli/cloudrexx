@@ -1409,7 +1409,6 @@ class Newsletter extends NewsletterLib
         $profileUrl = '';
         $unsubscribeUrl = '';
         $recipientId = 0;
-        $realUser = true;
         if (isset($_GET['m'])) {
             $recipientId = contrexx_input2raw($_GET['m']);
             $recipientType = NewsletterLib::USER_TYPE_NEWSLETTER;
