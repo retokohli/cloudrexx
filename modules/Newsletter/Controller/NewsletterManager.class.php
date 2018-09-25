@@ -983,6 +983,8 @@ class NewsletterManager extends NewsletterLib
             $this->_objTpl->hideBlock('associatedGroupToolTipBeforeSend');
             $this->_objTpl->touchBlock('crmMembershipFilterToolTipAfterSent');
             $this->_objTpl->hideBlock('crmMembershipFilterToolTipBeforeSend');
+            $this->_objTpl->touchBlock('crmMembershipAssociatedToolTipAfterSend');
+            $this->_objTpl->hideBlock('crmMembershipAssociatedToolTipBeforeSend');
 
             $this->_objTpl->setVariable(array(
                 'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'],
@@ -997,6 +999,10 @@ class NewsletterManager extends NewsletterLib
             $this->_objTpl->hideBlock('associatedListToolTip');
             $this->_objTpl->hideBlock('associatedGroupToolTipAfterSent');
             $this->_objTpl->touchBlock('associatedGroupToolTipBeforeSend');
+            $this->_objTpl->hideBlock('crmMembershipFilterToolTipAfterSent');
+            $this->_objTpl->touchBlock('crmMembershipFilterToolTipBeforeSend');
+            $this->_objTpl->hideBlock('crmMembershipAssociatedToolTipAfterSend');
+            $this->_objTpl->touchBlock('crmMembershipAssociatedToolTipBeforeSend');
         }
 
         // Mediabrowser
