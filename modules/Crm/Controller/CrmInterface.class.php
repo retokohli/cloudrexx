@@ -1247,6 +1247,7 @@ class CrmInterface extends CrmLibrary
             if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
                 return false;
             }
+            $this->memoryLimit = $potentialRequiredMemory;
         }
 
         return true;
