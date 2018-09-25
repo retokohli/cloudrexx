@@ -782,8 +782,6 @@ class CrmInterface extends CrmLibrary
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
 
-        $json = array();
-
         $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
         $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
         $csvIgnoreFirst = isset ($_POST['ignore_first']) && contrexx_input2int($_POST['ignore_first']);
