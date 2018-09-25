@@ -260,7 +260,7 @@ class Newsletter extends NewsletterLib
                         break;
                 }
 
-                $url = $_SERVER['SERVER_NAME'];
+                $url = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl()->getDomain();
                 $arrMailTemplate = array(
                     'key'          => 'confirm_email',
                     'section'      => 'Newsletter',
@@ -890,7 +890,7 @@ class Newsletter extends NewsletterLib
             WHERE `email` = "'. contrexx_raw2db($recipientEmail) .'"'
         );
 
-        $url = $_SERVER['SERVER_NAME'];
+        $url = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl()->getDomain();
         $now = date(ASCMS_DATE_FORMAT);
 
         $arrMailTemplate = array(
