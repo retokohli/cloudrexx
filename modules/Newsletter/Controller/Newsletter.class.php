@@ -414,17 +414,17 @@ class Newsletter extends NewsletterLib
         $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
 
         $captchaOk = true;
-        if (
-            !$isAuthenticatedUser &&
-            isset($recipientAttributeStatus['captcha']) &&
-            $recipientAttributeStatus['captcha']['active']
-        ) {
-            if (!\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()) {
-                $captchaOk = false;
-                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_CAPTCHA']);
-            }
-        }
         if (isset($_POST['recipient_save'])) {
+            if (
+                !$isAuthenticatedUser &&
+                isset($recipientAttributeStatus['captcha']) &&
+                $recipientAttributeStatus['captcha']['active']
+            ) {
+                if (!\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()) {
+                    $captchaOk = false;
+                    array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_CAPTCHA']);
+                }
+            }
             if (isset($_POST['email'])) {
                 $recipientEmail = $_POST['email'];
             }
