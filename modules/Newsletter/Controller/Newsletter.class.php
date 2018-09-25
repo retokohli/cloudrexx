@@ -1411,19 +1411,19 @@ class Newsletter extends NewsletterLib
         $unsubscribeUrl = '';
         $recipientId = 0;
         if (isset($_GET['m'])) {
-            $recipientId = contrexx_input2raw($_GET['m']);
+            $recipientId = intval($_GET['m']);
             $recipientType = NewsletterLib::USER_TYPE_NEWSLETTER;
         } else if (isset($_GET['r'])) {
-            $recipientId = contrexx_input2raw($_GET['r']);
+            $recipientId = intval($_GET['r']);
             $recipientType = NewsletterLib::USER_TYPE_ACCESS;
         } else if (isset($_GET['c'])) {
-            $recipientId = contrexx_input2raw($_GET['c']);
+            $recipientId = intval($_GET['c']);
             $recipientType = NewsletterLib::USER_TYPE_CRM;
         } else {
             return false;
         }
-        $emailId = isset($_GET['n']) ? contrexx_input2raw($_GET['n']) : 0;
-        $linkId = isset($_GET['l']) ? contrexx_input2raw($_GET['l']) : 0;
+        $emailId = isset($_GET['n']) ? intval($_GET['n']) : 0;
+        $linkId = isset($_GET['l']) ? intval($_GET['l']) : 0;
 
         if (!empty($recipientId)) {
             // find out recipient type
