@@ -820,7 +820,7 @@ class CrmInterface extends CrmLibrary
                         $fileName,
                         'error',
                         $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_MEMORY_ERROR']
-                        );
+                    );
                 }
 
                 if ($i <= $processedLines) {
