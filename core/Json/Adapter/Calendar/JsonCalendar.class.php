@@ -129,21 +129,21 @@ class JsonCalendar implements JsonAdapter {
         // 2.) load crm users
         $invited = $params['get']['invite_crm_memberships'];
         $excluded = $params['get']['excluded_crm_memberships'];
-        $event->invitedCrmGroups = is_array($invited) ? $invited : array();
-        $event->excludedCrmGroups = is_array($excluded) ? $excluded : array();
+        $event->invitedCrmGroups = is_array($invited) ? contrexx_input2int($invited) : array();
+        $event->excludedCrmGroups = is_array($excluded) ? contrexx_input2int($excluded) : array();
 
         // 3.) load emails which were entered manually
         $event->invitedMails = $params['get']['invitedMails'];
 
         // get the send to filter
-        $send_invitation_to = $params['get']['sendMailTo'];
+        $sendInvitationTo = $params['get']['sendMailTo'];
         $calendarManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
         $recipientsCount = $calendarManager->getSendMailRecipientsCount(
             \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION,
             $event,
             0,
             null,
-            $send_invitation_to
+            $sendInvitationTo
         );
         return $recipientsCount;
     }

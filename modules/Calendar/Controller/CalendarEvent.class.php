@@ -1223,7 +1223,7 @@ class CalendarEvent extends CalendarLibrary
         $excludedCrmGroups         = isset($data['calendar_event_excluded_crm_memberships']) ? join(',', $data['calendar_event_excluded_crm_memberships']) : '';
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;
-        $send_invitation_to         = isset($data['sendMailTo']) ? contrexx_input2raw($data['sendMailTo']) : CalendarMailManager::MAIL_INVITATION_TO_ALL;
+        $sendInvitationTo         = isset($data['sendMailTo']) ? contrexx_input2raw($data['sendMailTo']) : CalendarMailManager::MAIL_INVITATION_TO_ALL;
         $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : array();
         $registration              =   isset($data['registration']) && in_array($data['registration'], array(self::EVENT_REGISTRATION_NONE, self::EVENT_REGISTRATION_INTERNAL, self::EVENT_REGISTRATION_EXTERNAL))
                                      ? intval($data['registration']) : 0;
@@ -1721,7 +1721,7 @@ class CalendarEvent extends CalendarLibrary
                 \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION,
                 null,
                 $invitationTemplate,
-                $send_invitation_to
+                $sendInvitationTo
             );
         }
         foreach ($event->getInvite() as $invite) {
