@@ -569,7 +569,7 @@ class Newsletter extends NewsletterLib
                                     } else {
                                         $unsub = $_ARRAYLANG['TXT_UNSUBSCRIBE'];
                                         if(isset($_REQUEST['code']) && isset($_REQUEST['mail'])) {
-                                            $nm = new \Cx\Modules\Newsletter\Controller\NewsletterManager();
+                                            $nm = new \Cx\Modules\Newsletter\Controller\NewsletterLib();
                                             $unsub = $nm->GetUnsubscribeURL($_REQUEST['code'], $_REQUEST['mail']);
                                         }
                                         array_push($arrStatusMessage['error'], sprintf($_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_IF_ONLY_ONE_LIST_ACTIVE'], $unsub));
@@ -1271,7 +1271,9 @@ class Newsletter extends NewsletterLib
             // subscription
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
             '[[unsubscribe]]',
+            '[[unsubscribe_url]]',
             '[[profile_setup]]',
+            '[[profile_setup_url]]',
 
             // profile data
             '[[sex]]',
@@ -1304,6 +1306,8 @@ class Newsletter extends NewsletterLib
             // subscription
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
             // > do empty placeholder
+            '',
+            '',
             '',
             '',
 
@@ -1402,6 +1406,8 @@ class Newsletter extends NewsletterLib
     {
         global $objDatabase;
 
+        $profileUrl = '';
+        $unsubscribeUrl = '';
         $recipientId = 0;
         $realUser = true;
         if (isset($_GET['m'])) {
@@ -1469,6 +1475,68 @@ class Newsletter extends NewsletterLib
             ";
             $objDatabase->Execute($query);
         }
+
+        if (!empty($recipientType)) {
+            $code = null;
+            $email = null;
+            // code taken from NewsletterManager::getNewsletterUserData()
+            switch ($recipientType) {
+                case self::USER_TYPE_ACCESS:
+                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($id);
+                    if (!$objUser) {
+                        break;
+                    }
+                    $email = $objUser->getEmail();
+                    $query = "
+                        SELECT code
+                          FROM ".DBPREFIX."module_newsletter_access_user
+                         WHERE accessUserID = $recipientId";
+                    $result = $objDatabase->SelectLimit($query, 1);
+                    if ($result && !$result->EOF) {
+                        $code = $result->fields['code'];
+                    }
+                    break;
+
+                case self::USER_TYPE_CORE:
+                case self::USER_TYPE_CRM:
+                    break;
+
+                case self::USER_TYPE_NEWSLETTER:
+                default:
+                    $query = "
+                        SELECT code, email
+                          FROM ".DBPREFIX."module_newsletter_user
+                         WHERE id=$recipientId";
+                    $result = $objDatabase->Execute($query);
+                    if ($result && !$result->EOF) {
+                        $code = $result->fields['code'];
+                        $email = $result->fields['email'];
+                    }
+                    break;
+
+            }
+
+            if (!empty($code) && !empty($email)) {
+                $nm = new \Cx\Modules\Newsletter\Controller\NewsletterLib();
+                $profileUrl = $nm->GetProfileURL($code, $email, $recipientType, false);
+                $unsubscribeUrl = $nm->GetUnsubscribeURL($code, $email, $recipientType, false);
+            }
+        }
+
+        $arrPlaceholders = array(
+            '[[profile_setup_url]]' => $profileUrl,
+            '[[unsubscribe_url]]'   => $unsubscribeUrl,
+        );
+        $url = str_replace(
+            array_keys($arrPlaceholders),
+            $arrPlaceholders,
+            $url
+        );
+
+        if (empty($url)) {
+            $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error');
+        }
+
         \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$url);
         exit;
     }

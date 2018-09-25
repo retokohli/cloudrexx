@@ -3654,14 +3654,18 @@ class NewsletterManager extends NewsletterLib
         $search = array(
             '[[display_in_browser_url]]',
             '[[profile_setup]]',
+            '[[profile_setup_url]]',
             '[[unsubscribe]]',
+            '[[unsubscribe_url]]',
             '[[date]]',
             '[[subject]]',
         );
         $replace = array(
             $browserViewUrl,
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
+            $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type'], false),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
+            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type'], false),
             date(ASCMS_DATE_FORMAT_DATE),
             $subject,
         );
@@ -3940,82 +3944,6 @@ class NewsletterManager extends NewsletterLib
 
         return $arrUserData;
     }
-
-
-    /**
-     * Get the URL to the page to unsubscribe
-     */
-    public function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
-    {
-        global $_ARRAYLANG, $_CONFIG;
-
-        if (
-            $type == self::USER_TYPE_CORE ||
-            $type == self::USER_TYPE_CRM
-        ) {
-            // recipients that will receive the newsletter through the selection of their user group don't have a profile
-            return '';
-        }
-
-        $cmd = '';
-        switch ($type) {
-            case self::USER_TYPE_ACCESS:
-                $cmd = 'profile';
-                break;
-
-            case self::USER_TYPE_NEWSLETTER:
-            default:
-                $cmd = 'unsubscribe';
-                break;
-        }
-
-        $unsubscribeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
-            'Newsletter',
-            $cmd,
-            $this->getUsersPreferredLanguageId(
-                $email,
-                $type
-            ),
-            array(
-                'code' => $code,
-                'mail' => urlencode($email),
-            )
-        );
-
-        return '<a href="'.$unsubscribeUrl->toString().'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
-    }
-
-
-    /**
-     * Return link to the profile of a user
-     */
-    function GetProfileURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
-    {
-        global $_ARRAYLANG;
-
-        if (
-            $type == self::USER_TYPE_CORE ||
-            $type == self::USER_TYPE_CRM
-        ) {
-            // recipients that will receive the newsletter through the selection of their user group don't have a profile
-            return '';
-        }
-
-        $profileUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
-            'Newsletter',
-            'profile',
-            $this->getUsersPreferredLanguageId(
-                $email,
-                $type
-            ),
-            array(
-                'code' => $code,
-                'mail' => urlencode($email),
-            )
-        );
-        return '<a href="'.$profileUrl->toString().'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
-    }
-
 
     /**
      * Parse the news section

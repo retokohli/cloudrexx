@@ -185,6 +185,88 @@ class NewsletterLib
     }
 
     /**
+     * Get the URL to the page to unsubscribe
+     */
+    public function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER, $htmlTag = true)
+    {
+        global $_ARRAYLANG;
+
+        if (
+            $type == self::USER_TYPE_CORE ||
+            $type == self::USER_TYPE_CRM
+        ) {
+            // recipients that will receive the newsletter through the selection of their user group don't have a profile
+            return '';
+        }
+
+        $cmd = '';
+        switch ($type) {
+            case self::USER_TYPE_ACCESS:
+                $cmd = 'profile';
+                break;
+
+            case self::USER_TYPE_NEWSLETTER:
+            default:
+                $cmd = 'unsubscribe';
+                break;
+        }
+
+        $unsubscribeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            $cmd,
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
+
+        if ($htmlTag) {
+            return '<a href="'.$unsubscribeUrl->toString().'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+        } else {
+            return $unsubscribeUrl->toString();
+        }
+    }
+
+
+    /**
+     * Return link to the profile of a user
+     */
+    function GetProfileURL($code, $email, $type = self::USER_TYPE_NEWSLETTER, $htmlTag = true)
+    {
+        global $_ARRAYLANG;
+
+        if (
+            $type == self::USER_TYPE_CORE ||
+            $type == self::USER_TYPE_CRM
+        ) {
+            // recipients that will receive the newsletter through the selection of their user group don't have a profile
+            return '';
+        }
+
+        $profileUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            'profile',
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
+        if ($htmlTag) {
+            return '<a href="'.$profileUrl->toString().'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+        } else {
+            return $profileUrl->toString();
+        }
+    }
+
+    /**
      * Returns the Language ID for a newsletter user
      *
      * If the user's preferred language can not be found, the default language
