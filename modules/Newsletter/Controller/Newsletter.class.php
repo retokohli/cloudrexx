@@ -1348,7 +1348,8 @@ class Newsletter extends NewsletterLib
             $userType = self::USER_TYPE_NEWSLETTER;
         } 
 
-        $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $userType);
+        $langId = FRONTEND_LANG_ID;
+        $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $userType, $langId);
 
         // Finally replace content placeholder in the template.
         $html = str_replace('[[content]]', $content, $html);
