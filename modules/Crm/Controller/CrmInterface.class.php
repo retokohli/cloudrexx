@@ -56,6 +56,11 @@ namespace Cx\Modules\Crm\Controller;
 class CrmInterface extends CrmLibrary
 {
     /**
+     * constant MiB2 2megabytes
+     */
+    const MiB2 = 2097152;
+
+    /**
      * delimiter
      *
      * @access private
@@ -111,6 +116,11 @@ class CrmInterface extends CrmLibrary
      * @var object
      */
     public $_objTpl;
+
+    /**
+     * @var integer
+     */
+    protected $memoryLimit;
 
     /**
      * php 5.3 contructor
@@ -770,7 +780,7 @@ class CrmInterface extends CrmLibrary
      */
     function saveCsvData()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase, $_LANGID, $_ARRAYLANG;
 
         $json = array();
 
@@ -809,6 +819,14 @@ class CrmInterface extends CrmLibrary
                     $i++;
                     $line = $objCsv->NextLine();
                     continue;
+                }
+
+                if (!$this->checkMemoryLimit()) {
+                    $this->sendCsvImportResponse(
+                        $fileName,
+                        'error',
+                        $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_MEMORY_ERROR']
+                    );
                 }
 
                 if (!$first || !$csvIgnoreFirst) {
@@ -1029,16 +1047,22 @@ class CrmInterface extends CrmLibrary
                 $line  = $objCsv->NextLine();
                 if ($i == $processRowCnt) {
                     $_SESSION[$fileName]['ignoreFirstRow'] = $first;
-                    $this->sendCsvImportResponse($fileName, true);
+                    $this->sendCsvImportResponse(
+                        $fileName,
+                        'success',
+                        $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_SUCCESS']
+                    );
                 }
                 $i++;
             }
-            $importStatus = true;
+            $importStatus = 'success';
+            $importMsg    = $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_SUCCESS'];
         } else {
-            $importStatus = false;
+            $importStatus = 'error';
+            $importMsg    = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
         }
 
-        $this->sendCsvImportResponse($fileName, $importStatus);
+        $this->sendCsvImportResponse($fileName, $importStatus, $importMsg);
     }
 
     /**
@@ -1185,25 +1209,46 @@ class CrmInterface extends CrmLibrary
     /**
      * Send a response for csv import
      *
-     * @param string  $fileName     File name
-     * @param boolean $importStatus If true set a succcess message otherwise error message
+     * @param string $fileName     File name
+     * @param string $importStatus Import status success or error
+     * @param String $importMsg    Import message
      */
-    public function sendCsvImportResponse($fileName, $importStatus)
+    public function sendCsvImportResponse($fileName, $importStatus, $importMsg)
     {
         global $_ARRAYLANG;
 
-        $message = $_ARRAYLANG['TXT_CRM_SETTINGS_INTERFACE_IMPORT_SUCCESS'];
-        if (!$importStatus) {
-            $message = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
-        }
-
         $json = array(
+            'status'        => $importStatus,
+            'message'       => $importMsg,
             'processedRows' => $_SESSION[$fileName]['processedRows'] ?? 0,
             'skippedRows'   => $_SESSION[$fileName]['skippedRows'] ?? 0,
-            'importedRows'  => $_SESSION[$fileName]['importedRows'] ?? 0,
-            'importMsg'     => $message
+            'importedRows'  => $_SESSION[$fileName]['importedRows'] ?? 0
         );
         echo json_encode($json);
         exit();
+    }
+
+    /**
+     * Check memory limit
+     *
+     * @return boolean
+     */
+    public function checkMemoryLimit()
+    {
+        if (empty($this->memoryLimit)) {
+            $memoryLimit = \FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
+            //if memory limit is empty then set default php memory limit of 8MiBytes
+            $this->memoryLimit = !empty($memoryLimit) ? $memoryLimit : self::MiB2 * 4;
+        }
+
+        $potentialRequiredMemory = memory_get_usage() + self::MiB2;
+        if ($potentialRequiredMemory > $this->memoryLimit) {
+            // try to set a higher memory_limit
+            if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

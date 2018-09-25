@@ -186,10 +186,10 @@ $J(function(){
                 $J('#progressDetails .imported').text(data.importedRows);
                 $J('#progressDetails .skiped').text(data.skippedRows);
                 $J('#progressDetails').show();
-                if ((data.processedRows !== 0) && (data.processedRows < totalRecord)) {
+                if ((data.status == 'success') && (data.processedRows < totalRecord)) {
                     csvImport($J('#frmImport2'));
                 } else {
-                    $J('#importMsg').text(data.importMsg);
+                    $J('#importMsg').text(data.message);
                     $J('#cancelled').addClass('disabled');
                     $J('#Done').removeClass('disabled');
                     $J('#cancelled').attr('disabled', 'disabled');
