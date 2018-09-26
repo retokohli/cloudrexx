@@ -6715,7 +6715,7 @@ function MultiAction() {
             'NEWS_DATE' => date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['newsdate']),
             'NEWS_LONG_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['newsdate']),
             'NEWS_TITLE' => contrexx_raw2xhtml($newstitle),
-            'NEWS_URL' => $newslink,
+            'NEWS_URL' => $newsUrl,
             'NEWS_TEASER_TEXT' => $newsteasertext,
             'NEWS_TEXT' => $newstext,
             'NEWS_AUTHOR' => $author,
