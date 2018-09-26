@@ -981,7 +981,7 @@ class CacheLib
             if(strpos($key, $this->getCachePrefix()) !== false){
                 if (
                     !empty($pattern) &&
-                    !preg_match('/' . preg_quote($pattern) . '/', $key)
+                    !preg_match('/' . $pattern . '/', $key)
                 ) {
                     continue;
                 }
