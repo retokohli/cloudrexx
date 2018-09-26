@@ -150,7 +150,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Request URL
-         * @var \Cx\Core\Routing\Url
+         * @var \Cx\Core\Routing\Model\Entity\Request
          */
         protected $request = null;
 
@@ -1086,7 +1086,7 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
+                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?' . self::FOLDER_NAME_COMMAND_MODE . '(?:[?/\#]|$)#', $_GET['__cap'])) {
                         $this->mode = self::MODE_COMMAND;
                         return;
                     }
@@ -2372,7 +2372,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the request URL
-         * @return \Cx\Core\Routing\Url Request URL
+         * @return \Cx\Core\Routing\Model\Entity\Request
          */
         public function getRequest() {
             return $this->request;

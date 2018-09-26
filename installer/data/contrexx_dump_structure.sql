@@ -1136,7 +1136,7 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   `contact_customer` int(11) DEFAULT NULL,
   `contact_language` int(11) DEFAULT NULL,
   `gender` tinyint(2) NOT NULL,
-  `salutation` int(11) NOT NULL,
+  `salutation` int(11) NOT NULL DEFAULT '0',
   `notes` text,
   `industry_type` int(11) DEFAULT NULL,
   `contact_type` tinyint(2) DEFAULT NULL,
