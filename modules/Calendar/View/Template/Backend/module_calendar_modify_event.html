@@ -213,6 +213,10 @@
         if(calendarXhr != null){
             calendarXhr.abort();
         }
+
+        // add loading animation
+        cx.jQuery("#recipientsCount").html("<img src=\"" + cx.variables.get('basePath', 'contrexx') + "lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" />");
+
         // parse selected access user groups
         var selectedGroups = new Array();
         cx.jQuery('#selectedGroups option').each(function() {
@@ -1397,7 +1401,7 @@
                 <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
                 <td width="1%">
                     <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
-                    ({TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT}  <p style="display: inline-block;" id="recipientsCount"></p>)
+                    ({TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT}  <div style="display: inline-block;" id="recipientsCount"></div>)
                 </td>
                 <td>
                     <div class="invitationEmailTemplateContainer" style="display: none;">
