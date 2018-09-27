@@ -1148,6 +1148,7 @@ class CalendarEventManager extends CalendarLibrary
         //     - or if there are still free places available
         $registrationOpen = true;
         $regLinkTarget = '_self';
+        $regLinkSrcQueryString = '';
         if ((
                 // event registration is handled by external app
                 // and it hasn't been marked as booked out yet
@@ -1208,7 +1209,9 @@ class CalendarEventManager extends CalendarLibrary
                     $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_RANDOM] = $inviteRandom;
                 }
 
-                $regLinkSrc = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params)->toString();
+                $regLinkUrl = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params);
+                $regLinkSrc = $regLinkUrl->toString();
+                $regLinkSrcQueryString = $regLinkUrl->getSuggestedParams();
             }
             $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
         } else {
@@ -1225,6 +1228,7 @@ class CalendarEventManager extends CalendarLibrary
         $objTpl->setVariable(array(
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK'        => $regLink,
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_SRC'    => $regLinkSrc,
+            $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_SRC_QUERY_STRING' => $regLinkSrcQueryString,
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_TARGET' => $regLinkTarget,
         ));
         if ($objTpl->blockExists('calendarEventRegistrationOpen')) {
