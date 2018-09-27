@@ -635,7 +635,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             case 2:
                 //Frontend View
                 if(!empty($this->arrEntries)) {
-                    foreach ($this->arrEntries as $key => $arrEntry) {
+                    foreach ($this->arrEntries as $arrEntry) {
                         if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                             $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
                             $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
