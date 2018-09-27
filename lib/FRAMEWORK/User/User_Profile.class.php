@@ -295,7 +295,7 @@ class User_Profile
     /**
      * Load custom attribute profile data
      *
-     * Gets the data of the custom profile attributes from the database an puts it into the class variables $this->arrLoadedusers and $this->arrCachedUsers.
+     * Gets the data of the custom profile attributes from the database an puts it into the class variables $this->arrLoadedUsers and $this->arrCachedUsers.
      * On the other hand it fills the class variables $this->arrAttributeHistories and $this->arrUpdataedAttributeHistories with the history IDs of each attribute.
      * Returns FALSE if a database error had occurred, otherwise TRUE.
      *
