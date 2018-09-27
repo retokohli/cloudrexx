@@ -140,6 +140,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $nr = 0;
+            $objUser->objAttribute->first();
             while (!$objUser->objAttribute->EOF) {
                 $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
                 if ($objAttribute->checkReadPermission()) {
