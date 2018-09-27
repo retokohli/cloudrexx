@@ -253,8 +253,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $sortPlaceholderPrefix = $this->modulePrefix.'SORT_';
 
         // filter out special placeholders that identify sort flags
-        $sortPlaceholders = preg_grep('/^' . $sortPlaceholderPrefix . '/', $placeholders);
-        $sortFlags = preg_filter('/^' . $sortPlaceholderPrefix . '/', '', $sortPlaceholders);
+        $sortFlags = preg_filter('/^' . $sortPlaceholderPrefix . '/', '', $placeholders);
 
         $sortBy = array();
         foreach ($sortFlags as $sortFlag) {
