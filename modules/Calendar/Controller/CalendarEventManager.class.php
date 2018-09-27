@@ -1148,6 +1148,7 @@ class CalendarEventManager extends CalendarLibrary
         //     - or if there are still free places available
         $registrationOpen = true;
         $regLinkTarget = '_self';
+        $regLinkSrcQueryString = '';
         if ((
                 // event registration is handled by external app
                 // and it hasn't been marked as booked out yet
@@ -1167,11 +1168,9 @@ class CalendarEventManager extends CalendarLibrary
         ) {
             if ($event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL) {
                 $regLinkSrc = \FWValidator::getUrl($event->registrationExternalLink);
-                $regLinkSrcQueryString = '';
                 $regLinkTarget = '_blank';
             } elseif ($hostUri) {
                 $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$event->id.'&amp;date='.$event->startDate->getTimestamp();
-                $regLinkSrcQueryString = '';
             } else {
                 $params = array(
                     'id'    => $event->id,
@@ -1218,7 +1217,6 @@ class CalendarEventManager extends CalendarLibrary
         } else {
             $regLink          = '<i>' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] . '</i>';
             $regLinkSrc       = '';
-            $regLinkSrcQueryString = '';
             $registrationOpen = false;
         }
 
