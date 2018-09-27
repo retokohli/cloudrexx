@@ -361,7 +361,7 @@ class Newsletter extends NewsletterLib
         $recipientBirthday = '';
         $recipientLanguage = '';
         $recipientStatus = 0;
-        $requestedMail = isset($_GET['mail']) ? contrexx_input2raw(urldecode($_GET['mail'])) : (isset($_POST['mail']) ? contrexx_input2raw($_POST['mail']) : '');
+        $requestedMail = isset($_GET['mail']) ? contrexx_input2raw($_GET['mail']) : (isset($_POST['mail']) ? contrexx_input2raw($_POST['mail']) : '');
         $arrAssociatedLists = array();
         $arrPreAssociatedInactiveLists = array();
         $code = isset($_REQUEST['code']) ? contrexx_addslashes($_REQUEST['code']) : '';
@@ -641,7 +641,7 @@ class Newsletter extends NewsletterLib
         } elseif ($isNewsletterRecipient) {
             $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, salutation, title, lastname, firstname, position, company, industry_sector, address, zip, city, country_id, phone_office, phone_private, phone_mobile, fax, notes, birthday, status, language FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
-                $recipientEmail = urldecode($_REQUEST['mail']);
+                $recipientEmail = contrexx_input2raw($_REQUEST['mail']);
                 $recipientUri = $objRecipient->fields['uri'];
                 $recipientSex = $objRecipient->fields['sex'];
                 $recipientSalutation = $objRecipient->fields['salutation'];
