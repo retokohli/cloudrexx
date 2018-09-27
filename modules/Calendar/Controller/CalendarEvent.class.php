@@ -1267,14 +1267,15 @@ class CalendarEvent extends CalendarLibrary
             }
         }
 
+        $validUriScheme = '%^(?:(?:ftp|http|https)://|\[\[|//)%';
         if (!empty($placeWebsite)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeWebsite)) {
+            if (!preg_match($validUriScheme, $placeWebsite)) {
                 $placeWebsite = "http://".$placeWebsite;
             }
         }
 
         if (!empty($placeLink)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
+            if (!preg_match($validUriScheme, $placeLink)) {
                 $placeLink = "http://".$placeLink;
             }
         }
@@ -1299,13 +1300,13 @@ class CalendarEvent extends CalendarLibrary
         $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2raw($data['organizerEmail']) : '';
 
         if (!empty($orgWebsite)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgWebsite)) {
+            if (!preg_match($validUriScheme, $orgWebsite)) {
                 $orgWebsite = "http://".$orgWebsite;
             }
         }
 
         if (!empty($orgLink)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgLink)) {
+            if (!preg_match($validUriScheme, $orgLink)) {
                 $orgLink = "http://".$orgLink;
             }
         }
