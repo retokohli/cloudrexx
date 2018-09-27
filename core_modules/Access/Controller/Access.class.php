@@ -470,6 +470,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $this->attachJavaScriptFunction('accessSetWebsite');
 
+        $this->_objTpl->setGlobalVariable(array(
+            'ACCESS_USER_ID'  => $objFWUser->objUser->getId(),
+        ));
+
         $this->_objTpl->setVariable(array(
             'ACCESS_DELETE_ACCOUNT_BUTTON'  => '<input type="submit" name="access_delete_account" value="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'].'" />',
             'ACCESS_USER_PASSWORD_INPUT'    => '<input type="password" name="access_user_password" />',
