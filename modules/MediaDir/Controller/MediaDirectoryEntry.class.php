@@ -687,7 +687,28 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->setVariable(array(
                                     'MEDIADIR_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
                                 ));
-                                }
+                            }
+
+                            if (
+                                $objTpl->blockExists(
+                                    $this->moduleNameLC . 'EntryRelatedList'
+                                ) && (
+                                    $this->countEntries() == 1 ||
+                                    $this->intLimitEnd == 1
+                                )
+                            ) {
+                                // parse related entries
+                                $objEntry = new MediaDirectoryEntry($this->moduleName);
+                                $objMediadir = new MediaDirectory('', $this->moduleName);
+                                $objMediadir->parseRelatedEntries(
+                                    $objTpl,
+                                    $objEntry,
+                                    $arrEntry['entryId'],
+                                    $this->intCatId,
+                                    $this->intLevelId,
+                                    'Entry'
+                                );
+                            }
 
                             if($this->arrSettings['settingsAllowVotes']) {
                                 $objVoting = new MediaDirectoryVoting($this->moduleName);
