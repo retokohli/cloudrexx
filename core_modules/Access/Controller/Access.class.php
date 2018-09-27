@@ -248,6 +248,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $userFilter = array('AND' => array());
         $userFilter['AND'][] = array('active' => true);
+        $profileFilter = array();
+
+        $limit = $_CONFIG['corePagingLimit'];
+        if ($this->_objTpl->placeholderExists($this->modulePrefix . 'LIMIT_OFF')) {
+            $limit = null;
+        }
 
         if (isset($_REQUEST['profile_filter']) && is_array($_REQUEST['profile_filter'])) {
             $profileFilter = $_REQUEST['profile_filter'];
@@ -275,10 +281,23 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objFWUser = \FWUser::getFWUserObject();
         $objGroup = $objFWUser->objGroup->getGroup($groupId);
-        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
+        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $limit, $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
-            if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+            if ($limit && $userCount > $limit) {
+                $params = '';
+                if ($groupId) {
+                    $params .= '&groupId='.$groupId;
+                }
+                if (count($search)) {
+                    $params .= '&search='.htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET);
+                }
+                if ($usernameFilter) {
+                    $params .= '&username_filter='.$usernameFilter;
+                }
+                if (count($profileFilter)) {
+                    $params .= '&'.http_build_query(array('profile_filter' => $profileFilter));
+                }
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, $params, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
