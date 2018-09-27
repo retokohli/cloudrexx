@@ -237,7 +237,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $groupId = !empty($groupId) ? $groupId : (isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0);
+        if (empty($groupId)) {
+            $groupId = isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0;
+        }
+
         $search = isset($_REQUEST['search']) && !empty($_REQUEST['search']) ? preg_split('#\s+#', $_REQUEST['search']) : array();
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
