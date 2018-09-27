@@ -329,8 +329,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $this->_objTpl->parse('access_members');
+            if ($this->_objTpl->blockExists('access_no_members')) {
+                $this->_objTpl->hideBlock('access_no_members');
+            }
         } else {
             $this->_objTpl->hideBlock('access_members');
+            if ($this->_objTpl->blockExists('access_no_members')) {
+                $this->_objTpl->touchBlock('access_no_members');
+            }
         }
     }
 
