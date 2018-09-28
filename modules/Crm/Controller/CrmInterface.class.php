@@ -1211,7 +1211,7 @@ class CrmInterface extends CrmLibrary
      * @param string $importStatus Import status success or error
      * @param String $importMsg    Import message
      */
-    public function sendCsvImportResponse($fileName, $importStatus, $importMsg)
+    protected function sendCsvImportResponse($fileName, $importStatus, $importMsg)
     {
         $json = array(
             'status'        => $importStatus,
@@ -1231,7 +1231,7 @@ class CrmInterface extends CrmLibrary
      * @return boolean True if memory limit is greater than required memory,
      *                 otherwise false if unable to set a memory limit
      */
-    public function checkMemoryLimit()
+    protected function checkMemoryLimit()
     {
         if (empty($this->memoryLimit)) {
             $memoryLimit = \FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
