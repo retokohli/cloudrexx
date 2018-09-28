@@ -291,7 +291,19 @@ class Newsletter extends NewsletterLib
         $this->_objTpl->setTemplate($this->pageContent);
         $message = '';
 
-        if (($objUser = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE code='".contrexx_addslashes($_REQUEST['code'])."' AND email='".urldecode(contrexx_addslashes($_REQUEST['mail']))."' AND status='1'", 1)) && $objUser->RecordCount() == 1) {
+
+        if (
+            !isset($_REQUEST['mail']) ||
+            !isset($_REQUEST['code'])
+        ) {
+            $message = '<span class="text-danger">'.$_ARRAYLANG['TXT_AUTHENTICATION_FAILED'].'</span>';
+            $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $message);
+            return;
+        }
+        $requestedMail = contrexx_input2raw($_REQUEST['mail']);
+        $code = contrexx_input2raw($_REQUEST['code']);
+
+        if (($objUser = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE code='".contrexx_raw2db($code)."' AND email='".contrexx_raw2db($requestedMail)."' AND status='1'", 1)) && $objUser->RecordCount() == 1) {
             $objSystem = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings`");
             if ($objSystem !== false) {
                 while (!$objSystem->EOF) {
