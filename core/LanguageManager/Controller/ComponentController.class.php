@@ -304,11 +304,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $widgetController = $this->getComponent('Widget');
 
+        $listProtectedPages = \Cx\Core\Setting\Controller\Setting::getValue(
+            'coreListProtectedPages',
+            'Config'
+        ) == 'on';
+
         $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
             $this,
             'locale_navbar',
             \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
         );
+
+        if ($listProtectedPages) {
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+            );
+        }
+
         $widgetController->registerWidget(
             $widget
         );
