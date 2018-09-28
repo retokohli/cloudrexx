@@ -244,7 +244,12 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 } elseif (!empty($objResult->fields['teaser_image_path'])) {
                     $image = $objResult->fields['teaser_image_path'];
                 } else {
-                    $image = ASCMS_CORE_MODULE_WEB_PATH.'/News/View/Media/pixel.gif';
+                    // get (customized) default image
+                    $news = $cx->getComponent('News');
+                    $componentDir = $news->getDirectory();
+                    $defaultImage = $componentDir . '/View/Media/pixel.gif';
+                    $cl = $cx->getClassLoader();
+                    $image = $cl->getWebFilePath($defaultImage);
                 }
                 $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
                 $this->arrTeasers[$objResult->fields['id']] = array(
@@ -398,7 +403,15 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
         if (isset($this->arrTeaserFrameTemplates[$templateId]['html'])) {
             $teaserFrame = $this->arrTeaserFrameTemplates[$templateId]['html'];
             if (preg_match_all('/<!-- BEGIN (teaser_[0-9]+) -->/ms', $teaserFrame, $arrTeaserBlocks)) {
-                $funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
+                $funcSort = function ($a, $b) {
+                    $aNr = preg_replace('/^[^_]+_/', '', $a);
+                    $bNr = preg_replace('/^[^_]+_/', '', $b);
+                    if ($aNr == $bNr) {
+                        return 0;
+                    }
+
+                    return ($aNr < $bNr) ? -1 : 1;
+                };
                 usort($arrTeaserBlocks[0], $funcSort);
                 usort($arrTeaserBlocks[1], $funcSort);
                 $arrMatch = array();
@@ -430,6 +443,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_DATE}', date(ASCMS_DATE_FORMAT_DATE, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_TIME}', date(ASCMS_DATE_FORMAT_TIME, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_TIMESTAMP}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_TITLE}', contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_MORE}', $_CORELANG['TXT_READ_MORE'], $teaserBlockCode);
                         if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {

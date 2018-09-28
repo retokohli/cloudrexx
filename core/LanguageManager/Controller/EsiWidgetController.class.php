@@ -131,12 +131,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             preg_match(
                 '/^LANG_SELECTED_([A-Z]{1,2}(?:_[A-Z]{2,4})?)$/',
                 $name,
-                $matches
+                $matches // E.g., "FR_CH"
             )
         ) {
             $selected = '';
-            $localeCode = str_replace('-', '_',$params['locale']->getShortForm());
-            if ($matches[1] === strtoupper($localeCode)) {
+            $langCode = $params['locale']->getShortForm(); // E.g., "fr-CH"
+            if (str_replace('_', '-', $matches[1]) === strtoupper($langCode)) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);

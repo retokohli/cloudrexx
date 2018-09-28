@@ -227,7 +227,12 @@ class User_Profile
                 $newValue = !isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]);
                 if ($newValue || $value != $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]) {
                     $value = '"' . contrexx_raw2db($value) . '"';
-                    if ($attributeId == 'title' && $value == '"0"') {
+                    if (
+                        $attributeId == 'title' && (
+                            $value == '""' ||
+                            $value == '"0"'
+                        )
+                    ) {
                         $value = 'NULL';
                     }
                     $query = $this->objAttribute->isCoreAttribute($attributeId) ?
@@ -290,7 +295,7 @@ class User_Profile
     /**
      * Load custom attribute profile data
      *
-     * Gets the data of the custom profile attributes from the database an puts it into the class variables $this->arrLoadedusers and $this->arrCachedUsers.
+     * Gets the data of the custom profile attributes from the database an puts it into the class variables $this->arrLoadedUsers and $this->arrCachedUsers.
      * On the other hand it fills the class variables $this->arrAttributeHistories and $this->arrUpdataedAttributeHistories with the history IDs of each attribute.
      * Returns FALSE if a database error had occurred, otherwise TRUE.
      *
@@ -366,9 +371,23 @@ class User_Profile
 
                     case 'title':
                     case 'country':
-                        $arrConditions[] = '(tblP.`'.$attribute.'` = '.(is_array($condition) ? implode(' OR tblP.`'.$attribute.'` = ',
-                            array_map(create_function('$condition', 'if (preg_match(\'#([0-9]+)#\', $condition, $pattern)) {return $pattern[0];} else {return 0;}'), $condition))
-                            : (preg_match('#([0-9]+)#', $condition, $pattern) ? $pattern[0] : 0)).')';
+                        $arrConditions[] = '(tblP.`' . $attribute . '` = ' . (
+                            is_array($condition)
+                                ? implode(
+                                    ' OR tblP.`' . $attribute . '` = ',
+                                    array_map(
+                                        function ($condition) {
+                                            if (preg_match('#([0-9]+)#', $condition, $pattern)) {
+                                                return $pattern[0];
+                                            }
+
+                                            return 0;
+                                        },
+                                        $condition
+                                    )
+                                )
+                                : (preg_match('#([0-9]+)#', $condition, $pattern) ? $pattern[0] : 0)
+                        ) . ')';
                         break;
 
                     default:
@@ -461,9 +480,19 @@ class User_Profile
      *                                      then its value will be used as
      *                                      prefix for the table alias of the
      *                                      SQL statement.
+     * @param   boolean $uniqueJoins Whether the filter arguments shall be
+     *                               joined by separate unique JOINs or by
+     *                               a single common JOIN statement.
+     * @param   integer $joinIdx     The current index used for separate
+     *                               unique JOINs.
      * @return  array                   The array of SQL snippets
      */
-    protected function parseCustomAttributeFilterConditions($arrFilter, $forceTableIdx = null)
+    protected function parseCustomAttributeFilterConditions(
+        $arrFilter,
+        $forceTableIdx = null,
+        $uniqueJoins = true,
+        &$joinIdx = 0
+    )
     {
         if (empty($this->objAttribute)) {
             $this->initAttributes();
@@ -478,7 +507,7 @@ class User_Profile
             if ($forceTableIdx) {
                 $tableIdx = $forceTableIdx;
             } else {
-                $tableIdx = $attribute;
+                $tableIdx = 'tblExp' . $joinIdx;
             }
 
             switch ($this->objAttribute->getDataType()) {
@@ -486,26 +515,38 @@ class User_Profile
                     $percent = '%';
                     if (   !is_array($condition)
                         && strpos('%', $condition) !== false) $percent = '';
-                    $arrConditions['tblA_' . $tableIdx] =
-                        "tblA_$tableIdx.`attribute_id` = ".$attribute.
-                        " AND (tblA_$tableIdx.`value` LIKE '$percent".
+                    $arrConditions[$tableIdx] =
+                        $tableIdx.".`attribute_id` = ".$attribute.
+                        " AND (".$tableIdx.".`value` LIKE '$percent".
                         (is_array($condition)
-                          ? implode("$percent' OR tblA_$tableIdx.`value` LIKE '$percent",
+                          ? implode("$percent' OR ".$tableIdx.".`value` LIKE '$percent",
                                 array_map('addslashes', $condition))
                           : addslashes($condition))."$percent')";
                     break;
 
                 case 'int':
-                    $arrConditions['tblA_' . $tableIdx] = "tblA_$tableIdx.`attribute_id` = ".$attribute." AND (tblA_$tableIdx.`value` = '".(is_array($condition) ? implode("' OR tblA_$tableIdx.`value` = '", array_map('intval', $condition)) : intval($condition))."')";
+                    $arrConditions[$tableIdx] = $tableIdx.".`attribute_id` = ".$attribute." AND (".$tableIdx.".`value` = '".(is_array($condition) ? implode("' OR ".$tableIdx.".`value` = '", array_map('intval', $condition)) : intval($condition))."')";
                     break;
                 case 'array':
                     if (count($this->objAttribute->getChildren())) {
                         foreach ($this->objAttribute->getChildren() as $childAttributeId) {
                             $arrSubFilter[$childAttributeId] = $condition;
                         }
-                        $arrConditions['tblA_' . $tableIdx] = implode(' OR ', $this->parseCustomAttributeFilterConditions($arrSubFilter, $tableIdx));
+                        $arrConditions[$tableIdx] = implode(
+                            ' OR ',
+                            $this->parseCustomAttributeFilterConditions(
+                                $arrSubFilter,
+                                $tableIdx,
+                                $uniqueJoins,
+                                $joinIdx
+                            )
+                        );
                     }
                     break;
+            }
+
+            if ($uniqueJoins) {
+                $joinIdx++;
             }
         }
 

@@ -154,11 +154,31 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if (!$cachedLocaleData) {
             $this->arrPageContent += $this->selectBestLanguageFromRequest($cx);
         } else {
-            $this->arrPageContent['locale'] = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
-                $cx,
-                $cachedLocaleData
-            );
+            $requestedLocale = '';
+            // fetch locale from requested url
+            if (
+                count($cachedLocaleData['Hashtables']['IdByCode']) > 1 ||
+                $_CONFIG['useVirtualLanguageDirectories'] != 'off'
+            ) {
+                $requestUrl = new \Cx\Lib\Net\Model\Entity\Url($this->currentUrl);
+                $requestedLocale = current($requestUrl->getPathParts());
+            }
+
+            if (
+                !empty($requestedLocale) &&
+                isset($cachedLocaleData['Hashtables']['IdByCode'][$requestedLocale])
+            ) {
+                // use locale from requested url
+                $this->arrPageContent['locale'] = $cachedLocaleData['Hashtables']['IdByCode'][$requestedLocale];
+            } else {
+                // select locale based on user agent
+                $this->arrPageContent['locale'] = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+                    $cx,
+                    $cachedLocaleData
+                );
+            }
         }
+
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
@@ -265,13 +285,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'strftime' => function($args) use ($cx) {
                 // Notes:
                 //   This function does not support the ESI dynamic function
-                //   modifiers %E, %O and %+.
-                //   This function does yet implement locales.
-                //   Therefore, the return value of locale specific format
-                //   parameters is unknown.
-                //   If you need locale specific parameters, do implement
-                //   an EsiWidget for it. For reference see EsiWidget
-                //   DATE of DateTime component
+                //   modifiers %c, %E, %O, %x, %X and %+.
 
                 $time = time();
                 $format = '';
@@ -291,7 +305,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 }
                 $format = trim($format, '\'');
 
-                return strftime($format, $time);
+                // TODO: drop this code as soon as strftime of DateTime
+                // component does no longer need any locale info.
+                $locale = '';
+                $cachedLocaleData = $this->getCachedLocaleData();
+                if (in_array($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode'])) {
+                    $locale = array_search($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode']);
+                }
+                // end of TODO
+                return \Cx\Core\DateTime\Controller\ComponentController::strftime(
+                    $format,
+                    $time,
+                    $locale
+                );
             },
         );
 
