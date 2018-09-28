@@ -72,6 +72,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             ) == 'on';
 
             foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                $languageCode = $lang['iso1'];
                 $langId = $lang['id'];
                 $lang = $lang['lang'];
                 $langPage = $currentPage->getNode()->getPage($langId);
@@ -92,6 +93,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 ) {
                     continue;
                 }
+
                 $template->setVariable(
                     array(
                         'PAGE_LINK' => contrexx_raw2xhtml(
@@ -99,10 +101,9 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                         ),
                         'PAGE_TITLE' => contrexx_raw2xhtml($langPage->getTitle()),
                         'LOCALE' => $lang,
-                        'LANGUAGE_CODE' => $params['locale']->getShortForm(),
+                        'LANGUAGE_CODE' => $languageCode,
                     )
                 );
-
                 if ($lang == $params['locale']->getShortForm()) {
                     $template->touchBlock('current_locale');
                 }
@@ -125,6 +126,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         $matches = null;
+
         if (
             preg_match(
                 '/^LANG_SELECTED_([A-Z]{1,2}(?:_[A-Z]{2,4})?)$/',
@@ -133,8 +135,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             )
         ) {
             $selected = '';
-            $langCode = $params['locale']->getShortForm();
-            if ($matches[1] === strtoupper($langCode)) {
+            $localeCode = str_replace('-', '_',$params['locale']->getShortForm());
+            if ($matches[1] === strtoupper($localeCode)) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);
