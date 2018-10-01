@@ -148,12 +148,28 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'actions'       => function($rowData, $rowId) {
                             global $_CORELANG;
                             static $mainDomainName;
+                            $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                             if (empty($mainDomainName)) {
-                                $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                                 $mainDomainName = $domainRepository->getMainDomain()->getName();
                             }
 
                             preg_match_all('/\d+/', $rowId, $ids, null, 0);
+
+                            // hostname's ID is 0
+                            try {
+                                if (
+                                    !$ids[0][1] ||
+                                    $domainRepository->find(
+                                        $ids[0][1]
+                                    )->isVirtual()
+                                ) {
+                                    return '';
+                                }
+                            } catch (\Cx\Core\Model\Controller\YamlRepositoryException $e) {
+                                // if we cannot find this entity we won't be
+                                // able to do changes to it.
+                                return '';
+                            }
 
                             $actionIcons = '';
                             $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
