@@ -222,12 +222,12 @@ $J(function(){
     });
 });
 
-function progress(percent, $element) {
-    percent = Math.round(percent);
-    var progressBarWidth = percent * $element.width() / 100;
+// Set width to a div tag
+function progress(percent, element) {
+    var percent = Math.round(percent);
     if (percent >= 1) {
-        $element.find('div').animate({
-            width: progressBarWidth
-        }, 500).html(percent + "%&nbsp;");
+        var div = element.find('div');
+        div.css('width', percent + '%');
+        div.html(percent + '%&nbsp;');
     }
 }
