@@ -222,9 +222,9 @@ $J(function(){
     });
 });
 
-// Set width to a div tag
+// Set width to a progress bar html element
 function progress(percent, element) {
-    var percent = Math.round(percent);
+    percent = Math.round(percent);
     if (percent >= 1) {
         var div = element.find('div');
         div.css('width', percent + '%');
