@@ -354,8 +354,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
      */
     public function setCallback(Callback $callback)
     {
-        //Use callback only for virtual instances otherwise throw exception
-        if (!$this->isVirtual() && $callback) {
+        if (!$this->isVirtual() && !$callback->isSerializable()) {
             throw new PermissionException('Permission::setCallback() failed: Could not set callback for non-virtual instance.');
         }
         $this->callback = $callback;
@@ -387,7 +386,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
     public function setVirtual($virtual)
     {
         //While setting instance as non-virtual, check the instance have callback if so throw exception
-        if ($this->callback && !$virtual) {
+        if ($this->callback && !$this->callback->isSerializable() && !$virtual) {
             throw new PermissionException('Permission::setVirtual() failed: Could not set instance as non-virtual since instance contains callback.');
         }
         parent::setVirtual($virtual);
