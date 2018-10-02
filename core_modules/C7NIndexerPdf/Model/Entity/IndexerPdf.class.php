@@ -66,7 +66,7 @@ class IndexerPdf extends \Cx\Core\MediaSource\Model\Entity\Indexer
             $content = $request->send()->getBody();
         } catch(\Exception $e) {
         }
-        $content = preg_replace('/\\s\\s+/', ' ', $content);
+        $content = trim(preg_replace('/\\s\\s+/', ' ', $content));
         return $content;
     }
 
