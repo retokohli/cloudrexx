@@ -150,7 +150,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Request URL
-         * @var \Cx\Core\Routing\Url
+         * @var \Cx\Core\Routing\Model\Entity\Request
          */
         protected $request = null;
 
@@ -2372,7 +2372,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the request URL
-         * @return \Cx\Core\Routing\Url Request URL
+         * @return \Cx\Core\Routing\Model\Entity\Request
          */
         public function getRequest() {
             return $this->request;
