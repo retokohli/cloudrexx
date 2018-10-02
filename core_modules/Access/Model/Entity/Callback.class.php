@@ -219,6 +219,7 @@ class Callback extends \Cx\Model\Base\EntityBase {
      *                          used as GET, the second as POST params. Params
      *                          specified in the Callback's definition cannot
      *                          be overwritten this way.
+     * @throws CallbackException If a JsonAdapter returns any status other than "success"
      * @return mixed Return value of the callback method or function
      */
     public function __invoke(...$args) {
@@ -247,7 +248,14 @@ class Callback extends \Cx\Model\Base\EntityBase {
                     $this->callbackInfo[1],
                     $params
                 );
-                return $data;
+                if (
+                    !isset($data['status']) ||
+                    $data['status'] != 'success' ||
+                    !isset($data['data'])
+                ) {
+                    throw new CallbackException('Callback execution failed');
+                }
+                return $data['data'];
                 break;
         }
     }
