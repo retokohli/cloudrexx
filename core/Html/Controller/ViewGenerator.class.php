@@ -175,6 +175,15 @@ class ViewGenerator {
             ) {
                 $this->removeEntry($entityWithNS);
             }
+
+            // execute copy if entry is a doctrine entity (or execute callback if specified in configuration)
+            // post edit
+            if (
+                !empty($this->options['functions']['copy']) &&
+                $this->options['functions']['copy'] != false
+            ) {
+                $this->saveEntry($entityWithNS);
+            }
         } catch (\Exception $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);
             return;
@@ -691,6 +700,15 @@ class ViewGenerator {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
+
+        // this case is used to copy the entry
+        if (!empty($_GET['copy'])
+            && !empty($this->options['functions']['copy'])) {
+            $isSingle = true;
+            $eId = intval($this->getVgParam($_GET['copy']));
+            return $this->renderFormForEntry($eId);
+        }
+
         $template = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
         $template->loadTemplateFile('TableView.html');
         $template->setGlobalVariable($_ARRAYLANG);
@@ -1311,7 +1329,7 @@ class ViewGenerator {
         }
         // get the proper action url and redirect the user
         $actionUrl = clone $this->cx->getRequest()->getUrl();
-        $actionUrl->setParam($param, null);
+        $actionUrl->removeAllParams();
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
 
