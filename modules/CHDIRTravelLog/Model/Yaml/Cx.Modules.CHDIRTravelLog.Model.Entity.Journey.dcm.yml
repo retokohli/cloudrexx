@@ -1,0 +1,59 @@
+Cx\Modules\CHDIRTravelLog\Model\Entity\Journey:
+  type: entity
+#  repositoryClass: Cx\Modules\CHDIRTravelLog\Model\Repository\JourneyRepository
+  table: module_chdirtravellog_journey
+# TODO: Is there any combination of keys to form a primary key?
+  id:
+# This is a dummy ID, as there is no other candidate.
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    att:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+    reisedat:
+      type: date
+      nullable: false
+    verbnr:
+      type: string
+      length: 255
+      nullable: false
+    rbn:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+    reisen:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+    d:
+      type: string # char?
+      length: 1
+      nullable: false
+    atStart:
+      type: string
+      length: 255
+      nullable: false
+      column: at_start
+    atRecs:
+      type: string
+      length: 255
+      nullable: false
+      column: at_recs
+  indexes:
+    att:
+      columns: [ att ]
+    reisedat:
+      columns: [ reisedat ]
+    verbnr:
+      columns: [ verbnr ]
+    rbn:
+      columns: [ rbn ]
+    d:
+      columns: [ d ]

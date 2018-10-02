@@ -46,3 +46,5 @@ $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DESCRIPTION'] = 'This is a new module wit
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONGRATULATIONS'] = 'Congratulations';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_SUCCESSFUL_CREATION'] = 'You successfully created a new module!';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXAMPLE_TEMPLATE'] = 'This is the default template for this component. It is used for all ACTs that do not have their own template.';
+
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] = "Entries";

@@ -1,0 +1,20 @@
+Cx\Modules\CHDIRTravelLog\Model\Entity\Connection:
+  type: entity
+#  repositoryClass: Cx\Modules\CHDIRTravelLog\Model\Repository\ConnectionRepository
+  table: module_chdirtravellog_connection
+  id:
+    verbindungsnummer:
+      type: integer
+      options:
+        unsigned: true
+      generator:
+        strategy: none
+  fields:
+    sequenznummer:
+      type: string
+      length: 255
+      nullable: false
+    verbindungsstring:
+      type: string
+      length: 10000
+      nullable: false

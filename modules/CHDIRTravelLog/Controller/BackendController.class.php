@@ -29,7 +29,7 @@
  * Specific BackendController for this Component.
  *
  * Use the examples here to easily customize the backend of your component.
- * Delete this file if you don't need it. Remove any methods you don't need! 
+ * Delete this file if you don't need it. Remove any methods you don't need!
  * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
@@ -42,80 +42,48 @@ namespace Cx\Modules\CHDIRTravelLog\Controller;
  * Specific BackendController for this Component.
  *
  * Use the examples here to easily customize the backend of your component.
- * Delete this file if you don't need it. Remove any methods you don't need! 
+ * Delete this file if you don't need it. Remove any methods you don't need!
  * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_chdirtravellog
  */
-class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
+class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
+{
 
-    /**
-     * Default permission
-     *
-     * @var Cx\Core_Modules\Access\Model\Entity\Permission
-     */
-    protected $defaultPermission;
-
-    /**
-     * Returns the object to parse a view with
-     *
-     * If you overwrite this and return anything else than string, filter will not work
-     * @return string|array|object An entity class name, entity, array of entities or DataSet
-     */
-    protected function getViewGeneratorParseObjectForEntityClass($entityClassName) {
-        return $entityClassName;
-    }
-
-    /**
-     * Returns all entities of this component which can have an auto-generated view
-     *
-     * @access protected
-     * @return array
-     */
-    protected function getEntityClassesWithView() {
-        return $this->getEntityClasses();
-    }
-
-    /**
-     * This function returns the ViewGeneration options for a given entityClass
-     *
-     * @access protected
-     * @global $_ARRAYLANG
-     * @param $entityClassName contains the FQCN from entity
-     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
-     * @return array with options
-     */
-    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
-        global $_ARRAYLANG;
-
-        $classNameParts = explode('\\', $entityClassName);
-        $classIdentifier = end($classNameParts);
-
-        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
-        $header = '';
-        if (isset($_ARRAYLANG[$langVarName])) {
-            $header = $_ARRAYLANG[$langVarName];
-        }
-        return array(
-            'header' => $header,
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-            ),
-        );
-    }
+//    /**
+//     * Default permission
+//     *
+//     * @var Cx\Core_Modules\Access\Model\Entity\Permission
+//     */
+//    protected $defaultPermission;
+//
+//    /**
+//     * Returns the object to parse a view with
+//     *
+//     * If you overwrite this and return anything else than string, filter will not work
+//     * @return string|array|object An entity class name, entity, array of entities or DataSet
+//     */
+//    protected function getViewGeneratorParseObjectForEntityClass($entityClassName) {
+//        return $entityClassName;
+//    }
+//
+//    /**
+//     * Returns all entities of this component which can have an auto-generated view
+//     *
+//     * @access protected
+//     * @return array
+//     */
+//    protected function getEntityClassesWithView() {
+//        return $this->getEntityClasses();
+//    }
 
     /**
      * Return true here if you want the first tab to be an entity view
      * @return boolean True if overview should be shown, false otherwise
      */
     protected function showOverviewPage() {
-        return true;
+        return false;
     }
 }
 

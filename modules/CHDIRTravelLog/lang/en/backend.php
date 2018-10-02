@@ -52,3 +52,7 @@ $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ACT_SETTINGS_HELP'] = 'Mailing';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONGRATULATIONS'] = 'Overview';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_SUCCESSFUL_CREATION'] = 'This is the Overview/Dashboard of your new Component. More tabs will be generated if you add entities to this component.';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXAMPLE_TEMPLATE'] = 'This is the default template for this component, located in View/Template/Backend/Default.html. In order to add entities, place your YAML files in Model/Yaml folder and execute ./cx workbench database update. Then add a language file entry for your entity.';
+
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_PROJECT_NAME'] = 'Projekt Name';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_LAST_SYNC_TIME'] = 'Zeitstempel der letzten Synchronisation';
+
