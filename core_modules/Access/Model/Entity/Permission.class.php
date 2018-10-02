@@ -395,6 +395,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
     /**
      * Check the permissions(Is allowed protocol, Is allowed method, user's group access, user's login status)
      *
+     * @param array $params Params to pass to callback (if any)
      * @return boolean
      */
     public function hasAccess(array $params = array()) {
