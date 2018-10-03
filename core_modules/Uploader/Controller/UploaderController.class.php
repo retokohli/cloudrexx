@@ -180,11 +180,12 @@ class UploaderController {
                 $fileName = $conf['fileName'];
             }
 
+            $imgExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             if ($conf['allow_extensions']) {
                 if (is_string($conf['allow_extensions'])) {
                     $conf['allow_extensions'] = explode(',', $conf['allow_extensions']);
                 }
-                if (!in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $conf['allow_extensions'])) {
+                if (!in_array($imgExtension, $conf['allow_extensions'])) {
                     throw new UploaderException('', PLUPLOAD_TYPE_ERR);
                 }
             }
@@ -202,6 +203,11 @@ class UploaderController {
                 }
             } else {
                 self::writeFileTo($tmp_path);
+            }
+
+            // Make image rotate for jpeg and jpg extension
+            if ($imgExtension === 'jpeg' || $imgExtension === 'jpg') {
+                self::makeImageRotate($tmp_path);
             }
 
             // Upload complete write a temp file to the final destination
@@ -441,4 +447,31 @@ class UploaderController {
         rmdir($dir);
     }
 
+    /**
+     * Make image rotate based on its exif-data
+     *
+     * @param string $filePath File path
+     */
+    protected static function makeImageRotate($filePath)
+    {
+        $exif = exif_read_data($filePath);
+        if (empty($exif['Orientation'])) {
+            return;
+        }
+
+        $image = new \ImageManager();
+        $image->loadImage($filePath);
+        switch ($exif['Orientation']) {
+            case 3:
+                $image->rotateImage(180);
+                break;
+            case 6:
+                $image->rotateImage(-90);
+                break;
+            case 8:
+                $image->rotateImage(90);
+                break;
+        }
+        $image->saveNewImage($filePath, true);
+    }
 }
