@@ -461,17 +461,21 @@ class UploaderController {
 
         $image = new \ImageManager();
         $image->loadImage($filePath);
-        switch ($exif['Orientation']) {
-            case 3:
-                $image->rotateImage(180);
-                break;
-            case 6:
-                $image->rotateImage(-90);
-                break;
-            case 8:
-                $image->rotateImage(90);
-                break;
+        try {
+            switch ($exif['Orientation']) {
+                case 3:
+                    $image->rotateImage(180);
+                    break;
+                case 6:
+                    $image->rotateImage(-90);
+                    break;
+                case 8:
+                    $image->rotateImage(90);
+                    break;
+            }
+            $image->saveNewImage($filePath, true);
+        } catch (UploaderException $ex) {
+            \DBG::msg($ex->getMessage());
         }
-        $image->saveNewImage($filePath, true);
     }
 }
