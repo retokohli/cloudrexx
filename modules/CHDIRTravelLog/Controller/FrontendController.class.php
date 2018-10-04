@@ -39,6 +39,11 @@ namespace Cx\Modules\CHDIRTravelLog\Controller;
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
 {
     /**
+     * Date format for output
+     */
+    const date_format_ymd = 'd.m.Y';
+
+    /**
      * Set up the frontend view
      * @param   \Cx\Core\Html\Sigma $template
      */
@@ -286,7 +291,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 'TRAVELLOG_JOURNEY_RNB_LINK' =>
                 $this->getFileLink($journey->getRbn()),
                 'TRAVELLOG_JOURNEY_RNB' => $journey->getRbn(),
-                'TRAVELLOG_JOURNEY_DATE' => $journey->getReisedat(),
+                'TRAVELLOG_JOURNEY_DATE' => $journey->getReisedat()
+                    ->format(static::date_format_ymd),
                 'TRAVELLOG_JOURNEY_NUMOF_CONNECTION' =>
                 $journey->getReisen(),
                 'TRAVELLOG_JOURNEY_CONNECTION_NR' =>
@@ -379,7 +385,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             $template->setVariable(array(
                 'TRAVELLOG_CONNECTION_RBN_LINK' => $this->getFileLink($searchTerm),
                 'TRAVELLOG_CONNECTION_RBN' => $journey->getRbn(),
-                'TRAVELLOG_CONNECTION_DATE' => $journey->getReisedat(),
+                'TRAVELLOG_CONNECTION_DATE' => $journey->getReisedat()
+                    ->format(static::date_format_ymd),
                 'TRAVELLOG_CONNECTION_NUMOF_CONNECTION' => $journey->getReisen(),
                 'TRAVELLOG_CONNECTION_NR' => $journey->getVerbnr(),
                 'TRAVELLOG_CONNECTION_NAME' => $connectionName,
