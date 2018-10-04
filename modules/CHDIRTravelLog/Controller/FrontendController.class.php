@@ -163,8 +163,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         global $_CORELANG;
         $paramsGet = $this->cx->getRequest()->getParams();
         $searchTerm = contrexx_input2raw($paramsGet['number'] ?? '');
-        $pos = intval($paramsGet['pos'] ?? 0);
-        $exportCsv = (bool)($_GET['csv'] ?? false);
         $selectJourney = '';
         $selectConnection = \Html::ATTRIBUTE_SELECTED;
         $type = $paramsGet['type'] ?? '';
@@ -183,6 +181,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 //            $template->hideBlock('travellog_connections');
             return;
         }
+        $pos = intval($paramsGet['pos'] ?? 0);
+        $exportCsv = (bool)($_GET['csv'] ?? false);
         $count = 0;
         switch ($type) {
             case 'connection':
