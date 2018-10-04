@@ -482,7 +482,7 @@ class BackendTable extends HTML_Table {
 
         if(!$virtual){
             if (isset($functions['copy']) && $functions['copy']) {
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                $actionUrl = clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
                 $actionUrl->setParam('copy', $editId);
                 //remove the parameter 'vg_increment_number' from actionUrl
                 //if the baseUrl contains the parameter 'vg_increment_number'

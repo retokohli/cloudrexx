@@ -702,8 +702,11 @@ class ViewGenerator {
         }
 
         // this case is used to copy the entry
-        if (!empty($_GET['copy'])
-            && !empty($this->options['functions']['copy'])) {
+        if (
+            !empty($_GET['copy']) &&
+            !empty($this->options['functions']['copy']) &&
+            $this->options['functions']['copy'] != false
+        ) {
             $isSingle = true;
             $eId = intval($this->getVgParam($_GET['copy']));
             return $this->renderFormForEntry($eId);
@@ -1274,10 +1277,14 @@ class ViewGenerator {
             $this->savePropertiesToClass($entity, $entityClassMetadata);
             $param = 'editid';
             $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'];
-        } else { // add case
+        } else {
+            if (!empty($_GET['copy'])) { // copy case
+                $param = 'copy';
+            } else { // add case
+                $param = 'add';
+            }
             // save main formular class data to its class over $_POST
             $this->savePropertiesToClass($entity, $entityClassMetadata);
-            $param = 'add';
             $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'];
         }
 
@@ -1329,7 +1336,7 @@ class ViewGenerator {
         }
         // get the proper action url and redirect the user
         $actionUrl = clone $this->cx->getRequest()->getUrl();
-        $actionUrl->removeAllParams();
+        $actionUrl->setParam($param, null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
 
