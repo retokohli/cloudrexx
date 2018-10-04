@@ -25,24 +25,10 @@
  * our trademarks remain entirely with us.
  */
 
-/**
- * Specific ComponentController for this Component.
- *
- * Use the examples here to easily customize your component. Delete this file
- * if you don't need it. Remove any methods you don't need! 
- * @copyright   Cloudrexx AG
- * @author      Michael Ritter <michael.ritter@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  module_chdirtravellog
- */
-
 namespace Cx\Modules\CHDIRTravelLog\Controller;
 
 /**
- * Specific ComponentController for this Component.
- *
- * Use the examples here to easily customize your component. Delete this file
- * if you don't need it. Remove any methods you don't need! 
+ * ComponentController
  * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
@@ -51,9 +37,7 @@ namespace Cx\Modules\CHDIRTravelLog\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
-     * Returns all Controller class names for this component (except this)
-     *
-     * Be sure to return all your controller classes if you add your own
+     * Return the Controller class names for this component (except this)
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
