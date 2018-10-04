@@ -142,13 +142,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Update the last synchronize time in the Settings
      *
      * Mind that the Settings must have been initialized.
-     * @return  string
+     * @param   integer $lastSyncTime
+     * @return  bool|null
      */
     protected static function setLastSyncTime($lastSyncTime)
     {
-        return \Cx\Core\Setting\Controller\Setting::update(
+        \Cx\Core\Setting\Controller\Setting::set(
             'last_sync_time', $lastSyncTime
         );
+        return \Cx\Core\Setting\Controller\Setting::updateAll();
     }
 
 
