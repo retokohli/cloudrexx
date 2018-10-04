@@ -197,7 +197,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 break;
         }
         if ($count === 0) {
-            $template->touchBlock('travellog_no_results');
+            $template->touchBlock('travellog_no_result');
         }
     }
 
@@ -295,7 +295,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $journey->getVerbnr(),
                 'TRAVELLOG_JOURNEY_CONNECTION_NAME' => $connectionName,
             ]);
-            $template->parse('travellog_journey_results');
+            $template->parse('travellog_journey');
         }
         return $count;
     }
@@ -385,7 +385,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 'TRAVELLOG_CONNECTION_NR' => $journey->getVerbnr(),
                 'TRAVELLOG_CONNECTION_NAME' => $connectionName,
             ));
-            $template->parse('travellog_connection_results');
+            $template->parse('travellog_connection');
         }
         return $count;
     }
