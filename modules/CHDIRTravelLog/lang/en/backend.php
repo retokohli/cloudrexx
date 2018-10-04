@@ -53,10 +53,11 @@ $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONGRATULATIONS'] = 'Overview';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_SUCCESSFUL_CREATION'] = 'This is the Overview/Dashboard of your new Component. More tabs will be generated if you add entities to this component.';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXAMPLE_TEMPLATE'] = 'This is the default template for this component, located in View/Template/Backend/Default.html. In order to add entities, place your YAML files in Model/Yaml folder and execute ./cx workbench database update. Then add a language file entry for your entity.';
 
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_PROJECT_NAME'] = 'Projekt Name';
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_LAST_SYNC_TIME'] = 'Zeitstempel der letzten Synchronisation';
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DATA_FOLDER'] = 'Verzeichnis der Datenablage';
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_PDF_FOLDER'] = 'Verzeichnis für generierte PDF Dokumente';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_PROJECT_NAME'] = 'Projekt Name: Vorgabe';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_PROJECT_NAMES'] = 'Projekt Name: Verfügbare Optionen (kommagetrennt)';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DATA_FOLDER'] = 'Verzeichnis: Datenablage';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_PDF_FOLDER'] = 'Verzeichnis: PDF Dokumente';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CSV_DELIMITER'] = 'CSV Import: Trennzeichen';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CSV_ENCLOSURE'] = 'CSV Import: Umschliessung';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CSV_ESCAPE'] = 'CSV Import: Escape';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_LAST_SYNC_TIME'] = 'Zeitstempel der letzten Synchronisation (nicht ändern!)';

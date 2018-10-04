@@ -13,6 +13,11 @@ class Journey
     protected $id;
 
     /**
+     * @var string
+     */
+    protected $project;
+
+    /**
      * @var integer
      */
     protected $att;
@@ -60,6 +65,29 @@ class Journey
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set project
+     *
+     * @param string $project
+     * @return Journey
+     */
+    public function setProject($project)
+    {
+        $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * Get project
+     *
+     * @return string
+     */
+    public function getProject()
+    {
+        return $this->project;
     }
 
     /**

@@ -10,6 +10,10 @@ Cx\Modules\CHDIRTravelLog\Model\Entity\Connection:
       generator:
         strategy: none
   fields:
+    project:
+      type: string
+      length: 255
+      nullable: false
     sequenznummer:
       type: string
       length: 255
@@ -18,3 +22,6 @@ Cx\Modules\CHDIRTravelLog\Model\Entity\Connection:
       type: string
       length: 10000
       nullable: false
+  indexes:
+    project:
+      columns: [ project ]

@@ -10,6 +10,10 @@ Cx\Modules\CHDIRTravelLog\Model\Entity\Journey:
       generator:
         strategy: AUTO
   fields:
+    project:
+      type: string
+      length: 255
+      nullable: false
     att:
       type: integer
       nullable: false
@@ -47,6 +51,8 @@ Cx\Modules\CHDIRTravelLog\Model\Entity\Journey:
       nullable: false
       column: at_recs
   indexes:
+    project:
+      columns: [ project ]
     att:
       columns: [ att ]
     reisedat:

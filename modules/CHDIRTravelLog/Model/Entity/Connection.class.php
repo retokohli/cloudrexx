@@ -15,13 +15,17 @@ class Connection
     /**
      * @var string
      */
+    protected $project;
+
+    /**
+     * @var string
+     */
     protected $sequenznummer;
 
     /**
      * @var string
      */
     protected $verbindungsstring;
-
 
     /**
      * Set verbindungsnummer
@@ -44,6 +48,29 @@ class Connection
     public function getVerbindungsnummer()
     {
         return $this->verbindungsnummer;
+    }
+
+    /**
+     * Set project
+     *
+     * @param string $project
+     * @return Connection
+     */
+    public function setProject($project)
+    {
+        $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * Get project
+     *
+     * @return string
+     */
+    public function getProject()
+    {
+        return $this->project;
     }
 
     /**

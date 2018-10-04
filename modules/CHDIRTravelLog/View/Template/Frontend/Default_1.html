@@ -1,12 +1,6 @@
 <form action="" method="get">
   <fieldset>
     <div class="contact row">
-      <label>Projekt</label>
-      <select name="project">
-        {TRAVELLOG_PROJECT_OPTIONS}
-      </select>
-    </div>
-    <div class="contact row">
       <label>Nummer</label>
       <input type="text" name="number" value="{TRAVELLOG_NUMBER}" />
     </div>
@@ -29,14 +23,8 @@
 </form>
 <!-- BEGIN travellog_journeys -->
 {TRAVELLOG_EXPORT_RESULTS}
-<!-- BEGIN travellog_journey_info -->
 Abgefragte Verbindung: {TRAVELLOG_QUERIED_CONNECTION}<br />
 Anzahl Treffer: {TRAVELLOG_NUM_JOURNEYS}<br />
-<!-- END travellog_journey_info -->
-<!-- BEGIN travellog_connection_info -->
-Abgefragtes Reiseblatt: {TRAVELLOG_QUERIED_JOURNEY}<br />
-Anzahl Verbindungen: {TRAVELLOG_NUM_CONNECTIONS}<br />
-<!-- END travellog_connection_info -->
 <br />
 <table>
   <tr>
@@ -52,12 +40,37 @@ Anzahl Verbindungen: {TRAVELLOG_NUM_CONNECTIONS}<br />
     <td>{TRAVELLOG_JOURNEY_CONNECTION_NR}</td>
     <td>{TRAVELLOG_JOURNEY_CONNECTION_NAME}</td>
     <td style="text-align: center;">{TRAVELLOG_JOURNEY_NUMOF_CONNECTION}</td>
-    <td>{TRAVELLOG_JOURNEY_RBN_LINK}</td>
-    <td style="vertical-align: middle !important;">{TRAVELLOG_JOURNEY_RBN}</td>
+    <td>{TRAVELLOG_JOURNEY_RNB_LINK}</td>
+    <td style="vertical-align: middle !important;">{TRAVELLOG_JOURNEY_RNB}</td>
   </tr>
   <!-- END travellog_journey -->
 </table>
 <!-- END travellog_journeys -->
+<!-- BEGIN travellog_connections -->
+{TRAVELLOG_EXPORT_RESULTS}
+Abgefragtes Reiseblatt: {TRAVELLOG_QUERIED_JOURNEY}<br />
+Anzahl Verbindungen: {TRAVELLOG_NUM_CONNECTIONS}<br />
+<br />
+<table>
+  <tr>
+    <th width="20%">&nbsp;Datum</th>
+    <th width="15%">Verbindung</th>
+    <th width="45%">Name</th>
+    <th width="10%" style="text-align: center;">Anzahl</th>
+    <th width="10%"  colspan="2">Reiseblatt&nbsp</th>
+  </tr>
+  <!-- BEGIN travellog_connection -->
+  <tr>
+    <td>&nbsp;{TRAVELLOG_CONNECTION_DATE}</td>
+    <td>{TRAVELLOG_CONNECTION_NR}</td>
+    <td>{TRAVELLOG_CONNECTION_NAME}</td>
+    <td style="text-align: center;">{TRAVELLOG_CONNECTION_NUMOF_CONNECTION}</td>
+    <td>{TRAVELLOG_CONNECTION_RBN_LINK}</td>
+    <td style="vertical-align: middle !important;">{TRAVELLOG_CONNECTION_RBN}</td>
+  </tr>
+  <!-- END travellog_connection -->
+</table>
+<!-- END travellog_connections -->
 <!-- BEGIN travellog_no_result -->
 <em>Keine Einträge gefunden</em>
 <!-- END travellog_no_result -->

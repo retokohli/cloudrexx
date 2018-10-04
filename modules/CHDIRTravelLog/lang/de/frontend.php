@@ -17,3 +17,4 @@ $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_JOURNEY'] = "Reiseblatt";
 
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] = "Einträge";
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_READ_FORMAT'] = 'Die Datei "%1$s" kann nicht gelesen werden.';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_IMPORT_CSV'] = 'Beim Aktualisieren der Daten ist ein Fehler aufgetreten.  Bitte informieren Sie den Administrator.';

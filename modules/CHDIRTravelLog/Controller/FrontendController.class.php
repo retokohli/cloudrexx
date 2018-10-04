@@ -73,6 +73,19 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
+     * Return the project names from the Settings
+     *
+     * Mind that the Settings must have been initialized.
+     * @return  array
+     */
+    protected static function getProjectNames(): array
+    {
+        return \Cx\Core\Setting\Controller\Setting::splitValues(
+            \Cx\Core\Setting\Controller\Setting::getValue('project_names')
+        );
+    }
+
+    /**
      * Return the data folder from the Settings
      *
      * Mind that the Settings must have been initialized.
@@ -153,8 +166,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return \Cx\Core\Setting\Controller\Setting::updateAll();
     }
 
-
-// TODO from index (class TravelLog)
     /**
      * Set up the search view
      * @global  array               $_CORELANG
@@ -162,8 +173,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function viewSearch(\Cx\Core\Html\Sigma $template)
     {
-        global $_CORELANG;
         $paramsGet = $this->cx->getRequest()->getParams();
+        $projectName = $paramsGet['project'] ?? '';
         $searchTerm = contrexx_input2raw($paramsGet['number'] ?? '');
         $selectJourney = '';
         $selectConnection = \Html::ATTRIBUTE_SELECTED;
@@ -172,8 +183,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             $selectConnection = '';
             $selectJourney = \Html::ATTRIBUTE_SELECTED;
         }
+        $projectNames = static::getProjectNames();
         $template->setGlobalVariable([
-            'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
+            'TRAVELLOG_PROJECT_OPTIONS' => \Html::getOptions(
+                array_combine($projectNames, $projectNames), $projectName
+            ),
             'TRAVELLOG_NUMBER' => $searchTerm,
             'TRAVELLOG_SELECTED_CONNECTION' => $selectConnection,
             'TRAVELLOG_SELECTED_JOURNEY' => $selectJourney,
@@ -186,13 +200,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $count = 0;
         switch ($type) {
             case 'connection':
-                $count = $this->parseConnections(
-                    $template, $searchTerm, $pos, $exportCsv
+                $count = $this->showConnections(
+                    $template, $projectName, $searchTerm, $pos, $exportCsv
                 );
                 break;
             case 'journey':
-                $count = $this->parseJourneys(
-                    $template, $searchTerm, $pos, $exportCsv
+                $count = $this->showJourneys(
+                    $template, $projectName, $searchTerm, $pos, $exportCsv
                 );
                 break;
         }
@@ -206,14 +220,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @global  array   $_ARRAYLANG
      * @global  array   $_CONFIG
      * @param   \Cx\Core\Html\Sigma $template
+     * @param   string  $projectName
      * @param   string  $searchTerm
      * @param   int     $pos
      * @param   bool    $exportCsv
      * @return  int                 The total result count
      */
-    protected function parseConnections(
+    protected function showConnections(
         \Cx\Core\Html\Sigma $template,
-        string $searchTerm, int $pos, bool $exportCsv
+        string $projectName, string $searchTerm, int $pos, bool $exportCsv
     ): int
     {
         global $_ARRAYLANG, $_CONFIG;
@@ -233,20 +248,21 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ->orderBy('j.rbn, j.reisedat')
             ->where(
                 $qb->expr()->andX(
+                    $qb->expr()->eq('j.project', ':project'),
                     $qb->expr()->neq('j.att', ':att'),
                     $qb->expr()->neq('j.d', ':d')
                 )
             )
             ->setParameters([
+                'project' => $projectName,
                 'att' => '111',
                 'd' => 'X',
-            ])
-        ;
+            ]);
         if (empty($arrConnection[1])) {
             $qb->andWhere(
                 $qb->expr()->like(
                 'j.verbnr', ':term'
-                    ))
+            ))
             ->setParameter('term', $arrConnection[0].'.%');
         } else {
             $qb->andWhere(
@@ -257,7 +273,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if ($exportCsv) {
             $journeys = $qb->getQuery()->getResult();
             // exit()s
-            $this->exportCsv('connection_nr_' . $searchTerm, $journeys);
+            $this->exportCsv(
+                $projectName, 'connection_nr_' . $searchTerm, $journeys
+            );
         }
         $journeys = new \Doctrine\ORM\Tools\Pagination\Paginator(
             $qb->getQuery(), false);
@@ -270,7 +288,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             '<b>' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] . '</b>',
             $count, $_CONFIG['corePagingLimit'], false, $pos, 'pos'
         );
-        $template->setGlobalVariable([
+        $template->setVariable([
             'TRAVELLOG_QUERIED_CONNECTION' => $searchTerm . ' ' . $connectionName,
             'TRAVELLOG_PAGING' => $paging,
             'TRAVELLOG_NUM_JOURNEYS' => $count,
@@ -282,38 +300,24 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             .' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '" />'
             .'</a>',
         ]);
-        foreach ($journeys as $journey) {
-            $template->setVariable([
-                'TRAVELLOG_JOURNEY_RNB_LINK' =>
-                $this->getFileLink($journey->getRbn()),
-                'TRAVELLOG_JOURNEY_RNB' => $journey->getRbn(),
-                'TRAVELLOG_JOURNEY_DATE' => $journey->getReisedat()
-                    ->format(static::date_format_ymd),
-                'TRAVELLOG_JOURNEY_NUMOF_CONNECTION' =>
-                $journey->getReisen(),
-                'TRAVELLOG_JOURNEY_CONNECTION_NR' =>
-                $journey->getVerbnr(),
-                'TRAVELLOG_JOURNEY_CONNECTION_NAME' => $connectionName,
-            ]);
-            $template->parse('travellog_journey');
-        }
+        $this->parseJourneys($template, $projectName, $journeys);
         return $count;
     }
-
 
     /**
      * List the Journeys in the search results view
      * @global  array   $_ARRAYLANG
      * @global  array   $_CONFIG
      * @param   \Cx\Core\Html\Sigma $template
+     * @param   string  $projectName
      * @param   string  $searchTerm
      * @param   int     $pos
      * @param   bool    $exportCsv
      * @return  int                 The total result count
      */
-    protected function parseJourneys(
+    protected function showJourneys(
         \Cx\Core\Html\Sigma $template,
-        string $searchTerm, int $pos, bool $exportCsv
+        string $projectName, string $searchTerm, int $pos, bool $exportCsv
     ): int
     {
         global $_ARRAYLANG, $_CONFIG;
@@ -323,22 +327,25 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ->from('Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Journey', 'j')
             ->where(
                 $qb->expr()->andX(
+                    $qb->expr()->eq('j.project', ':project'),
                     $qb->expr()->neq('j.att', ':att'),
                     $qb->expr()->neq('j.d', ':d'),
                     $qb->expr()->eq('j.rbn', ':term')
                 )
             )
             ->setParameters([
+                'project' => $projectName,
                 'att' => '111',
                 'd' => 'X',
                 'term' => $searchTerm,
-                ])
-            ->orderBy('j.reisedat')
-        ;
+            ])
+            ->orderBy('j.reisedat');
         if ($exportCsv) {
             $journeys = $qb->getQuery()->getResult();
             // exit()s
-            $this->exportCsv('datasheet_nr_' . $searchTerm, $journeys);
+            $this->exportCsv(
+                $projectName, 'datasheet_nr_' . $searchTerm, $journeys
+            );
         }
         $qb->setFirstResult($pos)
             ->setMaxResults($_CONFIG['corePagingLimit']);
@@ -351,7 +358,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             '<b>' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] . '</b>',
             $count, $_CONFIG['corePagingLimit'], false, $pos, 'pos'
         );
-        $template->setGlobalVariable([
+        $template->setVariable([
             'TRAVELLOG_QUERIED_JOURNEY' =>
             '<a target="_blank" href="' . static::getPdfFolder()
             . static::getProjectName() . '_' . $searchTerm . '.pdf">'
@@ -366,64 +373,95 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             .' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '" />'
             .'</a>',
         ]);
-        $connectionRepo = $this->cx->getDb()->getEntityManager()->getRepository(
-            'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
-        );
+        $this->parseJourneys($template, $projectName, $journeys);
+        return $count;
+    }
+
+    /**
+     * Parse the journeys for the given project name
+     * @staticvar   \Doctrine\ORM\EntityRepository  $connectionRepo
+     * @param   \Cx\Core\Html\Sigma $template
+     * @param   string  $projectName
+     * @param   array   $journeys
+     */
+    protected function parseJourneys(
+        \Cx\Core\Html\Sigma $template, string $projectName, iterable $journeys
+    ) {
+        static $connectionRepo = null;
+        if (!$connectionRepo) {
+            $connectionRepo =
+                $this->cx->getDb()->getEntityManager()->getRepository(
+                    'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
+                );
+        }
         foreach ($journeys as $journey) {
             $connectionNr = intval($journey->getVerbnr());
-            $connection = $connectionRepo->find($connectionNr);
+            $connection = $connectionRepo->findOneBy([
+                'verbindungsnummer' => $connectionNr,
+                'project' => $projectName,
+            ]);
             $connectionName = '';
             if ($connection) {
                 $connectionName = $connection->getVerbindungsstring();
             }
-            $template->setVariable(array(
-                'TRAVELLOG_CONNECTION_RBN_LINK' => $this->getFileLink($searchTerm),
-                'TRAVELLOG_CONNECTION_RBN' => $journey->getRbn(),
-                'TRAVELLOG_CONNECTION_DATE' => $journey->getReisedat()
+            $template->setVariable([
+                'TRAVELLOG_JOURNEY_RBN_LINK' =>
+                    $this->getFileLink($projectName, $journey->getRbn()),
+                'TRAVELLOG_JOURNEY_RBN' => $journey->getRbn(),
+                'TRAVELLOG_JOURNEY_DATE' => $journey->getReisedat()
                     ->format(static::date_format_ymd),
-                'TRAVELLOG_CONNECTION_NUMOF_CONNECTION' => $journey->getReisen(),
-                'TRAVELLOG_CONNECTION_NR' => $journey->getVerbnr(),
-                'TRAVELLOG_CONNECTION_NAME' => $connectionName,
-            ));
-            $template->parse('travellog_connection');
+                'TRAVELLOG_JOURNEY_NUMOF_CONNECTION' =>
+                    $journey->getReisen(),
+                'TRAVELLOG_JOURNEY_CONNECTION_NR' =>
+                    $journey->getVerbnr(),
+                'TRAVELLOG_JOURNEY_CONNECTION_NAME' => $connectionName,
+            ]);
+            $template->parse('travellog_journey');
         }
-        return $count;
     }
 
     /**
      * Update the database tables from the CSV files
      *
      * Skips updating iff neither of the files has been modified.
+     * Updates the last sync timestamp iff all updates were successful.
      */
     function importCsv()
     {
+        global $_ARRAYLANG;
         $dataRoot = static::getDataFolder();
-        $projectName = static::getProjectName();
+        $projectNames = static::getProjectNames();
         $lastSyncTime = static::getLastSyncTime();
-        $connectionsFile = new \Cx\Lib\FileSystem\FileSystemFile(
-            $dataRoot . $projectName . '_Verbindungen.csv'
-        );
-        $journeysFile = new \Cx\Lib\FileSystem\FileSystemFile(
-            $dataRoot . $projectName . '_FAHRT.csv'
-        );
-\DBG::log("dataroot $dataRoot");
-\DBG::log("connectionsFile {$connectionsFile->getAbsoluteFilePath()}");
-\DBG::log("journeysFile {$journeysFile->getAbsoluteFilePath()}");
-        if (filemtime($connectionsFile->getAbsoluteFilePath()) < $lastSyncTime
-            && filemtime($journeysFile->getAbsoluteFilePath()) < $lastSyncTime
-        ) {
-            return;
-        }
         // Avoid race condition: Mark the time *before* starting the import
         // (works even if the files are modified while the import is running).
-        $lastSyncTime = time();
-        if ($this->csv2db('connection', $connectionsFile)
-            && $this->csv2db('journey', $journeysFile)
-        ) {
-            // Update on success only
-            static::setLastSyncTime($lastSyncTime);
+        $thisSyncTime = time();
+        $success = true;
+        foreach ($projectNames as $projectName) {
+            $connectionsFile = new \Cx\Lib\FileSystem\FileSystemFile(
+                $dataRoot . $projectName . '_Verbindungen.csv'
+            );
+            $journeysFile = new \Cx\Lib\FileSystem\FileSystemFile(
+                $dataRoot . $projectName . '_FAHRT.csv'
+            );
+            if (filemtime($connectionsFile->getAbsoluteFilePath())
+                    < $lastSyncTime
+                && filemtime($journeysFile->getAbsoluteFilePath())
+                    < $lastSyncTime
+            ) {
+                continue;
+            }
+            if (!$this->csv2db('connection', $projectName, $connectionsFile)
+                || !$this->csv2db('journey', $projectName, $journeysFile)
+            ) {
+                $success = false;
+            }
         }
+        if ($success) {
+            static::setLastSyncTime($thisSyncTime);
+        } else {
 // TODO: Message, at least on error
+            \Message::warning($_ARRAYLANG['']);
+        }
     }
 
     /**
@@ -432,11 +470,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Inserts all records from the given CSV file.
      * Skips the first row (headers).
      * @param   string  $tablename
+     * @param   string  $projectName
      * @param   \Cx\Lib\FileSystem\FileSystemFile   $file
      * @return  bool                    True on success, false otherwise
      */
     function csv2db(
-        string $tablename, \Cx\Lib\FileSystem\FileSystemFile $file
+        string $tablename, string $projectName,
+        \Cx\Lib\FileSystem\FileSystemFile $file
     ): bool
     {
         global $_ARRAYLANG;
@@ -491,19 +531,26 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 //                array_pop($row);
 //            }
             if ($tablename === 'connection') {
+                // verbindungsnummer, project, sequenznummer, verbindungsstring
                 $queries[] = sprintf('
-                    (%1$u, \'%2$s\', \'%3$s\')',
-                    $row[0], addslashes($row[1]), addslashes($row[2]));
-
+                    (%1$u, \'%2$s\', \'%3$s\', \'%4$s\')',
+                    $row[0], $projectName, addslashes($row[1]),
+                    addslashes($row[2])
+                );
             }
             if ($tablename === 'journey') {
                 $reisedat = new \DateTime($row[1]);
                 $row[1] = $reisedat->format('Y-m-d');
+                // att, project, reisedat, verbnr, rbn,
+                // reisen, d, at_start, at_recs
                 $queries[] = sprintf('
-                    (%1$u, \'%2$s\', \'%3$s\', %4$u,
-                    %5$u, \'%6$s\', \'%7$s\', \'%8$s\')',
-                    $row[0], addslashes($row[1]), addslashes($row[2]), $row[3],
-                    $row[4], addslashes($row[5]), addslashes($row[6]), addslashes($row[7]));
+                    (%1$u, \'%2$s\', \'%3$s\', \'%4$s\', %5$u,
+                    %6$u, \'%7$s\', \'%8$s\', \'%9$s\')',
+                    $row[0], $projectName, addslashes($row[1]),
+                    addslashes($row[2]), $row[3],
+                    $row[4], addslashes($row[5]),
+                    addslashes($row[6]), addslashes($row[7])
+                );
             }
             // Note: With 500 records, the queries are too long.
             // 400 works, 200 is pretty safe.
@@ -535,13 +582,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if ($tablename === 'connection') {
             $query = '
                 INSERT INTO `contrexx_module_chdirtravellog_connection`(
-                    `verbindungsnummer`, `sequenznummer`, `verbindungsstring`
+                    `verbindungsnummer`, `project`, `sequenznummer`, `verbindungsstring`
                 )';
         }
         if ($tablename === 'journey') {
             $query = '
                 INSERT INTO `contrexx_module_chdirtravellog_journey`(
-                    `att`, `reisedat`, `verbnr`, `rbn`,
+                    `att`, `project`, `reisedat`, `verbnr`, `rbn`,
                     `reisen`, `d`, `at_start`, `at_recs`
                 )';
         }
@@ -551,10 +598,20 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $db->Execute($query);
     }
 
-    function getFileLink($journeyNr, $urlOnly = null)
-    {
+    /**
+     * Return the link to the PDF document
+     *
+     * Includes an icon in the <a> tag.
+     * @global  array   $_ARRAYLANG
+     * @param   string  $projectName
+     * @param   int     $journeyNr
+     * @param   bool    $urlOnly       Exclude all HTML if true
+     * @return  type
+     */
+    function getFileLink(
+        string $projectName, int $journeyNr, bool $urlOnly = false
+    ) {
         global $_ARRAYLANG;
-        $dataRoot = static::getDataFolder();
         $pdfRoot = static::getPdfFolder();
         $projectName = static::getProjectName();
         $journeyIcon = '<img src="' . $this->getIconFolderPath() . 'pdf.png"'
@@ -597,11 +654,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Does not return.
      * @global  array       $_ARRAYLANG
-     * @param   iterable    $journeys
+     * @param   string      $projectName
      * @param   string      $filename
+     * @param   iterable    $journeys
      */
-    function exportCsv(iterable $journeys, string $filename)
-    {
+    function exportCsv(
+        string $projectName, string $filename, iterable $journeys
+    ) {
         global $_ARRAYLANG;
         $filename = $filename . '.csv';
         $delimiter = static::getCsvDelimiter();
@@ -636,7 +695,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     $journey->getVerbnr(),
                     $connectionName,
                     $journey->getReisen(),
-                    $this->getFileLink($journey->getRbn(), true)
+                    $this->getFileLink($projectName, $journey->getRbn(), true)
                 ],
                 $delimiter, $enclosure, $escape);
         }
