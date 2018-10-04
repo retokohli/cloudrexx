@@ -415,6 +415,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             return;
         }
         // Avoid race condition: Mark the time *before* starting the import
+        // (works even if the files are modified while the import is running).
         $lastSyncTime = time();
         if ($this->csv2db('connection', $connectionsFile)
             && $this->csv2db('journey', $journeysFile)
