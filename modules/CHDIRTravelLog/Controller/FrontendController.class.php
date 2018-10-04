@@ -439,6 +439,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         string $tablename, \Cx\Lib\FileSystem\FileSystemFile $file
     ): bool
     {
+        global $_ARRAYLANG;
         $filePath = $file->getAbsoluteFilePath();
         $handle = fopen($filePath, 'r');
         if (!$handle) {
@@ -451,22 +452,33 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $em = $this->cx->getDb()->getEntityManager();
         $className = '\\Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\'
             . ucfirst($tablename);
-// TODO: See whether that works
         // https://stackoverflow.com/a/17068337/3396113
         $cmd = $em->getClassMetadata($className);
         $connection = $em->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
         $connection->query('SET FOREIGN_KEY_CHECKS=0');
-        $q = $dbPlatform->getTruncateTableSql($cmd->getTableName());
-        $connection->executeUpdate($q);
+        $query = $dbPlatform->getTruncateTableSql($cmd->getTableName());
+        $connection->executeUpdate($query);
         $connection->query('SET FOREIGN_KEY_CHECKS=1');
         $delimiter = static::getCsvDelimiter();
         $enclosure = static::getCsvEnclosure();
         $escape = static::getCsvEscape();
-        $header = null;
+        // Skip headers in first row
+        $row = fgetcsv($handle, 10500, $delimiter, $enclosure, $escape);
+        ini_set('max_execution_time', '120');
+        // NOTE: Trying to create and persist entities causes either
+        // a timeout, or an out of memory error.
+        // Fallback to AdoDb in order to get the job done.
+        // Without bulk inserts, the import would still take 700+ seconds.
+        // With bulk inserts of 100 or more records, it takes less than
+        // 10 seconds.
+        $db = $this->cx->getDb()->getAdoDb();
+        $queries = [];
+        $i = 0;
         while (true) {
             // "verbindungsstring" property values may be
             // up to 10,000 characters (according to the YAML).
+            // Mind that these CSV files use ISO-8859-1!
             $row = fgetcsv($handle, 10500, $delimiter, $enclosure, $escape);
             if ($row === false) {
                 break;
@@ -478,30 +490,65 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 //            if ($tablename === 'journey') {
 //                array_pop($row);
 //            }
-            if (!$header) {
-                $header = true;
-                continue;
-            }
-            $entity = new $className();
             if ($tablename === 'connection') {
-                $entity->setVerbindungsnummer($row[0]);
-                $entity->setSequenznummer($row[1]);
-                $entity->setVerbindungsstring($row[2]);
+                $queries[] = sprintf('
+                    (%1$u, \'%2$s\', \'%3$s\')',
+                    $row[0], addslashes($row[1]), addslashes($row[2]));
+
             }
             if ($tablename === 'journey') {
-                $entity->setAtt($row[0]);
-                $entity->setReisedat($row[1]);
-                $entity->setVerbnr($row[2]);
-                $entity->setRbn($row[3]);
-                $entity->setReisen($row[4]);
-                $entity->setD($row[5]);
-                $entity->setAtStart($row[6]);
-                $entity->setAtRecs($row[7]);
+                $reisedat = new \DateTime($row[1]);
+                $row[1] = $reisedat->format('Y-m-d');
+                $queries[] = sprintf('
+                    (%1$u, \'%2$s\', \'%3$s\', %4$u,
+                    %5$u, \'%6$s\', \'%7$s\', \'%8$s\')',
+                    $row[0], addslashes($row[1]), addslashes($row[2]), $row[3],
+                    $row[4], addslashes($row[5]), addslashes($row[6]), addslashes($row[7]));
             }
-            $em->persist($entity);
+            // Note: With 500 records, the queries are too long.
+            // 400 works, 200 is pretty safe.
+            if (++$i % 200 === 0) {
+                static::bulkInsert($db, $tablename, $queries);
+                $queries = [];
+            }
+        }
+        if ($queries) {
+            static::bulkInsert($db, $tablename, $queries);
+            $queries = [];
         }
         fclose($handle);
         return true;
+    }
+
+    /**
+     * Insert a bunch of prepared records
+     *
+     * Mind that the query is converted from ISO-8859-1 to UTF-8.
+     * @param   \ADOConnection  $db
+     * @param   string          $tablename
+     * @param   array           $queries
+     */
+    protected static function bulkInsert(
+        \ADOConnection $db, string $tablename, array $queries)
+    {
+        $query = '';
+        if ($tablename === 'connection') {
+            $query = '
+                INSERT INTO `contrexx_module_chdirtravellog_connection`(
+                    `verbindungsnummer`, `sequenznummer`, `verbindungsstring`
+                )';
+        }
+        if ($tablename === 'journey') {
+            $query = '
+                INSERT INTO `contrexx_module_chdirtravellog_journey`(
+                    `att`, `reisedat`, `verbnr`, `rbn`,
+                    `reisen`, `d`, `at_start`, `at_recs`
+                )';
+        }
+        $query .= ' VALUES ' . mb_convert_encoding(
+            join(',', $queries), 'UTF-8', 'ISO-8859-1'
+        );
+        $db->Execute($query);
     }
 
     function getFileLink($journeyNr, $urlOnly = null)
