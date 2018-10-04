@@ -177,8 +177,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'TRAVELLOG_SELECTED_JOURNEY' => $selectJourney,
         ]);
         if (empty($paramsGet['search'])) {
-//            $template->hideBlock('travellog_journeys');
-//            $template->hideBlock('travellog_connections');
             return;
         }
         $pos = intval($paramsGet['pos'] ?? 0);
@@ -198,8 +196,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
         if ($count === 0) {
             $template->touchBlock('travellog_no_results');
-//            $template->hideBlock('travellog_journeys');
-//            $template->hideBlock('travellog_connections');
         }
     }
 
@@ -284,8 +280,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             .' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '" />'
             .'</a>',
         ]);
-//        $template->parse('travellog_journeys');
-//        $template->hideBlock('travellog_connections');
         foreach ($journeys as $journey) {
             $template->setVariable([
                 'TRAVELLOG_JOURNEY_RNB_LINK' =>
@@ -370,8 +364,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             .' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '" />'
             .'</a>',
         ]);
-//        $template->parse('travellog_connections');
-//        $template->hideBlock('travellog_journeys');
         $connectionRepo = $this->cx->getDb()->getEntityManager()->getRepository(
             'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
         );
