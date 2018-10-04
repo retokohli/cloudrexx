@@ -555,14 +555,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
         global $_ARRAYLANG;
         $dataRoot = static::getDataFolder();
+        $pdfRoot = static::getPdfFolder();
         $projectName = static::getProjectName();
         $journeyIcon = '<img src="' . $this->getIconFolderPath() . 'pdf.png"'
             . ' style="height: 20px; width: auto; margin: 0 !important;"'
             . ' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
             . ' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
             . ' />';
-        $journeyPath = $dataRoot
-            . 'pdf/' . $projectName . '_' . $journeyNr . '.pdf';
+        $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '.pdf';
 \DBG::log($journeyPath);
         $domain = $this->cx->getRequest()->getUrl()->getDomain();
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
@@ -574,8 +574,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             return '<a target="_blank" href="' . $journeyPath . '" >'
                 . $journeyIcon . '</a>';
         }
-        $journeyPath = $dataRoot
-            . 'pdf/' . $projectName . '_' . $journeyNr . '_F.pdf';
+        $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '_F.pdf';
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
             if ($urlOnly) {
                 return '//' . $domain . $journeyPath;
