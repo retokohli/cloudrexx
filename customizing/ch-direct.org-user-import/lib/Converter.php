@@ -85,8 +85,10 @@ class Converter
      */
     public static function initUsers()
     {
-        $sqlQueries[] = 'REPLACE INTO `' . Config::DBPREFIX . 'access_users`'
+        $sqlQueries[] = 'INSERT INTO `' . Config::DBPREFIX . 'access_users`'
             . ' (`id`) VALUES (' . static::user_id_upper . ');';
+        $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_users`'
+            . ' WHERE `id`=' . static::user_id_upper . ';';
         $whereCondition = ' BETWEEN ' . static::user_id_lower
             . ' AND ' . static::user_id_upper;
         $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_users`'
