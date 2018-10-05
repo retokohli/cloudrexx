@@ -211,7 +211,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 break;
         }
         if ($count === 0) {
-            $template->touchBlock('travellog_no_result');
+            $template->touchBlock('chdirtravellog_no_result');
         }
     }
 
@@ -416,7 +416,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     $journey->getVerbnr(),
                 'CHDIRTRAVELLOG_JOURNEY_CONNECTION_NAME' => $connectionName,
             ]);
-            $template->parse('travellog_journey');
+            $template->parse('chdirtravellog_journey');
         }
     }
 
