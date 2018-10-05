@@ -36,6 +36,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Set up the frontend view
      * @param   \Cx\Core\Html\Sigma $template
      * @param   string              $cmd
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
@@ -51,6 +52,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getProjectName(): string
     {
@@ -62,6 +64,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getProjectNames(): array
     {
@@ -75,6 +78,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getDataFolder()
     {
@@ -86,6 +90,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getPdfFolder()
     {
@@ -97,6 +102,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getCsvDelimiter()
     {
@@ -108,6 +114,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getCsvEnclosure()
     {
@@ -119,6 +126,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getCsvEscape()
     {
@@ -130,6 +138,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Mind that the Settings must have been initialized.
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getLastSyncTime()
     {
@@ -142,6 +151,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Mind that the Settings must have been initialized.
      * @param   integer $lastSyncTime
      * @return  bool|null
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function setLastSyncTime($lastSyncTime)
     {
@@ -155,6 +165,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Set up the search view
      * @global  array               $_CORELANG
      * @param   \Cx\Core\Html\Sigma $template
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function viewSearch(\Cx\Core\Html\Sigma $template)
     {
@@ -210,6 +221,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   int     $pos
      * @param   bool    $exportCsv
      * @return  int                 The total result count
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function showConnections(
         \Cx\Core\Html\Sigma $template,
@@ -299,6 +311,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   int     $pos
      * @param   bool    $exportCsv
      * @return  int                 The total result count
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function showJourneys(
         \Cx\Core\Html\Sigma $template,
@@ -368,6 +381,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   \Cx\Core\Html\Sigma $template
      * @param   string  $projectName
      * @param   array   $journeys
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function parseJourneys(
         \Cx\Core\Html\Sigma $template, string $projectName, iterable $journeys
@@ -410,6 +424,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Skips updating iff neither of the files has been modified.
      * Updates the last sync timestamp iff all updates were successful.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function importCsv()
     {
@@ -458,6 +473,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   string  $projectName
      * @param   \Cx\Lib\FileSystem\FileSystemFile   $file
      * @return  bool                    True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function csv2db(
         string $tablename, string $projectName,
@@ -552,6 +568,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   \ADOConnection  $db
      * @param   string          $tablename
      * @param   array           $queries
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function bulkInsert(
         \ADOConnection $db, string $tablename, array $queries)
@@ -586,6 +603,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   int     $journeyNr
      * @param   bool    $urlOnly       Exclude all HTML if true
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getFileLink(
         string $projectName, int $journeyNr, bool $urlOnly = false
@@ -637,6 +655,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   string      $projectName
      * @param   string      $filename
      * @param   iterable    $journeys
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function exportCsv(
         string $projectName, string $filename, iterable $journeys
@@ -686,6 +705,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * Return the icons folder path, relative to the document root
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function getIconFolderPath(): string
     {

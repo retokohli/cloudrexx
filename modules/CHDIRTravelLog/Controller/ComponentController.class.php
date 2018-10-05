@@ -29,7 +29,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Return the Controller class names for this component (except this)
-     * @return array List of Controller class names (without namespace)
+     * @return  array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public function getControllerClasses()
     {

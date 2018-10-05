@@ -29,6 +29,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 {
     /**
      * @return  boolean     True if overview should be shown, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function showOverviewPage()
     {
