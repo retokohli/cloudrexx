@@ -28,13 +28,6 @@ CREATE TABLE `contrexx_module_chdirtravellog_connection` (
 );
 ALTER TABLE `contrexx_module_chdirtravellog_connection`
 ADD INDEX `unique` (`project`, `verbindungsnummer`);
-INSERT INTO `contrexx_module_chdirtravellog_connection` (
-  `project`, `verbindungsnummer`, `sequenznummer`, `verbindungsstring`
-)
-(
-  SELECT 'GAN16', `Verbindungsnummer`, `Sequenznummer`, `Verbindungsstring`
-  FROM `contrexx_module_travellog_connection`
-);
 DROP TABLE IF EXISTS `contrexx_module_chdirtravellog_journey`;
 CREATE TABLE `contrexx_module_chdirtravellog_journey` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -55,12 +48,21 @@ ADD INDEX `reisedat` (`reisedat`),
 ADD INDEX `verbnr` (`verbnr`),
 ADD INDEX `rbn` (`rbn`),
 ADD INDEX `d` (`d`);
-INSERT INTO `contrexx_module_chdirtravellog_journey` (
-  `project`, `att`, `reisedat`,
-  `verbnr`, `rbn`, `reisen`, `d`, `at_start`, `at_recs`
-)
-(
-  SELECT 'GAN16', `ATT`, STR_TO_DATE(`REISEDAT`, '%d.%m.%Y'),
-      `VERBNR`, `RBN`, `REISEN`, `D`, `AT_START`, `AT_RECS`
-  FROM `contrexx_module_travellog_journey`
-);
+-- You may run these optionally, given that the original tables are present.
+-- Otherwise, the import is initially triggered by opening the frontend view.
+-- INSERT INTO `contrexx_module_chdirtravellog_connection` (
+--   `project`, `verbindungsnummer`, `sequenznummer`, `verbindungsstring`
+-- )
+-- (
+--   SELECT 'GAN16', `Verbindungsnummer`, `Sequenznummer`, `Verbindungsstring`
+--   FROM `contrexx_module_travellog_connection`
+-- );
+-- INSERT INTO `contrexx_module_chdirtravellog_journey` (
+--   `project`, `att`, `reisedat`,
+--   `verbnr`, `rbn`, `reisen`, `d`, `at_start`, `at_recs`
+-- )
+-- (
+--   SELECT 'GAN16', `ATT`, STR_TO_DATE(`REISEDAT`, '%d.%m.%Y'),
+--       `VERBNR`, `RBN`, `REISEN`, `D`, `AT_START`, `AT_RECS`
+--   FROM `contrexx_module_travellog_journey`
+-- );
