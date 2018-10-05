@@ -80,7 +80,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function getDataFolder()
+    protected static function getDataFolder(): string
     {
         return \Cx\Core\Setting\Controller\Setting::getValue('data_folder');
     }
@@ -92,7 +92,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function getPdfFolder()
+    protected static function getPdfFolder(): string
     {
         return \Cx\Core\Setting\Controller\Setting::getValue('pdf_folder');
     }
@@ -104,7 +104,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function getCsvDelimiter()
+    protected static function getCsvDelimiter(): string
     {
         return \Cx\Core\Setting\Controller\Setting::getValue('csv_delimiter');
     }
@@ -116,7 +116,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function getCsvEnclosure()
+    protected static function getCsvEnclosure(): string
     {
         return \Cx\Core\Setting\Controller\Setting::getValue('csv_enclosure');
     }
@@ -128,7 +128,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function getCsvEscape()
+    protected static function getCsvEscape(): string
     {
         return \Cx\Core\Setting\Controller\Setting::getValue('csv_escape');
     }
@@ -137,10 +137,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Return the last synchronize time from the Settings
      *
      * Mind that the Settings must have been initialized.
-     * @return  string
+     * @return  int
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function getLastSyncTime()
+    protected static function getLastSyncTime(): int
     {
         return \Cx\Core\Setting\Controller\Setting::getValue('last_sync_time');
     }
@@ -153,7 +153,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @return  bool|null
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function setLastSyncTime($lastSyncTime)
+    protected static function setLastSyncTime(int $lastSyncTime)
     {
         \Cx\Core\Setting\Controller\Setting::set(
             'last_sync_time', $lastSyncTime
@@ -226,8 +226,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function showConnections(
         \Cx\Core\Html\Sigma $template,
         string $projectName, string $searchTerm, int $pos, bool $exportCsv
-    ): int
-    {
+    ): int {
         global $_ARRAYLANG, $_CONFIG;
         $arrConnection = explode('.', $searchTerm);
         $connectionRepo = $this->cx->getDb()->getEntityManager()->getRepository(
@@ -316,8 +315,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function showJourneys(
         \Cx\Core\Html\Sigma $template,
         string $projectName, string $searchTerm, int $pos, bool $exportCsv
-    ): int
-    {
+    ): int {
         global $_ARRAYLANG, $_CONFIG;
         $em = $this->cx->getDb()->getEntityManager();
         $qb = $em->createQueryBuilder();
@@ -478,8 +476,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     function csv2db(
         string $tablename, string $projectName,
         \Cx\Lib\FileSystem\FileSystemFile $file
-    ): bool
-    {
+    ): bool {
         global $_ARRAYLANG;
         $filePath = $file->getAbsoluteFilePath();
         $handle = fopen($filePath, 'r');
@@ -568,8 +565,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function bulkInsert(
-        \ADOConnection $db, string $tablename, array $queries)
-    {
+        \ADOConnection $db, string $tablename, array $queries
+    ) {
         $query = '';
         if ($tablename === 'connection') {
             $query = '
@@ -604,8 +601,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     function getFileLink(
         string $projectName, int $journeyNr, bool $urlOnly = false
-    ): string
-    {
+    ): string {
         global $_ARRAYLANG;
         $pdfRoot = static::getPdfFolder();
         $projectName = static::getProjectName();
