@@ -523,7 +523,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             if ($tablename === 'connection') {
                 // project, verbindungsnummer, sequenznummer, verbindungsstring
                 $queries[] = sprintf('
-                    (%1$s, \'%2$u\', \'%3$s\', \'%4$s\')',
+                    (\'%1$s\', %2$u, \'%3$s\', \'%4$s\')',
                     $projectName, $row[0], addslashes($row[1]),
                     addslashes($row[2])
                 );
@@ -534,7 +534,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 // project, att, reisedat, verbnr, rbn,
                 // reisen, d, at_start, at_recs
                 $queries[] = sprintf('
-                    (%1$s, \'%2$u\', \'%3$s\', \'%4$s\', %5$u,
+                    (\'%1$s\', %2$u, \'%3$s\', \'%4$s\', %5$u,
                     %6$u, \'%7$s\', \'%8$s\', \'%9$s\')',
                     $projectName, $row[0], addslashes($row[1]),
                     addslashes($row[2]), $row[3],
@@ -573,13 +573,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if ($tablename === 'connection') {
             $query = '
                 INSERT INTO `contrexx_module_chdirtravellog_connection`(
-                    `verbindungsnummer`, `project`, `sequenznummer`, `verbindungsstring`
+                    `project`, `verbindungsnummer`,
+                    `sequenznummer`, `verbindungsstring`
                 )';
         }
         if ($tablename === 'journey') {
             $query = '
                 INSERT INTO `contrexx_module_chdirtravellog_journey`(
-                    `att`, `project`, `reisedat`, `verbnr`, `rbn`,
+                    `project`, `att`, `reisedat`, `verbnr`, `rbn`,
                     `reisen`, `d`, `at_start`, `at_recs`
                 )';
         }
