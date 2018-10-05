@@ -46,19 +46,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * Set up the frontend view
      * @param   \Cx\Core\Html\Sigma $template
+     * @param   string              $cmd
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
-\DBG::activate(DBG_PHP);
         \Cx\Core\Setting\Controller\Setting::init(
             $this->getName(), 'config', 'FileSystem'
         );
-// TODO: Is jQuery required?
-        \JS::activate('jquery');
         $this->importCsv();
         $this->viewSearch($template);
-// TODO: Probby not required
-//        return parent::parsePage($template, $cmd);
     }
 
     /**
@@ -523,13 +519,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             if ($row === false) {
                 break;
             }
-// TODO: Why were these fields cleared?
-//            if ($tablename === 'connection') {
-//                unset($row[1]);
-//            }
-//            if ($tablename === 'journey') {
-//                array_pop($row);
-//            }
             if ($tablename === 'connection') {
                 // verbindungsnummer, project, sequenznummer, verbindungsstring
                 $queries[] = sprintf('
@@ -624,15 +613,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
             . ' />';
         $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '.pdf';
-\DBG::log($journeyPath);
         $protocol = $this->cx->getRequest()->getUrl()->getProtocol();
         $domain = $this->cx->getRequest()->getUrl()->getDomain();
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
-\DBG::log('exists');
             if ($urlOnly) {
                 return $protocol . '://' . $domain . $journeyPath;
             }
-\DBG::log('does not exist');
             return '<a target="_blank" href="' . $journeyPath . '" >'
                 . $journeyIcon . '</a>';
         }
