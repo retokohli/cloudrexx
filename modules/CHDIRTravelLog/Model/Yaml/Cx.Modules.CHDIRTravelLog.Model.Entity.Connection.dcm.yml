@@ -2,14 +2,18 @@ Cx\Modules\CHDIRTravelLog\Model\Entity\Connection:
   type: entity
 #  repositoryClass: Cx\Modules\CHDIRTravelLog\Model\Repository\ConnectionRepository
   table: module_chdirtravellog_connection
+# This is a dummy ID, avoids trouble with the combined key (see index)
   id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
     verbindungsnummer:
       type: integer
+      nullable: false
       options:
         unsigned: true
-      generator:
-        strategy: none
-  fields:
     project:
       type: string
       length: 255
@@ -22,6 +26,6 @@ Cx\Modules\CHDIRTravelLog\Model\Entity\Connection:
       type: string
       length: 10000
       nullable: false
-  indexes:
-    project:
-      columns: [ project ]
+  uniqueConstraints:
+    unique:
+      columns: [ project, verbindungsnummer ]

@@ -491,16 +491,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             return false;
         }
         $em = $this->cx->getDb()->getEntityManager();
-        $className = '\\Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\'
+        $className = 'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\'
             . ucfirst($tablename);
-        // https://stackoverflow.com/a/17068337/3396113
-        $cmd = $em->getClassMetadata($className);
-        $connection = $em->getConnection();
-        $dbPlatform = $connection->getDatabasePlatform();
-        $connection->query('SET FOREIGN_KEY_CHECKS=0');
-        $query = $dbPlatform->getTruncateTableSql($cmd->getTableName());
-        $connection->executeUpdate($query);
-        $connection->query('SET FOREIGN_KEY_CHECKS=1');
+        $qb = $em->createQueryBuilder();
+        $qb->delete($className, 'e')
+            ->where($qb->expr()->eq('e.project', ':project'))
+            ->setParameter('project', $projectName);
+        $qb->getQuery()->execute();
         $delimiter = static::getCsvDelimiter();
         $enclosure = static::getCsvEnclosure();
         $escape = static::getCsvEscape();
@@ -546,9 +543,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     addslashes($row[6]), addslashes($row[7])
                 );
             }
-            // Note: With 500 records, the queries are too long.
-            // 400 works, 200 is pretty safe.
-            if (++$i % 200 === 0) {
+            // Note: With 1000 records,
+            // the longest queries are below 120K characters.
+            if (++$i % 1000 === 0) {
                 static::bulkInsert($db, $tablename, $queries);
                 $queries = [];
             }

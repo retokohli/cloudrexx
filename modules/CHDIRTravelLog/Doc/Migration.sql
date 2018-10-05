@@ -18,25 +18,23 @@
 -- AND `VERBNR` $regex
 -- ORDER BY `RBN` ASC, `resedat` ASC";
 -- --
-
 DROP TABLE IF EXISTS `contrexx_module_chdirtravellog_connection`;
 CREATE TABLE `contrexx_module_chdirtravellog_connection` (
-  `verbindungsnummer` int(11) unsigned NOT NULL PRIMARY KEY,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `project` varchar(255) NOT NULL,
+  `verbindungsnummer` int(11) unsigned NOT NULL,
   `sequenznummer` varchar(255) NOT NULL, -- never used
   `verbindungsstring` text NOT NULL
 );
 ALTER TABLE `contrexx_module_chdirtravellog_connection`
-ADD INDEX `project` (`project`);
+ADD INDEX `unique` (`project`, `verbindungsnummer`);
 INSERT INTO `contrexx_module_chdirtravellog_connection` (
-  `verbindungsnummer`, `project`, `sequenznummer`, `verbindungsstring`
+  `project`, `verbindungsnummer`, `sequenznummer`, `verbindungsstring`
 )
 (
-  SELECT `Verbindungsnummer`, 'GAN16', `Sequenznummer`, `Verbindungsstring`
+  SELECT 'GAN16', `Verbindungsnummer`, `Sequenznummer`, `Verbindungsstring`
   FROM `contrexx_module_travellog_connection`
 );
-
--- TODO: Is there any combination of keys to form a primary?
 DROP TABLE IF EXISTS `contrexx_module_chdirtravellog_journey`;
 CREATE TABLE `contrexx_module_chdirtravellog_journey` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +48,6 @@ CREATE TABLE `contrexx_module_chdirtravellog_journey` (
   `at_start` varchar(255) NOT NULL, -- never used
   `at_recs` varchar(255) NOT NULL -- never used
 );
--- INDEX
 ALTER TABLE `contrexx_module_chdirtravellog_journey`
 ADD INDEX `project` (`project`),
 ADD INDEX `att` (`att`),
@@ -58,14 +55,12 @@ ADD INDEX `reisedat` (`reisedat`),
 ADD INDEX `verbnr` (`verbnr`),
 ADD INDEX `rbn` (`rbn`),
 ADD INDEX `d` (`d`);
-
 INSERT INTO `contrexx_module_chdirtravellog_journey` (
-  `att`, `project`, `reisedat`,
+  `project`, `att`, `reisedat`,
   `verbnr`, `rbn`, `reisen`, `d`, `at_start`, `at_recs`
 )
 (
-  SELECT `ATT`, 'GAN16', STR_TO_DATE(`REISEDAT`, '%d.%m.%Y'),
+  SELECT 'GAN16', `ATT`, STR_TO_DATE(`REISEDAT`, '%d.%m.%Y'),
       `VERBNR`, `RBN`, `REISEN`, `D`, `AT_START`, `AT_RECS`
   FROM `contrexx_module_travellog_journey`
 );
-

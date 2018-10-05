@@ -30,12 +30,17 @@ class Connection
     /**
      * @var integer
      */
-    protected $verbindungsnummer;
+    protected $id;
 
     /**
      * @var string
      */
     protected $project;
+
+    /**
+     * @var integer
+     */
+    protected $verbindungsnummer;
 
     /**
      * @var string
@@ -48,26 +53,13 @@ class Connection
     protected $verbindungsstring;
 
     /**
-     * Set verbindungsnummer
-     *
-     * @param integer $verbindungsnummer
-     * @return Connection
-     */
-    public function setVerbindungsnummer($verbindungsnummer)
-    {
-        $this->verbindungsnummer = $verbindungsnummer;
-
-        return $this;
-    }
-
-    /**
-     * Get verbindungsnummer
+     * Get id
      *
      * @return integer
      */
-    public function getVerbindungsnummer()
+    public function getId()
     {
-        return $this->verbindungsnummer;
+        return $this->id;
     }
 
     /**
@@ -91,6 +83,29 @@ class Connection
     public function getProject()
     {
         return $this->project;
+    }
+
+    /**
+     * Set verbindungsnummer
+     *
+     * @param integer $verbindungsnummer
+     * @return Connection
+     */
+    public function setVerbindungsnummer($verbindungsnummer)
+    {
+        $this->verbindungsnummer = $verbindungsnummer;
+
+        return $this;
+    }
+
+    /**
+     * Get verbindungsnummer
+     *
+     * @return integer
+     */
+    public function getVerbindungsnummer()
+    {
+        return $this->verbindungsnummer;
     }
 
     /**
