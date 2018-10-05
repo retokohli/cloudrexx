@@ -38,8 +38,6 @@ namespace Cx\Core\Model\Model\Entity;
 /**
  * DATE as (primary) key support for Doctrine
  * @see https://stackoverflow.com/questions/17125863/symfony-doctrine-datetime-as-primary-key
- * @todo Perhaps this needs to be added in Db.class:
- *  $platform->markDoctrineTypeCommented(\Doctrine\DBAL\Types\Type::getType('datekey'));
  * @copyright   Cloudrexx AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @package     cloudrexx
