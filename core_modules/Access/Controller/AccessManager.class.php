@@ -1502,18 +1502,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
         }
 
-        //Clear cache
-        if ($clearCache) {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            $cx->getEvents()->triggerEvent(
-                'clearEsiCache',
-                array(
-                    'Widget',
-                    $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
-                )
-            );
-        }
-
         return $this->userList();
     }
 
@@ -2582,6 +2570,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                             $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                         )
                     );
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Access');
                 } else {
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_FAILED_SAVED'];
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'];
@@ -2589,7 +2578,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
         }
 
-        $curlAvailable = true;
+        $curlAvailable        = true;
+        $socialloginProviders = array();
         try {
             $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
         } catch (\Exception $e) {
@@ -2884,6 +2874,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Access');
             } else {
                 self::$arrStatusMsg['error'][] = $objAttribute->getErrorMsg();
             }
@@ -3167,6 +3158,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Access');
             } else {
                 self::$arrStatusMsg['error'][] = $objAttribute->getErrorMsg();
                 if ($objAttribute->getParent()) {

@@ -115,7 +115,39 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $this->recordCount = 0;
     }
 
-    function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
+    /**
+     * Load Entries for the given parameters
+     *
+     * Adds Entries to the $arrEntries property array.
+     * @global  array           $_ARRAYLANG
+     * @global  array           $_CORELANG
+     * @global  \ADOConnection  $objDatabase
+     * @global  InitCMS         $objInit
+     * @param   integer|null    $intEntryId         The Entry ID
+     * @param   integer|null    $intLevelId
+     * @param   integer|null    $intCatId
+     * @param   string|null     $strSearchTerm
+     * @param   boolean|null    $bolLatest
+     * @param   boolean|null    $bolUnconfirmed
+     * @param   boolean|null    $bolActive
+     * @param   integer|null    $intLimitStart
+     * @param   integer|string  $intLimitEnd
+     * @param   integer|null    $intUserId
+     * @param   boolean|null    $bolPopular
+     * @param   integer|null    $intCmdFormId
+     * @param   boolean|null    $bolReadyToConfirm
+     * @param   integer         $intLimit
+     * @param   integer         $intOffset
+     * @param   boolean         $associated         If true, load all Entries
+     *                                              associated with Entry ID
+     *                                              $intEntryId
+     */
+    function getEntries($intEntryId = null, $intLevelId = null,
+        $intCatId = null, $strSearchTerm = null, $bolLatest = null,
+        $bolUnconfirmed = null, $bolActive = null, $intLimitStart = null,
+        $intLimitEnd = 'n', $intUserId = null, $bolPopular = null,
+        $intCmdFormId = null, $bolReadyToConfirm = null, $intLimit = 0,
+        $intOffset = 0, $associated = false)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
@@ -147,6 +179,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strOrder = "rel_inputfield.`value` ASC";
         $strSlugField = '';
         $strJoinSlug = '';
+        $strJoinAssociated = $strWhereAssociated = '';
 
         $langId = static::getOutputLocale()->getId();
 
@@ -160,11 +193,21 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strWhereFormId = "AND (entry.`form_id` = ".$this->intCmdFormId.") ";
         }
 
-        if(!empty($this->intEntryId)) {
-            $strWhereEntryId = "AND (entry.`id` = ".$this->intEntryId.") ";
+        if ($associated) {
+            $strJoinAssociated = '
+                JOIN `' . DBPREFIX . 'module_mediadir_entry_associated_entry`
+                    AS `associated`
+                ON `associated`.`target_entry_id`=`entry`.`id`';
+            $strWhereAssociated = '
+                AND `associated`.`source_entry_id`=' . $intEntryId;
+            if ($this->arrSettings['settingsIndividualEntryOrder']) {
+                $strOrder = '`associated`.`ord` ASC';
+            }
+        } else {
+            if(!empty($this->intEntryId)) {
+                $strWhereEntryId = "AND (entry.`id` = ".$this->intEntryId.") ";
+            }
         }
-
-
         if(!empty($this->intUserId)) {
             $strWhereEntryId = "AND (entry.`added_by` = ".$this->intUserId.") ";
         }
@@ -188,7 +231,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strOrder = "entry.`popular_hits` DESC";
         }
 
-        if(empty($this->bolLatest) && empty($this->bolPopular) && $this->arrSettings['settingsIndividualEntryOrder'] == 1) {
+        if (!$associated
+            && empty($this->bolLatest) && empty($this->bolPopular)
+            && $this->arrSettings['settingsIndividualEntryOrder'] == 1) {
             $strOrder = "entry.`order` ASC, rel_inputfield.`value` ASC";
         }
 
@@ -327,6 +372,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             ".$strJoinSlug."
             ".$strJoinCategory."
             ".$strJoinLevel."
+            $strJoinAssociated
             WHERE
                 rel_inputfield.`entry_id` = entry.`id`
                 ".$strWhereFirstInputfield."
@@ -340,6 +386,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 ".$strWhereFormId."
                 ".$strWhereReadyToConfirm."
                 ".$strWhereDuration."
+                $strWhereAssociated
             GROUP BY
                 entry.`id`
             ORDER BY
@@ -382,7 +429,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $arrEntry['slug_field_id'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug_field_id'] : 0;
                 $arrEntry['slug'] = $this->arrSettings['usePrettyUrls'] ? $objEntries->fields['slug'] : '';
                 $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
-
                 $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
 
                 $objEntries->MoveNext();
@@ -589,7 +635,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             case 2:
                 //Frontend View
                 if(!empty($this->arrEntries)) {
-                    foreach ($this->arrEntries as $key => $arrEntry) {
+                    foreach ($this->arrEntries as $arrEntry) {
                         if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                             $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
                             $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
@@ -641,7 +687,28 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->setVariable(array(
                                     'MEDIADIR_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
                                 ));
-                                }
+                            }
+
+                            if (
+                                $objTpl->blockExists(
+                                    $this->moduleNameLC . 'EntryRelatedList'
+                                ) && (
+                                    $this->countEntries() == 1 ||
+                                    $this->intLimitEnd == 1
+                                )
+                            ) {
+                                // parse related entries
+                                $objEntry = new MediaDirectoryEntry($this->moduleName);
+                                $objMediadir = new MediaDirectory('', $this->moduleName);
+                                $objMediadir->parseRelatedEntries(
+                                    $objTpl,
+                                    $objEntry,
+                                    $arrEntry['entryId'],
+                                    $this->intCatId,
+                                    $this->intLevelId,
+                                    'Entry'
+                                );
+                            }
 
                             if($this->arrSettings['settingsAllowVotes']) {
                                 $objVoting = new MediaDirectoryVoting($this->moduleName);
@@ -705,6 +772,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             } else {
                                 $strAlphaIndex = '#';
                             }
+                        }
+
+                        if (!isset($arrAlphaGroups[$strAlphaIndex])) {
+                            $arrAlphaGroups[$strAlphaIndex] = array();
                         }
 
                         $arrAlphaGroups[$strAlphaIndex][] = $arrEntry;
@@ -1328,7 +1399,7 @@ JSCODE;
 
             $arrAdditionalQuery[] = " `updated_by`='".$intUserId."'";
 
-            if(intval($arrData['userId']) != 0) {
+            if (isset($arrData['userId']) && intval($arrData['userId']) != 0) {
                 $arrAdditionalQuery[] = "`added_by`='".intval($arrData['userId'])."'";
             }
 
@@ -1490,6 +1561,9 @@ JSCODE;
                             $arrNewValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
                             foreach ($arrValues as $strKey => $strMasterValue) {
                                 if ($intLangId == $outputLocaleId) {
+                                    if (!isset($arrDefault[$intKey])) {
+                                        $arrDefault[$intKey] = array();
+                                    }
                                     if ($arrNewDefault[$strKey] != $strMasterValue) {
                                         if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
                                             $arrDefault[$intKey][$strKey] = $strMasterValue;
@@ -1501,6 +1575,9 @@ JSCODE;
                                     }
                                 } else {
                                     if ($arrNewValues[$strKey] == '') {
+                                        if (!isset($arrDefault[$intKey])) {
+                                            $arrDefault[$intKey] = array();
+                                        }
                                         $arrDefault[$intKey][$strKey] = $strMasterValue;
                                     } else {
                                         $arrDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId];
@@ -1554,7 +1631,9 @@ JSCODE;
                 }
             }
         }
-
+        $this->storeAssociatedEntryIds($intId,
+            isset($arrData['target_entry_ids'])
+                ? $arrData['target_entry_ids'] : []);
         if(empty($intEntryId)) {
             if($intReadyToConfirm == 1) {
                 new MediaDirectoryMail(1, $intId, $this->moduleName);
@@ -1577,7 +1656,13 @@ JSCODE;
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objMail = new MediaDirectoryMail(5, $intEntryId, $this->moduleName);
-
+        if (!$objDatabase->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_entry_associated_entry
+            WHERE `source_entry_id`=?
+            OR `target_entry_id`=?', [$intEntryId, $intEntryId])) {
+            return false;
+        }
         //delete entry
         $objDeleteEntry = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE `id`='".intval($intEntryId)."'");
 
@@ -1956,37 +2041,65 @@ JSCODE;
      */
     public function searchResultsForSearchModule($searchTerm)
     {
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-
-        // only list results in case the associated page of the module is active
-        $page = $pageRepo->findOneBy(array(
-            'module' => 'MediaDir',
-            'lang'   => FRONTEND_LANG_ID,
-            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-        ));
-
-        //If page is not exists or page is inactive then return empty result
-        if (!$page || !$page->isActive()) {
-            return array();
-        }
-
         //get the config site values
         \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
         $coreListProtectedPages   = \Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages','Config');
         $searchVisibleContentOnly = \Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly','Config');
+
         //get the config otherConfigurations value
         \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
         $searchDescriptionLength  = \Cx\Core\Setting\Controller\Setting::getValue('searchDescriptionLength','Config');
 
-        $hasPageAccess = true;
-        $isNotVisible = ($searchVisibleContentOnly == 'on') && !$page->isVisible();
-        if ($coreListProtectedPages == 'off' && $page->isFrontendProtected()) {
-            $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+        // fetch data about existing application pages of this component
+        $cmds = array();
+        $em = $this->cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $pages = $pageRepo->getAllFromModuleCmdByLang($this->moduleName);
+        foreach ($pages as $pagesOfLang) {
+            foreach ($pagesOfLang as $page) {
+                $cmds[] = $page->getCmd();
+            }
         }
 
-        //If the page is invisible and frontend access is denied then return empty result
-        if ($isNotVisible || !$hasPageAccess) {
+        // check if an application page is published
+        $cmds = array_unique($cmds);
+        foreach ($cmds as $idx => $cmd) {
+            // fetch application page with specific CMD from current locale
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmd, FRONTEND_LANG_ID);
+
+            // skip if page does not exist in current locale or has not been
+            // published
+            if (
+                !$page ||
+                !$page->isActive()
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+
+            // skip invisible page (if excluded from search)
+            if (
+                $searchVisibleContentOnly == 'on' &&
+                !$page->isVisible()
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+
+            // skip protected page (if excluded from search)
+            if (
+                $coreListProtectedPages == 'off' &&
+                $page->isFrontendProtected() &&
+                $page->getComponent('Session')->getSession() &&
+                !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+            ) {
+                unset($cmds[$idx]);
+                continue;
+            }
+        }
+
+        // abort in case no valid application page is published
+        if (empty($cmds)) {
             return array();
         }
 
@@ -2057,10 +2170,13 @@ JSCODE;
             }
 
             $results[] = array(
-                'Score'   => 100,
-                'Title'   => html_entity_decode(contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET),
-                'Content' => $content,
-                'Link'    => $pageUrlResult->toString()
+                'Score'     => 100,
+                'Title'     => html_entity_decode(
+                    contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET
+                ),
+                'Content'   => $content,
+                'Link'      => (string) $pageUrlResult,
+                'Component' => $this->moduleName,
             );
         }
         return $results;
@@ -2089,4 +2205,163 @@ JSCODE;
         $formId = $this->arrEntries[$entryId]['entryFormId'];
         return $this->objForm->arrForms[$formId];
     }
+
+    /**
+     * Return HTML options for selecting associated entries
+     *
+     * Includes active Entries of Forms associated with Form ID $formId only.
+     * Entries associated with $entryID have their "selected" attribute set.
+     * When creating a new Entry, $entryId should be null.
+     * @param   integer $formId
+     * @param   integer $entryId        The optional Entry ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public function getAssociatedEntriesOptions($formId, $entryId = null)
+    {
+        if (empty($this->arrEntries[$entryId])) {
+            $this->getEntries($entryId);
+        }
+        $options = $selected = [];
+        if ($entryId && isset($this->arrEntries[$entryId])) {
+            $entry = $this->arrEntries[$entryId];
+            try {
+                $options = $selected =
+                    array_flip($this->getAssociatedEntryIdsByEntryId($entryId));
+            } catch (\Exception $e) {
+                \DBG::log('ERROR: Failed to retrieve associated Entry IDs for ID '
+                    . $entryId . ': ' . $e->getMessage());
+            }
+        }
+        $form = new MediaDirectoryForm($formId, $this->moduleName);
+        $targetFormIds = [];
+        if (isset($form->arrForms[$formId])) {
+            $targetFormIds =
+                $form->arrForms[$formId]['target_form_ids'];
+        }
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        foreach ($targetFormIds as $targetFormId) {
+            $objEntry->getEntries(null, null, null, null, null, null, null,
+                null, 'n', null, null, $targetFormId);
+        }
+        foreach ($objEntry->arrEntries as $entry) {
+            $id = $entry['entryId'];
+            $value = join(', ', $entry['entryFields']);
+            // Update values for existing selected keys, append others
+            $options[$id] = $value;
+        }
+        return \Html::getOptions($options, $selected);
+    }
+
+    /**
+     * Return an array of Entry IDs associated to the given Entry ID
+     *
+     * Mind that the returned array may be empty.
+     * @param   integer     $entryId
+     * @return  array                   The ID array
+     * @throws  Exception               With the database error message
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public function getAssociatedEntryIdsByEntryId($entryId)
+    {
+        $objResult = $this->cx->getDb()->getAdoDb()->Execute('
+            SELECT `target_entry_id`
+            FROM ' . DBPREFIX . 'module_'
+            . $this->moduleTablePrefix . '_entry_associated_entry
+            WHERE `source_entry_id`=?
+            ORDER BY `ord` ASC',
+            [$entryId]);
+        if (!$objResult) {
+            throw new \Exception($this->cx->getDb()->getAdoDb()->ErrorMsg());
+        }
+        $entryIds = [];
+        while (!$objResult->EOF) {
+            $entryIds[] = intval($objResult->fields['target_entry_id']);
+            $objResult->MoveNext();
+        }
+        return $entryIds;
+    }
+
+    /**
+     * Store an array of target Entry IDs associated to the given source Entry ID
+     *
+     * Returns false on error.
+     * If the source Entry's Form is associated bidirectionally with
+     * the target form, Entries are also associated both ways.
+     * @param   integer $sourceEntryId
+     * @param   array   $targetEntryIds
+     * @return  boolean                 True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    protected function storeAssociatedEntryIds(
+        $sourceEntryId, array $targetEntryIds)
+    {
+        $this->deleteAssociatedEntryIds($sourceEntryId);
+        if (empty($this->arrEntries[$sourceEntryId])) {
+            $this->getEntries($sourceEntryId);
+        }
+        if (empty($this->arrEntries[$sourceEntryId])) {
+            return false;
+        }
+        $entry = $this->arrEntries[$sourceEntryId];
+        $form = new MediaDirectoryForm(null, $this->moduleName);
+        $sourceFormId = $entry['entryFormId'];
+        foreach ($targetEntryIds as $ord => $targetEntryId) {
+            $targetEntry = new MediaDirectoryEntry($this->moduleName);
+            $targetEntry->getEntries($targetEntryId);
+            if (empty($targetEntry->arrEntries[$targetEntryId])) {
+                continue;
+            }
+            $this->insertAssociatedEntryId(
+                $sourceEntryId, $targetEntryId, $ord);
+            $targetFormId =
+                $targetEntry->arrEntries[$targetEntryId]['entryFormId'];
+            $targetForm = $form->arrForms[$targetFormId];
+            $targetFormTargetFormIds = $targetForm['target_form_ids'];
+            if (in_array($sourceFormId, $targetFormTargetFormIds)) {
+                $this->insertAssociatedEntryId(
+                    $targetEntryId, $sourceEntryId, $ord);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Remove associated Entries for the given Entry ID
+     * @param   integer $entryId
+     * @return  boolean             True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    protected function deleteAssociatedEntryIds($entryId)
+    {
+        return (boolean)$this->cx->getDb()->getAdoDb()->Execute('
+            DELETE FROM ' . DBPREFIX . 'module_'
+                . $this->moduleTablePrefix . '_entry_associated_entry
+            WHERE `source_entry_id`=?',
+            [$entryId]);
+    }
+
+    /**
+     * Insert an associated Entry relation
+     *
+     * The relation is added one-way only, from source to target.
+     * Existing records are ignored.
+     * @param   integer $sourceEntryId
+     * @param   integer $targetEntryId
+     * @param   integer $ord
+     * @return  boolean                 True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    protected function insertAssociatedEntryId(
+        $sourceEntryId, $targetEntryId, $ord)
+    {
+        return (boolean)$this->cx->getDb()->getAdoDb()->Execute('
+            INSERT IGNORE INTO ' . DBPREFIX . 'module_'
+                . $this->moduleTablePrefix . '_entry_associated_entry (
+                `source_entry_id`, `target_entry_id`, `ord`
+            ) VALUES (
+                ?, ?, ?
+            )',
+            [$sourceEntryId, $targetEntryId, $ord]);
+    }
+
 }

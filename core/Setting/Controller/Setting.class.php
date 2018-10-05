@@ -604,6 +604,12 @@ class Setting{
               //Multiselect dropdown/Dropdown menu
               case self::TYPE_DROPDOWN_MULTISELECT:
                   $isMultiSelect = true;
+                  \JS::registerCode('
+                      cx.jQuery(document).ready(function() { 
+                        if (cx.jQuery(".chzn-select-multi").length > 0) { 
+                            cx.jQuery(".chzn-select-multi").chosen({width: "' . self::DEFAULT_INPUT_WIDTH  . 'px"}); 
+                        } 
+                      });');
               case self::TYPE_DROPDOWN:
                 $matches   = null;
                 $arrValues = $arrSetting['values'];
@@ -616,7 +622,7 @@ class Setting{
                 $elementName   = $isMultiSelect ? $name.'[]' : $name;
                 $value         = $isMultiSelect ? self::splitValues($value) : $value;
                 $elementValue  = is_array($value) ? array_flip($value) : $value;
-                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
+                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select-multi"' : '';
                 $element       = \Html::getSelect(
                                     $elementName, $arrValues, $elementValue,
                                     '', '',
@@ -630,7 +636,7 @@ class Setting{
               case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = \Html::getSelect(
                     $name,
-                    User_Profile_Attribute::getCustomAttributeNameArray(),
+                    \User_Profile_Attribute::getCustomAttributeNameArray(),
                     $arrSetting['value'], '', '',
                     'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
                 );
@@ -638,7 +644,7 @@ class Setting{
               case self::TYPE_DROPDOWN_USERGROUP:
                 $element = \Html::getSelect(
                     $name,
-                    UserGroup::getNameArray(),
+                    \UserGroup::getNameArray(),
                     $arrSetting['value'],
                     '', '', 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
                 );
@@ -672,7 +678,7 @@ class Setting{
                         // Set the ID only if the $value is non-empty.
                         // This toggles the file name and delete icon on or off
                         $name, ($value ? $name : false),
-                        Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
+                        \Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
                         // "values" defines the MIME types allowed
                         $arrSetting['values'],
                         'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''), true,
@@ -1042,7 +1048,16 @@ class Setting{
                 }
                 //\DBG::log('setting value ' . $name . ' = ' . $value);
                 self::set($name, $value);
-            } elseif ($arrSettings[$name]['type'] == self::TYPE_CHECKBOX && $arrSettings[$name]['group'] == $submittedGroup) {
+            } elseif (
+                in_array(
+                    $arrSettings[$name]['type'],
+                    array(
+                        self::TYPE_CHECKBOX,
+                        self::TYPE_DROPDOWN_MULTISELECT,
+                    )
+                ) &&
+                $arrSettings[$name]['group'] == $submittedGroup
+            ) {
                 self::set($name, null);
             }
         }

@@ -383,7 +383,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entry')
                     ) {
                         $objEntry = new MediaDirectoryEntry($this->moduleName);
-                        $objEntry->getEntries(null, $arrLevel['levelId'], null, null, false, null, true);
+                        $objEntry->getEntries(null, $arrLevel['levelId'], $categoryId, null, false, null, true);
                         if ($objEntry->countEntries()) {
                             // set mediadirCategoriesLevels_row_N_entry tempalte block to be parsed
                             $objEntry->setStrBlockName($this->moduleNameLC.'CategoriesLevels_row_'. $intBlockId . '_entry');
@@ -503,7 +503,10 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $spacer .= "&nbsp;";
                     }
 
-                    if(in_array($arrLevel['levelId'], $this->arrSelectedLevels)) {
+                    if (
+                        $this->arrSelectedLevels &&
+                        in_array($arrLevel['levelId'], $this->arrSelectedLevels)
+                    ) {
                         $this->strSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
                     } else {
                         $this->strNotSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';

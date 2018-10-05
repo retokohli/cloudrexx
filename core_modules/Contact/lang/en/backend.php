@@ -233,4 +233,7 @@ $_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Date & Time";
 $_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS']  = "Choose customer groups";
 $_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP']  = "Assign to CRM customer group";
 $_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'] = "Set the customer groups to which the new CRM contact shall be assigned to.";
+$_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS'] = "Store contact submissions";
+$_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSION_DATA_IN_DB'] = "Store contact submissions in the database";
+$_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS_NOTE'] = "Activate this option to store the contact submissions in the database. Important: In most countries it is prohibited to store (and eventually process) any personal data without consens of the affected person. Please ensure to comply with any applicable law before activating the storage of contact submissions.";
 ?>

@@ -130,6 +130,11 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $page->setContent('');
             return;
         }
+
+        // we must force user based cache as the form might contain
+        // user attribute fields data
+        $cx->getComponent('Cache')->forceUserbasedPageCache();
+
         $theme = $themeRepo->findById(\Env::get('init')->getCurrentThemeId());
         $useCaptcha =
             !\FWUser::getFWUserObject()->objUser->login() &&
@@ -157,6 +162,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         $objCrmLibrary->addCrmContact($arrFormData);
                     }
                     $this->sendMail($arrFormData);
+                    $this->dropUploads($arrFormData);
                     if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
                         $formTemplate->hideFormText();
                         $formTemplate->hideForm();
@@ -215,6 +221,8 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
 // TODO: check if _uploadFiles does something dangerous with $arrFormData['fields'] (this is raw data!)
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
+            $arrFormData['data'] = array();
+            $arrFormData['meta'] = array();
             foreach ($_POST as $key => $value) {
                 if ((($value === '0') || !empty($value)) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
                     $id = intval(substr($key, 17));
@@ -632,6 +640,11 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         if(!$this->legacyMode)
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields'], true);
 
+        $arrSettings = $this->getSettings();
+        if (!$arrSettings['storeFormSubmissions']) {
+            return true;
+        }
+
         $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_data
                                         (`id_form`, `id_lang`, `time`, `host`, `lang`, `browser`, `ipaddress`)
                                         VALUES
@@ -795,6 +808,9 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         // a recipient mail address which has been picked by sender
         $chosenMailRecipient = null;
 
+        // fetch settings
+        $arrSettings = $this->getSettings();
+
         // fill the html and plaintext body with the submitted form data
         foreach ($arrFormData['fields'] as $fieldId => $arrField) {
             if($fieldId == 'unique_id') //generated for uploader. no interesting mail content.
@@ -821,8 +837,15 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     if (isset($arrFormData['uploadedFiles'][$fieldId])) {
                         $htmlValue = "<ul>";
                         foreach ($arrFormData['uploadedFiles'][$fieldId] as $file) {
-                            $htmlValue .= "<li><a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a></li>";
-                            $plaintextValue  .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().$file['path']."\r\n";
+                            // only add uploaded files as links if form
+                            // submission storage is enabled
+                            if ($arrSettings['storeFormSubmissions']) {
+                                $htmlValue .= "<li><a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a></li>";
+                                $plaintextValue  .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().$file['path']."\r\n";
+                            } else {
+                                $htmlValue .= "<li>".contrexx_raw2xhtml($file['name'])."</li>";
+                                $plaintextValue  .= $file['name']."\r\n";
+                            }
                         }
                         $htmlValue .= "</ul>";
                     }
@@ -869,14 +892,14 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     if ($objTemplate->blockExists('field_'.$fieldId)) {
                         // parse field specific template block
                         $objTemplate->setVariable(array(
-                            'FIELD_'.$fieldId.'_LABEL' => contrexx_raw2xhtml($fieldLabel),
+                            'FIELD_'.$fieldId.'_LABEL' => strip_tags($fieldLabel),
                             'FIELD_'.$fieldId.'_VALUE' => $htmlValue,
                         ));
                         $objTemplate->parse('field_'.$fieldId);
                     } elseif ($objTemplate->blockExists('form_field')) {
                         // parse regular field template block
                         $objTemplate->setVariable(array(
-                            'FIELD_LABEL'   => contrexx_raw2xhtml($fieldLabel),
+                            'FIELD_LABEL'   => strip_tags($fieldLabel),
                             'FIELD_VALUE'   => $htmlValue,
                         ));
                         $objTemplate->parse('form_field');
@@ -899,8 +922,6 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             }
 
         }
-
-        $arrSettings = $this->getSettings();
 
 // TODO: this is some fixed plaintext message data -> must be ported to html body
         $message  = $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM']." ".$_CONFIG['domainUrl']."\n\n";
@@ -989,6 +1010,37 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
     }
 
     /**
+     * Drop any submitted files in case the storage of form submission
+     * is not allowed
+     *
+     * @param   array   $arrFormData    Details of the contact request
+     */
+    protected function dropUploads($arrFormData) {
+        $arrSettings = $this->getSettings();
+
+        // abort in case storage of form submission is allowed
+        if ($arrSettings['storeFormSubmissions']) {
+            return;
+        }
+
+        // abort in case no files have been submitted
+        if (!count($arrFormData['uploadedFiles'])) {
+            return;
+        }
+
+        // drop any uploaded files
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        foreach (array_keys($arrFormData['uploadedFiles']) as $fieldId) {
+            if (!isset($this->depositionTarget[$fieldId])) {
+                continue;
+            }
+            $path = $cx->getWebsiteDocumentRootPath() .
+                $this->depositionTarget[$fieldId];
+            \Cx\Lib\FileSystem\FileSystem::delete_folder($path, true);
+        }
+    }
+
+    /**
      * Sort the form input data
      *
      * Sorts the input data of the form according of the field's order.
@@ -1019,12 +1071,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
      */
     function _getEmailAdressOfString($string)
     {
-        $arrMatch = array();
-        if (preg_match('/'.\FWValidator::REGEX_EMAIL.'/', $string, $arrMatch)) {
-            return $arrMatch[0];
-        } else {
-            return false;
-        }
+        return current(\FWValidator::getEmailAsArray($string));
     }
 
     /**
@@ -1112,10 +1159,10 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
     protected static function getTemporaryUploadPath($fieldId)
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $session = $cx->getComponent('Session')->getSession();
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        $tempPath = $session->getTempPath();
+        $tempWebPath = $session->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not get temporary session folder');
 

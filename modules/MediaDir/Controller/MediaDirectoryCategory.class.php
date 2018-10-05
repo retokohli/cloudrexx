@@ -376,7 +376,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entry')
                     ) {
                         $objEntry = new MediaDirectoryEntry($this->moduleName);
-                        $objEntry->getEntries(null, null, $arrCategory['catId'], null, false, null, true);
+                        $objEntry->getEntries(null, $levelId, $arrCategory['catId'], null, false, null, true);
                         if ($objEntry->countEntries()) {
                             // set mediadirCategoriesLevels_row_N_entry tempalte block to be parsed
                             $objEntry->setStrBlockName($this->moduleNameLC.'CategoriesLevels_row_'. $intBlockId . '_entry');
@@ -499,7 +499,10 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $spacer .= "&nbsp;";
                     }
 
-                    if(in_array($arrCategory['catId'], $this->arrSelectedCategories)) {
+                    if (
+                        $this->arrSelectedCategories &&
+                        in_array($arrCategory['catId'], $this->arrSelectedCategories)
+                    ) {
                       $this->strSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';
                     } else {
                       $this->strNotSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';

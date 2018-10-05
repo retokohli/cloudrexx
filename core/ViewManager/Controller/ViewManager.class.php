@@ -2075,12 +2075,23 @@ CODE;
         $components = $objSystemComponent->findAll();
         $componentFiles = array();
         foreach ($components as $component) {
-            $componentDirectory = $cx->getClassLoader()->getFilePath(
-                $component->getDirectory(false) . '/View/Template/Frontend'
-            );
-            if (file_exists($componentDirectory)) {
-                foreach (glob("$componentDirectory/*") as $componentFile) {
-                   $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+            foreach (array('Template/Frontend', 'Style') as $offset) {
+                $componentDirectory = $cx->getClassLoader()->getFilePath(
+                    $component->getDirectory(false) . '/View/' . $offset
+                );
+                if (file_exists($componentDirectory)) {
+                    foreach (glob("$componentDirectory/*") as $componentFile) {
+                        if (
+                            substr($componentFile, -3, 3) == 'css' &&
+                            substr($componentFile, -12, 12) != 'Frontend.css'
+                        ) {
+                            continue;
+                        }
+                        if (!isset($componentFiles[$component->getType()])) {
+                            $componentFiles[$component->getType()] = array();
+                        }
+                        $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+                    }
                 }
             }
         }
@@ -2233,9 +2244,48 @@ CODE;
         } else {
             \JS::activate('ace');
 
-            $contenthtml = htmlspecialchars(
-                preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $this->fileSystem->readFile($file))
-            );
+            // fetch content from file
+            $content = $this->fileSystem->readFile($file);
+
+            // replace placeholder format
+            $content = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $content);
+
+            // escape special characters
+            $contenthtml = htmlspecialchars($content);
+
+            // check if file contains invalid characters
+            if (
+                strlen($content) &&
+                !strlen($contenthtml)
+            ) {
+                // replace invalid code unit sequences with a Unicode
+                // Replacement Character U+FFFD
+                $contenthtml = htmlspecialchars($content, ENT_SUBSTITUTE);
+
+
+                $invalidFileMessage = sprintf(
+                    $_ARRAYLANG['TXT_VIEWMANAGER_INVALID_FILE_ENCODING_MSG'],
+                    contrexx_raw2xhtml($file)
+                );
+                $confirmFileStorage = $invalidFileMessage . sprintf(
+                    $_ARRAYLANG['TXT_VIEWMANAGER_CONFIRM_INVALID_FILE_ENCODING'],
+                    contrexx_raw2xhtml($file)
+                );
+
+                // add warning box regarding done replacement
+                $objTemplate->setVariable(array(
+                    'VIEWMANAGER_INVALID_FILE_ENCODING' => $invalidFileMessage,
+                    'VIEWMANAGER_STORE_INVALID_ENCODING' => $confirmFileStorage,
+                ));
+                $objTemplate->parse('viewmanager_invalid_encoding');
+
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'fileEncodingIsInvalid', true, 'ViewManager'
+                );
+            } else {
+                $objTemplate->hideBlock('viewmanager_invalid_encoding');
+            }
+
             $objTemplate->setVariable('CONTENT_HTML', $contenthtml);
             $pathInfo = pathinfo(
                 $this->fileSystem->getFullPath($file) . $file->getFullName(),
@@ -2380,14 +2430,18 @@ CODE;
             return false;
         }
 
+        $offset = 'Template/Frontend';
+        if (substr($path, -3, 3) == 'css') {
+            $offset = 'Style';
+        }
         //get the Core Modules File path
         if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', $path)) {
-            return \Env::get('cx')->getCoreModuleFolderName() .'/'.$moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+            return \Env::get('cx')->getCoreModuleFolderName() .'/'.$moduleName . ($loadFromComponentDir ? '/View' : '') .'/'.$offset.'/' . $fileName;
         }
 
         //get the Modules File path
         if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', $path)) {
-            return \Env::get('cx')->getModuleFolderName() .'/'. $moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+            return \Env::get('cx')->getModuleFolderName() .'/'. $moduleName . ($loadFromComponentDir ? '/View' : '') .'/'.$offset.'/' . $fileName;
         }
 
         return false;

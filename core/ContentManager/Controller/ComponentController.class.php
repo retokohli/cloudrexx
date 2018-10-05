@@ -97,7 +97,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 //'CONTENT_TEXT',
                 'CSS_NAME',
                 'TXT_CORE_LAST_MODIFIED_PAGE',
-                'LAST_MODIFIED_PAGE'
+                'LAST_MODIFIED_PAGE',
+                'CANONICAL_LINK',
             ) as $widgetName
         ) {
             $widgetController->registerWidget(
@@ -155,14 +156,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\Node', $nodeListener);
 
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\LogEntry', new \Cx\Core\ContentManager\Model\Event\LogEntryEventListener());
-    }
 
-    /**
-     * Do something for search the content
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core\ContentManager\Model\Event\PageEventListener());
-   }
+        // Event register for search content
+        $evm->addEventListener('SearchFindContent', $pageListener);
+    }
 }

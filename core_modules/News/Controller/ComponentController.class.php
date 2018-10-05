@@ -46,6 +46,8 @@ namespace Cx\Core_Modules\News\Controller;
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {
+        // Return an empty array here to let the component handler know that there
+        // does not exist a backend, nor a frontend controller of this component.
         return array('JsonNews', 'EsiWidget');
     }
 
@@ -182,29 +184,44 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // Get Top news, News categories, News Archives, recent News Comments
         $widgetNames = array(
-            'TOP_NEWS_FILE'   => true,
-            'NEWS_CATEGORIES' => false,
-            'NEWS_ARCHIVES'   => true,
-            'NEWS_RECENT_COMMENTS_FILE' => false,
+            'TOP_NEWS_FILE' => 
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER,
+            'NEWS_CATEGORIES' => 
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_QUERY,
+            'NEWS_ARCHIVES' => 
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER,
+            'NEWS_RECENT_COMMENTS_FILE' => 0,
         );
-        foreach ($widgetNames as $widgetName => $esiVariable) {
+        foreach ($widgetNames as $widgetName => $esiVariables) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName
             );
+
+            // set common esi variables
             $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL |
+                $esiVariables
             );
-            if ($esiVariable) {
-                $widget->setEsiVariable(
-                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
-                );
-            }
+
             $widgetController->registerWidget(
                 $widget
             );
         }
+
+        // news category block widget
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'news_category_widget',
+            \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
+        );
+        $widget->setEsiVariable(
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_QUERY
+        );
+        $widgetController->registerWidget(
+            $widget
+        );
 
         // Register tag-cloud widget
         $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -238,6 +255,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget
             );
         }
+    }
+
+    /**
+     * Called for additional, component specific resolving
+     * 
+     * If /en/Path/to/Page is the path to a page for this component
+     * a request like /en/Path/to/Page/with/some/parameters will
+     * give an array like array('with', 'some', 'parameters') for $parts
+     * 
+     * This may be used to redirect to another page
+     * @todo filter arguments as in adjustResponse()
+     * @param array $parts List of additional path parts
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved virtual page
+     */
+    public function resolve($parts, $page) {
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $this->cx->getRequest()->getUrl()->getParamArray());
+        header('Link: <' . $canonicalUrl->toString() . '>; rel="canonical"');
     }
 
     /**
@@ -282,6 +316,40 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'Link',
             '<' . $canonicalUrl->toString() . '>; rel="canonical"'
         );
+
+        if (
+             !$page ||
+             $page->getModule() !== $this->getName() ||
+             !$page->getCmd() === 'details'
+        ) {
+            return;
+        }
+
+        $news = new News('');
+        $news->getNewsPage();
+
+        //Set title's, if news title is not empty
+        if (!empty($news->newsTitle)) {
+            $page->setTitle($news->newsTitle);
+            $page->setContentTitle($news->newsTitle);
+            $page->setMetatitle($news->newsTitle);
+        }
+
+        //Set meta description, if news teaser text is not empty
+        $metaDesc = $news->newsText;
+        if (!empty($news->getTeaser())) {
+            $metaDesc = $news->getTeaser();
+        }
+        $page->setMetadesc(contrexx_raw2xhtml(
+            contrexx_strip_tags(
+                html_entity_decode($metaDesc, ENT_QUOTES, CONTREXX_CHARSET)
+            )
+        ));
+
+        //Set meta image, if news thumbnail is not empty
+        if (!empty($news->newsThumbnail)) {
+            $page->setMetaimage($news->newsThumbnail);
+        }
     }
 
     /**

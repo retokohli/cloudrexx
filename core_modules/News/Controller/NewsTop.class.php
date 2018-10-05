@@ -190,6 +190,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     'NEWS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                     'NEWS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'NEWS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
+                    'NEWS_TIMESTAMP'    => $objResult->fields['date'],
                     'NEWS_TITLE'        => contrexx_raw2xhtml($newstitle),
                     'NEWS_TEASER'       => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
                     'NEWS_LINK_TITLE'   => $htmlLinkTitle,
@@ -213,9 +214,15 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     if ($this->_objTemplate->blockExists('news_image')) {
                         $this->_objTemplate->parse('news_image');
                     }
+                    if ($this->_objTemplate->blockExists('news_no_image')) {
+                        $this->_objTemplate->hideBlock('news_no_image');
+                    }
                 } else {
                     if ($this->_objTemplate->blockExists('news_image')) {
                         $this->_objTemplate->hideBlock('news_image');
+                    }
+                    if ($this->_objTemplate->blockExists('news_no_image')) {
+                        $this->_objTemplate->touchBlock('news_no_image');
                     }
                 }
 

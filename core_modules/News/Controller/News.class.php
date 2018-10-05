@@ -125,7 +125,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         default:
             if (substr($_REQUEST['cmd'], 0, 7) == 'details') {
                 // cache timeout: this article's end date
-                $details  = $this->getDetails($expirationDate);
+                $categoryId = intval(substr($_REQUEST['cmd'], 7));
+                $details  = $this->getDetails($expirationDate, $categoryId);
                 $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
                 $response->setExpirationDate($expirationDate);
                 return $details;
@@ -150,18 +151,29 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
      * Gets the news details
      *
      * @param  string $expirationDate Expiration date
+     * @param  integer $categoryId ID of category to output the latest news
+     *                             article from, in case the URL-argument
+     *                             newsid is not set and the placeholder
+     *                             NEWS_LIST_LATEST is present in the
+     *                             application template.
      * @return string parsed content
      */
-    private function getDetails(&$expirationDate = null)
+    private function getDetails(&$expirationDate = null, $categoryId = 0)
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        if (empty($_GET['newsid'])) {
+        if (!empty($_GET['newsid'])) {
+            $newsid = intval($_GET['newsid']);
+        } elseif ($this->_objTpl->placeholderExists('NEWS_LIST_LATEST')) {
+            try {
+                $newsid = $this->getIdOfLatestNewsArticle($categoryId);
+            } catch (NewsLibraryException $e) {}
+        }
+
+        if (empty($newsid)) {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
             exit;
         }
-
-        $newsid = intval($_GET['newsid']);
 
         $whereStatus    = '';
         $newsAccess     = \Permission::checkAccess(10, 'static', true);
@@ -228,8 +240,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsTeaser         = '';
         $redirect           = $objResult->fields['redirect'];
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
-        $url1               = contrexx_raw2xhtml($objResult->fields['url1']);
-        $url2               = contrexx_raw2xhtml($objResult->fields['url2']);
+        $url1               = $objResult->fields['url1'];
+        $url2               = $objResult->fields['url2'];
         $newsUrl            = '';
         $newsSource         = '';
         $newsLastUpdate     = !empty($lastUpdate)
@@ -274,11 +286,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
            'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE,$objResult->fields['date']),
            'NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME,$objResult->fields['date']),
+           'NEWS_TIMESTAMP'      => $objResult->fields['date'],
            'NEWS_TITLE'          => $newstitle,
            'NEWS_TEASER_TEXT'    => $newsTeaser,
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
            'NEWS_SOURCE'         => $newsSource,
            'NEWS_URL'            => $newsUrl,
+           'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
+           'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
            'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
@@ -336,9 +351,15 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if ($this->_objTpl->blockExists('news_image')) {
                 $this->_objTpl->parse('news_image');
             }
+            if ($this->_objTpl->blockExists('news_no_image')) {
+                $this->_objTpl->hideBlock('news_no_image');
+            }
         } else {
             if ($this->_objTpl->blockExists('news_image')) {
                 $this->_objTpl->hideBlock('news_image');
+            }
+            if ($this->_objTpl->blockExists('news_no_image')) {
+                $this->_objTpl->touchBlock('news_no_image');
             }
         }
 
@@ -531,6 +552,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
+               'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_TIMESTAMP'     => $objResult->fields['newsdate'],
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LINK_TITLE'    => $htmlLinkTitle,
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LINK'          => $htmlLink,
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LINK_TARGET'   => $linkTarget,
@@ -1049,6 +1071,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                    'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                    'NEWS_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
                    'NEWS_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
+                   'NEWS_TIMESTAMP'     => $objResult->fields['newsdate'],
                    'NEWS_LINK_TITLE'    => $htmlLinkTitle,
                    'NEWS_LINK'          => $htmlLink,
                    'NEWS_LINK_TARGET'   => $linkTarget,
@@ -1073,9 +1096,15 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     if ($this->_objTpl->blockExists('news_image')) {
                         $this->_objTpl->parse('news_image');
                     }
+                    if ($this->_objTpl->blockExists('news_no_image')) {
+                        $this->_objTpl->hideBlock('news_no_image');
+                    }
                 } else {
                     if ($this->_objTpl->blockExists('news_image')) {
                         $this->_objTpl->hideBlock('news_image');
+                    }
+                    if ($this->_objTpl->blockExists('news_no_image')) {
+                        $this->_objTpl->touchBlock('news_no_image');
                     }
                 }
 
@@ -1112,18 +1141,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         return $this->_objTpl->get();
     }
 
-
-    /**
-    * Gets the global page title
-    *
-    * @param     string    (optional)$pageTitle
-    */
-    public function getPageTitle($pageTitle='')
-    {
-        if (empty($this->newsTitle)) {
-            $this->newsTitle = $pageTitle;
-        }
-    }
 
     private function notifyWebmasterAboutNewlySubmittedNewsMessage($news_id)
     {
@@ -1818,6 +1835,7 @@ RSS2JSCODE;
                        'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['date']),
                        'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['date']),
                        'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['date']),
+                       'NEWS_ARCHIVE_TIMESTAMP'     => $news['date'],
                        'NEWS_ARCHIVE_LINK_TITLE'    => contrexx_raw2xhtml($newstitle),
                        'NEWS_ARCHIVE_LINK'          => $htmlLink,
                        'NEWS_ARCHIVE_LINK_TARGET'   => $linkTarget,

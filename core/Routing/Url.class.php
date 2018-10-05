@@ -240,28 +240,42 @@ class Url {
 
     /**
      * Checks wheter this Url points to a location within this installation
+     *
+     * The check works by checking if the domain of the url is a registered
+     * domain in the repo of \Cx\Core\Net\Model\Entity\Domain.
+     * If for some reason, the domain repo can't be loaded and the check is
+     * therefore unable to perform its task, it will return TRUE as fallback.
+     *
      * @todo This does not work correctly if setPath() is called from outside
      * @return boolean True for internal URL, false otherwise
      */
     public function isInternal() {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        try {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
-        // check domain
-        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
-            'Cx\Core\Net\Model\Entity\Domain'
-        );
-        if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
-            return false;
-        }
+            // check domain
+            $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
+                'Cx\Core\Net\Model\Entity\Domain'
+            );
+            if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
+                return false;
+            }
 
-        // check offset
-        $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
-        $providedOffset = $this->realPath;
-        if (
-            $installationOffset !=
-            substr($providedOffset, 0, strlen($installationOffset))
-        ) {
-            return false;
+            // check offset
+            $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
+            $providedOffset = $this->realPath;
+            if (
+                $installationOffset !=
+                substr($providedOffset, 0, strlen($installationOffset))
+            ) {
+                return false;
+            }
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            // In case the domain repository can't be loaded,
+            // doctrine's entity manager will throw an exception.
+            // We catch this exception for that specific case to make
+            // the web-installer work.
+            \DBG::msg($e->getMessage());
         }
         return true;
     }
@@ -498,7 +512,6 @@ class Url {
             if (isset($array['csrf'])) {
                 unset($array['csrf']);
             }
-            $array = self::encodeParams($array);
         }
         return $array;
     }
@@ -515,59 +528,7 @@ class Url {
             unset($array['csrf']);
         }
 
-        // Decode parameters since http_build_query() encodes them by default.
-        // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
-        $array = self::decodeParams($array);
-
-        return http_build_query($array, null, '&');
-    }
-
-    /**
-     * Url encode passed array (key and value).
-     *
-     * @access  public
-     * @param   array       $input
-     * @return  array       $output
-     */
-    public static function encodeParams($input = array()) {
-        $output = array();
-
-        foreach ($input as $key => $value) {
-            // First decode url before encode them (in case that the given string is already encoded).
-            // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
-            $key = urlencode(urldecode($key));
-
-            if (is_array($value)) {
-                $output[$key] = self::encodeParams($value);
-            } else {
-                $output[$key] = urlencode(urldecode($value));
-            }
-        }
-
-        return $output;
-    }
-
-    /**
-     * Url decode passed array (key and value).
-     *
-     * @access  public
-     * @param   array       $input
-     * @return  array       $output
-     */
-    public static function decodeParams($input = array()) {
-        $output = array();
-
-        foreach ($input as $key => $value) {
-            $key = urldecode($key);
-
-            if (is_array($value)) {
-                $output[$key] = self::decodeParams($value);
-            } else {
-                $output[$key] = urldecode($value);
-            }
-        }
-
-        return $output;
+        return http_build_query($array, null, '&', PHP_QUERY_RFC3986);
     }
 
     public function getTargetPath() {
