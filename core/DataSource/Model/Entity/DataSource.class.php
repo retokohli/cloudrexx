@@ -117,7 +117,7 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     /**
      * Set the options
      *
-     * @param string $options
+     * @param array $options
      */
     public function setOptions($options) {
         $this->options = $options;
@@ -126,10 +126,27 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     /**
      * Get the options
      *
-     * @return string $options
+     * @return array $options
      */
     public function getOptions() {
         return $this->options;
+    }
+
+    /**
+     * Get an option by key
+     * @param string $key Path to desired info, delimited by "."
+     * @return mixed Desired information or false if not found
+     */
+    public function getOption($key) {
+        $path = explode('.', $key);
+        $optionLevel = $this->options;
+        foreach ($path as $pathPart) {
+            if (!isset($optionLevel[$pathPart])) {
+                return false;
+            }
+            $optionLevel = $optionLevel[$pathPart];
+        }
+        return $optionLevel;
     }
 
     /**
