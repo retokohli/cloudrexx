@@ -142,7 +142,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected static function getLastSyncTime(): int
     {
-        return \Cx\Core\Setting\Controller\Setting::getValue('last_sync_time');
+        return intval(
+            \Cx\Core\Setting\Controller\Setting::getValue('last_sync_time')
+        );
     }
 
     /**
