@@ -602,30 +602,35 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Return the link to the PDF document
      *
      * Includes an icon in the <a> tag.
+     * Set $urlOnly to true in order to obtain the URL only; required for CSV.
      * @global  array   $_ARRAYLANG
      * @param   string  $projectName
      * @param   int     $journeyNr
      * @param   bool    $urlOnly       Exclude all HTML if true
-     * @return  type
+     * @return  string
      */
     function getFileLink(
         string $projectName, int $journeyNr, bool $urlOnly = false
-    ) {
+    ): string
+    {
         global $_ARRAYLANG;
         $pdfRoot = static::getPdfFolder();
         $projectName = static::getProjectName();
         $journeyIcon = '<img src="' . $this->getIconFolderPath() . 'pdf.png"'
             . ' style="height: 20px; width: auto; margin: 0 !important;"'
-            . ' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
-            . ' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
+            . ' title="'
+            . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
+            . ' alt="'
+            . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
             . ' />';
         $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '.pdf';
 \DBG::log($journeyPath);
+        $protocol = $this->cx->getRequest()->getUrl()->getProtocol();
         $domain = $this->cx->getRequest()->getUrl()->getDomain();
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
 \DBG::log('exists');
             if ($urlOnly) {
-                return '//' . $domain . $journeyPath;
+                return $protocol . '://' . $domain . $journeyPath;
             }
 \DBG::log('does not exist');
             return '<a target="_blank" href="' . $journeyPath . '" >'
@@ -634,13 +639,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '_F.pdf';
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
             if ($urlOnly) {
-                return '//' . $domain . $journeyPath;
+                return $protocol . '://' . $domain . $journeyPath;
             }
             return '<a target="_blank" href="' . $journeyPath . '" >'
                 . $journeyIcon . '</a>';
         }
         if ($urlOnly) {
-            return null;
+            return '';
         }
         return '<img src="' . $this->getIconFolderPath() . 'blank.gif"'
             . ' style="margin: 0 !important;"'
@@ -691,7 +696,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             }
             fputcsv($handle,
                 [
-                    $journey->getReisedat(),
+                    $journey->getReisedat()->format(static::date_format_ymd),
                     $journey->getVerbnr(),
                     $connectionName,
                     $journey->getReisen(),
