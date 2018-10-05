@@ -28,6 +28,17 @@ namespace Cx\Modules\CHDIRTravelLog\Controller;
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
 {
     /**
+     * Hide the subnavigation, display the general settings only
+     * @return  array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public function getCommands()
+    {
+        return ['Settings'];
+    }
+
+    /**
+     * Hide the overview
      * @return  boolean     True if overview should be shown, false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
