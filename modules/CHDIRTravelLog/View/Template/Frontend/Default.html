@@ -1,25 +1,37 @@
 <form action="" method="get">
   <fieldset>
     <div class="contact row">
-      <label>Projekt</label>
-      <select name="project">
-        {TRAVELLOG_PROJECT_OPTIONS}
-      </select>
+      <label>
+        {TXT_MODULE_CHDIRTRAVELLOG_PROJECT}
+        <select name="project">
+          {CHDIRTRAVELLOG_PROJECT_OPTIONS}
+        </select>
+      </label>
     </div>
     <div class="contact row">
-      <label>Nummer</label>
-      <input type="text" name="number" value="{TRAVELLOG_NUMBER}" />
+      <label>
+        {TXT_MODULE_CHDIRTRAVELLOG_NUMBER}
+        <input type="text" name="number" value="{CHDIRTRAVELLOG_NUMBER}" />
+      </label>
     </div>
     <div class="contact row">
-      <label>Eingabe der</label>
-      <select name="type">
-        <option value="connection" {TRAVELLOG_SELECTED_CONNECTION}>Verbindungsnummer</option>
-        <option value="journey" {TRAVELLOG_SELECTED_JOURNEY}>Reiseblattnummer</option>
-      </select>
+      <label>
+        {TXT_MODULE_CHDIRTRAVELLOG_SELECT_TYPE}
+        <select name="type">
+          <option value="connection"{CHDIRTRAVELLOG_SELECTED_CONNECTION}>
+            {TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_NUMBER}
+          </option>
+          <option value="journey"{CHDIRTRAVELLOG_SELECTED_JOURNEY}>
+            {TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_NUMBER}
+          </option>
+        </select>
+      </label>
     </div>
     <div class="contact row">
-      <label>&nbsp;</label>
-      <input type="submit" name="search" value="{TXT_SEARCH}" />
+      <label>
+        <input type="submit" name="search"
+               value="{TXT_MODULE_CHDIRTRAVELLOG_SEARCH}" />
+      </label>
       <div style="padding-top: 17px;">{BLOCK_70}</div>
     </div>
     <div class="contact row">
@@ -28,37 +40,53 @@
   </fieldset>
 </form>
 <!-- BEGIN travellog_journeys -->
-{TRAVELLOG_EXPORT_RESULTS}
+{CHDIRTRAVELLOG_EXPORT_RESULTS}
 <!-- BEGIN travellog_journey_info -->
-Abgefragte Verbindung: {TRAVELLOG_QUERIED_CONNECTION}<br />
-Anzahl Treffer: {TRAVELLOG_NUM_JOURNEYS}<br />
+{TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_QUERIED_COLON}
+{CHDIRTRAVELLOG_JOURNEY_QUERIED}<br />
+{TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_COUNT_COLON}
+{CHDIRTRAVELLOG_JOURNEY_COUNT}<br />
 <!-- END travellog_journey_info -->
 <!-- BEGIN travellog_connection_info -->
-Abgefragtes Reiseblatt: {TRAVELLOG_QUERIED_JOURNEY}<br />
-Anzahl Verbindungen: {TRAVELLOG_NUM_CONNECTIONS}<br />
+{TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_QUERIED_COLON}
+{CHDIRTRAVELLOG_CONNECTION_QUERIED}<br />
+{TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_COUNT_COLON}
+{CHDIRTRAVELLOG_CONNECTION_COUNT}<br />
 <!-- END travellog_connection_info -->
 <br />
 <table>
   <tr>
-    <th width="20%">&nbsp;Datum</th>
-    <th width="15%">Verbindung</th>
-    <th width="45%">Name</th>
-    <th width="10%" style="text-align: center;">Anzahl</th>
-    <th width="10%"  colspan="2">Reiseblatt&nbsp</th>
+    <th width="20%">
+      {TXT_MODULE_CHDIRTRAVELLOG_DATE}
+    </th>
+    <th width="15%">
+      {TXT_MODULE_CHDIRTRAVELLOG_CONNECTION}
+    </th>
+    <th width="45%">
+      {TXT_MODULE_CHDIRTRAVELLOG_NAME}
+    </th>
+    <th width="10%" style="text-align: center;">
+      {TXT_MODULE_CHDIRTRAVELLOG_COUNT}
+    </th>
+    <th width="10%"  colspan="2">
+      {TXT_MODULE_CHDIRTRAVELLOG_JOURNEY}
+    </th>
   </tr>
   <!-- BEGIN travellog_journey -->
   <tr>
-    <td>&nbsp;{TRAVELLOG_JOURNEY_DATE}</td>
-    <td>{TRAVELLOG_JOURNEY_CONNECTION_NR}</td>
-    <td>{TRAVELLOG_JOURNEY_CONNECTION_NAME}</td>
-    <td style="text-align: center;">{TRAVELLOG_JOURNEY_NUMOF_CONNECTION}</td>
-    <td>{TRAVELLOG_JOURNEY_RBN_LINK}</td>
-    <td style="vertical-align: middle !important;">{TRAVELLOG_JOURNEY_RBN}</td>
+    <td>{CHDIRTRAVELLOG_JOURNEY_DATE}</td>
+    <td>{CHDIRTRAVELLOG_JOURNEY_CONNECTION_NR}</td>
+    <td>{CHDIRTRAVELLOG_JOURNEY_CONNECTION_NAME}</td>
+    <td style="text-align: center;">{CHDIRTRAVELLOG_JOURNEY_CONNECTION_COUNT}</td>
+    <td>{CHDIRTRAVELLOG_JOURNEY_RBN_LINK}</td>
+    <td style="vertical-align: middle !important;">{CHDIRTRAVELLOG_JOURNEY_RBN}</td>
   </tr>
   <!-- END travellog_journey -->
 </table>
 <!-- END travellog_journeys -->
 <!-- BEGIN travellog_no_result -->
-<em>Keine Einträge gefunden</em>
+<em>
+  {TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_RESULT}
+</em>
 <!-- END travellog_no_result -->
-{TRAVELLOG_PAGING}
+{CHDIRTRAVELLOG_PAGING}

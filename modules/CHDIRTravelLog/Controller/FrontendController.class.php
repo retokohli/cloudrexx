@@ -185,12 +185,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
         $projectNames = static::getProjectNames();
         $template->setGlobalVariable([
-            'TRAVELLOG_PROJECT_OPTIONS' => \Html::getOptions(
+            'CHDIRTRAVELLOG_PROJECT_OPTIONS' => \Html::getOptions(
                 array_combine($projectNames, $projectNames), $projectName
             ),
-            'TRAVELLOG_NUMBER' => $searchTerm,
-            'TRAVELLOG_SELECTED_CONNECTION' => $selectConnection,
-            'TRAVELLOG_SELECTED_JOURNEY' => $selectJourney,
+            'CHDIRTRAVELLOG_NUMBER' => $searchTerm,
+            'CHDIRTRAVELLOG_SELECTED_CONNECTION' => $selectConnection,
+            'CHDIRTRAVELLOG_SELECTED_JOURNEY' => $selectJourney,
         ]);
         if (empty($paramsGet['search'])) {
             return;
@@ -289,10 +289,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             $count, $_CONFIG['corePagingLimit'], false, $pos, 'pos'
         );
         $template->setVariable([
-            'TRAVELLOG_QUERIED_CONNECTION' => $searchTerm . ' ' . $connectionName,
-            'TRAVELLOG_PAGING' => $paging,
-            'TRAVELLOG_NUM_JOURNEYS' => $count,
-            'TRAVELLOG_EXPORT_RESULTS' =>
+            'CHDIRTRAVELLOG_CONNECTION_QUERIED' => $searchTerm . ' ' . $connectionName,
+            'CHDIRTRAVELLOG_PAGING' => $paging,
+            'CHDIRTRAVELLOG_CONNECTION_COUNT' => $count,
+            'CHDIRTRAVELLOG_EXPORT_RESULTS' =>
             '<a href="' . $_SERVER['REQUEST_URI'] . '&csv=1"'
             .' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '">'
             .'<img src="' . $this->getIconFolderPath() . 'xls.png"'
@@ -359,13 +359,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             $count, $_CONFIG['corePagingLimit'], false, $pos, 'pos'
         );
         $template->setVariable([
-            'TRAVELLOG_QUERIED_JOURNEY' =>
+            'CHDIRTRAVELLOG_JOURNEY_QUERIED' =>
             '<a target="_blank" href="' . static::getPdfFolder()
             . static::getProjectName() . '_' . $searchTerm . '.pdf">'
             . $searchTerm . '</a>',
-            'TRAVELLOG_NUM_CONNECTIONS' => $count,
-            'TRAVELLOG_PAGING' => $paging,
-            'TRAVELLOG_EXPORT_RESULTS' =>
+            'CHDIRTRAVELLOG_JOURNEY_COUNT' => $count,
+            'CHDIRTRAVELLOG_PAGING' => $paging,
+            'CHDIRTRAVELLOG_EXPORT_RESULTS' =>
             '<a href="' . $_SERVER['REQUEST_URI'] . '&csv=1"'
             .' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '">'
             .'<img src="' . $this->getIconFolderPath() . 'xls.png"'
@@ -405,16 +405,16 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $connectionName = $connection->getVerbindungsstring();
             }
             $template->setVariable([
-                'TRAVELLOG_JOURNEY_RBN_LINK' =>
+                'CHDIRTRAVELLOG_JOURNEY_RBN_LINK' =>
                     $this->getFileLink($projectName, $journey->getRbn()),
-                'TRAVELLOG_JOURNEY_RBN' => $journey->getRbn(),
-                'TRAVELLOG_JOURNEY_DATE' => $journey->getReisedat()
+                'CHDIRTRAVELLOG_JOURNEY_RBN' => $journey->getRbn(),
+                'CHDIRTRAVELLOG_JOURNEY_DATE' => $journey->getReisedat()
                     ->format(static::date_format_ymd),
-                'TRAVELLOG_JOURNEY_NUMOF_CONNECTION' =>
+                'CHDIRTRAVELLOG_JOURNEY_CONNECTION_COUNT' =>
                     $journey->getReisen(),
-                'TRAVELLOG_JOURNEY_CONNECTION_NR' =>
+                'CHDIRTRAVELLOG_JOURNEY_CONNECTION_NR' =>
                     $journey->getVerbnr(),
-                'TRAVELLOG_JOURNEY_CONNECTION_NAME' => $connectionName,
+                'CHDIRTRAVELLOG_JOURNEY_CONNECTION_NAME' => $connectionName,
             ]);
             $template->parse('travellog_journey');
         }
@@ -649,8 +649,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
         return '<img src="' . $this->getIconFolderPath() . 'blank.gif"'
             . ' style="margin: 0 !important;"'
-            . ' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_NO_DOWNLOAD_FOUND'] . '"'
-            . ' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_NO_DOWNLOAD_FOUND'] . '"'
+            . ' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_DOWNLOAD_FOUND'] . '"'
+            . ' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_DOWNLOAD_FOUND'] . '"'
             . ' />';
     }
 
@@ -679,7 +679,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_DATE'],
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_CONNECTION'],
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_NAME'],
-                $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_NUM'],
+                $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_COUNT'],
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_JOURNEY'],
             ],
             $delimiter, $enclosure, $escape
