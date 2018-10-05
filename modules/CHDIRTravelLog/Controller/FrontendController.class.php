@@ -1,38 +1,27 @@
 <?php declare(strict_types=1);
-
 /**
- * PHP Version 7.1 - 7.2 (uses iterable type declaration)
+ * Cloudrexx App by Comvation AG
  *
- * Cloudrexx
+ * PHP Version 7.1 - 7.2
  *
- * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
+ * @category  CloudrexxApp
+ * @package   CHDIRTravelLog
+ * @author    Comvation AG <info@comvation.com>
+ * @copyright 2018 ch-direct
+ * @link      https://www.comvation.com/
  *
- * According to our dual licensing model, this program can be used either
- * under the terms of the GNU Affero General Public License, version 3,
- * or under a proprietary license.
+ * Unauthorized copying, changing or deleting
+ * of any file from this app is strictly prohibited
  *
- * The texts of the GNU Affero General Public License with an additional
- * permission and of our proprietary license can be found at and
- * in the LICENSE file you have received along with this program.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * "Cloudrexx" is a registered trademark of Cloudrexx AG.
- * The licensing of the program under the AGPLv3 does not imply a
- * trademark license. Therefore any rights, title and interest in
- * our trademarks remain entirely with us.
+ * Authorized copying, changing or deleting
+ * can only be allowed by a separate contract
  */
 
 namespace Cx\Modules\CHDIRTravelLog\Controller;
 
 /**
  * Travel Log (Nemesis)
- * @copyright   Cloudrexx AG
- * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_chdirtravellog
  */
