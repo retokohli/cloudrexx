@@ -519,22 +519,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 break;
             }
             if ($tablename === 'connection') {
-                // verbindungsnummer, project, sequenznummer, verbindungsstring
+                // project, verbindungsnummer, sequenznummer, verbindungsstring
                 $queries[] = sprintf('
-                    (%1$u, \'%2$s\', \'%3$s\', \'%4$s\')',
-                    $row[0], $projectName, addslashes($row[1]),
+                    (%1$s, \'%2$u\', \'%3$s\', \'%4$s\')',
+                    $projectName, $row[0], addslashes($row[1]),
                     addslashes($row[2])
                 );
             }
             if ($tablename === 'journey') {
                 $reisedat = new \DateTime($row[1]);
                 $row[1] = $reisedat->format('Y-m-d');
-                // att, project, reisedat, verbnr, rbn,
+                // project, att, reisedat, verbnr, rbn,
                 // reisen, d, at_start, at_recs
                 $queries[] = sprintf('
-                    (%1$u, \'%2$s\', \'%3$s\', \'%4$s\', %5$u,
+                    (%1$s, \'%2$u\', \'%3$s\', \'%4$s\', %5$u,
                     %6$u, \'%7$s\', \'%8$s\', \'%9$s\')',
-                    $row[0], $projectName, addslashes($row[1]),
+                    $projectName, $row[0], addslashes($row[1]),
                     addslashes($row[2]), $row[3],
                     $row[4], addslashes($row[5]),
                     addslashes($row[6]), addslashes($row[7])
