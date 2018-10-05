@@ -490,7 +490,7 @@ class BackendTable extends HTML_Table {
                 if (isset($params['vg_increment_number'])) {
                     \Html::stripUriParam($actionUrl, 'vg_increment_number');
                 }
-                $code = '<a href="'.$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code().'" class="copy" title="'.$_ARRAYLANG['TXT_CORE_RECORD_COPY_TITLE'].'"></a>';
+                $code = '<a href="'.$actionUrl.'" class="copy" title="'.$_ARRAYLANG['TXT_CORE_RECORD_COPY_TITLE'].'"></a>';
 
             }
             if (isset($functions['edit']) && $functions['edit']) {
