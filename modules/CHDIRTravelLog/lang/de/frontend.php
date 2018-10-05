@@ -1,11 +1,28 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @access      public
- * @package     contrexx
- * @subpackage  module_travellog
+ * Cloudrexx App by Comvation AG
+ *
+ * PHP Version 7.1 - 7.2
+ *
+ * @category  CloudrexxApp
+ * @package   CHDIRTravelLog
+ * @author    Comvation AG <info@comvation.com>
+ * @copyright 2018 ch-direct
+ * @link      https://www.comvation.com/
+ *
+ * Unauthorized copying, changing or deleting
+ * of any file from this app is strictly prohibited
+ *
+ * Authorized copying, changing or deleting
+ * can only be allowed by a separate contract
  */
+
+/**
+ * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @package     cloudrexx
+ * @subpackage  module_chdirtravellog
+ */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONNECTION'] = 'Verbindung';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_COUNT_COLON'] = 'Anzahl Verbindungen:';
 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_NUMBER'] = 'Verbindungsnummer';

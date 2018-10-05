@@ -1,50 +1,52 @@
-<?php
-
+<?php declare(strict_types=1);
 /**
- * Cloudrexx
+ * Cloudrexx App by Comvation AG
  *
- * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
+ * PHP Version 7.1 - 7.2
  *
- * According to our dual licensing model, this program can be used either
- * under the terms of the GNU Affero General Public License, version 3,
- * or under a proprietary license.
+ * @category  CloudrexxApp
+ * @package   CHDIRTravelLog
+ * @author    Comvation AG <info@comvation.com>
+ * @copyright 2018 ch-direct
+ * @link      https://www.comvation.com/
  *
- * The texts of the GNU Affero General Public License with an additional
- * permission and of our proprietary license can be found at and
- * in the LICENSE file you have received along with this program.
+ * Unauthorized copying, changing or deleting
+ * of any file from this app is strictly prohibited
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * "Cloudrexx" is a registered trademark of Cloudrexx AG.
- * The licensing of the program under the AGPLv3 does not imply a
- * trademark license. Therefore any rights, title and interest in
- * our trademarks remain entirely with us.
+ * Authorized copying, changing or deleting
+ * can only be allowed by a separate contract
  */
 
 /**
- * This is the english language file for frontend mode.
- * This file is included by Cloudrexx and all entries are set as placeholder
- * values for frontent page template by SystemComponentFrontendController
- *
- * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_chdirtravellog
  */
-
 global $_ARRAYLANG;
-
-// Let's start with module info:
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG'] = 'CHDIRTravelLog';
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DESCRIPTION'] = 'This is a new module with some sample content to show how to start.';
-
-// Now our content specific values:
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONGRATULATIONS'] = 'Congratulations';
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_SUCCESSFUL_CREATION'] = 'You successfully created a new module!';
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXAMPLE_TEMPLATE'] = 'This is the default template for this component. It is used for all ACTs that do not have their own template.';
-
-$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] = "Entries";
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONNECTION'] = 'Connection';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_COUNT_COLON'] = 'Number of connections:';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_NUMBER'] = 'Connection number';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_QUERIED_COLON'] = 'Queried connection:';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_COUNT'] = 'Number';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DATE'] = 'Date';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] = 'Download travel sheet';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] = 'Entries';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_READ_FORMAT'] = 'The file "%1$s" cannot be read.';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_IMPORT_CSV'] = 'Updating the data failed.  Please contact the administrator.';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_CONNECTION'] = 'Connection';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_COUNT'] = 'Number';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_DATE'] = 'Date';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_JOURNEY'] = 'Travel sheet';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_NAME'] = 'Name';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] = 'Export search results';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_JOURNEY'] = 'Travel sheet';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_COUNT_COLON'] = 'Number of matches:';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_NUMBER'] = 'Travel sheet number';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_QUERIED_COLON'] = 'Queried travel sheet:';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_NAME'] = 'Name';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_NUMBER'] = 'Number';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_PROJECT'] = 'Project';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_SEARCH'] = 'Search';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_SELECT_TYPE'] = 'Search by';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_DOWNLOAD_FOUND'] = 'No travel sheet found';
+$_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_RESULT'] = 'No entries found';
