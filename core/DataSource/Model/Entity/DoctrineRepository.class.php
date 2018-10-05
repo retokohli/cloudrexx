@@ -71,7 +71,6 @@ class DoctrineRepository extends DataSource {
         $offset = 0,
         $fieldList = array()
     ) {
-        $repo = $this->getRepository();
         $em = $this->cx->getDb()->getEntityManager();
 
         $criteria = array();
@@ -102,15 +101,6 @@ class DoctrineRepository extends DataSource {
                 unset($order[$field]);
             }
         }
-
-        // order, limit and offset are not supported by our doctrine version
-        // yet! This would be the nice way to solve this:
-        /*$result = $repo->findBy(
-            $criteria,
-            $order,
-            (int) $limit,
-            (int) $offset
-        );//*/
 
         // but for now we'll have to:
         $qb = $em->createQueryBuilder();
