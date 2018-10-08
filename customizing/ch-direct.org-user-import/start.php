@@ -14,7 +14,6 @@
     init('minimal');
     require_once 'config.php';
     require_once 'lib/DatabaseToSql.php';
-    require_once 'lib/ProfileAttribute.php';
     chdir(dirname(__FILE__));
     DatabaseToSql::convert(\Converter::SQL_TARGET_PATH);
     ?>
