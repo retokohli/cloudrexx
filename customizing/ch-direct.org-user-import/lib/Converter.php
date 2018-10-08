@@ -91,14 +91,15 @@ class Converter
             . ' WHERE `id`=' . static::user_id_upper . ';';
         $whereCondition = ' BETWEEN ' . static::user_id_lower
             . ' AND ' . static::user_id_upper;
-        $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_users`'
-            . ' WHERE id' . $whereCondition . ';';
-        $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_user_profile`'
+        // Order of deletion is important; there are constraints
+        $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_rel_user_group`'
             . ' WHERE user_id' . $whereCondition . ';';
         $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_user_attribute_value`'
             . ' WHERE user_id' . $whereCondition . ';';
-        $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_rel_user_group`'
+        $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_user_profile`'
             . ' WHERE user_id' . $whereCondition . ';';
+        $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'access_users`'
+            . ' WHERE id' . $whereCondition . ';';
         $sqlQueries[] = 'DELETE FROM `' . Config::DBPREFIX . 'module_newsletter_access_user`'
             . ' WHERE accessUserID' . $whereCondition . ';';
         return join("\n", $sqlQueries);
