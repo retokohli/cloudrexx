@@ -102,10 +102,39 @@ class DoctrineRepository extends DataSource {
             }
         }
 
-        // but for now we'll have to:
+        // if recursion is on we recurse for all "to 1" and n:n relations.
+        // additionally we recurse for recursions forced by options.
+        // TODO: add feature to skip recursions
+
+        $configuredRecursions = array();
+        if ($this->getOption('recurse')) {
+            $forcedRecursions = $this->getOption('forcedRecursions');
+            if (!is_array($forcedRecursions)) {
+                $forcedRecursions = array();
+            }
+            $configuredRecursions = $this->resolveRecursedRelations($forcedRecursions);
+        }
+
+        $mappingTable = array();
         $qb = $em->createQueryBuilder();
-        $qb->select('x')
-            ->from($this->getIdentifier(), 'x');
+        // Note: our hydrator takes over the indexing
+        $qb->select('x')->from($this->getIdentifier(), 'x');
+        // joins
+        $i = 1;
+        foreach ($configuredRecursions as $property=>$class) {
+            $mappedProperty = str_replace(
+                array_keys($mappingTable),
+                array_values($mappingTable),
+                $property
+            );
+            $mappingTable[$mappedProperty . '.'] = 'x' . $i . '.';
+
+            $qb->addSelect('x' . $i);
+            // Note: our hydrator takes over the indexing
+            $qb->leftJoin($mappedProperty, 'x' . $i);
+            $i++;
+        }
+
         // $filter
         $i = 1;
         foreach ($criteria as $field=>$value) {
@@ -124,7 +153,7 @@ class DoctrineRepository extends DataSource {
                 $qb->setFirstResult($offset);
             }
         }
-        $result = $qb->getQuery()->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        $result = $qb->getQuery()->getResult('IndexedArray');
 
         // $fieldList
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($result);
@@ -142,6 +171,56 @@ class DoctrineRepository extends DataSource {
         }
 
         return $dataSet->toArray();
+    }
+
+    /**
+     * Prepares an array with all relation recursions to do for this DataSource
+     *
+     * Automatically recurses all "to 1" and n:n reltions
+     * @todo: $forcedRecursions is not yet taken into account
+     * @param array $forcedRecursions List of relations to force anyway
+     * @param string? $entityClass Fully qualified entity class name to parse relations of
+     * @param array? $output Previously generated part of end result
+     * @param string? $prefix Prefix for keys in $output
+     * @param array? $exclusionList List of fully qualified class names to ignore
+     */
+    protected function resolveRecursedRelations($forcedRecursions, $entityClass = '', $output = array(), $prefix = 'x.', $exclusionList = array()) {
+        if (empty($entityClass)) {
+            $entityClass = $this->getIdentifier();
+        }
+        if (in_array($entityClass, $exclusionList)) {
+            return $output;
+        }
+        $exclusionList[] = $entityClass;
+        $em = $this->cx->getDb()->getEntityManager();
+        $metaData = $em->getClassMetadata($entityClass);
+        // foreach relation
+        foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+            if (in_array($associationMapping['targetEntity'], $exclusionList)) {
+                continue;
+            }
+            // if is "to 1" or n:n or is forced by config
+            if (
+                in_array($associationMapping['type'], array(
+                    \Doctrine\ORM\Mapping\ClassMetadata::ONE_TO_ONE,
+                    \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_ONE,
+                    \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_MANY,
+                ))
+            ) {
+                // add to array
+                $output[$prefix . $relationField] = $associationMapping['targetEntity'];
+                // recurse
+                $output = $this->resolveRecursedRelations(
+                    $forcedRecursions,
+                    $associationMapping['targetEntity'],
+                    $output,
+                    $prefix . $relationField . '.',
+                    $exclusionList
+                );
+            }
+        }
+        ksort($output);
+        return $output;
     }
 
     /**
