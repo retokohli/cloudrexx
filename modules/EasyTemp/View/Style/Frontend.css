@@ -1,0 +1,29 @@
+/*
+Customize and add these to your theme:
+
+#easytemp-validation-messages {
+  width: 100%;
+}
+#easytemp .message {
+  cursor: pointer;
+  display: block;
+  margin-bottom: 10px;
+  padding: 5px;
+  width: 100%;
+}
+#easytemp .error {
+  background-color: #fee;
+}
+#easytemp div.error {
+  border: #edd 1px solid;
+}
+#easytemp .success {
+  background-color: #efe;
+}
+#easytemp div.success {
+  border: #ded 1px solid;
+}
+#easytemp button.removefile {
+  display: none;
+}
+*/

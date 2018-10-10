@@ -1,0 +1,39 @@
+Cx\Modules\EasyTemp\Model\Entity\Text:
+  type: entity
+  table: module_easytemp_texts
+  id:
+    id:
+      # The alphanumeric id attribute of the content,
+      # e.g.: "1", or "DE"
+      type: string
+      generator:
+        strategy: NONE
+    code:
+      # e.g.: "job-rubrik", or "application-fahrzeug"
+      type: string
+      generator:
+        strategy: NONE
+  fields:
+    de:
+      # e.g.: "Text in Deutsch"
+      type: string
+      nullable: true
+    en:
+      # e.g.: "Text in English"
+      type: string
+      nullable: true
+    fr:
+      # e.g.: "Texte en français"
+      type: string
+      nullable: true
+    it:
+      # e.g.: "Texte inne italiano"
+      type: string
+      nullable: true
+    active:
+      # Available as a search option only when active
+      type: boolean
+
+  indexes:
+    active:
+      columns: [active]

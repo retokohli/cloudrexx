@@ -1,0 +1,91 @@
+Cx\Modules\EasyTemp\Model\Entity\Application:
+  type: entity
+  table: module_easytemp_applications
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    anrede:
+      type: string
+    name:
+      type: string
+    vorname:
+      type: string
+    zusatzadresse:
+      type: string
+    strasse:
+      type: string
+    plz:
+      type: string
+    ort:
+      type: string
+    staat:
+      type: string
+    geschlecht:
+      type: string
+    zivilstand:
+      type: string
+    heimatort:
+      type: string
+    geburtsdatum:
+      type: string
+    muttersprache:
+      type: string
+    fahrzeug:
+      type: string
+    fuehrerschein:
+      type: string
+    telefong:
+      type: string
+    telefonp:
+      type: string
+    telefonm:
+      type: string
+    email:
+      type: string
+    sozialversnr:
+      type: string
+    kuendigungsfrist:
+      type: string
+    verfuegbarab:
+      type: string
+    bewilstatus:
+      type: string
+    bewilnr:
+      type: string
+    bewilverfall:
+      type: string
+    beruferlernt:
+      type: string
+    wunschregion:
+      type: string
+    wunschberuf:
+      type: string
+    wunschbranche:
+      type: string
+    bemerkung:
+      type: string
+    sprache:
+      type: string
+    anstellungsgrad:
+      type: string
+    anstellungsart:
+      type: string
+    noattachment:
+      type: string
+    file1:
+      type: string
+    file2:
+      type: string
+    file3:
+      type: string
+
+# Relations: NOT IMPLEMEMTED
+# manyToOne:
+#   Jobs: # Jobs applied for
+# The Job ID is not used here.
+# The hash is a unique identifier.
+# It is used to reference the Job, if any, in an application.
+#     hash: [...]

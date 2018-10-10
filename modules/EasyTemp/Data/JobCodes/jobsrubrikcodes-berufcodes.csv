@@ -1,0 +1,144 @@
+154;CEO/Geschäftsführung;CEO/Management;Direction générale/Chef d'équipe;Direzione/CEO
+3;Sekretariat/Empfang;Secretary/Reception;Secrétariat/Réception;Centralino
+2022;Direktionsassistenz;Management Assistance;Assistance direction;Assistenza di direzione
+155;Sachbearbeitung/Sprachübersetzung;Processing/Language Translation;Employé de commerce/Traduction;Gestione pratiche/Traduzione
+4;Personalwesen/-entwicklung;HR Management/Development;Gestion du personnel/Formation;Risorse umane/sviluppo del personale
+5;Personalvermittlung/-beratung;Personnel Placement/Consultancy;Recrutement/Placement de personnel;Ricerca/Consulenza del personale
+6;Beratung/Unternehmensentwicklung;Consultancy/Company Development;Consultances d'entreprises;Consulenza aziendale
+2023;Qualitätsmanagement;Quality Management;Management qualité;Gestione della qualità
+7;Juristen/Anwälte/Gericht;Legal/Attorneys/Court;Juridique/Droit/Tribunal;Giuristi/avvocati/tribunale
+8;Regulatory Affairs;Regulatory Affairs;Regulatory Affairs;Regulatory Affairs
+10;Audit/Revision/Wirtschaftsprüfung;Auditing/Revision/Auditing;Audit/Révision/Expertise comptable;Auditing/Revisione contabile
+11;Buchhaltung;Accounting;Comptabilité;Contabilità
+2024;Finanz-/Rechnungswesen;Finance;Finance;Finanza
+12;Controlling;Controlling;Controlling;Controlling
+13;Immobilien Handel/Bewirtschaftung;Real Estate Management/Trade;Courtage immobilier/Gérance;Gestione degli immobili
+14;Inkasso;Collection Services;Recouvrements;Incasso
+15;Lohnbuchhaltung;Payroll Accounting;Payroll;Contabilità paghe
+16;Steuern;Tax;Impôts/Fiscalité;Fiscale
+17;Treuhand;Trusts;Fiduciaire;Fiduciaria
+21;Anlageberatung/Private Banking;Investment Cons./Private Banking;Conseils placement/Private Banking;Consulenza finanziaria/Privat Banking
+22;Asset/Portfolio Management;Asset/Portfolio Management;Portfolio Manag./Gestion fortune;Asset/Portfolio Management
+23;Back-Office/Zahlungsverkehr;Back-Office/Operations;Back-Office/Trafic paiement;Back office/pagamenti
+24;Finanz-/Business Analyse;Financial/Business Analysis;Analyses financ./commerciales;Analisi finanziaria/commerciale
+25;Fonds/Wertschriften/Handel;Funds/Stocks/Trade;Fonds/Titres/Marchés financiers;Fondi/Titoli/Commercio
+26;Kredit/Hypotheken;Loans/Mortgages;Crédits/Hypothèques;Crediti/Ipoteche
+27;Kundenberatung/Relationship Mgmt;Customer Service/Relationship Mgmt;Conseils clientèle/Relationship mgmt;Assistenza alla ientela/Relationship. Mgmt.
+28;Risk Mgmt/Compliance;Risk Management/Compliance;Gestion risques/Compliance;Risk Mgmt/Compliance
+29;Treasury/Controlling/Audit;Treasury/Controlling/Auditing;Treasury/Controlling/Audit;Treasury/Controlling/Audit
+150;Projekt Management;Project Management;Project Management;Project Management
+30;Versicherung: Agenturen;Insurance Agencies;Agences d'assurances;Assicurazione: agenzie
+31;Versicherung: Akquisition/Beratung;Insurance: Customer Acquisition/Sales;Assurance: Acquisition/Conseil;Assicurazione: acquisizione/consulenza
+32;Aktuariat/Mathematik;Actuary/Mathematics;Actuaire/Mathématique;Attuariato/matematica
+33;Versicherung: Schaden/Leistungen;Insurance: Claims/Benefits;Assurances: Dommages/Prestations sinistres;Assicurazione: sinistri/Prestazioni
+34;Underwriting/Product Mgmt;Underwriting/Product Management;Underwriting/Product Mgmt;Underwriting/Product Mgmt
+37;Einkauf/Procurement;Purchasing/Procurement;Achats/Approvisionnement;Acquisti/Procurement
+38;Logistik/Supply Chain;Logistics/Supply Chain;Logistique/Supply Chain;Logistica/Supply Chain
+39;Import/Export/Trading;Import/Export/Trading;Import/Export/Trading;Import/Export/Trading
+36;Produkt-/Brand Management;Product-/Brand Management;Produit/Brand Management;Product-/Brand-Management
+2025;Online Marketing/Social Media;Online Marketing/Social Media;Online Marketing/Social Media;Online Marketing/Social Media
+41;Marketing/Direktmarketing;Marketing/Direct Marketing;Marketing/Marketing direct;Marketing/marketing diretto
+42;Werbeberatung/-kommunikation;Advertising Consultancy/Communications;Publicité;Cons. pubblicitaria/Comunicazione
+43;PR/Corporate Communications;PR/Corporate Communications;PR/Communication d'entreprise;PR/Corporate Communications
+44;Medien/Redaktion/Verlagswesen;Media/Editorial/Publishing;Media/Rédaction/Edition;Media/Redazione/Editoria
+46;Telefonverkauf/Telesale;Telesale;Vente téléphone/Telesales;Vendita telefonica/Telesale
+47;Verkauf Detailhandel;Sales Retail Trade;Vente au détail;Vendita commercio al dettaglio
+48;Verkauf Beratung/Management;Sales Consulting/Management;Vente Consulting/Management;Vendita Consulenze/Management
+2026;Verkauf Aussendienst/Spezialisten;External Sales/Specialists;Vente externe/Spécialistes;Vendita servizio esterno/Specialisti
+156;Kundenberatung/Key Account Mgmt;Customer Advice/Key Account Mgmt;Conseil clientèle/Key Account Mgmt;Consulenza alla clientela/Key Account Mgmt
+49;Verkauf Innendienst/Back-Office;Internal Sales Service/Back-office;Vente interne/Back-Office;Vendita servizio interno/Back office
+50;Kundendienst/Call Center;Customer Service/Call Center;Service clients/Call Center;Assistenza clienti/Call center
+51;Category Management;Category Management;Category Management;Category Management
+54;Testing/Audit/Security;Testing/Audit/Security;Testing/Audit/Securité;Testing/Audit/Security
+55;Beratung/Wirtschaftsinformatik;Consultancy/Business Informatics;Conseil /Informatique commerciale;Consulenza/informatica economica
+56;Datenbank Spezialisten/Entwicklung;Database Specialists/Development;Base données/Développement;Progettazione Database
+57;Netzwerk Spezialisten/Engineers;Network Specialists/Engineers;Spécialiste réseaux/Ingénieur;Sistemisti/Amministr. reti network/Ingenieri
+58;Projekt Management/Analyse;Project Management/Analysis;Project Management/Analyse;Project Management/Analisi
+62;ERP/SAP/CRM;ERP/SAP/CRM;ERP/SAP/CRM;ERP/SAP/CRM
+2027;Software Architektur/Engineering;Software Architecture/Engineering;Architecture software/Engineering;Architettura software/Engineering
+59;Software Programmierung;Software Development;Développement software;Sviluppo software
+2028;Web Programmierung/Mobile;Web Programming/Mobile;Développement web/mobile;Programmazione web/mobile
+157;Web Publishing/Design;Web Publishing/Design;Web Publishing/Design;Web Publishing/Design
+60;System Engineering;System Engineering;Dévelopment système;Sistemistica
+2029;System Administration;System Administration;System Administration;Amministrazione die sistema
+61;User Help Desk/Support/Training;User Help Desk/Support/Training;Support utilisateur/Help Desk/Formation;User Help Desk/Support/Training
+67;Apotheken/Drogerien;Pharmacy/Drug Stores;Pharmacie/Droguerie;Farmacie/Erboristerie
+68;Biologie/Biotechnologie;Biology/Biotechnology;Biologie/Biotechnologie;Biologia/Biotecnologie
+69;Chemie F+E/Analytik/Produktion;Chemical R+D/Analysis/Production;Chimie R+D/Analyse/Production;Chimica Analitica/RicercaSviluppo
+70;Pharma F+E/Analytik/Produktion;Pharmaceutical R+D/Analysis/Production;Pharma R+D/Analyse/Production;Ricerca & Sviluppo Farmaceutico/Analisi/Produzione
+71;Qualitätswesen/-management;Quality Assurance/Management;Gestion/Management Qualité;Gestione qualità
+73;Elektronik/Elektrotechnik;Electronics/Electrotechnics;Electronique/Electrotechnique;Elettronica/Elettrotechnica
+75;Mechanik/Feinmechanik/Uhren;Mechanics/Precision Engin./Watchmakers;Mécanique de précision/Horlogerie;Meccanica/Mecc. precisione/Orologeria
+77;Werkzeugbau;Tool Engineering;Construction d'outillage;Costruzione utensili
+78;Medizinaltechnik;Medical Equipment Engineering;Medical equipment engineering;Tecnica medicale
+79;Energie-/Gebäude-/Haustechnik;Energy/Building Engineering;Energie/Technique du bâtiment;Tecnica edilizia/degli impianti domestici
+2032;Kundendienst/Beratung;Customer Service;Service clients;Servizio clienti
+151;Servicetechnik;Technical Service;Service technique;Servizio technico
+80;Qualitätswesen/-management;Quality Assurance/Management;Contrôle/Management Qualité;Gestione qualità
+82;Anlagen-/Apparatebau;Plant/Device Engineering;Installations/Appareils;Impiantistica/Costruzione apparecchi
+83;Automation/Verfahrenstechnik;Automation/Process Engineering;Automation/Agent de méthodes;Automazione/Tecnologia di processo
+84;Konstruktion;Construction;Construction;Costruzione
+76;CNC-Mechanik/Polymechanik;CNC Mechanics/Polymechanics;Mécanique CNC/Polymécanique;Meccanica CNC/Polimeccanica
+85;Maschinenbau;Machine Building/Engineering;Construction de machines;Ingegneria meccanica
+86;Produktion/Fertigung/Montage;Manufacturing/Production Industry;Production/Finition/Montage;Produzione/Fabbricazione/Montaggio
+87;Servicetechnik/Wartung;Maintenance/Servicing;Service technique/Entretien;Assistenza clienti/Manutenzione
+88;Qualitätswesen/-management;Quality Assurance/Management;Contrôle/Management Qualité;Gestione qualità
+90;Architektur/Bauplanung/Zeichner;Architecture/Technical Drawing/Planning;Architecture/Dessin/Planification;Architettura/Progettazione dilizia/Disegnazione
+91;Innenarchitektur/Dekoration;Interior Design/Decoration;Architecture d'intérieur/Décoration;Architettura interni/Decorazione
+92;Gartenbau/Landschaftsarchitektur;Gardening/Landscape Architecture;Paysagisme/Horticulture/Environnement;Giardinaggio/Architettura del paesaggio
+93;Bauleitung/Bauingenieure/AVOR;Civil Engineering/Supervision;Direction de chantier/Ingénieur construction;Direzione dei lavori/Ingegneria civile/Preparazione del lavo
+94;Baupersonal/Gerüstbau/Maschinen;Construction Work/Scaffolding/Machinery;Ouvriers bâtiment/Machinistes/Echafaudage;Macchinisti/Operai edili
+95;Bauspengler/Dachdecker;Pluming/Roofing;Couverture/Ferblanterie;Lattonieri/Conciatetti
+2030;Metall/Fassadenbau;Metal Construction;Construction métallique;Metalcostruttori
+2031;Holzbau/Zimmermann;Wood Construction;Construction bois;Costruzione in legno
+96;Boden-/Plattenleger;Floor Laying/Paving;Poseur de sol/Carreleur;Pavimentatori/Piastrellisti
+97;Sanitär Planung/Montage;Sanitary Engineering/Installation;Sanitaire Planification/Montage;Impianti sanitari
+98;Maler/Gipser;Painting/Plastering;Peintre/Plâtrier;Imbianchini/Stuccatori
+99;Maurer;Bricklaying;Maçon;Muratori
+74;Elektro Planung/Montage;Electricity Engineering/Installation;Electricité Planification/Montage;Elettrotecnica/-meccanica
+100;Heizung/Lüftung/KlimaPlanung/Montage;Heating/Ventilation/Climate;Chauffage/Ventilation/Clima./Planific./Montage;Riscaldamento/Climatizzazione/Ventilazione
+102;Fahrzeugmechanik/-diagnostik;Vehicle Mechanics/Diagnostics;Mécanique véhicules/Diagnostic;Automeccanica/-diagnostica
+103;Carosseriespengler/Lackierer;Vehicle Body Engineering/Varnishing;Carrossier/Peintre carrosserie;Lattonieri da carrozzeria/Verniciatori
+104;Metallhandwerk;Metal Crafts;Artisanat métal;Artigianato metallo
+105;Holzhandwerk;Wood Crafts;Artisanat bois;Artigianato legno
+106;Land-/Forstwirtschaft;Agriculture/Forestry;Agriculteur/Forestier;Agricoltura/Silvicoltura
+19;Facility Management/Reinigung;Facility Management/Cleaning;Facility Management/Nettoyage;Facility Management
+107;Textil/Schneider;Textile/Dressmaking/Tailoring;Textile/Tailleur;Tessile/Sarti
+108;Lager;Storage;Magasinier/Stock;Magazzino
+109;Personentransport Flug/See/Zug/Strasse;Transport AIr/Sea/Rail/Road ;Transport aérien/maritime/ferroviaire/routier;Trasporti aeri/maritimi/ferroviari/stradali
+112;Hebammen;Midwifery;Sage-femme;Ostetriche
+1282;Labor/Analyse;Laboratory/Analysis;Laboratoire/Analyse;Laboratorio / Analisi
+1283;Ärzte - Assistenz-/Fach-/Oberärzte;Doctors/Interns;Médecins - adjoints/chefs/spécialisés;Dottori / Chirurghi / Assistenti in Medicina
+113;Med. Praxisassistenz/Sekretariat;Med. Assistant/Admin;Secrétariat/Assistanat médical ;Segretarie/Aiuto Medico
+114;Radiologie;Radiology;Radiologie;Radiologia
+115;Akutpflege;Nursing;Soins aigus;Cura acuta
+116;Langzeitpflege;Geriatrics;Soins de longue durée/palliatifs;Cura di lunga durata
+117;Psychologie/Psychiatrie;Psychology/Psychiatry;Psychologie/Psychiatrie;Psicologia/Psichiatria
+118;Therapie/Orthopädie;Therapy;Thérapie;Terapia
+119;Tiermedizin;Veterinary Medicine;Vétérinaire;Medicina veterinaria
+121;Oeffentliche Verwaltung;Public Administration;Administration publique;Pubblica amministrazione
+122;Wissenschaft/Forschung;Science/Research;Science/Recherche;Scienza/Ricerca
+123;Lehrer/Dozenten;Teaching/Lecturing;Enseignement/Chargé de cours;Insegnanti/Docenti
+124;Sozial-/Heilpädagogen;Social/Remedial Education;Pédagogue Social/Santé;Pedagoghi sociali
+125;Sozial-/Jugendarbeit;Social/Youth Work;Educateur Spécialisé/Social;Assistenza sociale/Servizi giovani
+2033;NGO/NPO/Hilfswerke;NGO/NPO/Charity;ONG/Bénévolat;ONG/Volontariato/Carità
+127;Betriebsführung/-administration;Administration/Management;Direction/Administration;Gestione/Amministrazione aziendale
+128;Küche;Cooking/Cuisine;Cuisine;Cucina
+129;Service/Bar;Service/Bar;Service/Bar;Service/Bar
+131;Metzger/Bäcker/Konditor/Käser;Butcher/Baker/Pastry Chef/Cheese Maker;Boucher/Boulanger/Confiseur/Fromager;Macellai/Panettieri/Pasticcieri/Casaro
+132;Lebensmitteltechnologie/-ingenieure;Food Engineering/Technology;Technologie agro-alimentaire/Ingénieur;Tecnologia/Ingegneria alimentare
+133;Réception/Portier/Concierge;Front Desk/Porter;Réception/Portier/Concierge;Reception/Portierato
+134;Zimmer/Lingerie/Hauswirtschaft;Room Service/Cleaning/Housekeeping;Gouvernante/Blanchisserie/Housekeeping;Camere/Lingerie/Economia domestica
+135;Reiseberatung/Reiseleitung;Travel Agencies/Tour Guiding;Agent de voyage/Guide touristique;Consulenza viaggi/Guide turistiche
+137;Drucker;Printing;Imprimeur;Tipografi
+138;Grafik/Design;Graphic Art/Design;Graphisme/Design;Grafica/Design
+139;Typografie/Polygrafie;Typography/Polygraphy;Typographie/Polygraphie;Tipografia/Poligrafia
+141;Bewachung/Kontrolle/Sicherheit;Surveillance/Control/Security;Surveillance/Contrôle/Sécurité;Sorveglianza/Controllo/Sicurezza
+142;Polizei/Militär;Police/Military;Police/Militaire;Polizia/Militari
+143;Rettung Sanität/Feuerwehr;Rescue/Fire Services;Sauvetage/Secours/Pompier;Soccorso Ambulanze/Vigili del fuoco
+144;Zoll/Grenzkontrolle;Customs/Border Control;Douanier/Garde-frontière;Dogana/Controllo alla frontiera
+146;Coiffeur/Kosmetik;Hairdressing/Cosmetics;Coiffure/Esthétique;Parrucchieri/Cosmetica
+147;Massage/Sport/Wellness;Massage/Sport/Spas&Wellness;Massage/Sport/Wellness;Massaggi/Sport/Wellness
+2034;Kultur/Unterhaltung;Culture/Entertainment;Culture/Divertissement;Cultura/Intrattenimento
+2035;MuseumKunst/Kunsthandwerk;Museum/Arts/Crafts;Museé/Art/Artisanat;Museo/Arte/Artigianato
+2036;Mode/Film/Theater/Radio;Fashion/Film/Theater/Radio;Mode/Film/Théâtre/Radio;Moda/Film/Teatro/Radio

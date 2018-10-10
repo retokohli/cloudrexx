@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<JOBS>
+  <INSERATE>
+    <INSERAT>
+      <ORGANISATIONID>2104</ORGANISATIONID>
+      <HASH>14178114931936948630</HASH>
+      <INSERATID>2104-100001-1-1</INSERATID>
+      <FIRMA>CarePeople AG</FIRMA>
+      <TITEL><![CDATA[Pflegefachfrau/-mann HF]]></TITEL>
+      <VORSPANN><![CDATA[<p>Wir suchen für unseren Kunden, eine kleine Institution eine fachkompetente und motivierte Pflegefachperson. Die Stelle ist ab sofort oder nach Vereinbarung zu besetzen. Das Haus bietet neben den Pflegeabteilungen auch Alterswohnungen sowie ein Ambulatorium. Bei der Stelle besteht die Möglichkeit durch einen temporären Einsatz das Haus kennenzulernen oder direkt dauerhaft angestellt zu werden.<br><br></p>]]></VORSPANN>
+      <BERUF>Pflegefachfrau/-mann HF / Fest</BERUF>
+      <TEXT><![CDATA[
+<p>
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+</p>
+]]></TEXT>
+      <ARTDERARBEIT><![CDATA[ <p><ul><li>Pflege, Betreuung und Aktivierung der pflegebedürftigen Bewohner/innen<li>Richten und verteilen der verordneten Medikamente<li>Sie sind mitverantwortlich für die Gestaltung des Pflegeprozesses<li>Sie übernehmen die Tagesverantwortung auf der Abteilung</ul><br><br></p>]]></ARTDERARBEIT>
+      <PLZ>9999</PLZ>
+      <ORT>Musterstadt</ORT>
+      <FILIALENR>110</FILIALENR>
+      <KONTAKT>Aline Coray</KONTAKT>
+      <TELEFON>044 421 39 39</TELEFON>
+      <EMAIL>info@carepeople.ch</EMAIL>
+      <URL>http://www.carepeople.ch</URL>
+      <DIREKT_URL>https://api.easytemp.ch/live/ins/14178114931936948630.html</DIREKT_URL>
+      <DIREKT_URL_POST_ARGS></DIREKT_URL_POST_ARGS>
+      <BEWERBEN_URL><![CDATA[https://api.easytemp.ch/live/bew/14178114931936948630-DE.php]]></BEWERBEN_URL>
+      <LAYOUT></LAYOUT>
+      <LOGO>https://www.easytemp.ch/bin/mandant2104.gif</LOGO>
+      <REGION>:1:</REGION>
+      <RUBRIKID>:37:</RUBRIKID>
+      <POSITION>:2:</POSITION>
+      <BRANCHE>10</BRANCHE>
+      <KATEGORIE></KATEGORIE>
+      <ANSTELLUNGSGRAD>80</ANSTELLUNGSGRAD>
+      <ANSTELLUNGSGRAD_BIS>100</ANSTELLUNGSGRAD_BIS>
+      <ANSTELLUNGSART>5</ANSTELLUNGSART>
+      <EINTRITT>ab sofort</EINTRITT>
+      <SPRACHE>de</SPRACHE>
+      <SPRACHEKENNTNIS_KANDIDAT>:2:</SPRACHEKENNTNIS_KANDIDAT>
+      <SPRACHEKENNTNIS_NIVEAU>:4:</SPRACHEKENNTNIS_NIVEAU>
+      <BILDUNGSNIVEAU>:1:193:543:</BILDUNGSNIVEAU>
+      <ALTER_VON>0</ALTER_VON>
+      <ALTER_BIS>65</ALTER_BIS>
+      <BERUFSERFAHRUNG>:37:37:</BERUFSERFAHRUNG>
+      <BERUFSERFAHRUNG_POSITION>:1:2:</BERUFSERFAHRUNG_POSITION>
+      <ANGEBOT>28</ANGEBOT>
+    </INSERAT>
+    <INSERAT>
+      <ORGANISATIONID>1234</ORGANISATIONID>
+      <HASH>99999999999999999999</HASH>
+      <INSERATID>1111-999999-9-9</INSERATID>
+      <FIRMA>TEST AG</FIRMA>
+      <TITEL><![CDATA[ <p>The job title / Temporary</p> ]]></TITEL>
+      <VORSPANN><![CDATA[<p>The introduction to the vacancy </p><p>Here is another paragraph </p>]]></VORSPANN>
+      <BERUF>Call Center Agent/in</BERUF>
+      <TEXT><![CDATA[
+<p>
+At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</p>
+</p>
+]]></TEXT>
+      <ARTDERARBEIT><![CDATA[<p>The job description<br> additional text<br</p>]]></ARTDERARBEIT>
+      <PLZ>4600</PLZ>
+      <ORT>Olten</ORT>
+      <FILIALENR>100</FILIALENR>
+      <KONTAKT>Andreas Mustermann</KONTAKT>
+      <TELEFON>044 123 456</TELEFON>
+      <EMAIL>test@youremailaddress.ch</EMAIL>
+      <URL>http://yoururl</URL>
+      <DIREKT_URL>https://api.easytemp.ch/test/ins/9999999999999999999999.html</DIREKT_URL>
+      <DIREKT_URL_POST_ARGS/>
+      <BEWERBEN_URL>https://api.easytemp.ch/test/bew/9999999999999999999999-DE.php</BEWERBEN_URL>
+      <LAYOUT/>
+      <LOGO>https://www.easytemp.ch/bin/mandant1255.gif</LOGO>
+      <REGION>:8:</REGION>
+      <RUBRIKID>:23:</RUBRIKID>
+      <POSITION>:3:</POSITION>
+      <BRANCHE>1</BRANCHE>
+      <ANSTELLUNGSGRAD>80</ANSTELLUNGSGRAD>
+      <ANSTELLUNGSGRAD_BIS>100</ANSTELLUNGSGRAD_BIS>
+      <ANSTELLUNGSART>1</ANSTELLUNGSART>
+      <EINTRITT>per sofort</EINTRITT>
+      <SPRACHE>de</SPRACHE>
+      <SPRACHEKENNTNIS_KANDIDAT>:1:</SPRACHEKENNTNIS_KANDIDAT>
+      <SPRACHEKENNTNIS_NIVEAU>:3:</SPRACHEKENNTNIS_NIVEAU>
+      <BILDUNGSNIVEAU>:1:193:543:</BILDUNGSNIVEAU>
+      <ALTER_VON>0</ALTER_VON>
+      <ALTER_BIS>65</ALTER_BIS>
+      <BERUFSERFAHRUNG>:23:23:</BERUFSERFAHRUNG>
+      <BERUFSERFAHRUNG_POSITION>:1:2:</BERUFSERFAHRUNG_POSITION>
+      <ANGEBOT>28</ANGEBOT>
+    </INSERAT>
+  </INSERATE>
+</JOBS>

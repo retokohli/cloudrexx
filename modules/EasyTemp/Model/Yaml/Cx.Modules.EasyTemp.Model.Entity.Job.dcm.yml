@@ -1,0 +1,248 @@
+Cx\Modules\EasyTemp\Model\Entity\Job:
+  type: entity
+  repositoryClass: Cx\Modules\EasyTemp\Model\Repository\JobRepository
+  table: module_easytemp_jobs
+  id:
+    hash:
+      # e.g.: "99999999999999999999"
+      # The hash is a unique identifier.
+      # It is used to reference the Job, if any, in an application
+      type: string
+      generator:
+        strategy: NONE
+  fields:
+    # The length specified here is greater than the length
+    # required by the specification in order to compensate for
+    # variations due to the encoding (multibyte!),
+    # and for unexpected changes to the specs.
+    # Any fields without an explicit length require far less than 255 chars.
+    inseratid:
+      # Provided by the imported dataset
+      # e.g.: "1111-999999-9-9"
+      type: string
+    organisationid:
+      # e.g.: "1234"
+      type: string
+    firma:
+      # e.g.: "test ag"
+      type: string
+      nullable: true
+    titel:
+      # e.g.: "<![cdata[ <p>the job title / temporary</p> ]]>"
+      type: string
+      nullable: true
+    vorspann:
+      # e.g.: "<![cdata[<p>the introduction to the vacancy </p><p>here is another paragraph </p>]]>"
+      type: string
+      length: 2000
+      nullable: true
+    beruf:
+      # e.g.: "call center agent/in"
+      type: string
+      nullable: true
+    text:
+      # e.g.: "<![cdata[<p>the job requirements<br> additional text<br</p><p>the job description<br> additional text<br</p>]]>"
+      type: string
+      length: 2000
+      nullable: true
+    artderarbeit:
+      # e.g.: "<![cdata[<p>the job description<br> additional text<br</p>]]>"
+      type: string
+      length: 2000
+      nullable: true
+    plz:
+      # e.g.: "4600"
+      type: string
+      nullable: true
+    ort:
+      # e.g.: "olten"
+      type: string
+      nullable: true
+    filialenr:
+      # e.g.: "100"
+      type: string
+      nullable: true
+    kontakt:
+      # e.g.: "andreas mustermann"
+      type: string
+      nullable: true
+    telefon:
+      # e.g.: "044 123 456"
+      type: string
+      nullable: true
+    email:
+      # e.g.: "test@youremailaddress.ch"
+      type: string
+      nullable: true
+    url:
+      # e.g.: "http://yoururl"
+      type: string
+      nullable: true
+    direkt_url:
+      # e.g.: "https://api.easytemp.ch/test/ins/9999999999999999999999.html"
+      type: string
+      nullable: true
+    direkt_url_post_args:
+      type: string
+      nullable: true
+    bewerben_url:
+      # e.g.: "https://api.easytemp.ch/test/bew/9999999999999999999999-de.php"
+      type: string
+      nullable: true
+    layout:
+      type: string
+      nullable: true
+    logo:
+      # e.g.: "https://www.easytemp.ch/bin/mandant1255.gif"
+      type: string
+      nullable: true
+    region:
+      # e.g.: ":8:"
+      type: string
+      nullable: true
+    rubrikid:
+      # e.g.: ":194:"
+      type: string
+      nullable: true
+    position:
+      # e.g.: ":3:"
+      type: string
+      nullable: true
+    branche:
+      # e.g.: "1"
+      type: string
+      nullable: true
+    kategorie:
+      # e.g.: "1"
+      type: string
+      nullable: true
+    anstellungsgrad:
+      # e.g.: "80"
+      type: string
+      nullable: true
+    anstellungsgrad_bis:
+      # e.g.: "100"
+      type: string
+      nullable: true
+    anstellungsart:
+      # e.g.: "1"
+      type: string
+      nullable: true
+    eintritt:
+      # e.g.: "per sofort"
+      type: string
+      nullable: true
+    sprache:
+      # e.g.: "de"
+      type: string
+      nullable: true
+    sprachekenntnis_kandidat:
+      # e.g.: ":1:"
+      type: string
+      nullable: true
+    sprachekenntnis_niveau:
+      # e.g.: ":3:"
+      type: string
+      nullable: true
+    bildungsniveau:
+      # e.g.: ":1:193:543:"
+      type: string
+      nullable: true
+    alter_von:
+      # e.g.: "0"
+      type: string
+      nullable: true
+    alter_bis:
+      # e.g.: "65"
+      type: string
+      nullable: true
+    berufserfahrung:
+      # e.g.: ":194:194:"
+      type: string
+      nullable: true
+    berufserfahrung_position:
+      # e.g.: ":1:2:"
+      type: string
+      nullable: true
+    angebot:
+      # e.g.: "28"
+      type: string
+      nullable: true
+    created:
+      type: datetime
+    deleted:
+      # e.g.: "28"
+      type: boolean
+      default: true
+
+  indexes:
+    # Any column used in the search has an index
+    inseratid:
+      columns: [inseratid]
+    firma:
+      columns: [firma]
+    titel:
+      columns: [titel]
+    vorspann:
+      columns: [vorspann]
+    beruf:
+      columns: [beruf]
+    text:
+      columns: [text]
+    artderarbeit:
+      columns: [artderarbeit]
+    plz:
+      columns: [plz]
+    ort:
+      columns: [ort]
+    region:
+      columns: [region]
+    rubrikid:
+      columns: [rubrikid]
+    position:
+      columns: [position]
+    branche:
+      columns: [branche]
+    kategorie:
+      columns: [kategorie]
+    beruf:
+      columns: [beruf]
+    anstellungsgrad:
+      columns: [anstellungsgrad]
+    anstellungsgrad_bis:
+      columns: [anstellungsgrad_bis]
+    anstellungsart:
+      columns: [anstellungsart]
+    sprache:
+      columns: [sprache]
+    sprachekenntnis_kandidat:
+      columns: [sprachekenntnis_kandidat]
+    sprachekenntnis_niveau:
+      columns: [sprachekenntnis_niveau]
+    bildungsniveau:
+      columns: [bildungsniveau]
+    alter_von:
+      columns: [alter_von]
+    alter_bis:
+      columns: [alter_bis]
+    berufserfahrung:
+      columns: [berufserfahrung]
+    berufserfahrung_position:
+      columns: [berufserfahrung_position]
+    created:
+      columns: [created]
+    deleted:
+      columns: [deleted]
+    # Not indexed:
+    #  filialenr
+    #  kontakt
+    #  telefon
+    #  email
+    #  url
+    #  direkt_url
+    #  direkt_url_post_args
+    #  bewerben_url
+    #  layout
+    #  logo
+    #  eintritt
+    #  angebot
