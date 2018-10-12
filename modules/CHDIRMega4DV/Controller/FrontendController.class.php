@@ -44,107 +44,56 @@ namespace Cx\Modules\CHDIRMega4DV\Controller;
  * @package     cloudrexx
  * @subpackage  module_chdirmega4dv
  */
-class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController {
-
-    /**
-     * Use this to parse your frontend page
-     *
-     * You will get a template based on the content of the resolved page
-     * You can access Cx class using $this->cx
-     * To show messages, use \Message class
-     * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
-     */
-    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
-        // this class inherits from Controller, therefore you can get access to
-        // Cx like this:
-        $this->cx;
-
-        // Controller routes all calls to undeclared methods to your
-        // ComponentController. So you can do things like
-        $this->getName();
-    }
-}
-
-
-// TODO from index.class.php
-
-// TODO: This is apparently obsolete
-//require 'lib/QueryPath/qp.php';
-
-/**
- * MEGA4DV module
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author	Comvation Development Team <info@comvation.com>
- * @author      Red Ochsenbein <red.ochsenbein@comvation.com>
- * @version	1.0.0
- * @package     contrexx
- * @subpackage  module_mega4dv
- */
-class Mega4Dv
+class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
 {
     /**
-     * The basepath of the current parsing location
-     *
-     * @access private
-     * @var string
+     * Set up the view
+     * @param   \Cx\Core\Html\Sigma $template
+     * @param   string              $cmd
      */
-    var $_basepath;
-
-    /**
-     * The current parsing location
-     *
-     * @access private
-     * @var string
-     */
-    var $_currentPath;
-
-    /**
-     * Get content page
-     *
-     * @access public
-     */
-    function getPage()
+    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
-        $path = $this->getCurrentPath();
+\DBG::activate(DBG_PHP|DBG_DB_ERROR);
+        $template->setTemplate($this->getContent());
+\DBG::deactivate();
+    }
 
-        $file = ASCMS_DOCUMENT_ROOT . '/mega4dv/' . $path;
-        if (!file_exists($file)) {
-            return 'Sorry, could not find the file ' . $path;
+    /**
+     * Return the effective content
+     */
+    protected function getContent()
+    {
+        $folder = $this->getCurrentFolder();
+        $path = $this->getBasePath() . $folder;
+        if (!file_exists($path)) {
+            return 'Sorry, could not find the file ' . $path /*TODO: $folder only*/;
         }
-
-        $content = file_get_contents($file);
-
+        $content = file_get_contents($path);
         $dom = new \DOMDocument();
         $dom->loadHTML($content);
-
-        libxml_use_internal_errors(TRUE);
-
+        libxml_use_internal_errors(true);
         $redirect = $this->checkForRedirect($dom);
         if ($redirect) {
             return $redirect;
         }
-
-        $xpath = new DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
         foreach ($xpath->query('//comment()') as $comment) {
             $comment->parentNode->removeChild($comment);
         }
-
         $this->rewriteDocumentsProxy($dom);
         $this->rewriteUrls($dom);
         $this->rewriteAreas($dom);
         $this->rewriteImages($dom, 'inline');
         $this->rewriteScripts($dom);
-
         libxml_clear_errors();
-
         $content = $this->extractBody($dom);
-        return '<div><div><div><div><div><div><div><div><div><div><div><div>' . $content . '';
+        return $content;
     }
 
     function checkForRedirect($dom)
     {
         $metas = $dom->getElementsByTagName('meta');
-        $basepath = $this->getBasePath();
+        $baseFolder = $this->getBaseFolder();
         if ($metas) {
             foreach ($metas as $meta) {
                 $http_equiv = $meta->getAttribute('http-equiv');
@@ -152,15 +101,14 @@ class Mega4Dv
                 if ($http_equiv && $http_equiv == 'REFRESH' && $url) {
                     $parts = explode('=', $url);
                     $url = array_pop($parts);
-
                     if (strpos($url, 'http') !== 0) {
-                        $url = $basepath . '/' . $url;
-                        $url = $this->checkPathAvailability($url,
-                                $basepath . '/');
+                        $url = $baseFolder . '/' . $url;
+                        $url = $this->checkFolderAvailability($url,
+                                $baseFolder . '/');
                     }
                     $myUrl = clone \Env::get('Resolver')->getUrl();
                     $myUrl->setParam('dv', $url);
-
+// TODO: Why not redirect immediately?
                     $redirect = '<script>document.location="' . $myUrl . '";</script>';
                     return $redirect;
                 }
@@ -169,10 +117,24 @@ class Mega4Dv
         return false;
     }
 
+    function rewriteDocumentsProxy($dom)
+    {
+        $links = $dom->getElementsByTagName('a');
+        foreach ($links as $link) {
+            if (strpos($link->getAttribute('href'), 'http') !== 0 && strpos(strtolower($link->getAttribute('href')),
+                            'xls') !== false || strpos(strtolower($link->getAttribute('href')),
+                            'pdf') !== false) {
+                $path = $this->getBaseFolder() .'/' . $link->getAttribute('href');
+                $url = '/imageproxy.php?c=' . md5($path . '38364DC9-FAEF-406E-B6A7-DFB0C83F1CBE') . '&i=' . urlencode($path);
+                $link->setAttribute('href', $url);
+            }
+        }
+    }
+
     function rewriteUrls($dom, $tagname = 'a')
     {
         $links = $dom->getElementsByTagName($tagname);
-        $basepath = $this->getBasePath();
+        $baseFolder = $this->getBaseFolder();
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
             if (
@@ -181,14 +143,41 @@ class Mega4Dv
                 strpos($href, 'http') !== 0 &&
                 strpos($href, '#') !== 0
             ) {
+//                $request = $this->cx->getRequest();
+//                $proto = $request->getUrl()->getProtocol();
+//                $host = isset($_SERVER['HTTPS_HOST']) ? $_SERVER['HTTPS_HOST'] : $_SERVER['HTTP_HOST'];
+//                $url = new \Cx\Lib\Net\Model\Entity\Url(
+//                    $proto
+//                    . \Cx\Lib\Net\Model\Entity\Uri::SCHEME_DELIMITER_WITH_AUTHORITY
+//                    . $host
+//                $cap = '';
+//                if ($request->hasParam('__cap')) {
+//                    $cap = $request->getParam('__cap');
+//                }
+//                $url->setPath($cap);
                 $param = explode('#', $href);
-                $host = isset($_SERVER['HTTPS_HOST']) ? $_SERVER['HTTPS_HOST'] : $_SERVER['HTTP_HOST'];
-                $url = new Cx\Lib\Net\Model\Entity\Url(ASCMS_PROTOCOL . '://' . $host . $_GET['__cap']);
-                $url->setParam('dv', $basepath . '/'. $param[0]);
-                if (isset($param[1])) {
-                    $url->setFragment($param[1]);
-                }
-                $link->setAttribute('href', $url);
+//                $url->setParam('dv', $baseFolder . '/' . $param[0]);
+//                if (isset($param[1])) {
+//                    $url->setFragment($param[1]);
+//                }
+//                );
+var_dump($param); //die();
+                $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    $this->getName(), '', '',
+                    [
+                        'dv' => $baseFolder . '/' . $param[0],
+                    ])
+
+                    ;
+// TODO: Is this a proper fix?  I don't want the (default) port to appear:
+                $url->setPort(null);
+                $urlString = $url->toString()
+                    . (isset($param[1]) ? '#' . $param[1] : '')
+                ;
+//die($urlString);
+// TODO: is this okay?:
+// 'http://chdirect.org.lvh.me/?dv=%2FADV_2017-01-30%2Fde%2Fpages%2F'
+                $link->setAttribute('href', $urlString);
             }
         }
     }
@@ -203,8 +192,52 @@ class Mega4Dv
         $scripts = $dom->getElementsByTagName('script');
         foreach ($scripts as $script) {
             if ($script->nodeValue) {
-                $script->nodeValue = '$J(document).ready(function($J){' . strtr($script->nodeValue,
-                                array('$(' => '$J(')) . '});';
+                $script->nodeValue = '$J(document).ready(function($J){'
+                    . strtr($script->nodeValue, ['$(' => '$J('])
+                    . '});';
+            }
+        }
+    }
+
+    function _rewriteImagesInline($dom)
+    {
+        $baseFolder = $this->getBaseFolder();
+        $basePath = $this->getBasePath();
+        $images = $dom->getElementsByTagName('img');
+        foreach ($images as $img) {
+            if (strpos($img->getAttribute('src'), 'http') !== 0) {
+                $path = $basePath . $baseFolder
+                    . '/' . $img->getAttribute('src');
+                if (file_exists($path)) {
+                    $mime = \Mime::getMimeTypeForExtension($path);
+                    $data = base64_encode(file_get_contents($path));
+                    $img->setAttribute('src', 'data:' . $mime . ';base64,' . $data);
+                } else {
+                	$img->setAttribute('src', 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=');
+                }
+            }
+        }
+    }
+
+    function _rewriteImagesProxy($dom)
+    {
+        $images = $dom->getElementsByTagName('img');
+        foreach ($images as $img) {
+            if (strpos($img->getAttribute('src'), 'http') !== 0) {
+                $url = '/imageproxy.php?c=' . md5($img->getAttribute('src') . '38364DC9-FAEF-406E-B6A7-DFB0C83F1CBE') . '&i=' . urlencode($img->getAttribute('src'));
+                $img->setAttribute('src', $url);
+            }
+        }
+    }
+
+    function _rewriteImagesSimple($dom)
+    {
+        $baseFolder = $this->getBaseFolder();
+        $images = $dom->getElementsByTagName('img');
+        foreach ($images as $img) {
+            if (strpos($img->getAttribute('src'), 'http') !== 0) {
+                $url = '/mega4dv/' . $baseFolder . '/' . $img->getAttribute('src');
+                $img->setAttribute('src', $url);
             }
         }
     }
@@ -221,178 +254,56 @@ class Mega4Dv
         }
     }
 
-    function _rewriteImagesSimple($dom)
-    {
-        $basepath = $this->getBasePath();
-        $images = $dom->getElementsByTagName('img');
-        foreach ($images as $img) {
-            if (strpos($img->getAttribute('src'), 'http') !== 0) {
-                $url = '/mega4dv/' . $basepath . '/' . $img->getAttribute('src');
-                $img->setAttribute('src', $url);
-            }
-        }
-    }
-
-    function rewriteDocumentsProxy($dom)
-    {
-
-        $links = $dom->getElementsByTagName('a');
-
-        foreach ($links as $link) {
-            if (strpos($link->getAttribute('href'), 'http') !== 0 && strpos(strtolower($link->getAttribute('href')),
-                            'xls') !== false || strpos(strtolower($link->getAttribute('href')),
-                            'pdf') !== false) {
-                $path = $this->getBasePath() .'/' . $link->getAttribute('href');
-                $url = '/imageproxy.php?c=' . md5($path . '38364DC9-FAEF-406E-B6A7-DFB0C83F1CBE') . '&i=' . urlencode($path);
-                $link->setAttribute('href', $url);
-            }
-        }
-    }
-
-    function _rewriteImagesProxy($dom)
-    {
-        $images = $dom->getElementsByTagName('img');
-        foreach ($images as $img) {
-            if (strpos($img->getAttribute('src'), 'http') !== 0) {
-                $url = '/imageproxy.php?c=' . md5($img->getAttribute('src') . '38364DC9-FAEF-406E-B6A7-DFB0C83F1CBE') . '&i=' . urlencode($img->getAttribute('src'));
-                $img->setAttribute('src', $url);
-            }
-        }
-    }
-
-    function _rewriteImagesInline($dom)
-    {
-        $basepath = $this->getBasePath();
-        $images = $dom->getElementsByTagName('img');
-        foreach ($images as $img) {
-            if (strpos($img->getAttribute('src'), 'http') !== 0) {
-                $path = ASCMS_DOCUMENT_ROOT . '/mega4dv/' . $basepath . '/' . $img->getAttribute('src');
-
-                if (file_exists($path)) {
-                    $mime = $this->getMimeType($path);
-                    $data = base64_encode(file_get_contents($path));
-                    $img->setAttribute('src', 'data:' . $mime . ';base64,' . $data);
-                } else {
-                	$img->setAttribute('src', 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=');
-                }
-            }
-        }
-    }
-
     function extractBody($dom)
     {
         $body = $dom->getElementsByTagName('body');
-
-        $content = '<style>b {font-weight: bold;}#content a:hover {text-decoration:underline;}article#content table tr {background-color:white !important;}#content table td {padding: 1px 0 1px 1px;}ul{margin:0;padding:0;list-style-type:none;}li{margin:0;padding:0;}#naviDiv{display:none;}img{/*max-width:100%;*/}.klapp>div:first-child{margin-top:-32px!important;}#content table {width:100%;}#subnavigation,aside#sidebar{display:none;}#main article#content{width:calc(100% - 30px)}.bg4{background-color: #666;color:white;}.bg4 a {color: white;}article#content img {margin:0;}article#content ul {list-style-type: square;margin-left:5px;}article#content li {padding-left:0 !important;}footer#content-meta{display:none;}</style>';
-        $content .= '<script>
-    if (!evaluateURLAndOpenKlappi) {
-        function evaluateURLAndOpenKlappi() {
-		var klappiId = getParam("open")
-		if (klappiId) {
-			document.location = "#Link"+klappiId;
-			$J("#klappi"+klappiId).slideToggle("fast");
-		}
-	}
-
-	/*  This function gets the value of the URL parameter provided */
-	function getParam(variable){
-		var query = window.location.search.substring(1);
-		var vars = query.split("&");
-		for (var i=0;i<vars.length;i++) {
-			var pair = vars[i].split("=");
-			if(pair[0] == variable){
-				return pair[1];
-			}
-		}
-		return(false);
-	}
-	 $J(document).ready(function(){evaluateURLAndOpenKlappi()});
-	}
-</script>';
-
+        $content = '';
         foreach ($body as $element) {
             $content .= $this->domInnerHtml($element);
         }
-        return $content . "<div style='clear:both;'></div>";
+        return $content . '<div style="clear:both;"></div>';
     }
 
     function domInnerHtml($element)
     {
-        $innerHTML = "";
+        $innerHTML = '';
         $children = $element->childNodes;
-
         foreach ($children as $child) {
-            $dom2 = new DOMDocument();
+            $dom = new \DOMDocument();
             $cloned = $child->cloneNode(true);
-            $dom2->appendChild($dom2->importNode($cloned, true));
-            $innerHTML .= $dom2->saveHTML();
+            $dom->appendChild($dom->importNode($cloned, true));
+            $innerHTML .= $dom->saveHTML();
         }
-
         return $innerHTML;
     }
 
-    function parseUri()
-    {
-        list($request_url, $request_query) = explode('?',
-                $_SERVER['REQUEST_URI']);
-        parse_str($request_query, $get);
-        return $get;
-    }
-
-    function getCurrentPath()
+    function guessStartFolder()
     {
     	global $objInit;
     	$lang = 'de';
-
         $langId = $objInit->getFrontendLangId();
-        $lang = FWLanguage::getLanguageCodeById($langId);
-
-        $basepath = ASCMS_DOCUMENT_ROOT . '/mega4dv/';
-        if ($this->_currentPath === null) {
-            $get = $this->parseUri();
-            if (empty($get['dv'])) {
-                $path = 'index.htm';
-                $path = $this->checkPathAvailability($path);
-                if (!file_exists($path)) {
-                    $path = $this->guessStartPath();
-                }
-            } else {
-                $path = strtr($get['dv'], '.', '');
-                $path = strtr($path, array('/de/'=>"/$lang/", '/fr/'=>"/$lang/"));
-                $path = $this->checkPathAvailability($path);
-            }
-            $this->_currentPath = $path;
-        }
-        return $this->_currentPath;
-    }
-
-    function guessStartPath()
-    {
-    	global $objInit;
-    	$lang = 'de';
-
-        $langId = $objInit->getFrontendLangId();
-        $lang = FWLanguage::getLanguageCodeById($langId);
-
-        $base = ASCMS_DOCUMENT_ROOT . '/mega4dv/';
-        $dirs = glob($base . "/*", GLOB_ONLYDIR);
+        $lang = \FWLanguage::getLanguageCodeById($langId);
+        $base = $this->getBasePath();
+        $dirs = glob($base . '/*', GLOB_ONLYDIR);
         $max = 0;
         foreach ($dirs as $dir) {
-        	$key = preg_replace("/[^0-9]/","",$dir);
+        	$key = preg_replace('/[^0-9]/','',$dir);
         	if ($key > $max) {
         		$goto = $dir;
         		$max = $key;
         	}
         }
-        if(file_exists($goto . '/de/index.htm') || file_exists($goto . '/fr/index.htm')) {
-        	return strtr($goto, array($base => '')) . '/' . $lang . '/index.htm';
+        if (file_exists($goto . '/de/index.htm')
+            || file_exists($goto . '/fr/index.htm')) {
+            return strtr($goto, [$base => ''])
+                . '/' . $lang . '/index.htm';
         }
-        return strtr($goto, array($base => '')) . '/index.htm';
+        return strtr($goto, [$base => '']) . '/index.htm';
     }
 
-    function checkPathAvailability($path)
+    function checkFolderAvailability($path)
     {
-        $base = ASCMS_DOCUMENT_ROOT . '/mega4dv';
+        $base = $this->getBasePath();
         $full = $base . $path;
         $dir = dirname($full);
         $file = basename($full);
@@ -400,10 +311,10 @@ class Mega4Dv
             case file_exists($dir . '/' . $file):
                 break;
             case file_exists($dir . '/' . strtolower($file)):
-                $path = strtr($path, array($file => strtolower($file)));
+                $path = strtr($path, [$file => strtolower($file)]);
                 break;
             case file_exists($dir . '/' . strtoupper($file)):
-                $path = strtr($path, array($file => strtoupper($file)));
+                $path = strtr($path, [$file => strtoupper($file)]);
                 break;
             default:
                 break;
@@ -411,41 +322,54 @@ class Mega4Dv
         return $path;
     }
 
-    function getBasePath()
+    protected function getCurrentFolder()
     {
-        static $basepath = null;
-        if (!$basepath) {
-            $path = $this->getCurrentPath();
-            $basepath = explode('/', $path);
-            array_pop($basepath);
-            $basepath = implode('/', $basepath);
+    	global $objInit;
+        static $currentFolder = null;
+        if (!$currentFolder) {
+            $langId = $objInit->getFrontendLangId();
+            $lang = \FWLanguage::getLanguageCodeById($langId);
+            $get = $this->cx->getRequest()->getParams();
+            if (empty($get['dv'])) {
+                $currentFolder = $this->checkFolderAvailability('index.htm');
+                if (!file_exists($currentFolder)) {
+                    $currentFolder = $this->guessStartFolder();
+                }
+            } else {
+                $currentFolder = strtr(
+                    urldecode($get['dv']), '.', '');
+                $currentFolder = strtr($currentFolder,
+                    [
+                        '/de/' => '/' . $lang . '/',
+                        '/fr/' => '/' . $lang . '/'
+                    ]
+                );
+                $currentFolder = $this->checkFolderAvailability($currentFolder);
+            }
         }
-        return $basepath;
+        return $currentFolder;
     }
 
-    function getMimeType($filename)
+    function getBaseFolder()
     {
-        preg_match("|\.([a-z0-9]{2,4})$|i", $filename, $fileSuffix);
-
-        switch (strtolower($fileSuffix[1])) {
-            case "jpg" :
-            case "jpeg" :
-            case "jpe" :
-                return "image/jpg";
-
-            case "png" :
-            case "gif" :
-            case "bmp" :
-            case "tiff" :
-                return "image/" . strtolower($fileSuffix[1]);
-
-            default :
-                if (function_exists("mime_content_type")) {
-                    $fileSuffix = mime_content_type($filename);
-                }
-
-                return "unknown/" . trim($fileSuffix[0], ".");
+        static $baseFolder = null;
+        if (!$baseFolder) {
+            $baseFolder = dirname($this->getCurrentFolder());
         }
+        return $baseFolder;
+    }
+
+    /**
+     * Return the absolute filesystem path of the contents folder
+     *
+     * This includes a trailing slash, and is typically something like:
+     *  /var/www/html/media/CHDIRMega4DV/
+     * @return  string
+     */
+    protected function getBasePath(): string
+    {
+        return $this->cx->getWebsiteDocumentRootPath()
+            . '/media/' . $this->getName() . '/';
     }
 
 }

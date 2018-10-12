@@ -1,6 +1,58 @@
-/**
- * This file is loaded by the abstract SystemComponentFrontendController
- * You may add own CSS files using
- * \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/FileName.css', 1));
- * or remove this file if you don't need it
- */
+b {
+  font-weight: bold;
+}
+#content a:hover {
+  text-decoration:underline;
+}
+article#content table tr {
+  background-color:white !important;
+}
+#content table td {
+  padding: 1px 0 1px 1px;
+}
+ul {
+  margin:0;
+  padding:0;
+  list-style-type:none;
+}
+li {
+  margin:0;
+  padding:0;
+}
+#naviDiv {
+  display:none;
+}
+img {
+  /*max-width:100%;*/
+}
+.klapp > div:first-child {
+  margin-top:-32px!important;
+}
+#content table {
+  width:100%;
+}
+#subnavigation, aside#sidebar {
+  display:none;
+}
+#main article#content {
+  width:calc(100% - 30px)}
+.bg4 {
+  background-color: #666;
+  color:white;
+}
+.bg4 a {
+  color: white;
+}
+article#content img {
+  margin:0;
+}
+article#content ul {
+  list-style-type: square;
+  margin-left:5px;
+}
+article#content li {
+  padding-left:0 !important;
+}
+footer#content-meta {
+  display:none;
+}
