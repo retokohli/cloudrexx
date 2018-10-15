@@ -88,7 +88,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
+     * Redirect to the page specified by a refresh meta tag
      *
+     * Redirects to the first URL found in any meta tag of the form:
+     *  <meta HTTP-EQUIV="REFRESH" content="0; url=pages/763F79EE5304A269.htm">
+     * Mind that the "REFRESH" value is matched case sensitive.
+     * Internal URLs are rewritten to match an existing path.
+     * The target URL includes the module base URL, plus the "dv" parameter
+     * with its value set to the target page path.
+     * If no matching meta tag is found, this is a noop, and returns.
      * @param   \DOMDocument    $dom
      */
     protected function checkForRedirect(\DOMDocument $dom)
@@ -97,19 +105,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if ($metas) {
             foreach ($metas as $meta) {
                 $http_equiv = $meta->getAttribute('http-equiv');
-                $param = $meta->getAttribute('content');
-                if ($http_equiv && $http_equiv == 'REFRESH' && $param) {
-                    $parts = explode('=', $param);
-                    $param = array_pop($parts);
-                    if (strpos($param, 'http') !== 0) {
-                        $param = $this->getBaseFolder() . '/' . $param;
-                        $param = $this->checkFolderAvailability($param,
-                                $this->getBaseFolder() . '/');
-                    }
-                    $url = clone \Env::get('Resolver')->getUrl();
-                    $url->setParam('dv', $param);
-                    \Cx\Core\Csrf\Controller\Csrf::redirect($url);
+                $content = $meta->getAttribute('content');
+                if ($http_equiv !== 'REFRESH' || !$content) {
+                    continue;
                 }
+                $parts = explode('=', $content);
+                $urlContent = array_pop($parts);
+                if (strpos($urlContent, 'http') !== 0) {
+                    $urlContent = $this->getBaseFolder() . '/' . $urlContent;
+                    $urlContent = $this->checkFolderAvailability($urlContent,
+                            $this->getBaseFolder() . '/');
+                }
+                $url = $this->getBaseUrl();
+                $url->setParam('dv', $urlContent);
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    $url->toString(true, false)
+                );
             }
         }
     }
