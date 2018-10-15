@@ -62,13 +62,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function getContent(): string
     {
         $this->sendDownload();
-        $folder = $this->getCurrentFolder();
+        $folder = $this->getCurrentFilePath();
         $path = $this->getBasePath() . $folder;
         if (!file_exists($path)) {
             return 'Sorry, could not find the file ' . $folder;
         }
-        // Suppress warnings
-        //libxml_use_internal_errors(true);
+        // Suppress warnings (you may disable this for testing)
+        libxml_use_internal_errors(true);
         $content = file_get_contents($path);
         $dom = new \DOMDocument();
         $dom->loadHTML($content);
@@ -112,9 +112,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $parts = explode('=', $content);
                 $urlContent = array_pop($parts);
                 if (strpos($urlContent, 'http') !== 0) {
-                    $urlContent = $this->getBaseFolder() . '/' . $urlContent;
-                    $urlContent = $this->checkFolderAvailability($urlContent,
-                            $this->getBaseFolder() . '/');
+                    $urlContent = $this->getBaseFolder() . $urlContent;
+                    $urlContent = $this->matchPath($urlContent);
                 }
                 $url = $this->getBaseUrl();
                 $url->setParam('dv', $urlContent);
@@ -155,7 +154,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 continue;
             }
             // Mind that the file must exist for realpath() to work.
-            $path = realpath($basePath . $this->getBaseFolder() . '/' . $href);
+            $path = realpath($basePath . $this->getBaseFolder() . $href);
             if (!$path) {
                 continue;
             }
@@ -222,7 +221,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ) {
                 $param = explode('#', $href);
                 $url = $this->getBaseUrl();
-                $url->setParam('dv', $baseFolder . '/' . $param[0]);
+                $url->setParam('dv', $baseFolder . $param[0]);
                 $urlString = $url->toString(false)
                     . (isset($param[1]) ? '#' . $param[1] : '');
                 $link->setAttribute('href', $urlString);
@@ -277,8 +276,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $images = $dom->getElementsByTagName('img');
         foreach ($images as $img) {
             if (strpos($img->getAttribute('src'), 'http') !== 0) {
-                $path = $basePath . $baseFolder
-                    . '/' . $img->getAttribute('src');
+                $path = $basePath . $baseFolder . $img->getAttribute('src');
                 if (file_exists($path)) {
                     $mime = \Mime::getMimeTypeForExtension($path);
                     $data = base64_encode(file_get_contents($path));
@@ -295,7 +293,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
+     * Return the content of the body tag from the current DOM
      *
+     * Appends a div tag for separating it from following content.
      * @param   \DOMDocument    $dom
      * @return  string
      */
@@ -310,7 +310,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     *
+     * Return the content of all children of the given element
      * @param   \DOMElement $element
      * @return  string
      */
@@ -319,8 +319,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $innerHTML = '';
         $children = $element->childNodes;
         foreach ($children as $child) {
-            $dom = new \DOMDocument();
             $cloned = $child->cloneNode(true);
+            $dom = new \DOMDocument();
             $dom->appendChild($dom->importNode($cloned, true));
             $innerHTML .= $dom->saveHTML();
         }
@@ -328,96 +328,107 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
+     * Return the path of the current start page
      *
-     * @global type $objInit
-     * @return string
+     * The path returned is relative to the one returned by
+     * {@see getBasePath()}.
+     * Finds the path of the latest data folder by date, and appends
+     * the current language folder and index file name.
+     * Does not test whether the resulting path exists.
+     * @return  string
      */
-    protected function guessStartFolder(): string
+    protected function guessStartPage(): string
     {
-        global $objInit;
-        $lang = 'de';
-        $langId = $objInit->getFrontendLangId();
-        $lang = \FWLanguage::getLanguageCodeById($langId);
-        $base = $this->getBasePath();
-        $dirs = glob($base . '/*', GLOB_ONLYDIR);
+        $basePath = $this->getBasePath();
+        $dirs = glob($basePath . '*', GLOB_ONLYDIR);
         $max = 0;
         foreach ($dirs as $dir) {
-            $key = preg_replace('/[^0-9]/','',$dir);
+            $key = preg_replace('/[^0-9]/', '', $dir);
             if ($key > $max) {
                 $goto = $dir;
                 $max = $key;
             }
         }
-        if (file_exists($goto . '/de/index.htm')
-            || file_exists($goto . '/fr/index.htm')) {
-            return strtr($goto, [$base => ''])
-                . '/' . $lang . '/index.htm';
-        }
-        return strtr($goto, [$base => '']) . '/index.htm';
+        $folder = strtr($goto, [$basePath => '']);
+\DBG::log("guessStartPage: $goto -> $folder");
+        $lang = $this->cx->getRequest()->getUrl()->getLangDir();
+        return $folder . '/' . $lang . '/index.htm';
     }
 
     /**
+     * Return a fixed version of the given path, if possible
      *
+     * The path must be relative to the one returned by {@see getBasePath()}.
+     * Tries the original, lower, and upper case versions of the file name
+     * trailing the given path, and returns the first that matches an
+     * existing file.
+     * If none matches, the original path is returned unchanged.
+     * Many pages in the content are referenced using all uppercase names,
+     * whereas the respective file names are written in lower case.
      * @param   string  $path
      * @return  string
      */
-    protected function checkFolderAvailability($path): string
+    protected function matchPath($path): string
     {
-        $base = $this->getBasePath();
-        $full = $base . $path;
-        $dir = dirname($full);
-        $file = basename($full);
+        $basePath = $this->getBasePath();
+        $fullPath = $basePath . $path;
+        $folderPath = dirname($fullPath);
+        $fileName = basename($path);
         switch (true) {
-            case file_exists($dir . '/' . $file):
+            case file_exists($folderPath . '/' . $fileName):
                 break;
-            case file_exists($dir . '/' . strtolower($file)):
-                $path = strtr($path, [$file => strtolower($file)]);
+            case file_exists($folderPath . '/' . strtolower($fileName)):
+                $path = strtr($path, [$fileName => strtolower($fileName)]);
                 break;
-            case file_exists($dir . '/' . strtoupper($file)):
-                $path = strtr($path, [$file => strtoupper($file)]);
-                break;
-            default:
+// TODO: This case does probably never match:
+            case file_exists($folderPath . '/' . strtoupper($fileName)):
+                $path = strtr($path, [$fileName => strtoupper($fileName)]);
                 break;
         }
         return $path;
     }
 
     /**
+     * Return the current file path
      *
-     * @global      \InitCMS    $objInit
-     * @staticvar   string      $currentFolder
+     * This path contains the folder path returned by {@see getBaseFolder()}.
+     * If the "dv" URL parameter value is set, replaces its language part
+     * with the current language directory, and tries finding a match
+     * by calling {@see matchPath()}
+     * Otherwise, returns the path returned by {@see guessStartPage()}.
+     * @staticvar   string      $currentFilePath
      * @return      string
      */
-    protected function getCurrentFolder(): string
+    protected function getCurrentFilePath(): string
     {
-        global $objInit;
-        static $currentFolder = null;
-        if (!$currentFolder) {
-            $langId = $objInit->getFrontendLangId();
-            $lang = \FWLanguage::getLanguageCodeById($langId);
+        static $currentFilePath = null;
+        if (!$currentFilePath) {
             $get = $this->cx->getRequest()->getParams();
             if (empty($get['dv'])) {
-                $currentFolder = $this->checkFolderAvailability('index.htm');
-                if (!file_exists($currentFolder)) {
-                    $currentFolder = $this->guessStartFolder();
-                }
+                $currentFilePath = $this->guessStartPage();
             } else {
-                $currentFolder = strtr(
-                    urldecode($get['dv']), '.', '');
-                $currentFolder = strtr($currentFolder,
+                $lang = $this->cx->getRequest()->getUrl()->getLangDir();
+                $currentFilePath = urldecode($get['dv']);
+                $currentFilePath = strtr($currentFilePath,
                     [
                         '/de/' => '/' . $lang . '/',
                         '/fr/' => '/' . $lang . '/'
                     ]
                 );
-                $currentFolder = $this->checkFolderAvailability($currentFolder);
+                $currentFilePath = $this->matchPath($currentFilePath);
             }
         }
-        return $currentFolder;
+        return $currentFilePath;
     }
 
     /**
+     * Return the folder of the current page
      *
+     * This folder path is relative to the one returned by {@see getBasePath()}.
+     * Contains a trailing slash.
+     * On empty "dv" parameter value, before redirecting to the start page,
+     * this is something like, "ADV_2017-01-30/de/".
+     * On any of the content pages, "ADV_2017-01-30/de/pages/".
      * @staticvar   string  $baseFolder
      * @return      string
      */
@@ -425,7 +436,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
         static $baseFolder = null;
         if (!$baseFolder) {
-            $baseFolder = dirname($this->getCurrentFolder());
+            $baseFolder = dirname($this->getCurrentFilePath()) . '/';
         }
         return $baseFolder;
     }
@@ -433,14 +444,16 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * Return the absolute filesystem path of the contents folder
      *
+     * This folder is the parent of the one returned by {@see getBaseFolder()}.
      * This includes a trailing slash, and is typically something like:
      *  /var/www/html/media/CHDIRMega4DV/
      * @return  string
      */
     protected function getBasePath(): string
     {
-        return $this->cx->getWebsiteDocumentRootPath()
+        $basePath = $this->cx->getWebsiteDocumentRootPath()
             . '/media/' . $this->getName() . '/';
+        return $basePath;
     }
 
     /**
@@ -451,11 +464,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function getBaseUrl(): \Cx\Core\Routing\Url
     {
-        $url = clone \Env::get('Resolver')->getUrl();
-        $url->removeAllParams();
+        $baseurl = clone \Env::get('Resolver')->getUrl();
+        $baseurl->removeAllParams();
 // TODO: Is this a proper fix?  I don't want the (default) port to appear:
-        $url->setPort(null);
-        return $url;
+        $baseurl->setPort(null);
+        return $baseurl;
     }
 
 }
