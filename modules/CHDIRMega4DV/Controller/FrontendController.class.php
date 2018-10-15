@@ -199,7 +199,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
+     * Rewrite links referencing local pages
      *
+     * Restricts affected elements to the given tag name.
+     * Ignores absolute links (starting with either "http", or "mailto"),
+     * and anchor links (starting with "#").
+     * Any other URL is transformed to the module base URL, plus the
+     * corresponding path as the "dv" parameter value.
      * @param   \DOMDocument    $dom
      * @param   string          $tagname
      */
@@ -210,15 +216,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
             // Do not touch href values starting with any of:
-            if (strpos($href, '/imageproxy.php') !== 0
-                && strpos($href, 'mailto') !== 0
+            if (strpos($href, 'mailto') !== 0
                 && strpos($href, 'http') !== 0
                 && strpos($href, '#') !== 0
             ) {
                 $param = explode('#', $href);
                 $url = $this->getBaseUrl();
                 $url->setParam('dv', $baseFolder . '/' . $param[0]);
-                $urlString = $url . (isset($param[1]) ? '#' . $param[1] : '');
+                $urlString = $url->toString(false)
+                    . (isset($param[1]) ? '#' . $param[1] : '');
                 $link->setAttribute('href', $urlString);
             }
         }
