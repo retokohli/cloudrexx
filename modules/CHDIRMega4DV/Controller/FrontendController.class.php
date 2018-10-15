@@ -415,6 +415,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Includes the module path, but no parameters.
      * @return  \Cx\Core\Routing\Url
+     * @todo    Ensure no other parameter than 'dv' occurs
+     * @todo    Perhaps use a different method to strip all parameters
      */
     protected function getBaseUrl(): \Cx\Core\Routing\Url
     {
