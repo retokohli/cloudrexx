@@ -249,7 +249,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     *
+     * Rewrite image tags with inline data
      * @param   \DOMDocument    $dom
      */
     protected function rewriteImagesInline(\DOMDocument $dom)
@@ -264,9 +264,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 if (file_exists($path)) {
                     $mime = \Mime::getMimeTypeForExtension($path);
                     $data = base64_encode(file_get_contents($path));
-                    $img->setAttribute('src', 'data:' . $mime . ';base64,' . $data);
+                    $img->setAttribute(
+                        'src', 'data:' . $mime . ';base64,' . $data);
                 } else {
-                	$img->setAttribute('src', 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=');
+                    $img->setAttribute(
+                        'src',
+                        'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs='
+                    );
                 }
             }
         }
