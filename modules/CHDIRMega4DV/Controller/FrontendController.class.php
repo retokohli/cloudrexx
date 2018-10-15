@@ -316,19 +316,19 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function guessStartFolder(): string
     {
-    	global $objInit;
-    	$lang = 'de';
+        global $objInit;
+        $lang = 'de';
         $langId = $objInit->getFrontendLangId();
         $lang = \FWLanguage::getLanguageCodeById($langId);
         $base = $this->getBasePath();
         $dirs = glob($base . '/*', GLOB_ONLYDIR);
         $max = 0;
         foreach ($dirs as $dir) {
-        	$key = preg_replace('/[^0-9]/','',$dir);
-        	if ($key > $max) {
-        		$goto = $dir;
-        		$max = $key;
-        	}
+            $key = preg_replace('/[^0-9]/','',$dir);
+            if ($key > $max) {
+                $goto = $dir;
+                $max = $key;
+            }
         }
         if (file_exists($goto . '/de/index.htm')
             || file_exists($goto . '/fr/index.htm')) {
@@ -372,7 +372,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function getCurrentFolder(): string
     {
-    	global $objInit;
+        global $objInit;
         static $currentFolder = null;
         if (!$currentFolder) {
             $langId = $objInit->getFrontendLangId();
