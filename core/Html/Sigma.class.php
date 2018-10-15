@@ -122,6 +122,15 @@ class Sigma extends \HTML_Template_Sigma {
         return $this->parseTarget;
     }
 
+    /**
+     * Sets the parse target after initialization
+     * @deprecated Set parse target on initialization
+     * @param \Cx\Core\View\Model\Entity\ParseTarget Target where this instances will get parsed into (or null)
+     */
+    public function setParseTarget($parseTarget) {
+        $this->parseTarget = $parseTarget;
+    }
+
     function getRoot() {
         return $this->fileRoot;
     }
