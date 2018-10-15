@@ -67,10 +67,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if (!file_exists($path)) {
             return 'Sorry, could not find the file ' . $folder;
         }
+        // Suppress warnings
+        //libxml_use_internal_errors(true);
         $content = file_get_contents($path);
         $dom = new \DOMDocument();
         $dom->loadHTML($content);
-        libxml_use_internal_errors(true);
         $this->checkForRedirect($dom);
         $xpath = new \DOMXPath($dom);
         foreach ($xpath->query('//comment()') as $comment) {
