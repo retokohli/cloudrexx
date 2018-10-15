@@ -205,10 +205,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 && strpos($href, '#') !== 0
             ) {
                 $param = explode('#', $href);
-                $url = clone \Env::get('Resolver')->getUrl();
+                $url = $this->getBaseUrl();
                 $url->setParam('dv', $baseFolder . '/' . $param[0]);
-// TODO: Is this a proper fix?  I don't want the (default) port to appear:
-                $url->setPort(null);
                 $urlString = $url . (isset($param[1]) ? '#' . $param[1] : '');
                 $link->setAttribute('href', $urlString);
             }
@@ -430,13 +428,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Includes the module path, but no parameters.
      * @return  \Cx\Core\Routing\Url
-     * @todo    Ensure no other parameter than 'dv' occurs
-     * @todo    Perhaps use a different method to strip all parameters
      */
     protected function getBaseUrl(): \Cx\Core\Routing\Url
     {
         $url = clone \Env::get('Resolver')->getUrl();
-        $url->setParam('dv', null);
+        $url->removeAllParams();
+// TODO: Is this a proper fix?  I don't want the (default) port to appear:
+        $url->setPort(null);
         return $url;
     }
 
