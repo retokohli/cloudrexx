@@ -25,20 +25,10 @@
  * our trademarks remain entirely with us.
  */
 
-/**
- * Specific FrontendController for this Component. Use this to easily create a frontent view
- *
- * @copyright   Cloudrexx AG
- * @author      Michael Ritter <michael.ritter@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  module_chdirmega4dv
- */
-
 namespace Cx\Modules\CHDIRMega4DV\Controller;
 
 /**
- * Specific FrontendController for this Component. Use this to easily create a frontent view
- *
+ * FrontendController
  * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
@@ -65,8 +55,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
     /**
      * Return the effective content
+     * @return  string
      */
-    protected function getContent()
+    protected function getContent(): string
     {
         $this->sendDownload();
         $folder = $this->getCurrentFolder();
@@ -78,10 +69,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $dom = new \DOMDocument();
         $dom->loadHTML($content);
         libxml_use_internal_errors(true);
-        $redirect = $this->checkForRedirect($dom);
-        if ($redirect) {
-            return $redirect;
-        }
+        $this->checkForRedirect($dom);
         $xpath = new \DOMXPath($dom);
         foreach ($xpath->query('//comment()') as $comment) {
             $comment->parentNode->removeChild($comment);
@@ -96,7 +84,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return $content;
     }
 
-    function checkForRedirect($dom)
+    /**
+     *
+     * @param   \DOMDocument    $dom
+     */
+    protected function checkForRedirect(\DOMDocument $dom)
     {
         $metas = $dom->getElementsByTagName('meta');
         if ($metas) {
@@ -117,7 +109,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 }
             }
         }
-        return false;
     }
 
     /**
@@ -125,9 +116,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Note that the generated links are absolute (including protocol)
      * in order to avoid rewriting them again in rewriteUrls().
-     * @param type $dom
+     * @param   \DOMDocument    $dom
      */
-    function rewriteDocumentsProxy($dom)
+    protected function rewriteDocumentsProxy(\DOMDocument $dom)
     {
         $basePath = $this->getBasePath();
         $basePathLength = strlen($basePath);
@@ -168,7 +159,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * this is a noop.
      * Otherwise, it sends the download, and exits.
      */
-    function sendDownload()
+    protected function sendDownload()
     {
         $request = $this->cx->getRequest();
         if (!(
@@ -193,7 +184,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         exit();
     }
 
-    function rewriteUrls($dom, $tagname = 'a')
+    /**
+     *
+     * @param   \DOMDocument    $dom
+     * @param   string          $tagname
+     */
+    protected function rewriteUrls(\DOMDocument $dom, $tagname = 'a')
     {
         $links = $dom->getElementsByTagName($tagname);
         $baseFolder = $this->getBaseFolder();
@@ -216,12 +212,20 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
     }
 
-    function rewriteAreas($dom)
+    /**
+     *
+     * @param   \DOMDocument    $dom
+     */
+    protected function rewriteAreas(\DOMDocument $dom)
     {
         $this->rewriteUrls($dom, 'area');
     }
 
-    function rewriteScripts($dom)
+    /**
+     *
+     * @param   \DOMDocument    $dom
+     */
+    protected function rewriteScripts(\DOMDocument $dom)
     {
         $scripts = $dom->getElementsByTagName('script');
         foreach ($scripts as $script) {
@@ -233,7 +237,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
     }
 
-    function rewriteImagesInline($dom)
+    /**
+     *
+     * @param   \DOMDocument    $dom
+     */
+    protected function rewriteImagesInline(\DOMDocument $dom)
     {
         $baseFolder = $this->getBaseFolder();
         $basePath = $this->getBasePath();
@@ -253,7 +261,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
     }
 
-    function extractBody($dom)
+    /**
+     *
+     * @param   \DOMDocument    $dom
+     * @return  string
+     */
+    protected function extractBody(\DOMDocument $dom): string
     {
         $body = $dom->getElementsByTagName('body');
         $content = '';
@@ -263,7 +276,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return $content . '<div style="clear:both;"></div>';
     }
 
-    function domInnerHtml($element)
+    /**
+     *
+     * @param   \DOMElement $element
+     * @return  string
+     */
+    protected function domInnerHtml(\DOMElement $element): string
     {
         $innerHTML = '';
         $children = $element->childNodes;
@@ -276,7 +294,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return $innerHTML;
     }
 
-    function guessStartFolder()
+    /**
+     *
+     * @global type $objInit
+     * @return string
+     */
+    protected function guessStartFolder(): string
     {
     	global $objInit;
     	$lang = 'de';
@@ -300,7 +323,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return strtr($goto, [$base => '']) . '/index.htm';
     }
 
-    function checkFolderAvailability($path)
+    /**
+     *
+     * @param   string  $path
+     * @return  string
+     */
+    protected function checkFolderAvailability($path): string
     {
         $base = $this->getBasePath();
         $full = $base . $path;
@@ -321,7 +349,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return $path;
     }
 
-    protected function getCurrentFolder()
+    /**
+     *
+     * @global      \InitCMS    $objInit
+     * @staticvar   string      $currentFolder
+     * @return      string
+     */
+    protected function getCurrentFolder(): string
     {
     	global $objInit;
         static $currentFolder = null;
@@ -349,7 +383,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return $currentFolder;
     }
 
-    function getBaseFolder()
+    /**
+     *
+     * @staticvar   string  $baseFolder
+     * @return      string
+     */
+    protected function getBaseFolder(): string
     {
         static $baseFolder = null;
         if (!$baseFolder) {
