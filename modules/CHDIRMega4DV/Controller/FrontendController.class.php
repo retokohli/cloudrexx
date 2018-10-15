@@ -66,7 +66,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $folder = $this->getCurrentFolder();
         $path = $this->getBasePath() . $folder;
         if (!file_exists($path)) {
-            return 'Sorry, could not find the file ' . $path /*TODO: $folder only*/;
+            return 'Sorry, could not find the file ' . $folder;
         }
         $content = file_get_contents($path);
         $dom = new \DOMDocument();
