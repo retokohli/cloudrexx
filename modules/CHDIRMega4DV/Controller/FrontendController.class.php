@@ -93,24 +93,21 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     function checkForRedirect($dom)
     {
         $metas = $dom->getElementsByTagName('meta');
-        $baseFolder = $this->getBaseFolder();
         if ($metas) {
             foreach ($metas as $meta) {
                 $http_equiv = $meta->getAttribute('http-equiv');
-                $url = $meta->getAttribute('content');
-                if ($http_equiv && $http_equiv == 'REFRESH' && $url) {
-                    $parts = explode('=', $url);
-                    $url = array_pop($parts);
-                    if (strpos($url, 'http') !== 0) {
-                        $url = $baseFolder . '/' . $url;
-                        $url = $this->checkFolderAvailability($url,
-                                $baseFolder . '/');
+                $param = $meta->getAttribute('content');
+                if ($http_equiv && $http_equiv == 'REFRESH' && $param) {
+                    $parts = explode('=', $param);
+                    $param = array_pop($parts);
+                    if (strpos($param, 'http') !== 0) {
+                        $param = $this->getBaseFolder() . '/' . $param;
+                        $param = $this->checkFolderAvailability($param,
+                                $this->getBaseFolder() . '/');
                     }
-                    $myUrl = clone \Env::get('Resolver')->getUrl();
-                    $myUrl->setParam('dv', $url);
-// TODO: Why not redirect immediately?
-                    $redirect = '<script>document.location="' . $myUrl . '";</script>';
-                    return $redirect;
+                    $url = clone \Env::get('Resolver')->getUrl();
+                    $url->setParam('dv', $param);
+                    \Cx\Core\Csrf\Controller\Csrf::redirect($url);
                 }
             }
         }
@@ -137,46 +134,18 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $baseFolder = $this->getBaseFolder();
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
-            if (
-                strpos($href, '/imageproxy.php') !== 0 &&
-                strpos($href, 'mailto') !== 0 &&
-                strpos($href, 'http') !== 0 &&
-                strpos($href, '#') !== 0
+            // Do not touch href values starting with any of:
+            if (strpos($href, '/imageproxy.php') !== 0
+                && strpos($href, 'mailto') !== 0
+                && strpos($href, 'http') !== 0
+                && strpos($href, '#') !== 0
             ) {
-//                $request = $this->cx->getRequest();
-//                $proto = $request->getUrl()->getProtocol();
-//                $host = isset($_SERVER['HTTPS_HOST']) ? $_SERVER['HTTPS_HOST'] : $_SERVER['HTTP_HOST'];
-//                $url = new \Cx\Lib\Net\Model\Entity\Url(
-//                    $proto
-//                    . \Cx\Lib\Net\Model\Entity\Uri::SCHEME_DELIMITER_WITH_AUTHORITY
-//                    . $host
-//                $cap = '';
-//                if ($request->hasParam('__cap')) {
-//                    $cap = $request->getParam('__cap');
-//                }
-//                $url->setPath($cap);
                 $param = explode('#', $href);
-//                $url->setParam('dv', $baseFolder . '/' . $param[0]);
-//                if (isset($param[1])) {
-//                    $url->setFragment($param[1]);
-//                }
-//                );
-var_dump($param); //die();
-                $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                    $this->getName(), '', '',
-                    [
-                        'dv' => $baseFolder . '/' . $param[0],
-                    ])
-
-                    ;
+                $url = clone \Env::get('Resolver')->getUrl();
+                $url->setParam('dv', $baseFolder . '/' . $param[0]);
 // TODO: Is this a proper fix?  I don't want the (default) port to appear:
                 $url->setPort(null);
-                $urlString = $url->toString()
-                    . (isset($param[1]) ? '#' . $param[1] : '')
-                ;
-//die($urlString);
-// TODO: is this okay?:
-// 'http://chdirect.org.lvh.me/?dv=%2FADV_2017-01-30%2Fde%2Fpages%2F'
+                $urlString = $url . (isset($param[1]) ? '#' . $param[1] : '');
                 $link->setAttribute('href', $urlString);
             }
         }
