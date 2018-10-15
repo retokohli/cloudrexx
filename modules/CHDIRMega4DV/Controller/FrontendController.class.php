@@ -50,6 +50,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
 \DBG::activate(DBG_PHP|DBG_DB_ERROR);
         $template->setTemplate($this->getContent());
+// TODO: Enable along with using cx.jQuery in rewriteScripts() (or remove)
+//        \JS::activate('cx');
 \DBG::deactivate();
     }
 
@@ -222,17 +224,25 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     *
+     * Rewrite Javascript calls to jQuery
      * @param   \DOMDocument    $dom
+     * @todo    Javascript calls are broken (e.g. "slideToogle")
+     * @todo    "slideToggle" does not work either (at least those I've seen)
      */
     protected function rewriteScripts(\DOMDocument $dom)
     {
         $scripts = $dom->getElementsByTagName('script');
         foreach ($scripts as $script) {
             if ($script->nodeValue) {
-                $script->nodeValue = '$J(document).ready(function($J){'
+                $script->nodeValue =
+                    '$J(function($J){'
                     . strtr($script->nodeValue, ['$(' => '$J('])
                     . '});';
+// TODO: Should/could cx.jQuery() be used instead?
+//                $script->nodeValue =
+//                    'cx.jQuery(function(){'
+//                    . strtr($script->nodeValue, ['$(' => 'cx.jQuery('])
+//                    . '});';
             }
         }
     }
