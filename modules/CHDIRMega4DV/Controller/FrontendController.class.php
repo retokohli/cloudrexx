@@ -47,6 +47,11 @@ namespace Cx\Modules\CHDIRMega4DV\Controller;
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
 {
     /**
+     * Salt added to md5 hashes
+     */
+    const SALT = '38364DC9-FAEF-406E-B6A7-DFB0C83F1CBE';
+
+    /**
      * Set up the view
      * @param   \Cx\Core\Html\Sigma $template
      * @param   string              $cmd
@@ -63,6 +68,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function getContent()
     {
+        $this->sendDownload();
         $folder = $this->getCurrentFolder();
         $path = $this->getBasePath() . $folder;
         if (!file_exists($path)) {
@@ -114,18 +120,77 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         return false;
     }
 
+    /**
+     * Rewrite links referencing documents for downloading
+     *
+     * Note that the generated links are absolute (including protocol)
+     * in order to avoid rewriting them again in rewriteUrls().
+     * @param type $dom
+     */
     function rewriteDocumentsProxy($dom)
     {
+        $basePath = $this->getBasePath();
+        $basePathLength = strlen($basePath);
+        $url = $this->getBaseUrl();
+        $url->setParam('proxy', '');
         $links = $dom->getElementsByTagName('a');
         foreach ($links as $link) {
-            if (strpos($link->getAttribute('href'), 'http') !== 0 && strpos(strtolower($link->getAttribute('href')),
-                            'xls') !== false || strpos(strtolower($link->getAttribute('href')),
-                            'pdf') !== false) {
-                $path = $this->getBaseFolder() .'/' . $link->getAttribute('href');
-                $url = '/imageproxy.php?c=' . md5($path . '38364DC9-FAEF-406E-B6A7-DFB0C83F1CBE') . '&i=' . urlencode($path);
-                $link->setAttribute('href', $url);
+            $href = $link->getAttribute('href');
+            if (strpos($href, 'http') === 0) {
+                continue;
             }
+            $hrefLower = strtr($href, [
+                '.PDF' => '.pdf',
+                '.XLSX' => '.xlsx',
+                '.XLS' => '.xls',
+            ]);
+            if (strpos($hrefLower, '.xls') === false
+                && strpos($hrefLower, '.pdf') === false
+            ) {
+                continue;
+            }
+            // Mind that the file must exist for realpath() to work.
+            $path = realpath($basePath . $this->getBaseFolder() . '/' . $href);
+            if (!$path) {
+                continue;
+            }
+            $path = substr($path, $basePathLength);
+            $url->setParam('c', md5($path . static::SALT));
+            $url->setParam('i', urlencode($path));
+            $link->setAttribute('href', $url->toString());
         }
+    }
+
+    /**
+     * Send the requested download, if any
+     *
+     * If any of the required URL parameters (proxy, c, i) is missing,
+     * this is a noop.
+     * Otherwise, it sends the download, and exits.
+     */
+    function sendDownload()
+    {
+        $request = $this->cx->getRequest();
+        if (!(
+            $request->hasParam('proxy')
+            && $request->hasParam('c')
+            && $request->hasParam('i')
+        )) {
+            return;
+        }
+        $check = $request->getParam('c');
+        $url = urldecode($request->getParam('i'));
+        $md5 = md5($url . static::SALT);
+        if ($check !== $md5) {
+            return;
+        }
+        $filePath = $this->getBasePath() . $url;
+        $fileName = basename($url);
+        $mediaType = \Mime::getMimeTypeForExtension($fileName);
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Content-type: ' . $mediaType);
+        readfile($filePath);
+        exit();
     }
 
     function rewriteUrls($dom, $tagname = 'a')
@@ -339,6 +404,19 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
         return $this->cx->getWebsiteDocumentRootPath()
             . '/media/' . $this->getName() . '/';
+    }
+
+    /**
+     * Return the base URL
+     *
+     * Includes the module path, but no parameters.
+     * @return  \Cx\Core\Routing\Url
+     */
+    protected function getBaseUrl(): \Cx\Core\Routing\Url
+    {
+        $url = clone \Env::get('Resolver')->getUrl();
+        $url->setParam('dv', null);
+        return $url;
     }
 
 }
