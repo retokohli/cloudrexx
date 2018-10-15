@@ -89,7 +89,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $this->rewriteDocumentsProxy($dom);
         $this->rewriteUrls($dom);
         $this->rewriteAreas($dom);
-        $this->rewriteImages($dom, 'inline');
+        $this->rewriteImagesInline($dom);
         $this->rewriteScripts($dom);
         libxml_clear_errors();
         $content = $this->extractBody($dom);
@@ -233,7 +233,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
     }
 
-    function _rewriteImagesInline($dom)
+    function rewriteImagesInline($dom)
     {
         $baseFolder = $this->getBaseFolder();
         $basePath = $this->getBasePath();
@@ -250,41 +250,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 	$img->setAttribute('src', 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=');
                 }
             }
-        }
-    }
-
-    function _rewriteImagesProxy($dom)
-    {
-        $images = $dom->getElementsByTagName('img');
-        foreach ($images as $img) {
-            if (strpos($img->getAttribute('src'), 'http') !== 0) {
-                $url = '/imageproxy.php?c=' . md5($img->getAttribute('src') . '38364DC9-FAEF-406E-B6A7-DFB0C83F1CBE') . '&i=' . urlencode($img->getAttribute('src'));
-                $img->setAttribute('src', $url);
-            }
-        }
-    }
-
-    function _rewriteImagesSimple($dom)
-    {
-        $baseFolder = $this->getBaseFolder();
-        $images = $dom->getElementsByTagName('img');
-        foreach ($images as $img) {
-            if (strpos($img->getAttribute('src'), 'http') !== 0) {
-                $url = '/mega4dv/' . $baseFolder . '/' . $img->getAttribute('src');
-                $img->setAttribute('src', $url);
-            }
-        }
-    }
-
-    function rewriteImages($dom, $type = 'simple')
-    {
-        switch ($type) {
-            case 'inline':
-                return $this->_rewriteImagesInline($dom);
-            case 'proxy':
-                return $this->_rewriteImagesProxy($dom);
-            default:
-                return $this->_rewriteImagesSimple($dom);
         }
     }
 
