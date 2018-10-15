@@ -185,8 +185,13 @@ class Sigma extends \HTML_Template_Sigma {
             }
         }
 
-        // Renew variable list
-        return $this->_buildBlockVariables();
+        // Renew variable list without dropping existing callbacks
+        // This may lead to too much data in $this->_functions but
+        // Sigma simply does str_replace() which never matches.
+        $func_bkp = $this->_functions;
+        $ret = $this->_buildBlockVariables();
+        $this->_functions = $func_bkp + $this->_functions;
+        return $ret;
     }
 
     /**
