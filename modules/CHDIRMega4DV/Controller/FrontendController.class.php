@@ -231,7 +231,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
+     * Rewrite links in area tags
      *
+     * Works exactly as {@see rewriteUrls()}, except that it overrides
+     * the tag name with "area".
      * @param   \DOMDocument    $dom
      */
     protected function rewriteAreas(\DOMDocument $dom)
