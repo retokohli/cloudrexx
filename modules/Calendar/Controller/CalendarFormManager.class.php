@@ -461,6 +461,9 @@ class CalendarFormManager extends CalendarLibrary
 
                 if (isset($_POST['registrationField'][$arrInputfield['id']])) {
                     $value = $_POST['registrationField'][$arrInputfield['id']];
+                } else if (isset($arrInputfield['fieldname']) && isset($_POST['fieldname'])) {
+                    // if field has a custom field name
+                    $value = $_POST[$arrInputfield['fieldname']];
                 } else if (isset($arrInputfield['value'])) {
                     // if there's a custom default value
                     $value = $arrInputfield['value'];
@@ -491,6 +494,7 @@ class CalendarFormManager extends CalendarLibrary
                 } else {
                     $value = $arrInputfield['default_value'][$_LANGID];
                 }
+                $fieldname = 'registrationField[' . $arrInputfield['id'] . ']';
 
                 $affiliationClass = 'affiliation'.ucfirst($arrInputfield['affiliation']);
 
@@ -504,7 +508,6 @@ class CalendarFormManager extends CalendarLibrary
                     case 'textarea':
                     case 'inputtext':
                         $objFieldTemplate->setVariable(array(
-                            'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . ']',
                             'CALENDAR_FIELD_VALUE' => $value,
                         ));
                         break;
@@ -523,10 +526,6 @@ class CalendarFormManager extends CalendarLibrary
                         $parseType = 'select';
                         // intentionally no break
                     case 'select':
-                        $fieldname = 'registrationField[' . $arrInputfield['id'] . ']';
-                        $objFieldTemplate->setVariable(array(
-                            'CALENDAR_FIELD_NAME' => $fieldname,
-                        ));
                         $i = 0;
                         if (
                             !isset($arrInputfield['showChoose']) ||
@@ -584,7 +583,6 @@ class CalendarFormManager extends CalendarLibrary
                                 $objFieldTemplate->hideBlock('radio_option_selected' . $blockSuffix);
                             }
                             $objFieldTemplate->setVariable(array(
-                                'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . ']',
                                 'CALENDAR_FIELD_OPTION_KEY' => intval($key + 1),
                                 'CALENDAR_FIELD_OPTION_VALUE' => $name,
                             ));
@@ -619,8 +617,8 @@ class CalendarFormManager extends CalendarLibrary
                         }
                         break;
                     case 'agb':
+                        $fieldname = 'registrationField[' . $arrInputfield['id'] . '][]';
                         $objFieldTemplate->setVariable(array(
-                            'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][]',
                             'CALENDAR_FIELD_VALUE' => $_ARRAYLANG['TXT_CALENDAR_AGB'],
                         ));
                         break;
@@ -628,6 +626,12 @@ class CalendarFormManager extends CalendarLibrary
                         $objFieldTemplate->hideBlock('label');
                         break;
                 }
+                if (isset($arrInputfield['fieldname'])) {
+                    $fieldname = $arrInputfield['fieldname'];
+                }
+                $objFieldTemplate->setVariable(array(
+                    'CALENDAR_FIELD_NAME' => $fieldname,
+                ));
                 // hide all other fieldtypes than the current
                 foreach ($parseTypes as $ptype) {
                     if ($ptype == $parseType) {
