@@ -516,18 +516,25 @@ class CalendarFormManager extends CalendarLibrary
                         $objFieldTemplate->setVariable(array(
                             'CALENDAR_FIELD_NAME' => $fieldname,
                         ));
-                        $objFieldTemplate->setVariable(array(
-                            'CALENDAR_FIELD_OPTION_KEY' => '',
-                            'CALENDAR_FIELD_OPTION_VALUE' => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'],
-                        ));
-                        $objFieldTemplate->parse('select_option' . $blockSuffix);
+                        $i = 0;
+                        if (
+                            !isset($arrInputfield['showChoose']) ||
+                            $arrInputfield['showChoose']
+                        ) {
+                            $objFieldTemplate->setVariable(array(
+                                'CALENDAR_FIELD_OPTION_KEY' => '',
+                                'CALENDAR_FIELD_OPTION_VALUE' => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'],
+                            ));
+                            $objFieldTemplate->parse('select_option' . $blockSuffix);
+                            $i++;
+                        }
 
                         foreach ($options as $key => $name) {
                             // filter out any seating options that would cause
                             // an overbooking
                             if (
                                 // skip filtering selected option of loaded registration
-                                $key + 1 != $value &&
+                                $key + $i != $value &&
                                 // only filter in case the event has set an invitee limit
                                 $checkSeating &&
                                 // skip if option would cause an overbooking of the event
@@ -535,13 +542,13 @@ class CalendarFormManager extends CalendarLibrary
                             ) {
                                 continue;
                             }
-                            if ($key + 1 == $value) {
+                            if ($key + $i == $value) {
                                 $objFieldTemplate->touchBlock('select_option_selected' . $blockSuffix);
                             } else {
                                 $objFieldTemplate->hideBlock('select_option_selected' . $blockSuffix);
                             }
                             $objFieldTemplate->setVariable(array(
-                                'CALENDAR_FIELD_OPTION_KEY' => intval($key + 1),
+                                'CALENDAR_FIELD_OPTION_KEY' => intval($key + $i),
                                 'CALENDAR_FIELD_OPTION_VALUE' => $name,
                             ));
                             $objFieldTemplate->parse('select_option' . $blockSuffix);
