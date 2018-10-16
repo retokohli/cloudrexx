@@ -461,6 +461,9 @@ class CalendarFormManager extends CalendarLibrary
 
                 if (isset($_POST['registrationField'][$arrInputfield['id']])) {
                     $value = $_POST['registrationField'][$arrInputfield['id']];
+                } else if (isset($arrInputfield['value'])) {
+                    // if there's a custom default value
+                    $value = $arrInputfield['value'];
                 } else if ($registration) {
                     $formFieldValue = $registration->getRegistrationFormFieldValueByFieldId($arrInputfield['id']);
                     if ($formFieldValue) {
