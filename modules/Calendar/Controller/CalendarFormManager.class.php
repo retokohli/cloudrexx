@@ -101,16 +101,6 @@ class CalendarFormManager extends CalendarLibrary
     private $onlyActive;
 
     /**
-     * Form field Template
-     *
-     * @var string
-     */
-    const frontendFieldTemplate = '<div class="row">
-                <label>{TXT_CALENDAR_FIELD_NAME}</label>
-                {CALENDAR_FIELD_INPUT}
-            </div>';
-
-    /**
      * Instance of Event
      *
      * @var CalendarEvent
@@ -611,21 +601,6 @@ class CalendarFormManager extends CalendarLibrary
                             'CALENDAR_FIELD_VALUE' => $_ARRAYLANG['TXT_CALENDAR_AGB'],
                         ));
                         break;
-                    /* case 'selectBillingAddress':
-                        if(!$selectBillingAddressStatus) {
-                            if($_REQUEST['registrationField'][$arrInputfield['id']] == 'deviatesFromContact') {
-                                $selectDeviatesFromContact = 'selected="selected"';
-                            } else {
-                                $selectDeviatesFromContact = '';
-                            }
-
-                            $inputfield = '<select id="calendarSelectBillingAddress" class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
-                            $inputfield .= '<option value="sameAsContact">'.$_ARRAYLANG['TXT_CALENDAR_SAME_AS_CONTACT'].'</option>';
-                            $inputfield .= '<option value="deviatesFromContact" '.$selectDeviatesFromContact.'>'.$_ARRAYLANG['TXT_CALENDAR_DEVIATES_FROM_CONTACT'].'</option>';
-                            $inputfield .= '</select>';
-                            $selectBillingAddressStatus = true;
-                        }
-                        break; */
                     case 'fieldset':
                         $objFieldTemplate->hideBlock('label');
                         break;
