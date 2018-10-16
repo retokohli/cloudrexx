@@ -438,12 +438,19 @@ class CalendarFormManager extends CalendarLibrary
             foreach ($objForm->inputfields as $key => $arrInputfield) {
                 $blockName = 'registration_field_' . $arrInputfield['id'];
                 $blockSuffix = '';
-                $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
                 if ($objTpl->blockExists($blockName)) {
                     $objFieldTemplate->setTemplate($objTpl->getUnparsedBlock($blockName));
                     $blockSuffix = 'field_' . $arrInputfield['id'];
                 } else {
                     $objFieldTemplate->loadTemplateFile('FormInputField.html', true, true);
+                }
+                if (
+                    isset($arrInputfield['options']) &&
+                    isset($arrInputfield['options'][$_LANGID])
+                ) {
+                    $options = $arrInputfield['options'][$_LANGID];
+                } else {
+                    $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
                 }
                 $inputfield = null;
                 $hide = false;
