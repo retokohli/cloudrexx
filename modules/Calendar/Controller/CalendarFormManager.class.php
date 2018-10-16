@@ -403,6 +403,7 @@ class CalendarFormManager extends CalendarLibrary
                 'fieldset',
             );
 
+            // parse registration type dropdown
             $registrationTypeOptions = array(
                 1 => $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'],
                 0 => $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'],
