@@ -459,14 +459,14 @@ class CalendarFormManager extends CalendarLibrary
                 $availableSeat = 0;
                 $checkSeating  = false;
 
-                if(isset($_POST['registrationField'][$arrInputfield['id']])) {
+                if (isset($_POST['registrationField'][$arrInputfield['id']])) {
                     $value = $_POST['registrationField'][$arrInputfield['id']];
-                } elseif ($registration) {
+                } else if ($registration) {
                     $formFieldValue = $registration->getRegistrationFormFieldValueByFieldId($arrInputfield['id']);
                     if ($formFieldValue) {
                         $value = $formFieldValue->getValue();
                     }
-                } elseif (
+                } else if (
                      $invitee &&
                      in_array($arrInputfield['type'], array('mail', 'firstname', 'lastname'))
                 ) {
