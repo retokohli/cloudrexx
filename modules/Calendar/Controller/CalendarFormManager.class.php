@@ -402,9 +402,16 @@ class CalendarFormManager extends CalendarLibrary
                 $inviteeLastname = \FWUser::getFWUserObject()->objUser->getProfileAttribute('lastname');
             }
 
-            // parse registration type dropdown
-            $objFieldTemplate = new \Cx\Core\Html\Sigma('.');
-            $objFieldTemplate->setTemplate(self::frontendFieldTemplate, true, true);
+            $parseTypes = array(
+                'inputtext',
+                'textarea',
+                'seating',
+                'select',
+                'checkbox',
+                'radio',
+                'agb',
+                'fieldset',
+            );
 
             $registrationTypeOptions = array(
                 1 => $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'],
@@ -418,19 +425,30 @@ class CalendarFormManager extends CalendarLibrary
                 $registrationType = key($registrationTypeOptions);
             }
 
-            $registrationTypeSelect = \Html::getSelect('registrationType', $registrationTypeOptions, $registrationType, false, '', 'style="calendarSelect affiliateForm"');
-            $objFieldTemplate->setVariable(array(
-                'TXT_'.$this->moduleLangVar.'_FIELD_NAME'   => $_ARRAYLANG['TXT_CALENDAR_TYPE'].'<font class="calendarRequired"> *</font>',
-                $this->moduleLangVar.'_FIELD_INPUT'         => $registrationTypeSelect,
-                $this->moduleLangVar.'_FIELD_CLASS'         => 'affiliationForm',
-            ));
-            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $objFieldTemplate->get());
-            $objTpl->parse('calendarRegistrationField');
+            array_unshift(
+                $objForm->inputfields,
+                array(
+                    'id' => 0,
+                    'type' => 'select',
+                    'required' => 1,
+                    'order' => 0,
+                    'showChoose' => false,
+                    'value' => $registrationType,
+                    'name' => array($_LANGID => $_ARRAYLANG['TXT_CALENDAR_TYPE']),
+                    'fieldname' => 'registrationType',
+                    'default_value' => array($_LANGID => ''),
+                    'options' => array($_LANGID => $registrationTypeOptions),
+                )
+            );
 
-
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objFieldTemplate = new \Cx\Core\Html\Sigma(
+                $cx->getCodeBaseModulePath() . '/Calendar/View/Template/Frontend/'
+            );
             foreach ($objForm->inputfields as $key => $arrInputfield) {
-                $objFieldTemplate->setTemplate(self::frontendFieldTemplate, true, true);
-                $options = array();
+                $blockName = 'registration_field_' . $arrInputfield['id'];
+                $blockSuffix = '';
+                $objFieldTemplate->loadTemplateFile('FormInputField.html', true, true);
                 $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
                 $inputfield = null;
                 $hide = false;
@@ -470,15 +488,19 @@ class CalendarFormManager extends CalendarLibrary
 
                 $affiliationClass = 'affiliation'.ucfirst($arrInputfield['affiliation']);
 
+                $parseType = $arrInputfield['type'];
                 switch($arrInputfield['type']) {
-                    case 'inputtext':
                     case 'mail':
                     case 'firstname':
                     case 'lastname':
-                        $inputfield = '<input type="text" class="calendarInputText" name="registrationField['.$arrInputfield['id'].']" value="'.$value.'" /> ';
-                        break;
+                        $parseType = 'inputtext';
+                        // intentionally no break
                     case 'textarea':
-                        $inputfield = '<textarea class="calendarTextarea" name="registrationField['.$arrInputfield['id'].']">'.$value.'</textarea>';
+                    case 'inputtext':
+                        $objFieldTemplate->setVariable(array(
+                            'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . ']',
+                            'CALENDAR_FIELD_VALUE' => $value,
+                        ));
                         break;
                     case 'seating':
                         if (!$ticketSales) {
@@ -490,11 +512,20 @@ class CalendarFormManager extends CalendarLibrary
                             $checkSeating  = $this->event->registration && $this->event->numSubscriber;
                             $availableSeat = $this->event->getFreePlaces();
                         }
-                    case 'select':
+                        // intentionally no break
                     case 'salutation':
-                        $inputfield = '<select class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
-                        $selected =  empty($_POST) ? 'selected="selected"' : '';
-                        $inputfield .= $optionSelect ? '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>' : '';
+                        $parseType = 'select';
+                        // intentionally no break
+                    case 'select':
+                        $fieldname = 'registrationField[' . $arrInputfield['id'] . ']';
+                        $objFieldTemplate->setVariable(array(
+                            'CALENDAR_FIELD_NAME' => $fieldname,
+                        ));
+                        $objFieldTemplate->setVariable(array(
+                            'CALENDAR_FIELD_OPTION_KEY' => '',
+                            'CALENDAR_FIELD_OPTION_VALUE' => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'],
+                        ));
+                        $objFieldTemplate->parse('select_option' . $blockSuffix);
 
                         foreach ($options as $key => $name) {
                             // filter out any seating options that would cause
@@ -509,37 +540,76 @@ class CalendarFormManager extends CalendarLibrary
                             ) {
                                 continue;
                             }
-                            $selected    = ($key + 1 == $value) ? 'selected="selected"' : '';
-                            $inputfield .= '<option value="' . intval($key + 1) . '" ' . $selected . '>' . $name . '</option>';
+                            if ($key + 1 == $value) {
+                                $objFieldTemplate->touchBlock('select_option_selected' . $blockSuffix);
+                            } else {
+                                $objFieldTemplate->hideBlock('select_option_selected' . $blockSuffix);
+                            }
+                            $objFieldTemplate->setVariable(array(
+                                'CALENDAR_FIELD_OPTION_KEY' => intval($key + 1),
+                                'CALENDAR_FIELD_OPTION_VALUE' => $name,
+                            ));
+                            $objFieldTemplate->parse('select_option' . $blockSuffix);
                         }
-
-                        $inputfield .= '</select>';
                         break;
                      case 'radio':
-                        $inputfield .= '<div>';
                         foreach($options as $key => $name)  {
-                            $checked =  ($key+1 == $value) || (empty($_POST) && $key == 0) ? 'checked="checked"' : '';
+                            if ($objFieldTemplate->blockExists('radio_embedded' . $blockSuffix)) {
+                                $textValue = (isset($_POST["registrationFieldAdditional"][$arrInputfield['id']][$key]) ? $_POST["registrationFieldAdditional"][$arrInputfield['id']][$key] : '');
+                                $objTextField = new \Cx\Core\Html\Sigma('.');
+                                $objTextField->setTemplate($objFieldTemplate->getUnparsedBlock('radio embedded' . $blockSuffix));
+                                $objTextField->setVariable(array(
+                                    'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
+                                    'CALENDAR_FIELD_OPTION_VALUE' => contrexx_input2xhtml($textValue),
+                                ));
+                                $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
+                            }
 
-                            $textValue = (isset($_POST["registrationFieldAdditional"][$arrInputfield['id']][$key]) ? $_POST["registrationFieldAdditional"][$arrInputfield['id']][$key] : '');
-                            $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" value="'. contrexx_input2xhtml($textValue) .'" />';
-                            $name = str_replace('[[INPUT]]', $textfield, $name);
-
-                            $inputfield .= '<input type="radio" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].']" value="'.intval($key+1).'" '.$checked.'/>&nbsp;'.$name.'<br />';
+                            if ($key + 1 == $value) {
+                                $objFieldTemplate->touchBlock('radio_option_selected' . $blockSuffix);
+                            } else {
+                                $objFieldTemplate->hideBlock('radio_option_selected' . $blockSuffix);
+                            }
+                            $objFieldTemplate->setVariable(array(
+                                'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . ']',
+                                'CALENDAR_FIELD_OPTION_KEY' => intval($key + 1),
+                                'CALENDAR_FIELD_OPTION_VALUE' => $name,
+                            ));
+                            $objFieldTemplate->parse('radio_option' . $blockSuffix);
                         }
-                        $inputfield .= '</div>';
                         break;
                      case 'checkbox':
                         foreach($options as $key => $name)  {
-                            $textValue = (isset($_POST["registrationFieldAdditional"][$arrInputfield['id']][$key]) ? $_POST["registrationFieldAdditional"][$arrInputfield['id']][$key] : '');
-                            $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" value="'. contrexx_input2xhtml($textValue) .'" />';
                             $name = str_replace('[[INPUT]]', $textfield, $name);
+                            if ($objFieldTemplate->blockExists('checkbox_embedded' . $blockSuffix)) {
+                                $textValue = (isset($_POST["registrationFieldAdditional"][$arrInputfield['id']][$key]) ? $_POST["registrationFieldAdditional"][$arrInputfield['id']][$key] : '');
+                                $objTextField = new \Cx\Core\Html\Sigma('.');
+                                $objTextField->setTemplate($objFieldTemplate->getUnparsedBlock('checkbox embedded' . $blockSuffix));
+                                $objTextField->setVariable(array(
+                                    'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
+                                    'CALENDAR_FIELD_OPTION_VALUE' => contrexx_input2xhtml($textValue),
+                                ));
+                                $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
+                            }
 
-                            $checked =  (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';
-                            $inputfield .= '<input '.$checked.' type="checkbox" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].'][]" value="'.intval($key+1).'" />&nbsp;'.$name.'<br />';
+                            if (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']])) {
+                                $objFieldTemplate->touchBlock('checkbox_option_selected' . $blockSuffix);
+                            } else {
+                                $objFieldTemplate->hideBlock('checkbox_option_selected' . $blockSuffix);
+                            }
+                            $objFieldTemplate->setVariable(array(
+                                'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][]',
+                                'CALENDAR_FIELD_OPTION_KEY' => intval($key + 1),
+                                'CALENDAR_FIELD_OPTION_VALUE' => $name,
+                            ));
+                            $objFieldTemplate->parse('checkbox_option' . $blockSuffix);
                         }
                         break;
                     case 'agb':
-                        $inputfield = '<input class="calendarInputCheckbox" type="checkbox" name="registrationField['.$arrInputfield['id'].'][]" value="1" />&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_AGB'].'<br />';
+                        $objFieldTemplate->setVariable(array(
+                            'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][]',
+                            'CALENDAR_FIELD_VALUE' => $_ARRAYLANG['TXT_CALENDAR_AGB'],
+                        ));
                         break;
                     /* case 'selectBillingAddress':
                         if(!$selectBillingAddressStatus) {
@@ -557,27 +627,34 @@ class CalendarFormManager extends CalendarLibrary
                         }
                         break; */
                     case 'fieldset':
-                        $inputfield = null;
+                        $objFieldTemplate->hideBlock('label');
                         break;
                 }
-
-                $field = '';
-                if($arrInputfield['type'] == 'fieldset') {
-                    $field = '</fieldset><fieldset><legend>'.$arrInputfield['name'][$_LANGID].'</legend>';
-                    $hide = true;
-                } else {
-                    $required = $arrInputfield['required'] == 1 ? '<font class="calendarRequired"> *</font>' : '';
-                    $label    = $arrInputfield['name'][$_LANGID].$required;
+                // hide all other fieldtypes than the current
+                foreach ($parseTypes as $ptype) {
+                    if ($ptype == $parseType) {
+                        if ($objFieldTemplate->blockExists($ptype)) {
+                            $objFieldTemplate->touchBlock($ptype);
+                            $objFieldTemplate->parse($ptype);
+                        }
+                        continue;
+                    }
+                    if (!$objFieldTemplate->blockExists($ptype)) {
+                        continue;
+                    }
+                    $objFieldTemplate->hideBlock($ptype);
                 }
 
-                if(!$hide) {
-                    $objFieldTemplate->setVariable(array(
-                        'TXT_'.$this->moduleLangVar.'_FIELD_NAME' => $label,
-                        $this->moduleLangVar.'_FIELD_INPUT'       => $inputfield,
-                        $this->moduleLangVar.'_FIELD_CLASS'       => $affiliationClass,
-                    ));
-                    $field = $objFieldTemplate->get();
+                if ($arrInputfield['required'] == 1) {
+                    $objFieldTemplate->touchBlock('required');
                 }
+                $label = $arrInputfield['name'][$_LANGID];
+
+                $objFieldTemplate->setVariable(array(
+                    'TXT_'.$this->moduleLangVar.'_FIELD_NAME' => $label,
+                    $this->moduleLangVar.'_FIELD_CLASS'       => $affiliationClass,
+                ));
+                $field = $objFieldTemplate->get();
                 $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $field);
 
                 $objTpl->parse('calendarRegistrationField');
