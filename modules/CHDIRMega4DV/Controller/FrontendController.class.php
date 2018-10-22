@@ -1,36 +1,27 @@
 <?php declare(strict_types=1);
-
 /**
- * Cloudrexx
+ * Cloudrexx App by Comvation AG
  *
- * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
+ * PHP Version 7.0 - 7.2
  *
- * According to our dual licensing model, this program can be used either
- * under the terms of the GNU Affero General Public License, version 3,
- * or under a proprietary license.
+ * @category  CloudrexxApp
+ * @package   CHDIRMega4DV
+ * @author    Comvation AG <info@comvation.com>
+ * @copyright 2018 ch-direct
+ * @link      https://www.comvation.com/
  *
- * The texts of the GNU Affero General Public License with an additional
- * permission and of our proprietary license can be found at and
- * in the LICENSE file you have received along with this program.
+ * Unauthorized copying, changing or deleting
+ * of any file from this app is strictly prohibited
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * "Cloudrexx" is a registered trademark of Cloudrexx AG.
- * The licensing of the program under the AGPLv3 does not imply a
- * trademark license. Therefore any rights, title and interest in
- * our trademarks remain entirely with us.
+ * Authorized copying, changing or deleting
+ * can only be allowed by a separate contract
  */
 
-namespace Cx\Modules\CHDIRMega4DV\Controller;
+namespace Cx\Modules\CHDIRTravelLog\Controller;
 
 /**
  * FrontendController
- * @copyright   Cloudrexx AG
- * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_chdirmega4dv
  */
@@ -48,11 +39,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
-\DBG::activate(DBG_PHP|DBG_DB_ERROR);
         $template->setTemplate($this->getContent());
-// TODO: Enable along with using cx.jQuery in rewriteScripts() (or remove)
+// Enable along with using cx.jQuery in rewriteScripts() (or remove)
 //        \JS::activate('cx');
-\DBG::deactivate();
     }
 
     /**
@@ -256,7 +245,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     '$J(function($J){'
                     . strtr($script->nodeValue, ['$(' => '$J('])
                     . '});';
-// TODO: Should/could cx.jQuery() be used instead?
+// Should/could cx.jQuery() be used instead?
 //                $script->nodeValue =
 //                    'cx.jQuery(function(){'
 //                    . strtr($script->nodeValue, ['$(' => 'cx.jQuery('])
@@ -350,7 +339,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             }
         }
         $folder = strtr($goto, [$basePath => '']);
-\DBG::log("guessStartPage: $goto -> $folder");
         $lang = $this->cx->getRequest()->getUrl()->getLangDir();
         return $folder . '/' . $lang . '/index.htm';
     }
@@ -380,8 +368,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             case file_exists($folderPath . '/' . strtolower($fileName)):
                 $path = strtr($path, [$fileName => strtolower($fileName)]);
                 break;
-// TODO: This case does probably never match:
             case file_exists($folderPath . '/' . strtoupper($fileName)):
+                // Note that this case does probably never match
                 $path = strtr($path, [$fileName => strtoupper($fileName)]);
                 break;
         }
