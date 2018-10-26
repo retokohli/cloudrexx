@@ -92,14 +92,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         ) {
             return;
         }
-        \ContrexxJavascript::getInstance()->setVariable(
-            array(
-                'cookieNoteTtl' => \Cx\Core\Setting\Controller\Setting::getValue(
-                    'cookieNoteTtl',
-                    'Config'
-                ),
-            ),
-            'privacy'
+        \JS::registerCode(
+            'var cookieNoteTtl = "' .
+            \Cx\Core\Setting\Controller\Setting::getValue(
+                'cookieNoteTtl',
+                'Config'
+            ) . '";'
         );
         \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
         \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));

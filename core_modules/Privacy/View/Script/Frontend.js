@@ -19,8 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
         "click",
         function () {
             // Set cookie expire limit based on the value of config 'cookieNoteTtl'
-            var cookieNoteTtl = cx.variables.get('cookieNoteTtl', 'privacy'),
-                date = new Date(), expires = '', expireTime = '';
+            var date = new Date(), expires = '', expireTime = '';
             switch (cookieNoteTtl) {
                 case 'week':
                     date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000);
