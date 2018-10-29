@@ -629,4 +629,60 @@ class DownloadsLibrary
 
         throw new DownloadsLibraryException('No active application page found');
     }
+
+    /**
+     * Format a filename according to configuration option 'Pretty format'
+     * of currently loaded downloads file.
+     *
+     * @param   string $fileName The filename to pretty format
+     * @return  string The pretty formatted filename. In case of any error
+     *                 or if the function to pretty format is disabled,
+     *                 then the original $filename is being returned.
+     */
+    public static function prettyFormatFileName($fileName, $arrConfig)
+    {
+        if (empty($fileName)) {
+            return '';
+        }
+        // return original filename in case pretty format function is disabled
+        if ($arrConfig['auto_file_naming'] == 'off') {
+            return $fileName;
+        }
+
+        // check if a regexp is set
+        $regexpConf = $arrConfig['pretty_regex_pattern'];
+
+        // generate pretty formatted filename
+        try {
+            $regularExpression = new \Cx\Lib\Helpers\RegularExpression($regexpConf);
+            $prettyFileName = $regularExpression->replace($fileName);
+
+            // return pretty filename if conversion was successful
+            if (!is_null($prettyFileName)) {
+                return $prettyFileName;
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+
+        // return original filename in case anything
+        // didn't work out as expected
+        return $fileName;
+    }
+
+    /**
+     * Get a pretty format file name by regexp
+     *
+     * @param string $fileName File name
+     */
+    public function getPrettyFormatFileName($fileName)
+    {
+        $prettyFileName = DownloadsLibrary::prettyFormatFileName(
+            $fileName,
+            $this->arrConfig
+        );
+
+        echo json_encode(array('fileName' => $prettyFileName));
+        exit();
+    }
 }

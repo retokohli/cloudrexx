@@ -375,4 +375,49 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         return $arrCategoryIds;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCommandsForCommandMode()
+    {
+        return array('Downloads');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCommandDescription($command, $short = false) {
+        switch ($command) {
+            case 'Downloads':
+                return 'To get pretty format downloads file name';
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommand($command, $arguments, $dataArguments = array())
+    {
+        $subcommand = null;
+        if (!empty($arguments[0])) {
+            $subcommand = $arguments[0];
+        }
+
+        switch ($command) {
+            case 'Downloads':
+                switch ($subcommand) {
+                    case 'autoFileNaming':
+                        $fileName    = $_GET['fileName'] ?? '';
+                        $downloadsLib = new DownloadsLibrary();
+                        $downloadsLib->getPrettyFormatFileName(contrexx_input2raw($fileName));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }

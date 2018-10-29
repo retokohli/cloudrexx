@@ -562,8 +562,12 @@ class Downloads extends DownloadsLibrary
         // parse name and description attributres
         $arrLanguageIds = array_keys(\FWLanguage::getLanguageArray());
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $downloadName = DownloadsLibrary::prettyFormatFileName(
+            $sourceName,
+            $objDownloads->arrConfig
+        );
         foreach ($arrLanguageIds as $langId) {
-            $arrNames[$langId] = $sourceName;
+            $arrNames[$langId] = $downloadName;
             $arrMetakeys[$langId] = '';
             $arrDescriptions[$langId] = '';
             $arrSourcePaths[$langId] = \Cx\Core\Core\Controller\Cx::FOLDER_NAME_IMAGES . '/Downloads/'.$fileName.$suffix.'.'.$fileExtension;
