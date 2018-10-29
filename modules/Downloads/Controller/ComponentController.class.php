@@ -390,7 +390,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getCommandDescription($command, $short = false) {
         switch ($command) {
             case 'Downloads':
-                return 'To get pretty format downloads file name';
+                return 'To get pretty format download file name';
         }
     }
 
@@ -407,10 +407,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($command) {
             case 'Downloads':
                 switch ($subcommand) {
-                    case 'autoFileNaming':
-                        $fileName    = $_GET['fileName'] ?? '';
+                    case 'getPrettyFileName':
                         $downloadsLib = new DownloadsLibrary();
-                        $downloadsLib->getPrettyFormatFileName(contrexx_input2raw($fileName));
+                        echo json_encode(array(
+                            'fileName' => $downloadsLib->getPrettyFormatFileName(
+                                contrexx_input2raw($_GET['fileName'])
+                            )
+                        ));
                         break;
                     default:
                         break;

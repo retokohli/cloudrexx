@@ -128,8 +128,7 @@ function mbCallback(data)
             var checkedArray = Array();
             $J('input[id^="downloads_download_language_"]').each(function() {
                 if ($J(this).is(':checked')) {
-                    var label = $J(this).next('label');
-                    var langKey = label.attr('for').split('downloads_download_language_')[1];
+                    var langKey = $J(this).attr('id').split('downloads_download_language_')[1];
                     var downloadName = $J('input[id="downloads_download_name_' + langKey + '"]');
                     if (downloadName.val() === '') {
                         checkedArray.push(downloadName);
@@ -140,7 +139,7 @@ function mbCallback(data)
             if (checkedArray.length > 0) {
                 $J.ajax({
                     type: 'GET',
-                    url: '/api/Downloads/autoFileNaming?fileName=' + data.data[0].datainfo.name,
+                    url: '/api/Downloads/getPrettyFileName?fileName=' + data.data[0].datainfo.name,
                     success: function(data) {
                         var obj = $J.parseJSON(data);
                         $J.each(checkedArray, function(key, nameObj) {

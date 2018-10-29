@@ -634,8 +634,9 @@ class DownloadsLibrary
      * Format a filename according to configuration option 'Pretty format'
      * of currently loaded downloads file.
      *
-     * @param   string $fileName The filename to pretty format
-     * @return  string The pretty formatted filename. In case of any error
+     * @param string $fileName  The filename to pretty format
+     * @param array  $arrConfig Array of settings config
+     * @return string The pretty formatted filename. In case of any error
      *                 or if the function to pretty format is disabled,
      *                 then the original $filename is being returned.
      */
@@ -677,12 +678,9 @@ class DownloadsLibrary
      */
     public function getPrettyFormatFileName($fileName)
     {
-        $prettyFileName = DownloadsLibrary::prettyFormatFileName(
+        return DownloadsLibrary::prettyFormatFileName(
             $fileName,
             $this->arrConfig
         );
-
-        echo json_encode(array('fileName' => $prettyFileName));
-        exit();
     }
 }
