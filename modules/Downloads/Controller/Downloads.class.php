@@ -607,8 +607,7 @@ class Downloads extends DownloadsLibrary
         $objDownload->setCategories(array($objCategory->getId()));
         $objDownload->setDownloads(array());
 
-
-        if (!$objDownload->store($objCategory)) {
+        if (!$objDownload->store($objCategory, \FWLanguage::getActiveFrontendLanguages())) {
             $objDownloads->arrStatusMsg['error'] = array_merge($objDownloads->arrStatusMsg['error'], $objDownload->getErrorMsg());
             return false;
         } else {
