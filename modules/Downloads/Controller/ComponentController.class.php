@@ -411,7 +411,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $downloadsLib = new DownloadsLibrary();
                         echo json_encode(array(
                             'fileName' => $downloadsLib->getPrettyFormatFileName(
-                                contrexx_input2raw($_GET['fileName'])
+                                contrexx_input2raw($arguments['fileName'])
                             )
                         ));
                         break;
