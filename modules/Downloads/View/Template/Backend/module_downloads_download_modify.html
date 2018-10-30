@@ -92,9 +92,10 @@ function downloadsRemoveOptionFromList(from,dest)
     }
 }
 
-function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMimeType)
+function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMimeType,elmName)
 {
     downloadsElInsertBox = elInsertBox;
+    downloadsElmName     = typeof(elmName) == 'undefined' ? null : elmName;
     downloadsElImagePreview = typeof(elImagePreview) == 'undefined' ? null : elImagePreview;
     downloadsElRemoveButton = typeof(elRemoveButton) == 'undefined' ? null : elRemoveButton;
     downloadsElMimeType = typeof(elMimeType) == 'undefined' ? null : elMimeType;
@@ -124,30 +125,15 @@ function mbCallback(data)
             }
         });
 
-        if (autoFileNaming === 'on') {
-            var checkedArray = Array();
-            $J('input[id^="downloads_download_language_"]').each(function() {
-                if ($J(this).is(':checked')) {
-                    var langKey = $J(this).attr('id').split('downloads_download_language_')[1];
-                    var downloadName = $J('input[id="downloads_download_name_' + langKey + '"]');
-                    if (downloadName.val() === '') {
-                        checkedArray.push(downloadName);
-                    }
+        if (autoFileNaming === 'on' && downloadsElmName != null && downloadsElmName.value === '') {
+            $J.ajax({
+                type: 'GET',
+                url: '/api/Downloads/getPrettyFileName?fileName=' + data.data[0].datainfo.name,
+                success: function(data) {
+                    var obj = $J.parseJSON(data);
+                    downloadsElmName.value = obj.fileName;
                 }
             });
-
-            if (checkedArray.length > 0) {
-                $J.ajax({
-                    type: 'GET',
-                    url: '/api/Downloads/getPrettyFileName?fileName=' + data.data[0].datainfo.name,
-                    success: function(data) {
-                        var obj = $J.parseJSON(data);
-                        $J.each(checkedArray, function(key, nameObj) {
-                            nameObj.val(obj.fileName);
-                        });
-                    }
-                });
-            }
         }
 
         if (downloadsElRemoveButton != null) {
@@ -600,7 +586,7 @@ window.onload = function () {
                         <td>{TXT_DOWNLOADS_SOURCE}</td>
                         <td>
                             <div id="downloads_download_type_file_config_{DOWNLOADS_DOWNLOAD_LANG_ID}" class="downloads_download_type_file_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY}">
-                                <input type="text" id="downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" name="downloads_download_file_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" />
+                                <input type="text" id="downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" name="downloads_download_file_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'),document.getElementById('downloads_download_name_{DOWNLOADS_DOWNLOAD_LANG_ID}'))" />
                             </div>
                             <div id="downloads_download_type_url_config_{DOWNLOADS_DOWNLOAD_LANG_ID}" class="downloads_download_type_url_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY}">
                                 <input type="text" id="downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" />
