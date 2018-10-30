@@ -392,6 +392,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($command) {
             case 'Downloads':
                 return 'To get pretty format download file name';
+            default :
+                break;
         }
     }
 
