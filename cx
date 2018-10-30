@@ -1440,6 +1440,9 @@ UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forc
 # Wrapper functions #
 #####################
 function phpexec {
+    if read -r -t 0; then
+        INPUT="$(cat /dev/stdin)"
+    fi
     # TODO: Check if we should run async
     if type docker >/dev/null 2>&1; then
         if [ ! "$(dockerexec ps -q -f "name=<web-container>")" ]; then
@@ -1449,8 +1452,8 @@ function phpexec {
                 echo "Environment not running!"
             fi
         else
-            if [ -t 0 ] ; then
-                dockerexec exec -ti --user www-data "<web-container>" php index.php "$@"
+            if read -r -t 0; then
+                echo "$INPUT" | dockerexec exec -i --user www-data "<web-container>" php index.php "$@"
             else
                 dockerexec exec -i --user www-data "<web-container>" php index.php "$@"
             fi
@@ -1461,8 +1464,14 @@ function phpexec {
 }
 
 function dockerexec {
-    get_config_array
-    internal_dockerexec "$@"
+    if read -r -t 0; then
+        INPUT="$(cat /dev/stdin)"
+        get_config_array
+        echo "$INPUT" | internal_dockerexec "$@"
+    else
+        get_config_array
+        internal_dockerexec "$@"
+    fi
 }
 
 function internal_dockerexec {
