@@ -159,6 +159,11 @@ class ListingController {
     protected $searchFields = array();
 
     /**
+     * List with callbacks for search
+     */
+    protected $searchCallback = array();
+
+    /**
      * Number of entries without filtering or paging
      * @var int
      */
@@ -195,6 +200,10 @@ class ListingController {
         $this->searching = isset($options['searching']) && $options['searching'];
         if (isset($options['searchFields'])) {
             $this->searchFields = $options['searchFields'];
+        }
+        if (isset($options['searchCallback'])) {
+            $this->searchCallback['search'] = $options['searchCallback'];
+            $this->searchCallback['filter'] = $options['filterCallback'];
         }
         // init handlers (filtering, paging and sorting)
         $this->handlers[] = new FilteringController();
@@ -335,26 +344,45 @@ class ListingController {
                     ) {
                         continue;
                     }
-                    $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
-                    $qb->setParameter($i, $crit);
+                    if (is_callable($this->searchCallback['search'])) {
+                        $qb = $this->searchCallback['search'](
+                            $qb,
+                            $field,
+                            $crit,
+                            $i
+                        );
+                    } else {
+                        $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                        $qb->setParameter($i, $crit);
+                    }
                     $i++;
                 }
             }
             // filtering: simple search by term
             if ($this->searching) {
                 if (!empty($this->filter) && count($this->searchFields)) {
-                    $ors = array();
-                    $orX = new \Doctrine\DBAL\Query\Expression\CompositeExpression(
-                        \Doctrine\DBAL\Query\Expression\CompositeExpression::TYPE_OR
-                    );
-                    // TODO: If $this->searchFields is empty allow all
-                    foreach ($this->searchFields as $field) {
-                        $orX->add($qb->expr()->like('x.' . $field, '?' . $i));
+                    if (is_callable($this->searchCallback['filter'])) {
+                        $qb = $this->searchCallback['filter'](
+                            $qb,
+                            $this->searchFields,
+                            $this->filter,
+                            $i
+                        );
+                    } else {
+                        $ors = array();
+                        $orX = new \Doctrine\DBAL\Query\Expression\CompositeExpression(
+                            \Doctrine\DBAL\Query\Expression\CompositeExpression::TYPE_OR
+                        );
+                        // TODO: If $this->searchFields is empty allow all
+                        foreach ($this->searchFields as $field) {
+                            $orX->add($qb->expr()->like('x.' . $field, '?' . $i));
+                        }
+                        $qb->andWhere($orX);
+                        $qb->setParameter($i, '%' . $this->filter . '%');
                     }
-                    $qb->andWhere($orX);
-                    $qb->setParameter($i, '%' . $this->filter . '%');
                 }
             }
+
             foreach ($this->order as $field=>&$order) {
                 $qb->orderBy('x.' . $field, $order);
             }
