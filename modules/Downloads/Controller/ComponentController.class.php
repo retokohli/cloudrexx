@@ -387,7 +387,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * {@inheritdoc}
      */
-    public function getCommandDescription($command, $short = false) {
+    public function getCommandDescription($command, $short = false)
+    {
         switch ($command) {
             case 'Downloads':
                 return 'To get pretty format download file name';
