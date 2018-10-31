@@ -84,6 +84,8 @@ class DownloadsLibrary
         'associate_user_to_groups'      => '',
         'list_downloads_current_lang'   => 1,
         'integrate_into_search_component'=> 1,
+        'auto_file_naming'     => 'off',
+        'pretty_regex_pattern' => '',
     );
 
     /**
@@ -236,7 +238,14 @@ class DownloadsLibrary
         global $objDatabase;
 
         foreach ($this->arrConfig as $key => $value) {
-            $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
+            $objDatabase->Execute('
+                UPDATE
+                    `' . DBPREFIX . 'module_downloads_settings`
+                SET
+                    `value` = "' . contrexx_input2db($value) . '"
+                WHERE
+                    `name` = "' . $key . '"
+            ');
         }
         //clear Esi Cache
         static::clearEsiCache();

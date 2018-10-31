@@ -2771,10 +2771,10 @@ class DownloadsManager extends DownloadsLibrary
             $this->arrConfig['associate_user_to_groups']    = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
             $this->arrConfig['downloads_sorting_order']     = (     !empty($_POST['downloads_settings_sorting_downloads'])
                                                                 && array_key_exists($_POST['downloads_settings_sorting_downloads'], $this->downloadsSortingOptions)
-                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_downloads']) : $this->arrConfig['downloads_sorting_order'];
+                                                              ) ? $_POST['downloads_settings_sorting_downloads'] : $this->arrConfig['downloads_sorting_order'];
             $this->arrConfig['categories_sorting_order']    = (     !empty($_POST['downloads_settings_sorting_categories'])
                                                                 &&  array_key_exists($_POST['downloads_settings_sorting_categories'], $this->categoriesSortingOptions)
-                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_categories']) : $this->arrConfig['categories_sorting_order'];
+                                                              ) ? $_POST['downloads_settings_sorting_categories'] : $this->arrConfig['categories_sorting_order'];
 
             $this->updateSettings();
         }
@@ -2901,7 +2901,7 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_SETTINGS_INTEGRATE_INTO_SEARCH_COMPONENT'=> $this->arrConfig['integrate_into_search_component'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_AUTO_NAMING_DISABLE_CHECKED' => $this->arrConfig['auto_file_naming'] == 'off' ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_AUTO_NAMING_ENABLE_CHECKED' => $this->arrConfig['auto_file_naming'] == 'on' ? 'checked="checked"' : '',
-            'DOWNLOADS_SETTINGS_PRETTY_FORMAT'              => $this->arrConfig['pretty_regex_pattern'],
+            'DOWNLOADS_SETTINGS_PRETTY_FORMAT'              => contrexx_raw2xhtml($this->arrConfig['pretty_regex_pattern']),
             'DOWNLOADS_SETTINGS_SEARCH_LINK_OPTIONS'        => $linkMethodOptions,
             'DOWNLOADS_SETTINGS_MOST_VIEWED_FILE_COUNT'     => $this->arrConfig['most_viewed_file_count'],
             'DOWNLOADS_SETTINGS_MOST_DOWNLOADED_FILE_COUNT' => $this->arrConfig['most_downloaded_file_count'],
