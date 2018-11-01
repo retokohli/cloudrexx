@@ -126,14 +126,19 @@ function mbCallback(data)
         });
 
         if (autoFileNaming === 'on' && downloadsElmName != null && downloadsElmName.value === '') {
-            $J.ajax({
-                type: 'GET',
-                url: '/api/Downloads/getPrettyFileName?fileName=' + data.data[0].datainfo.name,
-                success: function(data) {
-                    var obj = $J.parseJSON(data);
-                    downloadsElmName.value = obj.fileName;
+            cx.ajax(
+                'Downloads',
+                'getPrettyFileName',
+                {
+                    type     : 'GET',
+                    data     : {
+                        fileName : data.data[0].datainfo.name
+                    },
+                    success  : function(data) {
+                        downloadsElmName.value = data.data.fileName;
+                    }
                 }
-            });
+            );
         }
 
         if (downloadsElRemoveButton != null) {

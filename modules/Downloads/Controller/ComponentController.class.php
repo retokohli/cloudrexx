@@ -62,7 +62,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getControllerClasses()
     {
-        return array('EsiWidget');
+        return array('EsiWidget', 'JsonDownloads');
     }
 
     /**
@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getControllersAccessableByJson()
     {
-        return array('EsiWidgetController');
+        return array('EsiWidgetController', 'JsonDownloadsController');
     }
 
     /**
@@ -374,56 +374,5 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         return $arrCategoryIds;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCommandsForCommandMode()
-    {
-        return array('Downloads');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCommandDescription($command, $short = false)
-    {
-        switch ($command) {
-            case 'Downloads':
-                return 'To get pretty format download file name';
-            default :
-                break;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function executeCommand($command, $arguments, $dataArguments = array())
-    {
-        $subcommand = null;
-        if (!empty($arguments[0])) {
-            $subcommand = $arguments[0];
-        }
-
-        switch ($command) {
-            case 'Downloads':
-                switch ($subcommand) {
-                    case 'getPrettyFileName':
-                        $downloadsLib = new DownloadsLibrary();
-                        echo json_encode(array(
-                            'fileName' => $downloadsLib->getPrettyFormatFileName(
-                                contrexx_input2raw($arguments['fileName'])
-                            )
-                        ));
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
     }
 }

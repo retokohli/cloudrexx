@@ -644,23 +644,23 @@ class DownloadsLibrary
      * of currently loaded downloads file.
      *
      * @param string $fileName  The filename to pretty format
-     * @param array  $arrConfig Array of settings config
      * @return string The pretty formatted filename. In case of any error
      *                 or if the function to pretty format is disabled,
      *                 then the original $filename is being returned.
      */
-    public static function prettyFormatFileName($fileName, $arrConfig)
+    public function getPrettyFormatFileName($fileName)
     {
         if (empty($fileName)) {
             return '';
         }
+
         // return original filename in case pretty format function is disabled
-        if ($arrConfig['auto_file_naming'] == 'off') {
+        if ($this->arrConfig['auto_file_naming'] == 'off') {
             return $fileName;
         }
 
         // check if a regexp is set
-        $regexpConf = $arrConfig['pretty_regex_pattern'];
+        $regexpConf = $this->arrConfig['pretty_regex_pattern'];
 
         // generate pretty formatted filename
         try {
@@ -678,18 +678,5 @@ class DownloadsLibrary
         // return original filename in case anything
         // didn't work out as expected
         return $fileName;
-    }
-
-    /**
-     * Get a pretty format file name by regexp
-     *
-     * @param string $fileName File name
-     */
-    public function getPrettyFormatFileName($fileName)
-    {
-        return DownloadsLibrary::prettyFormatFileName(
-            $fileName,
-            $this->arrConfig
-        );
     }
 }
