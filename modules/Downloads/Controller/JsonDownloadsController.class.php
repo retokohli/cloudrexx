@@ -26,7 +26,7 @@
  */
 
 /**
- * Class JsonAdapterController
+ * Class JsonDownloadsController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Project Team SS4U <info@cloudrexx.com>
@@ -98,7 +98,7 @@ class JsonDownloadsController extends \Cx\Core\Core\Model\Entity\Controller impl
      * Get pretty file name
      *
      * @param array $params Array of GET and POST parameters
-     * @return array Return a file name
+     * @return array Return a pretty file name
      */
     public function getPrettyFileName($params)
     {
