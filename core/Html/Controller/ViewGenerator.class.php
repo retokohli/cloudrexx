@@ -1510,6 +1510,16 @@ class ViewGenerator {
     }
 
     /**
+     * Get the Url to show an entry of this VG instance
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with edit arguments
+     */
+    public function getShowUrl($entryOrId, $url = null) {
+        return static::getVgShowUrl($this->viewId, $entryOrId, $url);
+    }
+
+    /**
      * Get the Url to delete an entry of this VG instance
      * @param int|string|array|object $entryOrId Entity or entity key
      * @return \Cx\Core\Routing\Url URL with delete arguments
@@ -1591,6 +1601,41 @@ class ViewGenerator {
      * @return string Entity identifier
      */
     protected static function getEditId($entryOrId) {
+        if (is_array($entryOrId)) {
+            return implode('/', $entryOrId);
+        }
+        if (is_object($entryOrId)) {
+            // find id using doctrine or dataset
+        }
+        return $entryOrId;
+    }
+
+    /**
+     * Get the Url to show an entry of a VG instance
+     * @param int $vgId ViewGenerator id
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with edit arguments
+     */
+    public static function getVgShowUrl($vgId, $entryOrId, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        static::appendVgParam(
+            $url,
+            $vgId,
+            'showid',
+            static::getShowId($entryOrId)
+        );
+        return $url;
+    }
+
+    /**
+     * Parses the mixed type $entryOrId param for all the get...Url methods
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @return string Entity identifier
+     */
+    protected static function getShowId($entryOrId) {
         if (is_array($entryOrId)) {
             return implode('/', $entryOrId);
         }
