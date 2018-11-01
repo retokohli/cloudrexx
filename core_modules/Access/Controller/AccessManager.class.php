@@ -1219,9 +1219,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
-        // add this to a new section maybe named like "maintenance"
-        $this->removeUselessImages();
-
         $arrSettings = \User_Setting::getSettings();
         $templateFile = 'module_access_user_list';
         if (!$arrSettings['use_usernames']['status']) {
