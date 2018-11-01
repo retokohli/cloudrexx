@@ -130,11 +130,11 @@ function mbCallback(data)
                 'Downloads',
                 'getPrettyFileName',
                 {
-                    type     : 'GET',
-                    data     : {
+                    type : 'GET',
+                    data : {
                         fileName : data.data[0].datainfo.name
                     },
-                    success  : function(data) {
+                    success : function(data) {
                         downloadsElmName.value = data.data.fileName;
                     }
                 }
