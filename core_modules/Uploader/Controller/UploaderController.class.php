@@ -180,12 +180,11 @@ class UploaderController {
                 $fileName = $conf['fileName'];
             }
 
-            $imgExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             if ($conf['allow_extensions']) {
                 if (is_string($conf['allow_extensions'])) {
                     $conf['allow_extensions'] = explode(',', $conf['allow_extensions']);
                 }
-                if (!in_array($imgExtension, $conf['allow_extensions'])) {
+                if (!in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $conf['allow_extensions'])) {
                     throw new UploaderException('', PLUPLOAD_TYPE_ERR);
                 }
             }
