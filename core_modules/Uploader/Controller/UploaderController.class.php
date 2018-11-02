@@ -205,11 +205,6 @@ class UploaderController {
                 self::writeFileTo($tmp_path);
             }
 
-            // Make image rotate for jpeg and jpg extension
-            if ($imgExtension === 'jpeg' || $imgExtension === 'jpg') {
-                self::makeImageRotate($tmp_path);
-            }
-
             // Upload complete write a temp file to the final destination
             if (!$conf['chunks'] || $conf['chunk'] == $conf['chunks'] - 1) {
                 if (is_callable($conf['cb_check_file']) && !call_user_func($conf['cb_check_file'], $tmp_path)) {
@@ -227,14 +222,16 @@ class UploaderController {
 
                 \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
 
-                $rootPath      = $cx->getWebsitePath() . $conf['target_dir'];
-                $rootPathFull  = $cx->getWebsitePath() . $new_path;
+                $rootPath      = $conf['target_dir'];
+                $rootPathFull  = $new_path;
                 $filePathinfo  = pathinfo($rootPathFull);
                 $fileExtension = $filePathinfo['extension'];
                 $fileNamePlain = $filePathinfo['filename'];
 
                 $im = new \ImageManager();
                 if ($im->_isImage($rootPathFull)) {
+                    // Fix an image orientation
+                    $im->fixImageOrientation($rootPathFull);
                     foreach (
                         $cx->getMediaSourceManager()
                             ->getThumbnailGenerator()
@@ -445,37 +442,5 @@ class UploaderController {
             }
         }
         rmdir($dir);
-    }
-
-    /**
-     * Make image rotate based on its exif-data
-     *
-     * @param string $filePath File path
-     */
-    protected static function makeImageRotate($filePath)
-    {
-        $exif = exif_read_data($filePath);
-        if (empty($exif['Orientation'])) {
-            return;
-        }
-
-        $image = new \ImageManager();
-        $image->loadImage($filePath);
-        try {
-            switch ($exif['Orientation']) {
-                case 3:
-                    $image->rotateImage(180);
-                    break;
-                case 6:
-                    $image->rotateImage(-90);
-                    break;
-                case 8:
-                    $image->rotateImage(90);
-                    break;
-            }
-            $image->saveNewImage($filePath, true);
-        } catch (UploaderException $ex) {
-            \DBG::msg($ex->getMessage());
-        }
     }
 }
