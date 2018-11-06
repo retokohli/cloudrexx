@@ -1366,7 +1366,7 @@ die("MailTemplate::init(): Empty section!");
                         'MAILTEMPLATE_ROWCLASS' => ( ++$i % 2 + 1),
                         'MAILTEMPLATE_SPECIAL' => new \Cx\Core\Wysiwyg\Wysiwyg(
                             $name,
-                            $value,
+                            contrexx_raw2xhtml($value),
                             'fullpage'
                         ),
                     ));
