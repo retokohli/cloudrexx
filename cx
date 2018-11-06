@@ -16,6 +16,8 @@ if [[ $BASH_VERSION != 4.* ]]; then
     exit 0
 fi
 
+# URL to download this script from
+DOWNLOAD_URL="https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx"
 # current command, sub-command, sub-sub-command, etc.:
 COMMANDS=()
 # list of arguments, including default values
@@ -728,6 +730,11 @@ function cmd_env {
                     echo "phpMyAdmin is available at http://phpma.${CONFIG["hostname"]}/"
                 else
                     echo "phpMyAdmin is available at http://${CONFIG["hostname"]}:8234/"
+                fi
+                if ! which cx > /dev/null; then
+                    echo ""
+                    echo "cx could not be found in your path. Run the following command to add it:"
+                    echo "sudo cp $(pwd -P)/cx /usr/local/bin"
                 fi
             fi
             exit 0
@@ -1660,6 +1667,43 @@ function isPortFree {
 #####################
 # Decide what to do #
 #####################
+
+# this finds "cx" in currend pwd or above
+path="$(pwd)"
+found=false
+while [[ $path != / ]];
+do
+    result=$(find "$path" -maxdepth 1 -mindepth 1 -name "cx" -execdir pwd \;)
+    if [[ "$result" != "" ]]; then
+        found=true
+        break;
+    fi
+    # Note: if you want to ignore symlinks, use "$(realpath -s "$path"/..)"
+    path="$(realpath -s "$path"/..)"
+done
+if ! $found; then
+    # command is init
+    if [[ "$1" == "env" ]] && [[ "$2" == "init" ]]; then
+        # download cx and call init
+        wget "$DOWNLOAD_URL" || curl -O "$DOWNLOAD_URL"
+        chmod +x cx
+        ./cx "$@"
+        exit
+
+    # command is envs
+    elif [[ "$1" == "envs" ]]; then
+        COMMANDS=("${COMMANDS[@]:1}")
+        cmd_envs "${COMMANDS[@]/#/}"
+        exit
+    fi
+    echo "cx not found, you may want to call \`cx env init\`";
+    exit
+fi
+if [[ "$(pwd -P)" != "$result" ]]; then
+    cd "$result" || exit
+    ./cx "$@"
+    exit
+fi
 
 case "${COMMANDS[0]}" in
     envs)
