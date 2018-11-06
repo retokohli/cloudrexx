@@ -917,16 +917,17 @@ SET FOREIGN_KEY_CHECKS = 1;"
             done <<< $(ARGUMENTS["raw"]=true && cmd_env component list)
             ;;
         config)
+            get_config_array
             if [[ ${ARGUMENTS["show"]} = true ]]; then
-                echo -e "Key\t\tValue"
-                echo "========================"
-                get_config_array
+                OUTPUT="KEY VALUE"
+                OUTPUT+=$'\n'
                 for value in "${!CONFIG[@]}"; do
-                    echo -e "$value\t\t${CONFIG[$value]}"
+                    OUTPUT+="$value ${CONFIG[$value]}"
+                    OUTPUT+=$'\n'
                 done
+                echo "$OUTPUT" | column -t
                 return
             fi
-            get_config_array
             declare -A CONFIG_OVERRIDE
             if [ ${#CONFIG[@]} -eq 0 ] || [[ ${ARGUMENTS["force-default"]} == true ]] ; then
                 # load config, if its empty: load default config over it
