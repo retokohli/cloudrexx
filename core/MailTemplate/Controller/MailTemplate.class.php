@@ -1541,6 +1541,9 @@ die("MailTemplate::init(): Empty section!");
             'section' => $section,
             'key' => $key,
             'to' => $email,
+            'from' => '',
+            'cc' => '',
+            'bcc' => '',
             'do_not_strip_empty_placeholders' => true, ));
         if ($sent) {
             \Message::ok(sprintf(
