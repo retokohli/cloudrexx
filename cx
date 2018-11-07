@@ -726,8 +726,10 @@ function cmd_env {
                 echo "Environment successfully initialized. It is available at http://${CONFIG["hostname"]}/"
                 if [[ ${CONFIG["is-vhost"]} == true ]]; then
                     echo "phpMyAdmin is available at http://phpma.${CONFIG["hostname"]}/"
+                    echo "MailHog is available at http://mail.${CONFIG["hostname"]}/"
                 else
                     echo "phpMyAdmin is available at http://${CONFIG["hostname"]}:8234/"
+                    echo "MailHog is available at http://${CONFIG["hostname"]}:8025/"
                 fi
             fi
             exit 0
