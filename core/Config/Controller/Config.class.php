@@ -158,7 +158,7 @@ class Config
                 ),
                 'cookieNoteTtl' => array(
                     'type'   => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                    'value'  => 'none',
+                    'value'  => 'session',
                     'values' => '{src:\\' . __CLASS__ . '::getCookieNoteTtlOptions()}',
                 ),
             ),
