@@ -47,13 +47,88 @@ namespace Cx\Core\Html;
  */
 class Sigma extends \HTML_Template_Sigma {
 
+    /**
+     * List of callbacks to register for all instances
+     * @see parent::setCallbackFunction()
+     * @var array
+     */
+    protected static $callbackPlaceholders = array();
+
     protected $restoreFileRoot = null;
 
-    public function __construct($root = '', $cacheRoot = '') {
+    /**
+     * Target where this instance is parsed into
+     * @var \Cx\Core\View\Model\Entity\ParseTarget
+     */
+    protected $parseTarget = null;
+
+    /**
+     * Adds a callback function to the list of callbacks for all instances
+     * @param string $name Name of callback to register
+     * @param callable $callback Callback to call for all occurences
+     */
+    public static function addCallbackPlaceholder($name, $callback) {
+        static::$callbackPlaceholders[$name] = $callback;
+    }
+
+    /**
+     * Removes a registered callback
+     * @param string $name Name of callback to unregister
+     */
+    public static function removeCallbackPlaceholder($name) {
+        unset(static::$callbackPlaceholders[$name]);
+    }
+
+    /**
+     * Returns a list of callbacks registered for all instances
+     * @return array List of callbacks ($name=>$callable)
+     */
+    public static function getCallbackPlaceholders() {
+        return static::$callbackPlaceholders;
+    }
+
+    /**
+     * Cx Sigma constructor
+     * @param string $root      root directory for templates
+     * @param string $cacheRoot directory to cache "prepared" templates in
+     * @param \Cx\Core\View\Model\Entity\ParseTarget $parseTarget (optional) Target where this instance will get parsed into
+     */
+    public function __construct($root = '', $cacheRoot = '', $parseTarget = null) {
         parent::__construct($root, $cacheRoot);
+        $this->parseTarget = $parseTarget;
         $this->removeVariablesRegExp = '@' . $this->openingDelimiter . '(' . $this->variablenameRegExp . ')\s*'
             . $this->closingDelimiter . '@sm';
         $this->setErrorHandling(PEAR_ERROR_DIE);
+
+        // Add registered callbacks and ensure we also pass reference to $this
+        foreach (static::getCallbackPlaceholders() as $name=>$callback) {
+            $this->setCallbackFunction(
+                $name,
+                function() use ($callback) {
+                    $args = func_get_args();
+                    array_unshift($args, $this);
+                    return call_user_func_array($callback, $args);
+                },
+                true
+            );
+        }
+    }
+
+    /**
+     * Returns this instances parse target (might be null)
+     * @return \Cx\Core\View\Model\Entity\ParseTarget Target where this instances will get parsed into (or null)
+     */
+    public function getParseTarget() {
+        return $this->parseTarget;
+    }
+
+    /**
+     * Sets the parse target after initialization
+     * @deprecated Set parse target on initialization
+     * @param \Cx\Core\View\Model\Entity\ParseTarget Target where this instances will get parsed into (or null)
+     */
+    public function setParseTarget($parseTarget) {
+        $this->parseTarget = $parseTarget;
     }
 
     function getRoot() {
@@ -112,8 +187,20 @@ class Sigma extends \HTML_Template_Sigma {
         // remove block
         $this->_removeBlockData($block, false);
 
-        // Renew variable list
-        return $this->_buildBlockVariables();
+        // remove block from parent block
+        foreach ($this->_children as &$children) {
+            if (isset($children[$block])) {
+                unset($children[$block]);
+            }
+        }
+
+        // Renew variable list without dropping existing callbacks
+        // This may lead to too much data in $this->_functions but
+        // Sigma simply does str_replace() which never matches.
+        $func_bkp = $this->_functions;
+        $ret = $this->_buildBlockVariables();
+        $this->_functions = $func_bkp + $this->_functions;
+        return $ret;
     }
 
     /**

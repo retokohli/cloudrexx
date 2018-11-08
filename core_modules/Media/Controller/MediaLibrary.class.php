@@ -721,7 +721,9 @@ class MediaLibrary
             $icon = strtoupper($fileType);
         } elseif (is_file($file)) {
             $info = pathinfo($file);
-            $icon = strtoupper($info['extension']);
+            if (isset($info['extension'])) {
+                $icon = strtoupper($info['extension']);
+            }
         }
 
         $arrImageExt        = array('JPEG', 'JPG', 'TIFF', 'GIF', 'BMP', 'PNG');
@@ -1114,7 +1116,7 @@ END;
                                         ');
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $arrReturn[$objResult->fields['name']] = stripslashes(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+                $arrReturn[$objResult->fields['name']] = $objResult->fields['value'];
                 $objResult->MoveNext();
             }
         }
@@ -1273,8 +1275,24 @@ END;
 
         if (empty($result)) {
             $result = array(
-                'dir'  => array(),
-                'file' => array(),
+                'dir'  => array(
+                    'icon' => array(),
+                    'name' => array(),
+                    'size' => array(),
+                    'type' => array(),
+                    'date' => array(),
+                    'perm' => array(),
+                    'path' => array(),
+                ),
+                'file' => array(
+                    'icon' => array(),
+                    'name' => array(),
+                    'size' => array(),
+                    'type' => array(),
+                    'date' => array(),
+                    'perm' => array(),
+                    'path' => array(),
+                ),
             );
         }
 

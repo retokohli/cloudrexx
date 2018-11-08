@@ -125,7 +125,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         $licenseVersion = $license->getVersion()->getNumber();
 
         //get the input datas
-        $feedBackType    = isset($_POST['feedBackType']) ? contrexx_input2raw($_POST['feedBackType']) : '';
+        $feedBackType    = isset($_REQUEST['feedBackType']) ? intval($_REQUEST['feedBackType']) : '';
         $feedBackSubject = isset($_POST['feedBackSubject']) ? contrexx_input2raw($_POST['feedBackSubject']) : '';
         $feedBackComment = isset($_POST['feedBackComment']) ? contrexx_input2raw($_POST['feedBackComment']) : '';
         $customerName    = isset($_POST['customerName']) ? contrexx_input2raw($_POST['customerName']) : '';
@@ -222,7 +222,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     <table cellpadding="0" cellspacing="0" style="width:100%; font-size: 13px;">
         <tbody>
             <tr>
-                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_FIRST_NAME'] . '</td>
+                <td valign="top" width="30%">' . $_ARRAYLANG['TXT_SUPPORT_USER_FIRST_NAME'] . '</td>
                 <td>&nbsp;: ' . $arrFields['firstName'] . '</td>
             </tr>
             <tr>
@@ -249,7 +249,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     <table cellpadding ="0" cellspacing ="0" style="width: 100%; font-size: 13px;">
         <tbody>
             <tr>
-                <td valign="top" >' . $_ARRAYLANG['TXT_SUPPORT_DOMAIN_NAME'] . '</td>
+                <td valign="top" width="30%">' . $_ARRAYLANG['TXT_SUPPORT_DOMAIN_NAME'] . '</td>
                 <td>&nbsp;: ' . $arrFields['domainName'] . '</td>
             </tr>
             <tr>
@@ -273,7 +273,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     <table cellpadding="0" cellspacing="0" style="width:100%; font-size: 13px;">
         <tbody>
             <tr>
-                <td valign="top" >' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC'] . '</td>
+                <td valign="top" width="30%">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC'] . '</td>
                 <td>&nbsp;: ' . $arrFields['feedBackType'] . '</td>
             </tr>
             <tr>

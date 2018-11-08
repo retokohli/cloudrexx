@@ -101,6 +101,7 @@ class DBG
     private static $memory_logs = array();
     protected static $enable_profiling = 0;
     protected static $logPrefix = '';
+    protected static $logHash= '';
 
 
     public function __construct()
@@ -119,6 +120,11 @@ class DBG
      */
     public static function activate($mode = null)
     {
+        // generate a hash to be used for associating all logs to the same request
+        if (empty(self::$logHash)) {
+            self::$logHash = base_convert(microtime(), 10, 36);
+        }
+
         if (!self::$fileskiplength) {
             self::$fileskiplength = strlen(dirname(dirname(dirname(dirname(__FILE__))))) + 1;
         }
@@ -289,7 +295,7 @@ class DBG
 // DO NOT OVERRIDE DEFAULT BEHAVIOR FROM INSIDE THE CLASS!
 // Call a method to do this from the outside.
 //        self::setup('dbg.log', 'w');
-        if (self::setup('dbg.log')) {
+        if (self::setup(dirname(__FILE__, 4) . '/tmp/log/dbg.log')) {
             self::$log_file = true;
         }
     }
@@ -671,7 +677,7 @@ class DBG
         if ($val === null) {
             $out = 'NULL';
         } else {
-            $out = var_export($val, true);
+            $out = stripslashes(var_export($val, true));
         }
         $out = str_replace("\n", "\n        ", $out);
         if (!self::$log_file && !self::$log_memory && php_sapi_name() != 'cli') {
@@ -686,16 +692,8 @@ class DBG
 
     private static function _escapeDoctrineDump(&$val)
     {
-        if (   $val instanceof \Cx\Model\Base\EntityBase
-            || $val instanceof \Doctrine\DBAL\Statement
-            || $val instanceof \Doctrine\DBAL\Connection
-            || $val instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain
-            || $val instanceof \Cx\Core\Core\Model\Entity\EntityBase
-            || $val instanceof \Doctrine\ORM\Mapping\ClassMetadata
-            || $val instanceof \Cx\Core\Core\Controller\Cx
-            || $val instanceof \Cx\Core\Html\Sigma
-            || $val instanceof \Cx\Core\Core\Model\Entity\SystemComponentController
-        ) {
+        // TODO: implement own dump-method that is able to handle recursive references
+        if (is_object($val)) {
             $val = \Doctrine\Common\Util\Debug::export($val, 2);
         } else if (is_array($val)) {
             foreach ($val as &$entry) {
@@ -804,9 +802,71 @@ class DBG
             } else {
                 self::_log("PHP: <strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong>");
             }
+
+            // Catch infinite loop produced by var_export()
+            if ($errstr == 'var_export does not handle circular references') {
+                self::log('Cancelled script execution to prevent memory overflow caused by var_export()');
+                self::stack();
+                exit;
+            }
         }
     }
 
+    /**
+     * Writes the last line of a request to the log
+     * @param \Cx\Core\Core\Controlller\Cx $cx Cx instance of the request
+     * @param bool $cached Whether this request is answered from cache
+     * @param string $outputModule (optional) Name of the output module
+     */
+    public static function writeFinishLine(
+        \Cx\Core\Core\Controller\Cx $cx,
+        bool $cached,
+        string $outputModule = ''
+    ) {
+        $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+        $requestIpParts = explode('.', $requestIp);
+        end($requestIpParts);
+        $requestIpParts[key($requestIpParts)] = '[...]';
+        $requestIp = implode('.', $requestIpParts);
+        $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
+        $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        $cachedStr = $cached ? 'cached' : 'uncached';
+        $userHash = '';
+        $stats = $cx->getComponent(
+            'Stats'
+        );
+        if ($stats) {
+            $counter = $stats->getCounterInstance();
+            if ($counter) {
+                $userHash = $counter->getUniqueUserId();
+            }
+        }
+        $outputModuleStr = empty($outputModule) ? '' : ' "' . $outputModule . '"';
+
+        register_shutdown_function(
+            function() use (
+                $cx,
+                $requestInfo,
+                $requestIp,
+                $requestHost,
+                $requestUserAgent,
+                $cachedStr,
+                $userHash,
+                $outputModuleStr
+            ) {
+                $parsingTime = $cx->stopTimer();
+                \DBG::log(
+                    '(Cx: ' . $cx->getId() .
+                    ') Request parsing completed after ' . $parsingTime  .
+                    ' "' . $cachedStr . '" "' . $requestInfo . '" "' .
+                    $requestIp . '" "' . $requestHost . '" "' .
+                    $requestUserAgent . '" "' . memory_get_peak_usage(true) .
+                    '" "' . $userHash . '"' . $outputModuleStr
+                );
+            }
+        );
+    }
 
     static function log($text, $firephp_action='log', $additional_args=null)
     {
@@ -825,7 +885,9 @@ class DBG
         }
 
         if (self::$logPrefix !== '') {
-            $text = '(' . self::$logPrefix . ') ' . $text;
+            $text = '"(' . self::$logPrefix . ' - ' . self::$logHash . ')" ' . $text;
+        } else {
+            $text = '"(' . self::$logHash . ')" ' . $text;
         }
 
         if (self::$log_firephp
@@ -857,7 +919,11 @@ class DBG
             }
             self::$memory_logs[] = date($dateFormat).' '.$text;
         } else {
-            echo $text.'<br />';
+            if (php_sapi_name() == 'cli') {
+                echo $text . PHP_EOL;
+            } else {
+                echo $text . '<br />';
+            }
             // force log message output
             if (ob_get_level()) {
                 ob_flush();
@@ -941,7 +1007,12 @@ class DBG
                     break;
             }
         }
-        if (!self::$log_file && !self::$log_firephp && !self::$log_memory) {
+        if (
+            !self::$log_file &&
+            !self::$log_firephp &&
+            !self::$log_memory &&
+            php_sapi_name() != 'cli'
+        ) {
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
             $sql = htmlentities($sql, ENT_QUOTES, CONTREXX_CHARSET);

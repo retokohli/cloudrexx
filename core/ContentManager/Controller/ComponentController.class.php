@@ -59,14 +59,55 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array
      */
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('EsiWidget');
     }
+
+    /**
+     * Get JsonAdapter classes
+     *
+     * @return array
+     */
     public function getControllersAccessableByJson() {
         return array(
-            'JsonNode', 'JsonPage', 'JsonContentManager',
+            'JsonNode',
+            'JsonPage',
+            'JsonContentManager',
+            'EsiWidgetController'
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        $widgetController = $this->getComponent('Widget');
+        foreach (
+            array(
+                'TITLE',
+                'METATITLE',
+                'NAVTITLE',
+                'METAKEYS',
+                'METADESC',
+                'METAROBOTS',
+                'METAIMAGE',
+                'METAIMAGE_WIDTH',
+                'METAIMAGE_HEIGHT',
+                'CONTENT_TITLE',
+                //'CONTENT_TEXT',
+                'CSS_NAME',
+                'TXT_CORE_LAST_MODIFIED_PAGE',
+                'LAST_MODIFIED_PAGE',
+                'CANONICAL_LINK',
+            ) as $widgetName
+        ) {
+            $widgetController->registerWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                    $this,
+                    $widgetName
+                )
+            );
+        }
     }
 
     /**
@@ -115,22 +156,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\Node', $nodeListener);
 
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\LogEntry', new \Cx\Core\ContentManager\Model\Event\LogEntryEventListener());
+
+        // Event register for search content
+        $evm->addEventListener('SearchFindContent', $pageListener);
     }
-
-    /**
-     * Do something for search the content
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core\ContentManager\Model\Event\PageEventListener());
-   }
-
-    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        // Set meta image to default if it's not defined
-        if (empty($page->getMetaimage())) {
-            $page->setMetaimage(\Env::get('config')['defaultMetaimage']);
-        }
-    }
-
 }

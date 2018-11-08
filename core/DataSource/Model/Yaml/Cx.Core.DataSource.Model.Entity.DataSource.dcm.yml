@@ -6,6 +6,7 @@ Cx\Core\DataSource\Model\Entity\DataSource:
   discriminatorColumn:
     name: type
     type: string
+    length: 50
   discriminatorMap:
     dataSource: DataSource
     mediaSource: \Cx\Core\MediaSource\Model\Entity\MediaSource

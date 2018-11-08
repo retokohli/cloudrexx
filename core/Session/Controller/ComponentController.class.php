@@ -56,17 +56,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
      */
     public function preResolve(\Cx\Core\Routing\Url $request) {
-        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $sessionObj = $this->getSession();
             $sessionObj->cmsSessionStatusUpdate('backend');
         }
     }
 
     /**
-     * Returns the current session or opens a new one if none exists yet
-     * @return \Cx\Core\Session\Model\Entity\Session Session instance
+     * Returns the current session
+     *
+     * If the session has not yet been initialized, it will be initialized
+     * if $forceInitialization is set to TRUE.
+     * Otherwise it will only initialize the session if an existing session
+     * can be resumed.
+     *
+     * @param   boolean $initialize Whether or not to force the initialization
+     *                              of a session.
+     * @return \Cx\Core\Session\Model\Entity\Session Session instance of
+     *                                               current user. If no
+     *                                               session is present and
+     *                                               session initialization is
+     *                                               not forced, then NULL is
+     *                                               returned.
      */
-    public function getSession() {
+    public function getSession($forceInitialization = true) {
+        if (
+            !\Cx\Core\Session\Model\Entity\Session::sessionExists() &&
+            !$forceInitialization
+        ) {
+            return null;
+        }
+
         return \Cx\Core\Session\Model\Entity\Session::getInstance();
     }
 

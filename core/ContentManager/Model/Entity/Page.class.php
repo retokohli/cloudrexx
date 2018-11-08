@@ -458,13 +458,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
     }
 
     protected function slugify($string) {
-        // replace international characters
-        $string = $this->getComponent('LanguageManager')->replaceInternationalCharacters($string);
-        // replace spaces
-        $string = preg_replace('/\s+/', '-', $string);
-        // replace all non-url characters
-        $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
-        return $string;
+        return $this->cx->getComponent('Model')->slugify($string);
     }
 
     public function nextSlug() {
@@ -1266,10 +1260,11 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
                 'webcam',
                 'favicon.ico',
             );
-            foreach (\FWLanguage::getActiveFrontendLanguages() as $id=>$lang) {
-                $invalidAliasNames[] = $lang['lang'];
-            }
-            if (in_array($this->getSlug(), $invalidAliasNames)) {
+            if (
+                in_array($this->getSlug(), $invalidAliasNames) ||
+                // check if alias matches language tag regex (de, en-US, i-hak, etc.)
+                preg_match('/^[a-z]{1,2}(?:-[A-Za-z]{2,4})?$/', $this->getSlug())
+            ) {
                 $lang = \Env::get('lang');
                 $error = array(
                     'slug' => array($lang['TXT_CORE_CANNOT_USE_AS_ALIAS'])
@@ -1788,7 +1783,6 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             $this->applicationTemplate = $page->getApplicationTemplate();
             $this->cssName = $page->getCssName();
         }
-        $this->cssNavName = $page->getCssNavName();
 
         $this->type = $page->getType();
         $this->target = $page->getTarget();
@@ -1865,8 +1859,8 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
 
         // merge both resultsets
         $aliases = array_merge(
-                $pageRepo->findBy($crit1, true),
-                $pageRepo->findBy($crit2, true)
+                $pageRepo->findBy($crit1, null, null, null, true),
+                $pageRepo->findBy($crit2, null, null, null, true)
         );
         return $aliases;
     }
@@ -1918,6 +1912,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
                 true    // followFallbacks
             );
             $page->setDisplay(false);
+            $page->setEditingStatus('');
             \Env::get('em')->persist($page);
             // recursion
             return $pages[$sourceLang]->setupPath($targetLang);
@@ -2147,6 +2142,21 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
         $this->metadesc = $unserialized[34];
         $this->metakeys = $unserialized[35];
         $this->metaimage = $unserialized[36];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getContentTemplateForWidget($widgetName, $langId, $page, $channel) {
+        $template = parent::getContentTemplateForWidget($widgetName, $langId, $page, $channel);
+
+        // load application template in case page is an application
+        if ($page->getType() == TYPE_APPLICATION) {
+            $contentTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPageWithoutWidget($page, null, $channel);
+            $template->addBlock('APPLICATION_DATA', 'cx_application_data', $contentTemplate);
+        }
+
+        return $template;
     }
 
     /**

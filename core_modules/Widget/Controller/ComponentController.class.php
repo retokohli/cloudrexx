@@ -70,7 +70,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
+        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma('', '', $page);
+        $template->setTemplate($page->getContent());
+        $this->parseWidgets($template, 'ContentManager', 'Page', $page->getId());
+        $page->setContent($template->get());
+    }
+
+    /**
+     * Do something before a module is loaded
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     */
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        // We do this here again:
+        // This is only triggered for application pages. The template file for
+        // application pages is not yet loaded in preContentLoad().
+        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma('', '', $page);
         $template->setTemplate($page->getContent());
         $this->parseWidgets($template, 'ContentManager', 'Page', $page->getId());
         $page->setContent($template->get());
@@ -184,12 +201,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return \Cx\Model\Base\EntityBase Parse target entity
      */
     protected function getParseTarget($componentName, $entityName, $entityId) {
+        if (!isset($this->cache)) {
+            $this->cache = array();
+        }
+        if (
+            isset($this->cache[$entityName]) &&
+            isset($this->cache[$entityName][$entityId])
+        ) {
+            return $this->cache[$entityName][$entityId];
+        }
         // the following IF block can be dropped as soon as Block is a Doctrine entity
         if ($componentName == 'Block' && $entityName == 'Block') {
-            return new \Cx\Modules\Block\Model\Entity\Block($entityId);
+            $target = new \Cx\Modules\Block\Model\Entity\Block($entityId);
+            $this->cache[$entityName][$entityId] = $target;
+            return $target;
         } else if ($componentName == 'View' && $entityName == 'Theme') {
             $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
-            return $themeRepo->findById($entityId);
+            $target = $themeRepo->findById($entityId);
+            $this->cache[$entityName][$entityId] = $target;
+            return $target;
         }
         $em = $this->cx->getDb()->getEntityManager();
         $component = $this->getComponent($componentName);
@@ -203,6 +233,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!is_a($target, $this->getNamespace() . '\Model\Entity\WidgetParseTarget')) {
             throw new \Exception('Invalid parse target specified');
         }
+        $this->cache[$entityName][$entityId] = $target;
         return $target;
     }
 
@@ -220,5 +251,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $eventListener = new \Cx\Core_Modules\Widget\Model\Event\WidgetEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('clearEsiCache', $eventListener);
+    }
+
+    /**
+     * Encodes a string so it can be used as an URL argument
+     * Currently uses a variant of RFC-4648:
+     * Compared to RFC-4648 this replaces "_" by "." in order to
+     * allow usage of encoded string in Cloudrexx cache files which are
+     * delimited by "_".
+     * @param string $string String to encode
+     * @return string Encoded string
+     */
+    public function encode($string) {
+        return strtr(base64_encode($string), '+/', '-.');
+    }
+
+    /**
+     * Decodes a string which was encoded using $this->encode()
+     * Currently uses a variant of RFC-4648:
+     * Compared to RFC-4648 this replaces "_" by "." in order to
+     * allow usage of encoded string in Cloudrexx cache files which are
+     * delimited by "_".
+     * @param string $string String to decode
+     * @return string Decoded string
+     */
+    public function decode($string) {
+        return base64_decode(strtr($string, '-.', '+/'));
     }
 }

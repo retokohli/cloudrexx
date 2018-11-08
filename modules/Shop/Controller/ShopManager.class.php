@@ -1636,6 +1636,19 @@ if ($test === NULL) {
                     \User_Profile_Attribute::getCustomAttributeNameArray(),
                     \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes','Shop'),
                     '', '', 'tabindex="0" style="width: 270px;"'),
+
+            // product attribute behavior
+            'SHOP_ACTIVATE_PRODUCT_ATTRIBUTE_CHILDREN_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('activate_product_attribute_children','Shop')
+                ? \Html::ATTRIBUTE_CHECKED : ''),
+
+            // always show 'please select' option in product attribute's dropdowns
+            'SHOP_FORCE_SELECT_OPTION_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop')
+                ? \Html::ATTRIBUTE_CHECKED : ''),
+
+            // don't allow (anonymous) checkout with an email address
+            // of which a user account does already exist
+            'SHOP_VERIFY_ACCOUNT_EMAIL_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop')
+                ? \Html::ATTRIBUTE_CHECKED : ''),
         ));
     }
 
@@ -1672,6 +1685,7 @@ if ($test === NULL) {
         $flagEditTabActive = false;
         $parent_id = 0;
         $name = '';
+        $short = '';
         $desc = '';
         $active = true;
         $virtual = false;
@@ -1684,6 +1698,7 @@ if ($test === NULL) {
             if ($objCategory) {
                 $parent_id = $objCategory->parent_id();
                 $name = contrexx_raw2xhtml($objCategory->name());
+                $short = $objCategory->shortDescription();
                 $desc = $objCategory->description();
                 $active = $objCategory->active();
                 $virtual = $objCategory->virtual();
@@ -1719,6 +1734,7 @@ if ($test === NULL) {
                 ($virtual ? \Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_CATEGORY_ACTIVE_CHECKED' =>
                 ($active ? \Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_CATEGORY_SHORT_DESCRIPTION' => $short,
             'SHOP_CATEGORY_DESCRIPTION' => $desc,
             'SHOP_CATEGORY_EDIT_ACTIVE' => ($flagEditTabActive ? 'active' : ''),
             'SHOP_CATEGORY_EDIT_DISPLAY' => ($flagEditTabActive ? 'block' : 'none'),
@@ -1817,6 +1833,7 @@ if ($test === NULL) {
         $virtual = isset($_POST['virtual']);
         $parentid = intval($_POST['parent_id']);
         $picture = contrexx_input2raw($_POST['image_href']);
+        $short = contrexx_input2raw($_POST['short']);
         $long = contrexx_input2raw($_POST['desc']);
         $objCategory = null;
         if ($category_id > 0) {
@@ -1830,12 +1847,13 @@ if ($test === NULL) {
             // If the values are identical, leave the parent ID alone!
             if ($category_id != $parentid) $objCategory->parent_id($parentid);
             $objCategory->name($name);
+            $objCategory->shortDescription($short);
             $objCategory->description($long);
             $objCategory->active($active);
         } else {
             // Add new ShopCategory
             $objCategory = new ShopCategory(
-                $name, $long, $parentid, $active, 0);
+                $name, $short, $long, $parentid, $active, 0);
         }
         // Ignore the picture if it's the default image!
         // Storing it would be pointless, and we should
@@ -2284,6 +2302,10 @@ if ($test === NULL) {
             'SHOP_WEIGHT_ENABLED' => (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable','Shop')
                 ? 1 : 0),
         ));
+
+        $activateChildrenOfProductAttribute = \Cx\Core\Setting\Controller\Setting::getValue('activate_product_attribute_children','Shop');
+        \ContrexxJavascript::getInstance()->setVariable('activate_product_attribute_children', $activateChildrenOfProductAttribute, 'shop');
+
         return true;
     }
 
@@ -2882,6 +2904,7 @@ if ($test === NULL) {
             'SHOP_PHONE' => $objCustomer->phone(),
             'SHOP_FAX' => $objCustomer->fax(),
             'SHOP_EMAIL' => $objCustomer->email(),
+            'SHOP_CUSTOMER_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $objCustomer->getProfileAttribute('birthday')),
 // OBSOLETE
 //            'SHOP_CCNUMBER' => $objCustomer->getCcNumber(),
 //            'SHOP_CCDATE' => $objCustomer->getCcDate(),
@@ -2897,7 +2920,7 @@ if ($test === NULL) {
         ));
 // TODO: TEST
         $count = NULL;
-        $orders = Orders::getArray($count, NULL, array(), \Paging::getPosition(),
+        $orders = Orders::getArray($count, NULL, array('customer_id' => $objCustomer->id()), \Paging::getPosition(),
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend','Shop'));
         $i = 1;
         foreach ($orders as $order) {
@@ -3013,6 +3036,7 @@ if ($test === NULL) {
             'SHOP_EMAIL' => $email,
             'SHOP_PHONE' => $phone,
             'SHOP_FAX' => $fax,
+            'SHOP_CUSTOMER_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $objCustomer->getProfileAttribute('birthday')),
             'SHOP_USERNAME' => $username,
             'SHOP_PASSWORD' => $password,
             'SHOP_COMPANY_NOTE' => $companynote,
@@ -3056,6 +3080,7 @@ if ($test === NULL) {
         $country_id = intval($_POST['country_id']);
         $phone = trim(strip_tags(contrexx_input2raw($_POST['phone'])));
         $fax = trim(strip_tags(contrexx_input2raw($_POST['fax'])));
+        $birthday = trim(strip_tags(contrexx_input2raw($_POST['shop_customer_birthday'])));
         $email = trim(strip_tags(contrexx_input2raw($_POST['email'])));
         $companynote = trim(strip_tags(contrexx_input2raw($_POST['companynote'])));
         $customer_active = intval($_POST['active']);
@@ -3078,6 +3103,7 @@ if ($test === NULL) {
         $objCustomer->phone($phone);
         $objCustomer->fax($fax);
         $objCustomer->email($email);
+        $objCustomer->setProfile(array('birthday' => array(0 => $birthday)));
         $objCustomer->companynote($companynote);
         $objCustomer->active($customer_active);
         $objCustomer->is_reseller($is_reseller);
@@ -3088,7 +3114,7 @@ if ($test === NULL) {
             $password = \User::make_password();
         }
         if ($password != '') {
-            $objCustomer->password($password);
+            $objCustomer->setPassword($password);
         }
         $objCustomer->setFrontendLanguage($lang_id);
         if (!$objCustomer->store()) {
@@ -3756,6 +3782,20 @@ if ($test === NULL) {
             ));
         }
         self::$objTemplate->parse('discountName');
+        self::$objTemplate->setCurrentBlock('discountType');
+        self::$objTemplate->setVariable(array(
+            'SHOP_DISCOUNT_GROUP_TYPE_OPTIONS' =>
+            \Html::getRadioGroup(
+                'discountGroupType',
+                array(
+                    $_ARRAYLANG['TXT_YES'],
+                    $_ARRAYLANG['TXT_NO']
+                ),
+                Discount::isDiscountCumulative($id)
+            )
+        ));
+        self::$objTemplate->touchBlock('discountType');
+        self::$objTemplate->parse('discountType');
         self::$objTemplate->setCurrentBlock('discountRate');
         if (isset($arrDiscountRates)) {
             $arrDiscountRates = array_reverse($arrDiscountRates, true);
@@ -3792,13 +3832,14 @@ if ($test === NULL) {
     {
         if (!isset($_POST['discountId'])) return true;
         $discountId = intval($_POST['discountId']);
+        $discountGroupType = contrexx_input2int($_POST['discountGroupType']);
         $discountGroupName = contrexx_input2raw($_POST['discountGroupName']);
         $discountGroupUnit = contrexx_input2raw($_POST['discountGroupUnit']);
         $arrDiscountCount = contrexx_input2int($_POST['discountCount']);
         $arrDiscountRate = contrexx_input2float($_POST['discountRate']);
         return Discount::storeDiscountCount(
-            $discountId, $discountGroupName, $discountGroupUnit,
-            $arrDiscountCount, $arrDiscountRate
+            $discountId, $discountGroupType, $discountGroupName,
+            $discountGroupUnit, $arrDiscountCount, $arrDiscountRate
         );
     }
 

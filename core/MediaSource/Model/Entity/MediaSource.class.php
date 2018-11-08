@@ -87,13 +87,36 @@ class MediaSource extends DataSource {
      */
     protected $fileSystem;
 
-    function __construct($name,$humanName, $directory, $accessIds = array(), $position = '',FileSystem $fileSystem = null) {
+    /**
+     * @var \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController
+     */
+    protected $systemComponentController;
+
+    public function __construct($name,$humanName, $directory, $accessIds = array(), $position = '',FileSystem $fileSystem = null, \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController = null) {
         $this->fileSystem = $fileSystem ? $fileSystem : LocalFileSystem::createFromPath($directory[0]);
         $this->name      = $name;
         $this->position  = $position;
         $this->humanName = $humanName;
         $this->directory = $directory;
         $this->accessIds = $accessIds;
+
+        // Sets provided SystemComponentController
+        $this->systemComponentController = $systemComponentController;
+        if (!$this->systemComponentController) {
+            // Searches a SystemComponentController intelligently by RegEx on backtrace stack frame
+            $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+            $trace = end($traces);
+            if (empty($trace['class'])) {
+                throw new MediaBrowserException('No SystemComponentController for ' . __CLASS__ . ' can be found');
+            }
+            $matches = array();
+            preg_match(
+                '/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/',
+                $trace['class'],
+                $matches
+            );
+            $this->systemComponentController = $this->getComponent($matches[1]);
+        }
     }
 
     /**
@@ -189,13 +212,20 @@ class MediaSource extends DataSource {
     }
 
     /**
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController
+     */
+    public function getSystemComponentController() {
+        return $this->systemComponentController;
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.
      * So if this is called without any arguments, all entries of this
      * DataSource are returned.
      * If no entry is found, an empty array is returned.
-     * @param string $elementId (optional) ID of the element if only one is to be returned
+     * @param array $elementId (optional) field=>value-type condition array identifying an entry
      * @param array $filter (optional) field=>value-type condition array, only supports = for now
      * @param array $order (optional) field=>order-type array, order is either "ASC" or "DESC"
      * @param int $limit (optional) If set, no more than $limit results are returned
@@ -205,7 +235,7 @@ class MediaSource extends DataSource {
      * @return array Two dimensional array (/table) of results (array($row=>array($fieldName=>$value)))
      */
     public function get(
-        $elementId = null,
+        $elementId = array(),
         $filter = array(),
         $order = array(),
         $limit = 0,
@@ -226,7 +256,7 @@ class MediaSource extends DataSource {
 
     /**
      * Updates an existing entry of this DataSource
-     * @param string $elementId ID of the element to update
+     * @param array $elementId field=>value-type condition array identifying an entry
      * @param array $data Field=>value-type array. Not all fields are required.
      * @throws \Exception If something did not go as planned
      */
@@ -236,7 +266,7 @@ class MediaSource extends DataSource {
 
     /**
      * Drops an entry from this DataSource
-     * @param string $elementId ID of the element to update
+     * @param array $elementId field=>value-type condition array identifying an entry
      * @throws \Exception If something did not go as planned
      */
     public function remove($elementId) {
