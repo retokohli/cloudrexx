@@ -1670,6 +1670,7 @@ function isPortFree {
 
 # this finds "cx" in currend pwd or above
 path="$(pwd)"
+result=""
 found=false
 while [[ $path != / ]];
 do
