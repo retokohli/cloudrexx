@@ -297,10 +297,10 @@ class ListingController {
             $data = $data->sort($this->order);
 
             // limit data
+            $this->dataSize = $data->size();
             if ($this->count) {
                 $data = $data->limit($this->count, $this->offset);
             }
-            $this->dataSize = $data->size();
             $this->data = $data;
             return $data;
         }
@@ -363,10 +363,10 @@ class ListingController {
             $entities = $qb->getQuery()->getResult();
 
             $metaData = $em->getClassMetaData($this->entityClass);
-            $qb = $em->createQueryBuilder();
-            $this->dataSize = (int) $qb->select(
-                'count(e.' . reset($metaData->getIdentifierFieldNames()) . ')'
-            )->from($this->entityClass, 'e')->getQuery()->getSingleScalarResult();
+            $qb->select(
+                'count(x.' . reset($metaData->getIdentifierFieldNames()) . ')'
+            );
+            $this->dataSize = $qb->getQuery()->getSingleScalarResult();
         }
 
         // return calculated data
