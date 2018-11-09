@@ -832,9 +832,16 @@ class DBG
         $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
         $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
         $cachedStr = $cached ? 'cached' : 'uncached';
-        $userHash = $cx->getComponent(
+        $userHash = '';
+        $stats = $cx->getComponent(
             'Stats'
-        )->getCounterInstance()->getUniqueUserId();
+        );
+        if ($stats) {
+            $counter = $stats->getCounterInstance();
+            if ($counter) {
+                $userHash = $counter->getUniqueUserId();
+            }
+        }
         $outputModuleStr = empty($outputModule) ? '' : ' "' . $outputModule . '"';
 
         register_shutdown_function(
@@ -912,7 +919,11 @@ class DBG
             }
             self::$memory_logs[] = date($dateFormat).' '.$text;
         } else {
-            echo $text.'<br />';
+            if (php_sapi_name() == 'cli') {
+                echo $text . PHP_EOL;
+            } else {
+                echo $text . '<br />';
+            }
             // force log message output
             if (ob_get_level()) {
                 ob_flush();
@@ -996,7 +1007,12 @@ class DBG
                     break;
             }
         }
-        if (!self::$log_file && !self::$log_firephp && !self::$log_memory) {
+        if (
+            !self::$log_file &&
+            !self::$log_firephp &&
+            !self::$log_memory &&
+            php_sapi_name() != 'cli'
+        ) {
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
             $sql = htmlentities($sql, ENT_QUOTES, CONTREXX_CHARSET);

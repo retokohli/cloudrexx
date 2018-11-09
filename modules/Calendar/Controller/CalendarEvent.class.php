@@ -383,6 +383,13 @@ class CalendarEvent extends CalendarLibrary
     public $invitedCrmGroups = array();
 
     /**
+     * Event excluded CRM groups
+     *
+     * @var array
+     */
+    public $excludedCrmGroups = array();
+
+    /**
      * Event invited mail
      *
      * @access public
@@ -792,6 +799,7 @@ class CalendarEvent extends CalendarLibrary
                          event.google AS google,
                          event.invited_groups AS invited_groups,
                          event.invited_crm_groups AS invited_crm_groups,
+                         event.excluded_crm_groups AS excluded_crm_groups,
                          event.invited_mails AS invited_mails,
                          event.invitation_sent AS invitation_sent,
                          event.invitation_email_template AS invitation_email_template,
@@ -971,6 +979,7 @@ class CalendarEvent extends CalendarLibrary
 
                 $this->invitedGroups = preg_grep('/^$/', explode(',', $objResult->fields['invited_groups']), PREG_GREP_INVERT);
                 $this->invitedCrmGroups = preg_grep('/^$/', explode(',', $objResult->fields['invited_crm_groups']), PREG_GREP_INVERT);
+                $this->excludedCrmGroups = preg_grep('/^$/', explode(',', $objResult->fields['excluded_crm_groups']), PREG_GREP_INVERT);
                 $this->invitedMails =  htmlentities($objResult->fields['invited_mails'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->registration = intval($objResult->fields['registration']);
                 $this->registrationForm = intval($objResult->fields['registration_form']);
@@ -1211,8 +1220,10 @@ class CalendarEvent extends CalendarLibrary
         $showIn                    = isset($data['showIn']) ? contrexx_addslashes(contrexx_strip_tags(join(",",$data['showIn']))) : '';
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : '';
         $invitedCrmGroups          = isset($data['calendar_event_invite_crm_memberships']) ? join(',', $data['calendar_event_invite_crm_memberships']) : '';
+        $excludedCrmGroups         = isset($data['calendar_event_excluded_crm_memberships']) ? join(',', $data['calendar_event_excluded_crm_memberships']) : '';
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;
+        $sendInvitationTo         = isset($data['sendMailTo']) ? contrexx_input2raw($data['sendMailTo']) : CalendarMailManager::MAIL_INVITATION_TO_ALL;
         $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : array();
         $registration              =   isset($data['registration']) && in_array($data['registration'], array(self::EVENT_REGISTRATION_NONE, self::EVENT_REGISTRATION_INTERNAL, self::EVENT_REGISTRATION_EXTERNAL))
                                      ? intval($data['registration']) : 0;
@@ -1256,14 +1267,15 @@ class CalendarEvent extends CalendarLibrary
             }
         }
 
+        $validUriScheme = '%^(?:(?:ftp|http|https)://|\[\[|//)%';
         if (!empty($placeWebsite)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeWebsite)) {
+            if (!preg_match($validUriScheme, $placeWebsite)) {
                 $placeWebsite = "http://".$placeWebsite;
             }
         }
 
         if (!empty($placeLink)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
+            if (!preg_match($validUriScheme, $placeLink)) {
                 $placeLink = "http://".$placeLink;
             }
         }
@@ -1288,13 +1300,13 @@ class CalendarEvent extends CalendarLibrary
         $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2raw($data['organizerEmail']) : '';
 
         if (!empty($orgWebsite)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgWebsite)) {
+            if (!preg_match($validUriScheme, $orgWebsite)) {
                 $orgWebsite = "http://".$orgWebsite;
             }
         }
 
         if (!empty($orgLink)) {
-            if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgLink)) {
+            if (!preg_match($validUriScheme, $orgLink)) {
                 $orgLink = "http://".$orgLink;
             }
         }
@@ -1498,6 +1510,7 @@ class CalendarEvent extends CalendarLibrary
             'show_in'                       => $showIn,
             'invited_groups'                => $invited_groups,
             'invited_crm_groups'            => $invitedCrmGroups,
+            'excluded_crm_groups'           => $excludedCrmGroups,
             'invited_mails'                 => $invited_mails,
             'invitation_email_template'     => json_encode($invitationTemplate),
             'registration'                  => $registration,
@@ -1704,7 +1717,13 @@ class CalendarEvent extends CalendarLibrary
             // TO-DO set form data into $this
             $legacyEvent    = new CalendarEvent($this->id);
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
-            $objMailManager->sendMail($legacyEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
+            $objMailManager->sendMail(
+                $legacyEvent,
+                \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION,
+                null,
+                $invitationTemplate,
+                $sendInvitationTo
+            );
         }
         foreach ($event->getInvite() as $invite) {
             $em->detach($invite);
@@ -2536,6 +2555,91 @@ class CalendarEvent extends CalendarLibrary
         $this->freePlaces = $freePlaces < 0 ? 0 : $freePlaces;
 
         $this->registrationCalculated = true;
+    }
+
+    /**
+     * Return the registered mail addresses as MailRecipients
+     *
+     * @return array        the mail recipients
+     */
+    public function getRegistrationMailRecipients()
+    {
+
+        $queryRegistration = '
+            SELECT DISTINCT `reg_form_val`.`reg_id`, `reg_form_field`.`type`, 
+              `reg_form_val`.`value`, `invite`.`invitee_type`, `invite`.`invitee_id`
+              FROM `' . DBPREFIX . 'module_calendar_registration` AS `reg`
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_invite` AS `invite`
+                ON `reg`.`invite_id` = `invite`.`id`
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form_field` as `reg_form_field` 
+                ON `reg_form_field`.`form` = ' . contrexx_input2int($this->registrationForm) . '
+                
+                LEFT JOIN `' . DBPREFIX . 'module_calendar_registration_form_field_value` as `reg_form_val`
+                ON `reg_form_field`.`id` = `reg_form_val`.`field_id` AND `reg_form_val`.`reg_id` = `reg`.`id`
+                  
+                WHERE `reg`.`event_id` = ' . $this->id . ' 
+                AND `reg`.`type` = 1';
+        $database = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $objRegistration = $database->Execute($queryRegistration);
+
+        $recipientsData = array();
+        $mailRecipients = array();
+        if (!$objRegistration) {
+            return $mailRecipients;
+        }
+        while (!$objRegistration->EOF) {
+
+            $regId = $objRegistration->fields['reg_id'];
+            $type = $objRegistration->fields['type'];
+
+            if (!isset($recipientsData[$regId])) {
+                $recipientsData[$regId] = array();
+            }
+
+            $recipientsData[$regId][$type] =
+                $objRegistration->fields['value'];
+            $recipientsData[$regId]['type'] =
+                $objRegistration->fields['invitee_type'];
+            $recipientsData[$regId]['invitee_id'] =
+                $objRegistration->fields['invitee_id'];
+
+            $objRegistration->MoveNext();
+        }
+
+
+        foreach ($recipientsData as $recipientData) {
+            $lang = null;
+
+            // if the recipient is a crm or access user, get its language
+            if ($recipientData['type'] == MailRecipient::RECIPIENT_TYPE_CRM_CONTACT) {
+                $contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                if ($contact->load($recipientData['invitee_id'])) {
+                    $lang = $contact->contact_language;
+                }
+            } elseif ($recipientData['type'] == MailRecipient::RECIPIENT_TYPE_ACCESS_USER) {
+                $user =
+                    \FWUser::getFWUserObject()->objUser->getUser(
+                        $recipientData['invitee_id']
+                    );
+                if ($user) {
+                    $lang = $user->getFrontendLanguage();
+                }
+            }
+
+            $recipient = new MailRecipient();
+            $recipient->setId(isset($recipientData['invitee_id']) ? $recipientData['invitee_id'] : 0);
+            $recipient->setLang($lang);
+            $recipient->setAddress(isset($recipientData['mail']) ? $recipientData['mail'] : '');
+            $recipient->setType(isset($recipientData['type']) ? $recipientData['type'] : '');
+            $recipient->setFirstname(isset($recipientData['firstname']) ? $recipientData['firstname'] : '');
+            $recipient->setLastname(isset($recipientData['lastname']) ? $recipientData['lastname'] : '');
+            $recipient->setUsername(isset($recipientData['mail']) ? $recipientData['mail'] : '');
+            $mailRecipients[] = $recipient;
+        }
+
+        return $mailRecipients;
     }
 
     /**

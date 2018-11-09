@@ -150,7 +150,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Request URL
-         * @var \Cx\Core\Routing\Url
+         * @var \Cx\Core\Routing\Model\Entity\Request
          */
         protected $request = null;
 
@@ -1086,7 +1086,7 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
+                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?' . self::FOLDER_NAME_COMMAND_MODE . '(?:[?/\#]|$)#', $_GET['__cap'])) {
                         $this->mode = self::MODE_COMMAND;
                         return;
                     }
@@ -1571,13 +1571,18 @@ namespace Cx\Core\Core\Controller {
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
-                    $dataArguments = array();
+                    $input = '';
                     if (php_sapi_name() == 'cli') {
-                        // the following does block if there's no data:
-                        //$input = trim(stream_get_contents(STDIN));
+                        $read = array(fopen('php://stdin', 'r'));
+                        $write = null;
+                        $except = null;
+                        if (stream_select($read, $write, $except, 0) === 1) {
+                            $input = file_get_contents('php://stdin');
+                        }
                     } else {
                         $input = file_get_contents('php://input');
                     }
+                    $dataArguments = array();
                     parse_str($input, $dataArguments);
                     $dataArguments = contrexx_input2raw($dataArguments);
 
@@ -1809,6 +1814,22 @@ namespace Cx\Core\Core\Controller {
             $this->ch->callPreContentLoadHooks();
 
             if ($this->mode == self::MODE_FRONTEND) {
+                // Set parse target
+                $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                $page = $this->getPage();
+                $resolvedTheme = $themeRepo->getDefaultTheme(
+                    \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                    $page->getLang()
+                );
+                if ($page->getSkin()) {
+                    $theme = $themeRepo->findById($page->getSkin());
+                    if ($theme) {
+                        $resolvedTheme = $theme;
+                    }
+                }
+                // TODO: Move template initialization to here instead
+                $this->template->setParseTarget($resolvedTheme);
+
                 // load content.html template (or customized version)
                 $this->template->setTemplate($themesPages['index']);
                 $this->template->addBlock('CONTENT_FILE', 'page_template', $page_template);
@@ -2360,7 +2381,7 @@ namespace Cx\Core\Core\Controller {
             $this->getResponse()->setParsedContent($endcode);
         }
 
-        /* GETTERS */
+        /* SETTERS AND GETTERS */
 
         /**
          * Returns the mode this instance of Cx is in
@@ -2372,7 +2393,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the request URL
-         * @return \Cx\Core\Routing\Url Request URL
+         * @return \Cx\Core\Routing\Model\Entity\Request
          */
         public function getRequest() {
             return $this->request;
@@ -2573,6 +2594,7 @@ namespace Cx\Core\Core\Controller {
                 $this->getModuleFolderName(),
                 $this->getThemesFolderName(),
                 static::FOLDER_NAME_TEMP,
+                static::FOLDER_NAME_COMMAND_MODE,
             );
         }
 
