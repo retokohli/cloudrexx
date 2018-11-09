@@ -1700,8 +1700,10 @@ if ! $found; then
     exit
 fi
 if [[ "$(pwd -P)" != "$result" ]]; then
+    prevPwd="$(pwd -P)"
     cd "$result" || exit
     ./cx "$@"
+    cd "$prevPwd"
     exit
 fi
 
