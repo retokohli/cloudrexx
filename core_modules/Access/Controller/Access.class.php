@@ -84,6 +84,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->user($metaPageTitle, $pageTitle);
                 break;
 
+            case 'export':
+                $this->export();
+                break;
+
             default:
                 $this->dashboard();
                 break;
@@ -153,6 +157,17 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         } else {
             // or would it be better to redirect to the home page?
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Access&cmd=members');
+            exit;
+        }
+    }
+
+    /**
+     * Export users as CSV
+     */
+    protected function export() {
+        if (isset($_POST['export'])) {
+            $groupId = !empty($_POST['groupId']) ? intval($_POST['groupId']) : 0;
+            $this->exportUsers($groupId);
             exit;
         }
     }
