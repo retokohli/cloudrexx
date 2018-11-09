@@ -386,15 +386,14 @@ class FormGenerator {
                     if ($mode == 'associate') {
                         // get all currently assigned entities
                         $values = array();
-                        if ($entityId != 0) {
-                            // if we edit the main form, we also want to show the existing associated values we already have
-                            $assocMapping = $localMetaData->getAssociationMapping($name);
-                            $data = $this->getForeignEntitySelectOptionData($assocMapping, $associatedClass, $entityId, $options, true);
-                            $values = $data['all'];
-                        }
+                        // if we edit the main form, we also want to show the existing associated values we already have
+                        $assocMapping = $localMetaData->getAssociationMapping($name);
+                        $data = $this->getForeignEntitySelectOptionData($assocMapping, $associatedClass, $entityId, $options, true);
+                        $values = $data['all'];
                         if (!count($values)) {
                             $values = array('');
                         }
+                        $_ARRAYLANG += \Env::get('init')->getComponentSpecificLanguageData('Html', false);
                         // get all assigned entities (by ajax?)
                         // add chosen
                         $select = new \Cx\Core\Html\Model\Entity\DataElement(
@@ -410,6 +409,7 @@ class FormGenerator {
                             }
                         }
                         $select->addClass('chzn');
+                        $select->setAttribute('data-placeholder', $_ARRAYLANG['TXT_CORE_HTML_PLEASE_CHOOSE']);
                         $select->setAttribute('multiple');
                         if (isset($options['attributes'])) {
                             $select->setAttributes($options['attributes']);
@@ -898,9 +898,11 @@ CODE;
         $localEntityMetadata = $em->getClassMetadata($this->entityClass);
         $localEntityRepo = $em->getRepository($this->entityClass);
         $foreignEntityRepo = $em->getRepository($assocMapping['targetEntity']);
-        $localEntity = $localEntityRepo->find($entityId);
-        if (!$localEntity) {
-            throw new \Exception('Entity not found');
+        if ($entityId != 0) {
+            $localEntity = $localEntityRepo->find($entityId);
+            if (!$localEntity) {
+                throw new \Exception('Entity not found');
+            }
         }
 
         $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
@@ -918,8 +920,10 @@ CODE;
         foreach ($allForeignEntities as $foreignEntity) {
             $data['all'][implode('/', static::getEntityIndexData($foreignEntity))] = (string) $foreignEntity;
         }
-        foreach ($localEntity->$foreignEntityGetter() as $foreignEntity) {
-            $data['selected'][implode('/', static::getEntityIndexData($foreignEntity))] = (string) $foreignEntity;
+        if ($entityId != 0) {
+            foreach ($localEntity->$foreignEntityGetter() as $foreignEntity) {
+                $data['selected'][implode('/', static::getEntityIndexData($foreignEntity))] = (string) $foreignEntity;
+            }
         }
         return $data;
     }

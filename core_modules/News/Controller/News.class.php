@@ -189,49 +189,93 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 //       in case the message doesn't exist in the requested language. But only try load the
 //       the message in the fallback-language in case the associated news-detail content page
 //       is setup to use the content of the fallback-language
-        $objResult = $objDatabase->SelectLimit('SELECT  news.id                 AS id,
-                                                        news.userid             AS userid,
-                                                        news.redirect           AS redirect,
-                                                        news.source             AS source,
-                                                        news.changelog          AS changelog,
-                                                        news.url1               AS url1,
-                                                        news.url2               AS url2,
-                                                        news.date               AS date,
-                                                        news.publisher          AS publisher,
-                                                        news.publisher_id       AS publisherid,
-                                                        news.enddate            AS enddate,
-                                                        news.author             AS author,
-                                                        news.author_id          AS authorid,
-                                                        news.changelog          AS changelog,
-                                                        news.teaser_image_path  AS newsimage,
-                                                        news.enable_related_news AS enableRelatedNews,
-                                                        news.enable_tags         AS enableTags,
-                                                        news.teaser_image_thumbnail_path AS newsThumbImg,
-                                                        news.typeid             AS typeid,
-                                                        news.allow_comments     AS commentactive,
-                                                        locale.text,
-                                                        locale.title            AS title,
-                                                        locale.teaser_text
-                                                  FROM  '.DBPREFIX.'module_news AS news
-                                            INNER JOIN  '.DBPREFIX.'module_news_locale AS locale ON news.id = locale.news_id
-                                                WHERE   ' . $whereStatus . '
-                                                        news.id = '.$newsid.' AND
-                                                        locale.is_active=1 AND
-                                                        locale.lang_id ='.FRONTEND_LANG_ID
-                                                        // ignore time for previews
-                                                        .((!$newsPreview) ? ' AND (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
-                                                        (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")' : '')
-                                                       .($this->arrSettings['news_message_protection'] == '1' && !\Permission::hasAllAccess() ? (
-                                                            ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
-                                                                " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
-                                                                :   " AND frontend_access_id=0 ")
-                                                            :   '')
-                                                , 1);
+        $query = '
+            SELECT
+                news.id                 AS id,
+                news.userid             AS userid,
+                news.redirect           AS redirect,
+                news.source             AS source,
+                news.changelog          AS changelog,
+                news.url1               AS url1,
+                news.url2               AS url2,
+                news.date               AS date,
+                news.publisher          AS publisher,
+                news.publisher_id       AS publisherid,
+                news.enddate            AS enddate,
+                news.author             AS author,
+                news.author_id          AS authorid,
+                news.changelog          AS changelog,
+                news.teaser_image_path  AS newsimage,
+                news.enable_related_news AS enableRelatedNews,
+                news.enable_tags        AS enableTags,
+                news.teaser_image_thumbnail_path AS newsThumbImg,
+                news.typeid             AS typeid,
+                news.allow_comments     AS commentactive,
+                news.frontend_access_id,
+                locale.text,
+                locale.title            AS title,
+                locale.teaser_text
+            FROM
+                ' . DBPREFIX . 'module_news AS news
+            INNER JOIN
+                ' . DBPREFIX . 'module_news_locale AS locale
+            ON
+                news.id = locale.news_id
+            WHERE
+                ' . $whereStatus . '
+                news.id = ' . $newsid . ' AND
+                locale.is_active = 1 AND
+                locale.lang_id = ' . FRONTEND_LANG_ID . '
+        ';
+        // ignore time for previews
+        if (!$newsPreview) {
+            $query .= ' AND
+                (
+                    news.startdate <= \'' . date('Y-m-d H:i:s') . '\' OR
+                    news.startdate="0000-00-00 00:00:00"
+                ) AND
+                (
+                    news.enddate >= \'' . date('Y-m-d H:i:s') . '\' OR
+                    news.enddate="0000-00-00 00:00:00"
+                )
+            ';
+        }
 
+        $objResult = $objDatabase->SelectLimit($query, 1);
 
         if (!$objResult || $objResult->EOF) {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
             exit;
+        }
+
+        if (
+            $this->arrSettings['news_message_protection'] == '1' &&
+            !\Permission::hasAllAccess()
+        ) {
+            $validAccessIds = array(0);
+            if (
+                ($objFWUser = \FWUser::getFWUserObject()) &&
+                $objFWUser->objUser->login()
+            ) {
+                $validAccessIds = array_merge(
+                    array(0),
+                    $objFWUser->objUser->getDynamicPermissionIds()
+                );
+            }
+            if (
+                !in_array(
+                    $objResult->fields['frontend_access_id'],
+                    $validAccessIds
+                )
+            ) {
+                if ($this->arrSettings['login_redirect'] == '1') {
+                    \Permission::noAccess($base64Redirect);
+                }
+                header(
+                    'Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News')
+                );
+                exit;
+            }
         }
 
         $newsCommentActive  = $objResult->fields['commentactive'];

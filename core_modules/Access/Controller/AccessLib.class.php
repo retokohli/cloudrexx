@@ -1920,7 +1920,7 @@ JS
     }
 
 
-    protected function removeUselessImages()
+    public static function removeUselessImages()
     {
         global $objDatabase;
 
