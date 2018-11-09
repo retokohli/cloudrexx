@@ -210,8 +210,8 @@ class AccessLib
         ");
         $this->arrAttributeTypeTemplates = array(
             'textarea'        => '<textarea name="[NAME]" rows="1" cols="1">[VALUE]</textarea>',
-            'text'            => '<input type="text" name="[NAME]" value="[VALUE]" />',
-            'password'        => '<input type="password" name="[NAME]" value="" autocomplete="off" />',
+            'text'            => '<input type="text" name="[NAME]" value="[VALUE]" autocomplete="foobar" />',
+            'password'        => '<input type="text" name="[NAME]" value="" onkeyup="if (this.value == \'\') { this.setAttribute(\'type\', \'text\'); } else { this.setAttribute(\'type\', \'password\'); }" style="text-security: disc; -webkit-text-security: disc;" />',
             'checkbox'        => '<input type="hidden" name="[NAME]" /><input type="checkbox" name="[NAME]" value="1" [CHECKED] />',
             'menu'            => '<select name="[NAME]"[STYLE]>[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED][STYLE]>[VALUE_TXT]</option>',
