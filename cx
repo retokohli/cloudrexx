@@ -1438,7 +1438,8 @@ function set_config_array {
             mysql_create_tempfile
             mysql_exec "UPDATE \`contrexx_settings\` SET \`setvalue\` = 'off' WHERE \`setname\` = 'forceDomainUrl';
 UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolFrontend';
-UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolBackend';"
+UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forceProtocolBackend';
+UPDATE \`contrexx_settings\` SET \`setvalue\` = '${CONFIG["hostname"]}' WHERE \`setname\` = 'domainUrl';"
         fi
     fi
 }
