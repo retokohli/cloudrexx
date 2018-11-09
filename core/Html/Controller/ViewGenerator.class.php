@@ -893,17 +893,24 @@ class ViewGenerator {
                 $renderObject->getDataType()
             );
             $renderObject = $this->listingController->getData();
-            if ($_POST['saveEntry']) {
-                            foreach ($renderObject as $rowname => $rows) {
-                                foreach ($rows as $header => $data) {
-                                    $attr[$header] = $_POST[$header . '-' . $rowname];
-                                }
-                                $entries[$rowname] = $attr;
-                            }
-                            $this->saveEntries($entityClassWithNS, $entries);
+            if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                $entityClassWithNS = $this->object->getDataType();
+            } else {
+                $entityClassWithNS = get_class($this->object);
             }
+            if ($_POST['saveEntry']) {
+                foreach ($renderObject as $rowname => $rows) {
+                    foreach ($rows as $header => $data) {
+                        $attr[$header] = $_POST[$header . '-' . $rowname];
+                    }
+                    $entries[$rowname] = $attr;
+                }
+
+                $this->saveEntries($entityClassWithNS, $entries);
+            }
+
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options);
+            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS);
             $template->setVariable(array(
                 'TABLE' => $backendTable,
                 'PAGING' => $this->listingController,
@@ -1352,7 +1359,7 @@ class ViewGenerator {
 
         if ($entityId != 0) { // edit case
             // update the main entry in doctrine so we can store it over doctrine to database later
-            $this->savePropertiesToClass($entity, $entityClassMetadata);
+            $this->savePropertiesToClass($entity, $entityClassMetadata, $entityData);
             $param = 'editid';
             $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'];
         } else {
