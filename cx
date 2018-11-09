@@ -919,13 +919,13 @@ SET FOREIGN_KEY_CHECKS = 1;"
         config)
             get_config_array
             if [[ ${ARGUMENTS["show"]} = true ]]; then
-                OUTPUT="KEY VALUE"
+                OUTPUT="$(echo -e "KEY\tVALUE")"
                 OUTPUT+=$'\n'
                 for value in "${!CONFIG[@]}"; do
-                    OUTPUT+="$value ${CONFIG[$value]}"
+                    OUTPUT+="$(echo -e "$value\t${CONFIG[$value]}")"
                     OUTPUT+=$'\n'
                 done
-                echo "$OUTPUT" | column -t
+                echo "$OUTPUT" | column -t -s $'\t'
                 return
             fi
             declare -A CONFIG_OVERRIDE
