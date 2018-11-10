@@ -850,6 +850,39 @@ class Url {
     }
 
     /**
+     * Returns an Url object for a backend section
+     * @param string $componentName Component name
+     * @param string $act (optional) The component's action, default is empty string
+     * @param int $lang (optional) Language to use, default is BACKEND_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\Url Url object for the supplied info
+     */
+    public static function fromBackend($componentName, $cmd = '', $lang = 0, $parameters = array(), $protocol = '') {
+        $langForced = true;
+        if ($lang == 0) {
+            $langForced = false;
+            $lang = BACKEND_LANG_ID;
+        }
+        $url = static::fromDocumentRoot($parameters, '', $protocol);
+        $url->setMode('backend');
+        $cmdPath = '';
+        if (!empty($cmd)) {
+            $cmdPath = '/' . $cmd;
+        }
+        $url->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::FOLDER_NAME_BACKEND,
+                1
+            ) . '/' . $componentName . $cmdPath
+        );
+        if ($langForced) {
+            $url->setParam('setLang', $lang);
+        }
+        return $url;
+    }
+
+    /**
      * Returns an absolute or relative link
      * @param boolean $absolute (optional) set to false to return a relative URL
      * @return type
