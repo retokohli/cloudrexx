@@ -2296,6 +2296,8 @@ JS
     /**
      * Export users of a group as CSV
      * @param integer $groupId
+     * @throws  \Cx\Core\Core\Controller\InstanceException  At the end of the
+     *          CSV export to properly end the script execution.
      */
     protected function exportUsers($groupId = 0, $langId = null)
     {
@@ -2330,17 +2332,27 @@ JS
             'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
         );
 
-        // fetch profile attributes
+        // check if we're in frontend mode
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $isFrontend =
+            $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+
+        // do not output active status of users in frontend
+        if ($isFrontend) {
+            unset($arrFields['active']);
+        }
+
+        // set profile attributes
         $arrProfileFields = array_merge(
             $objFWUser->objUser->objAttribute->getCoreAttributeIds(),
             $objFWUser->objUser->objAttribute->getCustomAttributeIds()
         );
         foreach ($arrFields as $field) {
-            print $this->_escapeCsvValue($field).$csvSeparator;
+            print $this->escapeCsvValue($field).$csvSeparator;
         }
         foreach ($arrProfileFields as $profileField) {
             $arrFields[$profileField] = $objFWUser->objUser->objAttribute->getById($profileField)->getName();
-            print $this->_escapeCsvValue($arrFields[$profileField]).$csvSeparator;
+            print $this->escapeCsvValue($arrFields[$profileField]).$csvSeparator;
         }
         print "\n";
 
@@ -2358,7 +2370,15 @@ JS
         $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array_keys($arrFields));
         if ($objUser) {
             while (!$objUser->EOF) {
-                $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
+                // do not export users without any group membership
+                // in frontend export
+                if (
+                    $isFrontend &&
+                    empty($objUser->getAssociatedGroupIds(true))
+                ) {
+                    $objUser->next();
+                    continue;
+                }
 
                 $frontendLangId = $objUser->getFrontendLanguage();
                 if (empty($frontendLangId)) {
@@ -2372,23 +2392,27 @@ JS
                 }
                 $backendLang = $arrLangs[$backendLangId]['name']." (".$arrLangs[$backendLangId]['lang'].")";
 
-                // active
-                print $this->_escapeCsvValue($activeStatus).$csvSeparator;
+                // active status of user
+                // note: do not output in frontend
+                if (!$isFrontend) {
+                    $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
+                    print $this->escapeCsvValue($activeStatus).$csvSeparator;
+                }
 
                 // frontend_lang_id
-                print $this->_escapeCsvValue($frontendLang).$csvSeparator;
+                print $this->escapeCsvValue($frontendLang).$csvSeparator;
 
                 // backend_lang_id
-                print $this->_escapeCsvValue($backendLang).$csvSeparator;
+                print $this->escapeCsvValue($backendLang).$csvSeparator;
 
                 // username
-                print $this->_escapeCsvValue($objUser->getUsername()).$csvSeparator;
+                print $this->escapeCsvValue($objUser->getUsername()).$csvSeparator;
 
                 // email
-                print $this->_escapeCsvValue($objUser->getEmail()).$csvSeparator;
+                print $this->escapeCsvValue($objUser->getEmail()).$csvSeparator;
 
                 // regdate
-                print $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
+                print $this->escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
 
                 // profile attributes
                 foreach ($arrProfileFields as $field) {
@@ -2426,7 +2450,7 @@ JS
                             }
                             break;
                     }
-                    print $this->_escapeCsvValue($value).$csvSeparator;
+                    print $this->escapeCsvValue($value).$csvSeparator;
                 }
 
                 // add line break at end of row
@@ -2435,7 +2459,8 @@ JS
                 $objUser->next();
             }
         }
-        exit;
+
+        throw new \Cx\Core\Core\Controller\InstanceException();
     }
 
     /**
@@ -2444,7 +2469,7 @@ JS
      * @param string $value
      * @return string
      */
-    protected function _escapeCsvValue($value) {
+    protected function escapeCsvValue($value) {
         $csvSeparator = ";";
         $value = in_array(strtolower(CONTREXX_CHARSET), array('utf8', 'utf-8')) ? utf8_decode($value) : $value;
         $value = preg_replace('/\r\n/', "\n", $value);
