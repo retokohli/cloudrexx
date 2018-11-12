@@ -2336,11 +2336,11 @@ JS
             $objFWUser->objUser->objAttribute->getCustomAttributeIds()
         );
         foreach ($arrFields as $field) {
-            print $this->_escapeCsvValue($field).$csvSeparator;
+            print $this->escapeCsvValue($field).$csvSeparator;
         }
         foreach ($arrProfileFields as $profileField) {
             $arrFields[$profileField] = $objFWUser->objUser->objAttribute->getById($profileField)->getName();
-            print $this->_escapeCsvValue($arrFields[$profileField]).$csvSeparator;
+            print $this->escapeCsvValue($arrFields[$profileField]).$csvSeparator;
         }
         print "\n";
 
@@ -2373,22 +2373,22 @@ JS
                 $backendLang = $arrLangs[$backendLangId]['name']." (".$arrLangs[$backendLangId]['lang'].")";
 
                 // active
-                print $this->_escapeCsvValue($activeStatus).$csvSeparator;
+                    print $this->escapeCsvValue($activeStatus).$csvSeparator;
 
                 // frontend_lang_id
-                print $this->_escapeCsvValue($frontendLang).$csvSeparator;
+                print $this->escapeCsvValue($frontendLang).$csvSeparator;
 
                 // backend_lang_id
-                print $this->_escapeCsvValue($backendLang).$csvSeparator;
+                print $this->escapeCsvValue($backendLang).$csvSeparator;
 
                 // username
-                print $this->_escapeCsvValue($objUser->getUsername()).$csvSeparator;
+                print $this->escapeCsvValue($objUser->getUsername()).$csvSeparator;
 
                 // email
-                print $this->_escapeCsvValue($objUser->getEmail()).$csvSeparator;
+                print $this->escapeCsvValue($objUser->getEmail()).$csvSeparator;
 
                 // regdate
-                print $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
+                print $this->escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
 
                 // profile attributes
                 foreach ($arrProfileFields as $field) {
@@ -2426,7 +2426,7 @@ JS
                             }
                             break;
                     }
-                    print $this->_escapeCsvValue($value).$csvSeparator;
+                    print $this->escapeCsvValue($value).$csvSeparator;
                 }
 
                 // add line break at end of row
@@ -2444,7 +2444,7 @@ JS
      * @param string $value
      * @return string
      */
-    protected function _escapeCsvValue($value) {
+    protected function escapeCsvValue($value) {
         $csvSeparator = ";";
         $value = in_array(strtolower(CONTREXX_CHARSET), array('utf8', 'utf-8')) ? utf8_decode($value) : $value;
         $value = preg_replace('/\r\n/', "\n", $value);
