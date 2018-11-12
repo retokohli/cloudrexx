@@ -171,9 +171,18 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     protected function export() {
         global $_CORELANG;
 
-        // export users as CSV
-        if (isset($_REQUEST['export'])) {
-            $groupId = !empty($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $requestParams = $cx->getRequest()->getUrl()->getParamArray();
+
+        // check if CSV export has been requested
+        if (isset($requestParams['export'])) {
+            // filter export by group
+            $groupId = 0;
+            if (!empty($requestParams['groupId'])) {
+                $groupId = intval($requestParams['groupId']);
+            }
+
+            // export users as CSV
             $this->exportUsers($groupId);
             exit;
         }
