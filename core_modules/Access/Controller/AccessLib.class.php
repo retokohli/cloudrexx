@@ -2333,7 +2333,7 @@ JS
         // check if we're in frontend mode
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $isFrontend =
-            $cx->getMode() == \Cx\Core\Core\Controller\CX::MODE_FRONTEND;
+            $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
 
         // do not output active status of users in frontend
         if ($isFrontend) {
