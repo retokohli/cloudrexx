@@ -2295,7 +2295,8 @@ JS
 
     /**
      * Export users of a group as CSV
-     * @param integer $groupId
+     * @param   integer $groupId Id of a user group to filter the export by
+     * @param   integer $langId Id of frontend locale to filter the export by
      * @throws  \Cx\Core\Core\Controller\InstanceException  At the end of the
      *          CSV export to properly end the script execution.
      */
@@ -2323,30 +2324,37 @@ JS
             ($langId != null ? '_lang_'.$arrLangs[$langId]['lang'] : '').
             '.csv"', true);
 
-        $arrFields = array (
-            'active'            => $_ARRAYLANG['TXT_ACCESS_ACTIVE'],
-            'frontend_lang_id'  => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_FRONTEND'].')',
-            'backend_lang_id'   => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_BACKEND'].')',
-            'username'          => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
-            'email'             => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
-            'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
-        );
-
         // check if we're in frontend mode
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $isFrontend =
             $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
 
-        // do not output active status of users in frontend
-        if ($isFrontend) {
-            unset($arrFields['active']);
+        // used to hold the list of CSV columns
+        $arrFields = array();
+
+        // output active status of users only if we're not in frontend mode
+        if (!$isFrontend) {
+            $arrFields = array (
+                'active'            => $_ARRAYLANG['TXT_ACCESS_ACTIVE'],
+            );
         }
+
+        // add core user attributes to CSV
+        $arrFields = array_merge($arrFields, array(
+            'frontend_lang_id'  => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_FRONTEND'].')',
+            'backend_lang_id'   => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_BACKEND'].')',
+            'username'          => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
+            'email'             => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+            'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
+        ));
 
         // set profile attributes
         $arrProfileFields = array_merge(
             $objFWUser->objUser->objAttribute->getCoreAttributeIds(),
             $objFWUser->objUser->objAttribute->getCustomAttributeIds()
         );
+
+        // print header for core attributes
         foreach ($arrFields as $field) {
             print $this->escapeCsvValue($field).$csvSeparator;
         }
@@ -2354,6 +2362,7 @@ JS
         // print header for user groups
         print $this->escapeCsvValue($_ARRAYLANG['TXT_ACCESS_GROUPS']).$csvSeparator;
 
+        // print header for profile attributes
         foreach ($arrProfileFields as $profileField) {
             $arrFields[$profileField] = $objFWUser->objUser->objAttribute->getById($profileField)->getName();
             print $this->escapeCsvValue($arrFields[$profileField]).$csvSeparator;
