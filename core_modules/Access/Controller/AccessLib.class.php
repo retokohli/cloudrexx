@@ -2348,10 +2348,30 @@ JS
             'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
         ));
 
+        // fetch custom attributes
+        $customAttributeIds = $objFWUser->objUser->objAttribute->getCustomAttributeIds();
+        foreach ($customAttributeIds as $idx => $customAttributeId) {
+            // fetch custom attribute
+            $objCustomAttribute = $objFWUser->objUser->objAttribute->getById(
+                $customAttributeId
+            );
+            if ($objCustomAttribute->EOF) {
+                continue;
+            }
+            // filter out child attributes
+            switch ($objCustomAttribute->getType()) {
+                case 'menu_option':
+                    unset($customAttributeIds[$idx]);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         // set profile attributes
         $arrProfileFields = array_merge(
             $objFWUser->objUser->objAttribute->getCoreAttributeIds(),
-            $objFWUser->objUser->objAttribute->getCustomAttributeIds()
+            $customAttributeIds
         );
 
         // print header for core attributes
@@ -2476,6 +2496,16 @@ JS
                                 $date = new \DateTime();
                                 $date ->setTimestamp($value);
                                 $value = $date->format(ASCMS_DATE_FORMAT_DATE);
+                            }
+                            if ($objAttribute->getType() == 'menu') {
+                                $option = '';
+                                if (!empty($value)) {
+                                    $objAttributeChild = $objUser->objAttribute->getById($value);
+                                    if (!$objAttributeChild->EOF) {
+                                        $option = $objAttributeChild->getName();
+                                    }
+                                }
+                                $value = $option;
                             }
                             break;
                     }
