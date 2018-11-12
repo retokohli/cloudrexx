@@ -2330,7 +2330,17 @@ JS
             'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
         );
 
-        // fetch profile attributes
+        // check if we're in frontend mode
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $isFrontend =
+            $cx->getMode() == \Cx\Core\Core\Controller\CX::MODE_FRONTEND;
+
+        // do not output active status of users in frontend
+        if ($isFrontend) {
+            unset($arrFields['active']);
+        }
+
+        // set profile attributes
         $arrProfileFields = array_merge(
             $objFWUser->objUser->objAttribute->getCoreAttributeIds(),
             $objFWUser->objUser->objAttribute->getCustomAttributeIds()
@@ -2358,7 +2368,15 @@ JS
         $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array_keys($arrFields));
         if ($objUser) {
             while (!$objUser->EOF) {
-                $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
+                // do not export users without any group membership
+                // in frontend export
+                if (
+                    $isFrontend &&
+                    empty($objUser->getAssociatedGroupIds(true))
+                ) {
+                    $objUser->next();
+                    continue;
+                }
 
                 $frontendLangId = $objUser->getFrontendLanguage();
                 if (empty($frontendLangId)) {
@@ -2372,8 +2390,12 @@ JS
                 }
                 $backendLang = $arrLangs[$backendLangId]['name']." (".$arrLangs[$backendLangId]['lang'].")";
 
-                // active
+                // active status of user
+                // note: do not output in frontend
+                if (!$isFrontend) {
+                    $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
                     print $this->escapeCsvValue($activeStatus).$csvSeparator;
+                }
 
                 // frontend_lang_id
                 print $this->escapeCsvValue($frontendLang).$csvSeparator;
