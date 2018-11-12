@@ -337,12 +337,14 @@ class AccessLib
             if (!$edit || file_exists($imageRepoPath .'/'. $image)) {
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
             }
-            $arrPlaceholders['_SRC'] = $imageRepoWeb.'/'
-                .(!empty($arrPlaceholders['_VALUE']) ?
-                    $arrPlaceholders['_VALUE']
-                    : ($attributeId == 'picture' ?
-                        \User_Profile::$arrNoAvatar['src']
-                        : \User_Profile::$arrNoPicture['src']));
+            if (!empty($arrPlaceholders['_VALUE'])) {
+                $imageFilename = $arrPlaceholders['_VALUE'];
+            } elseif ($attributeId == 'picture') {
+                $imageFilename = \User_Profile::$arrNoAvatar['src'];
+            } else {
+                $imageFilename = \User_Profile::$arrNoPicture['src'];
+            }
+            $arrPlaceholders['_SRC'] = $imageRepoWeb . '/' . $imageFilename;
             if (empty($arrPlaceholders['_VALUE'])) {
                 $arrPlaceholders['_VALUE'] = $_CORELANG['TXT_ACCESS_NO_PICTURE'];
             }
@@ -357,6 +359,16 @@ class AccessLib
 //                if ($attributeId == 'picture') {
 //                    $arrPlaceholders['_DESC'] = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 //                }
+            $thumbnailGenerator = $cx->getMediaSourceManager()->getThumbnailGenerator();
+            $thumbnailFormats = $thumbnailGenerator->getThumbnails();
+            $thumbnails = $thumbnailGenerator->getThumbnailsFromFile($imageRepoWeb, $imageFilename, true);
+            foreach ($thumbnailFormats as $thumbnailFormat) {
+                if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                    continue;
+                }
+                $format = strtoupper($thumbnailFormat['name']);
+                $arrPlaceholders['_THUMBNAIL_' . $format . '_SRC'] = $thumbnails[$thumbnailFormat['size']];
+            }
             break;
         case 'checkbox':
             $arrPlaceholders['_CHECKED'] = $objUser->getProfileAttribute($attributeId, $historyId) ? 'checked="checked"' : '';
