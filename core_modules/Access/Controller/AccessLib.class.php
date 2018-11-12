@@ -2350,6 +2350,10 @@ JS
         foreach ($arrFields as $field) {
             print $this->escapeCsvValue($field).$csvSeparator;
         }
+
+        // print header for user groups
+        print $this->escapeCsvValue($_ARRAYLANG['TXT_ACCESS_GROUPS']).$csvSeparator;
+
         foreach ($arrProfileFields as $profileField) {
             $arrFields[$profileField] = $objFWUser->objUser->objAttribute->getById($profileField)->getName();
             print $this->escapeCsvValue($arrFields[$profileField]).$csvSeparator;
@@ -2375,6 +2379,19 @@ JS
                 if (
                     $isFrontend &&
                     empty($objUser->getAssociatedGroupIds(true))
+                ) {
+                    $objUser->next();
+                    continue;
+                }
+
+                // fetch associated user groups
+                $groups = $this->getGroupListOfUser($objUser);
+
+                // do not export users without any group membership
+                // in frontend export
+                if (
+                    $isFrontend &&
+                    empty($groups)
                 ) {
                     $objUser->next();
                     continue;
@@ -2413,6 +2430,9 @@ JS
 
                 // regdate
                 print $this->escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
+
+                // user groups
+                print $this->escapeCsvValue(join(',', $groups)).$csvSeparator;
 
                 // profile attributes
                 foreach ($arrProfileFields as $field) {
@@ -2461,6 +2481,45 @@ JS
         }
 
         throw new \Cx\Core\Core\Controller\InstanceException();
+    }
+
+    /**
+     * Get a list of user groups a user is a member of
+     *
+     * Returns an array of all user groups the supplied user (identified by
+     * $objUser) is a member of.
+     * In frontend mode, this method does only return frontend user groups.
+     * Whereas in every other mode, it does return all associated user groups.
+     *
+     * @param   \User   $objUser    The user of whom the associated groups
+     *                              shall be returned.
+     * @return  array   An array containing the names of the associated groups.
+     */
+    protected function getGroupListOfUser($objUser) {
+        // check if we're in frontend mode
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $activeOnly =
+            $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+        $groupIds = $objUser->getAssociatedGroupIds($activeOnly);
+        $arrGroupNames = array();
+
+        foreach ($groupIds as $groupId) {
+            $objGroup = \FWUser::getFWUserObject()->objGroup->getGroup($groupId);
+            if ($objGroup->EOF) {
+                continue;
+            }
+
+            if (
+                $activeOnly &&
+                $objGroup->getType() != 'frontend'
+            ) {
+                continue;
+            }
+
+            $arrGroupNames[] = $objGroup->getName();
+        }
+
+        return $arrGroupNames;
     }
 
     /**
