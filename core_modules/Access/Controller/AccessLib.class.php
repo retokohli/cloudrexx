@@ -2432,7 +2432,7 @@ JS
                 print $this->escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
 
                 // user groups
-                print $this->escapeCsvValue($groups).$csvSeparator;
+                print $this->escapeCsvValue(join(',', $groups)).$csvSeparator;
 
                 // profile attributes
                 foreach ($arrProfileFields as $field) {
@@ -2489,14 +2489,17 @@ JS
      * Returns an array of all user groups the supplied user (identified by
      * $objUser) is a member of.
      * In frontend mode, this method does only return frontend user groups.
-     * Whereas in ever other mode, it does return all associated user groups.
+     * Whereas in every other mode, it does return all associated user groups.
      *
-     * @param   \User   $objUser    The user of whoem the associated groups
+     * @param   \User   $objUser    The user of whom the associated groups
      *                              shall be returned.
      * @return  array   An array containing the names of the associated groups.
      */
     protected function getGroupListOfUser($objUser) {
-        $activeOnly = \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\CX::MODE_FRONTEND;
+        // check if we're in frontend mode
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $activeOnly =
+            $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
         $groupIds = $objUser->getAssociatedGroupIds($activeOnly);
         $arrGroupNames = array();
 
