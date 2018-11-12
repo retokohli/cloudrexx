@@ -184,7 +184,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             // export users as CSV
             $this->exportUsers($groupId);
-            exit;
+
+            // note: this code is never reached as exportUsers does throw an
+            // InstanceException
         }
 
         // abort in case the template block for listing the existing

@@ -2296,6 +2296,8 @@ JS
     /**
      * Export users of a group as CSV
      * @param integer $groupId
+     * @throws  \Cx\Core\Core\Controller\InstanceException  At the end of the
+     *          CSV export to properly end the script execution.
      */
     protected function exportUsers($groupId = 0, $langId = null)
     {
@@ -2457,7 +2459,8 @@ JS
                 $objUser->next();
             }
         }
-        exit;
+
+        throw new \Cx\Core\Core\Controller\InstanceException();
     }
 
     /**
