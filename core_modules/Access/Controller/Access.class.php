@@ -175,11 +175,11 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $requestParams = $cx->getRequest()->getUrl()->getParamArray();
 
         // check if CSV export has been requested
-        if (isset($requestParams['export'])) {
+        if ($cx->getRequest()->hasParam('export')) {
             // filter export by group
             $groupId = 0;
-            if (!empty($requestParams['groupId'])) {
-                $groupId = intval($requestParams['groupId']);
+            if ($cx->getRequest()->hasParam('groupId')) {
+                $groupId = intval($cx->getRequest()->getParam('groupId'));
             }
 
             // export users as CSV
