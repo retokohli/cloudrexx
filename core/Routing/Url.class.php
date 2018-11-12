@@ -837,7 +837,6 @@ class Url {
     public static function fromApi($command, $arguments, $parameters = array()) {
         $url = \Cx\Core\Routing\Url::fromDocumentRoot();
         $url->setMode('backend');
-        $url->setPath('api/' . $command . '/' . implode('/', $arguments));
         $url->setPath(
             substr(
                 \Cx\Core\Core\Controller\Cx::FOLDER_NAME_COMMAND_MODE,
