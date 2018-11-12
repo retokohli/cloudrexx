@@ -162,13 +162,53 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     }
 
     /**
-     * Export users as CSV
+     * Export user section
+     *
+     * This section lists the existing active frontend user groups.
+     * Additionally is provides the ability to export the members of the
+     * active frontend groups as CSV file.
      */
     protected function export() {
-        if (isset($_POST['export'])) {
-            $groupId = !empty($_POST['groupId']) ? intval($_POST['groupId']) : 0;
+        global $_CORELANG;
+
+        // export users as CSV
+        if (isset($_REQUEST['export'])) {
+            $groupId = !empty($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0;
             $this->exportUsers($groupId);
             exit;
+        }
+
+        // abort in case the template block for listing the existing
+        // user groups is missing
+        if (!$this->_objTpl->blockExists('access_group_list')) {
+            return;
+        }
+
+        // fetch active frontend groups
+        $objGroup = \FWUser::getFWUserObject()->objGroup->getGroups(
+            array(
+                'type' => 'frontend',
+                'is_active' => true,
+            )
+        );
+
+        // all text-variable 'All'
+        $this->_objTpl->setVariable('TXT_USER_ALL', $_CORELANG['TXT_USER_ALL']);
+
+        // parse list of active frontend groups
+        while (!$objGroup->EOF) {
+            $this->_objTpl->setVariable(array(
+                'ACCESS_GROUP_ID'    => $objGroup->getId(),
+                'ACCESS_GROUP_NAME'  => contrexx_raw2xhtml(
+                    $objGroup->getName()
+                ),
+                'ACCESS_GROUP_DESCRIPTION'  => contrexx_raw2xhtml(
+                    $objGroup->getDescription()
+                ),
+            ));
+
+            $this->_objTpl->parse('access_group_list');
+            $objGroup->next();
         }
     }
 
