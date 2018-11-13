@@ -25,7 +25,7 @@ namespace Cx\Modules\CHDIRTravelLog\Model\Entity;
  * @package     cloudrexx
  * @subpackage  module_chdirtravellog
  */
-class Journey
+class Journey extends \Cx\Model\Base\EntityBase
 {
     /**
      * @var integer
@@ -96,8 +96,6 @@ class Journey
     public function setProject($project)
     {
         $this->project = $project;
-
-        return $this;
     }
 
     /**
@@ -119,8 +117,6 @@ class Journey
     public function setAtt($att)
     {
         $this->att = $att;
-
-        return $this;
     }
 
     /**
@@ -142,8 +138,6 @@ class Journey
     public function setReisedat($reisedat)
     {
         $this->reisedat = $reisedat;
-
-        return $this;
     }
 
     /**
@@ -165,8 +159,6 @@ class Journey
     public function setVerbnr($verbnr)
     {
         $this->verbnr = $verbnr;
-
-        return $this;
     }
 
     /**
@@ -188,8 +180,6 @@ class Journey
     public function setRbn($rbn)
     {
         $this->rbn = $rbn;
-
-        return $this;
     }
 
     /**
@@ -211,8 +201,6 @@ class Journey
     public function setReisen($reisen)
     {
         $this->reisen = $reisen;
-
-        return $this;
     }
 
     /**
@@ -234,8 +222,6 @@ class Journey
     public function setD($d)
     {
         $this->d = $d;
-
-        return $this;
     }
 
     /**
@@ -257,8 +243,6 @@ class Journey
     public function setAtStart($atStart)
     {
         $this->atStart = $atStart;
-
-        return $this;
     }
 
     /**
@@ -280,8 +264,6 @@ class Journey
     public function setAtRecs($atRecs)
     {
         $this->atRecs = $atRecs;
-
-        return $this;
     }
 
     /**

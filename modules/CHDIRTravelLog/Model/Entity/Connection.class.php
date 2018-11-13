@@ -25,7 +25,7 @@ namespace Cx\Modules\CHDIRTravelLog\Model\Entity;
  * @package     cloudrexx
  * @subpackage  module_chdirtravellog
  */
-class Connection
+class Connection extends \Cx\Model\Base\EntityBase
 {
     /**
      * @var integer
@@ -71,8 +71,6 @@ class Connection
     public function setProject($project)
     {
         $this->project = $project;
-
-        return $this;
     }
 
     /**
@@ -94,8 +92,6 @@ class Connection
     public function setVerbindungsnummer($verbindungsnummer)
     {
         $this->verbindungsnummer = $verbindungsnummer;
-
-        return $this;
     }
 
     /**
@@ -117,8 +113,6 @@ class Connection
     public function setSequenznummer($sequenznummer)
     {
         $this->sequenznummer = $sequenznummer;
-
-        return $this;
     }
 
     /**
@@ -140,8 +134,6 @@ class Connection
     public function setVerbindungsstring($verbindungsstring)
     {
         $this->verbindungsstring = $verbindungsstring;
-
-        return $this;
     }
 
     /**

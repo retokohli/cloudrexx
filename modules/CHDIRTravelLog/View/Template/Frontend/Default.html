@@ -1,4 +1,4 @@
-<form action="" method="get">
+<form action="{CHDIRTRAVELLOG_URI}" method="get">
   <fieldset>
     <div class="contact row">
       <label>
@@ -40,16 +40,26 @@
   </fieldset>
 </form>
 <!-- BEGIN chdirtravellog_journeys -->
-{CHDIRTRAVELLOG_EXPORT_RESULTS}
+<a href="{CHDIRTRAVELLOG_URI}&csv=1"
+   title="{TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE}">
+  <img src="{CHDIRTRAVELLOG_ICON_FOLDER_PATH}xls.png"
+       style="height: 20px; width: auto; margin: 0 0 15px 0 !important; float: right;"
+       alt="{TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE}" />
+</a>
 <!-- BEGIN chdirtravellog_journey_info -->
 {TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_QUERIED_COLON}
-{CHDIRTRAVELLOG_JOURNEY_QUERIED}<br />
+<a target="_blank"
+   href="{CHDIRTRAVELLOG_PDF_FOLDER_PATH}{CHDIRTRAVELLOG_PROJECT_NAME}_{CHDIRTRAVELLOG_NUMBER}.pdf">
+  {CHDIRTRAVELLOG_NUMBER}
+</a>
+<br />
 {TXT_MODULE_CHDIRTRAVELLOG_JOURNEY_COUNT_COLON}
 {CHDIRTRAVELLOG_JOURNEY_COUNT}<br />
 <!-- END chdirtravellog_journey_info -->
 <!-- BEGIN chdirtravellog_connection_info -->
 {TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_QUERIED_COLON}
-{CHDIRTRAVELLOG_CONNECTION_QUERIED}<br />
+{CHDIRTRAVELLOG_NUMBER}
+{CHDIRTRAVELLOG_CONNECTION_NAME}<br />
 {TXT_MODULE_CHDIRTRAVELLOG_CONNECTION_COUNT_COLON}
 {CHDIRTRAVELLOG_CONNECTION_COUNT}<br />
 <!-- END chdirtravellog_connection_info -->
@@ -78,7 +88,22 @@
     <td>{CHDIRTRAVELLOG_JOURNEY_CONNECTION_NR}</td>
     <td>{CHDIRTRAVELLOG_JOURNEY_CONNECTION_NAME}</td>
     <td style="text-align: center;">{CHDIRTRAVELLOG_JOURNEY_CONNECTION_COUNT}</td>
-    <td>{CHDIRTRAVELLOG_JOURNEY_RBN_LINK}</td>
+    <td>
+      <!-- BEGIN chdirtravellog_journey_download -->
+      <a target="_blank" href="{CHDIRTRAVELLOG_JOURNEY_RBN_URL}">
+        <img src="{CHDIRTRAVELLOG_ICON_FOLDER_PATH}pdf.png"
+             style="height: 20px; width: auto; margin: 0 !important;"
+             title="{TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE}"
+             alt="{TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE}" />
+      </a>
+      <!-- END chdirtravellog_journey_download -->
+      <!-- BEGIN chdirtravellog_journey_no_download -->
+      <img src="{CHDIRTRAVELLOG_ICON_FOLDER_PATH}blank.gif"
+           style="margin: 0 !important;"
+           title="{TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_DOWNLOAD_FOUND}"
+           alt="{TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_DOWNLOAD_FOUND}" />
+      <!-- END chdirtravellog_journey_no_download -->
+    </td>
     <td style="vertical-align: middle !important;">{CHDIRTRAVELLOG_JOURNEY_RBN}</td>
   </tr>
   <!-- END chdirtravellog_journey -->

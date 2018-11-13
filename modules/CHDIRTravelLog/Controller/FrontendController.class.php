@@ -28,11 +28,6 @@ namespace Cx\Modules\CHDIRTravelLog\Controller;
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
 {
     /**
-     * Date format for output
-     */
-    const date_format_ymd = 'd.m.Y';
-
-    /**
      * Set up the frontend view
      * @param   \Cx\Core\Html\Sigma $template
      * @param   string              $cmd
@@ -173,7 +168,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
         $paramsGet = $this->cx->getRequest()->getParams();
         $projectName = $paramsGet['project'] ?? '';
-        $searchTerm = contrexx_input2raw($paramsGet['number'] ?? '');
+        $searchTerm = $paramsGet['number'] ?? '';
         $selectJourney = '';
         $selectConnection = \Html::ATTRIBUTE_SELECTED;
         $type = $paramsGet['type'] ?? '';
@@ -186,7 +181,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'CHDIRTRAVELLOG_PROJECT_OPTIONS' => \Html::getOptions(
                 array_combine($projectNames, $projectNames), $projectName
             ),
-            'CHDIRTRAVELLOG_NUMBER' => $searchTerm,
+            'CHDIRTRAVELLOG_URI' => $_SERVER['REQUEST_URI'],
+            'CHDIRTRAVELLOG_ICON_FOLDER_PATH' => $this->getIconFolderPath(),
+            'CHDIRTRAVELLOG_NUMBER' => urldecode($searchTerm),
             'CHDIRTRAVELLOG_SELECTED_CONNECTION' => $selectConnection,
             'CHDIRTRAVELLOG_SELECTED_JOURNEY' => $selectJourney,
         ]);
@@ -216,7 +213,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * List the Connections in the search results view
      * @global  array   $_ARRAYLANG
-     * @global  array   $_CONFIG
      * @param   \Cx\Core\Html\Sigma $template
      * @param   string  $projectName
      * @param   string  $searchTerm
@@ -229,7 +225,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         \Cx\Core\Html\Sigma $template,
         string $projectName, string $searchTerm, int $pos, bool $exportCsv
     ): int {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
         $arrConnection = explode('.', $searchTerm);
         $connectionRepo = $this->cx->getDb()->getEntityManager()->getRepository(
             'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
@@ -258,9 +254,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ]);
         if (empty($arrConnection[1])) {
             $qb->andWhere(
-                $qb->expr()->like(
-                'j.verbnr', ':term'
-            ))
+                $qb->expr()->like('j.verbnr', ':term')
+            )
             ->setParameter('term', $arrConnection[0].'.%');
         } else {
             $qb->andWhere(
@@ -276,28 +271,26 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             );
         }
         $journeys = new \Doctrine\ORM\Tools\Pagination\Paginator(
-            $qb->getQuery(), false);
+            $qb->getQuery(), false
+        );
         $count = count($journeys);
-        $qb->setFirstResult($pos)
-            ->setMaxResults($_CONFIG['corePagingLimit']);
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue(
+            'corePagingLimit', 'Config'
+        );
+        $qb->setFirstResult($pos)->setMaxResults($limit);
         $paramsGet = $this->cx->getRequest()->getParams();
         $paging = \Paging::get(
             $paramsGet,
-            '<b>' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] . '</b>',
-            $count, $_CONFIG['corePagingLimit'], false, $pos, 'pos'
+            $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'],
+            $count, $limit, false, $pos, 'pos'
         );
-        $template->setVariable([
-            'CHDIRTRAVELLOG_CONNECTION_QUERIED' => $searchTerm . ' ' . $connectionName,
-            'CHDIRTRAVELLOG_PAGING' => $paging,
+        $template->setGlobalVariable([
+            'CHDIRTRAVELLOG_NUMBER' => $searchTerm,
+            'CHDIRTRAVELLOG_CONNECTION_NAME' => $connectionName,
             'CHDIRTRAVELLOG_CONNECTION_COUNT' => $count,
-            'CHDIRTRAVELLOG_EXPORT_RESULTS' =>
-            '<a href="' . $_SERVER['REQUEST_URI'] . '&csv=1"'
-            .' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '">'
-            .'<img src="' . $this->getIconFolderPath() . 'xls.png"'
-            .' style="height: 20px; width: auto; margin: 0 0 15px 0 !important; float: right;"'
-            .' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '" />'
-            .'</a>',
+            'CHDIRTRAVELLOG_PAGING' => $paging,
         ]);
+        $template->touchBlock('chdirtravellog_connection_info');
         $this->parseJourneys($template, $projectName, $journeys);
         return $count;
     }
@@ -305,7 +298,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * List the Journeys in the search results view
      * @global  array   $_ARRAYLANG
-     * @global  array   $_CONFIG
      * @param   \Cx\Core\Html\Sigma $template
      * @param   string  $projectName
      * @param   string  $searchTerm
@@ -318,7 +310,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         \Cx\Core\Html\Sigma $template,
         string $projectName, string $searchTerm, int $pos, bool $exportCsv
     ): int {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
         $em = $this->cx->getDb()->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('j')
@@ -345,32 +337,27 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $projectName, 'datasheet_nr_' . $searchTerm, $journeys
             );
         }
-        $qb->setFirstResult($pos)
-            ->setMaxResults($_CONFIG['corePagingLimit']);
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue(
+            'corePagingLimit', 'Config'
+        );
+        $qb->setFirstResult($pos)->setMaxResults($limit);
         $journeys = new \Doctrine\ORM\Tools\Pagination\Paginator(
-            $qb->getQuery(), false);
+            $qb->getQuery(), false
+        );
         $count = count($journeys);
         $paramsGet = $this->cx->getRequest()->getParams();
         $paging = \Paging::get(
             $paramsGet,
-            '<b>' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'] . '</b>',
-            $count, $_CONFIG['corePagingLimit'], false, $pos, 'pos'
+            $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ENTRIES'],
+            $count, $limit, false, $pos, 'pos'
         );
-        $template->setVariable([
-            'CHDIRTRAVELLOG_JOURNEY_QUERIED' =>
-            '<a target="_blank" href="' . static::getPdfFolder()
-            . static::getProjectName() . '_' . $searchTerm . '.pdf">'
-            . $searchTerm . '</a>',
+        $template->setGlobalVariable([
+            'CHDIRTRAVELLOG_PDF_FOLDER_PATH' => static::getPdfFolder(),
+            'CHDIRTRAVELLOG_PROJECT_NAME' => static::getProjectName(),
             'CHDIRTRAVELLOG_JOURNEY_COUNT' => $count,
             'CHDIRTRAVELLOG_PAGING' => $paging,
-            'CHDIRTRAVELLOG_EXPORT_RESULTS' =>
-            '<a href="' . $_SERVER['REQUEST_URI'] . '&csv=1"'
-            .' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '">'
-            .'<img src="' . $this->getIconFolderPath() . 'xls.png"'
-            .' style="height: 20px; width: auto; margin: 0 0 15px 0 !important; float: right;"'
-            .' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_TITLE'] . '" />'
-            .'</a>',
         ]);
+        $template->touchBlock('chdirtravellog_journey_info');
         $this->parseJourneys($template, $projectName, $journeys);
         return $count;
     }
@@ -386,13 +373,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function parseJourneys(
         \Cx\Core\Html\Sigma $template, string $projectName, iterable $journeys
     ) {
-        static $connectionRepo = null;
-        if (!$connectionRepo) {
-            $connectionRepo =
-                $this->cx->getDb()->getEntityManager()->getRepository(
-                    'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
-                );
-        }
+        $connectionRepo =
+            $this->cx->getDb()->getEntityManager()->getRepository(
+                'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
+            );
         foreach ($journeys as $journey) {
             $connectionNr = intval($journey->getVerbnr());
             $connection = $connectionRepo->findOneBy([
@@ -403,12 +387,18 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             if ($connection) {
                 $connectionName = $connection->getVerbindungsstring();
             }
+            $url = $this->getFileUrl($projectName, $journey->getRbn());
+            if ($url) {
+                $template->setVariable([
+                'CHDIRTRAVELLOG_JOURNEY_RBN_URL' => $url,
+                ]);
+            } else {
+                $template->touchBlock('chdirtravellog_journey_no_download');
+            }
             $template->setVariable([
-                'CHDIRTRAVELLOG_JOURNEY_RBN_LINK' =>
-                    $this->getFileLink($projectName, $journey->getRbn()),
                 'CHDIRTRAVELLOG_JOURNEY_RBN' => $journey->getRbn(),
-                'CHDIRTRAVELLOG_JOURNEY_DATE' => $journey->getReisedat()
-                    ->format(static::date_format_ymd),
+                'CHDIRTRAVELLOG_JOURNEY_DATE' =>
+                    $journey->getReisedat()->format(ASCMS_DATE_FORMAT_DATE),
                 'CHDIRTRAVELLOG_JOURNEY_CONNECTION_COUNT' =>
                     $journey->getReisen(),
                 'CHDIRTRAVELLOG_JOURNEY_CONNECTION_NR' =>
@@ -426,7 +416,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Updates the last sync timestamp iff all updates were successful.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function importCsv()
+    protected function importCsv()
     {
         global $_ARRAYLANG;
         $dataRoot = static::getDataFolder();
@@ -435,7 +425,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         // Avoid race condition: Mark the time *before* starting the import
         // (works even if the files are modified while the import is running).
         $thisSyncTime = time();
-        $success = true;
+        $failed = [];
         foreach ($projectNames as $projectName) {
             $connectionsFile = new \Cx\Lib\FileSystem\FileSystemFile(
                 $dataRoot . $projectName . '_Verbindungen.csv'
@@ -450,17 +440,23 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ) {
                 continue;
             }
-            if (!$this->csv2db('connection', $projectName, $connectionsFile)
-                || !$this->csv2db('journey', $projectName, $journeysFile)
-            ) {
-                $success = false;
+            if (!$this->csv2db('connection', $projectName, $connectionsFile)) {
+                $failed[$connectionsFile] = $projectName;
+            }
+            if (!$this->csv2db('journey', $projectName, $journeysFile)) {
+                $failed[$journeysFile] = $projectName;
             }
         }
-        if ($success) {
-            static::setLastSyncTime($thisSyncTime);
+        if ($failed) {
+            \Message::warning($_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_IMPORT']);
+            foreach ($failed as $path => $projectName) {
+                \Message::warning(sprintf(
+                    $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_IMPORT_FORMAT'],
+                    $path, $projectName
+                ));
+            }
         } else {
-// TODO: Message, at least on error
-            \Message::warning($_ARRAYLANG['']);
+            static::setLastSyncTime($thisSyncTime);
         }
     }
 
@@ -475,7 +471,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @return  bool                    True on success, false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function csv2db(
+    protected function csv2db(
         string $tablename, string $projectName,
         \Cx\Lib\FileSystem\FileSystemFile $file
     ): bool {
@@ -502,14 +498,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $escape = static::getCsvEscape();
         // Skip headers in first row
         $row = fgetcsv($handle, 10500, $delimiter, $enclosure, $escape);
-        ini_set('max_execution_time', '120');
         // NOTE: Trying to create and persist entities causes either
         // a timeout, or an out of memory error.
-        // Fallback to AdoDb in order to get the job done.
+        // Fallback to the Connection in order to get the job done.
         // Without bulk inserts, the import would still take 700+ seconds.
         // With bulk inserts of 100 or more records, it takes less than
         // 10 seconds.
-        $db = $this->cx->getDb()->getAdoDb();
+        $db = $this->cx->getDb()->getEntityManager()->getConnection();
         $queries = [];
         $i = 0;
         while (true) {
@@ -561,25 +556,26 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Insert a bunch of prepared records
      *
      * Mind that the query is converted from ISO-8859-1 to UTF-8.
-     * @param   \ADOConnection  $db
-     * @param   string          $tablename
-     * @param   array           $queries
+     * @param   \Doctrine\DBAL\Connection   $connection
+     * @param   string                      $tablename
+     * @param   array                       $queries
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function bulkInsert(
-        \ADOConnection $db, string $tablename, array $queries
+        \Doctrine\DBAL\Connection $connection,
+        string $tablename, array $queries
     ) {
         $query = '';
         if ($tablename === 'connection') {
             $query = '
-                INSERT INTO `contrexx_module_chdirtravellog_connection`(
+                INSERT INTO `' . DBPREFIX . 'module_chdirtravellog_connection`(
                     `project`, `verbindungsnummer`,
                     `sequenznummer`, `verbindungsstring`
                 )';
         }
         if ($tablename === 'journey') {
             $query = '
-                INSERT INTO `contrexx_module_chdirtravellog_journey`(
+                INSERT INTO `' . DBPREFIX . 'module_chdirtravellog_journey`(
                     `project`, `att`, `reisedat`, `verbnr`, `rbn`,
                     `reisen`, `d`, `at_start`, `at_recs`
                 )';
@@ -587,60 +583,55 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $query .= ' VALUES ' . mb_convert_encoding(
             join(',', $queries), 'UTF-8', 'ISO-8859-1'
         );
-        $db->Execute($query);
+        $connection->exec($query);
     }
 
     /**
-     * Return the link to the PDF document
+     * Return the URL of the PDF document
      *
-     * Includes an icon in the <a> tag.
-     * Set $urlOnly to true in order to obtain the URL only; required for CSV.
-     * @global  array   $_ARRAYLANG
+     * If the file does not exist, returns the empty string
      * @param   string  $projectName
      * @param   int     $journeyNr
-     * @param   bool    $urlOnly       Exclude all HTML if true
      * @return  string
-     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getFileLink(
-        string $projectName, int $journeyNr, bool $urlOnly = false
+    protected function getFileUrl(
+        string $projectName, int $journeyNr
     ): string {
-        global $_ARRAYLANG;
+        $journeyPath = static::getFilePath($projectName, $journeyNr);
+        if (!$journeyPath) {
+            return '';
+        }
+        $url = $this->cx->getRequest()->getUrl();
+        $url->removeAllParams();
+        $url->setLangDir(null);
+        $url->setPort(null);
+        $url->setPath($journeyPath);
+        return $url->toString();
+    }
+
+    /**
+     * Return the path to the PDF document
+     *
+     * If the file does not exist, returns the empty string
+     * @param   string  $projectName
+     * @param   int     $journeyNr
+     * @return  string
+     */
+    protected static function getFilePath(
+        string $projectName, int $journeyNr
+    ): string
+    {
         $pdfRoot = static::getPdfFolder();
         $projectName = static::getProjectName();
-        $journeyIcon = '<img src="' . $this->getIconFolderPath() . 'pdf.png"'
-            . ' style="height: 20px; width: auto; margin: 0 !important;"'
-            . ' title="'
-            . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
-            . ' alt="'
-            . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_DOWNLOAD_ICON_TITLE'] . '"'
-            . ' />';
         $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '.pdf';
-        $protocol = $this->cx->getRequest()->getUrl()->getProtocol();
-        $domain = $this->cx->getRequest()->getUrl()->getDomain();
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
-            if ($urlOnly) {
-                return $protocol . '://' . $domain . $journeyPath;
-            }
-            return '<a target="_blank" href="' . $journeyPath . '" >'
-                . $journeyIcon . '</a>';
+            return $journeyPath;
         }
         $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '_F.pdf';
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
-            if ($urlOnly) {
-                return $protocol . '://' . $domain . $journeyPath;
-            }
-            return '<a target="_blank" href="' . $journeyPath . '" >'
-                . $journeyIcon . '</a>';
+            return $journeyPath;
         }
-        if ($urlOnly) {
-            return '';
-        }
-        return '<img src="' . $this->getIconFolderPath() . 'blank.gif"'
-            . ' style="margin: 0 !important;"'
-            . ' title="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_DOWNLOAD_FOUND'] . '"'
-            . ' alt="' . $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_WARNING_NO_DOWNLOAD_FOUND'] . '"'
-            . ' />';
+        return '';
     }
 
     /**
@@ -653,7 +644,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param   iterable    $journeys
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function exportCsv(
+    protected function exportCsv(
         string $projectName, string $filename, iterable $journeys
     ) {
         global $_ARRAYLANG;
@@ -686,16 +677,18 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             }
             fputcsv($handle,
                 [
-                    $journey->getReisedat()->format(static::date_format_ymd),
+                    $journey->getReisedat()
+                        ->format(ASCMS_DATE_FORMAT_DATE),
                     $journey->getVerbnr(),
                     $connectionName,
                     $journey->getReisen(),
-                    $this->getFileLink($projectName, $journey->getRbn(), true)
+                    $this->getFileUrl($projectName, $journey->getRbn()),
                 ],
-                $delimiter, $enclosure, $escape);
+                $delimiter, $enclosure, $escape
+            );
         }
         fclose($handle);
-        exit();
+        throw new \Cx\Core\Core\Controller\InstanceException();
     }
 
     /**
@@ -705,9 +698,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function getIconFolderPath(): string
     {
-        return $this->cx->getWebsiteOffsetPath()
-            . '/modules/' . $this->getName()
-            . '/View/Icons/';
+        return $this->getDirectory(true, true) . '/View/Icons/';
     }
 
 }
