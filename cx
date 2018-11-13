@@ -935,6 +935,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                 echo "Update ${component[0]} ${component[1]}"
                 cmd_env component update "${component[0]}" "${component[1]}"
             done <<< $(ARGUMENTS["raw"]=true && cmd_env component list)
+            clearUsercache
             ;;
         config)
             get_config_array
@@ -1457,6 +1458,10 @@ UPDATE \`contrexx_settings\` SET \`setvalue\` = 'none' WHERE \`setname\` = 'forc
     fi
 }
 
+function clearUsercache {
+    dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo "flush_all" >&3 && read -u 3 msg_in && echo "$msg_in"'
+}
+
 #####################
 # Wrapper functions #
 #####################
@@ -1760,7 +1765,7 @@ case "${COMMANDS[0]}" in
             tail -f -n0 tmp/log/dbg.log
             exit
         elif [[ ${ARGUMENTS["clear-usercache"]} ]]; then
-            dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'
+            clearUsercache
             exit
         fi
         tac tmp/log/dbg.log | grep -m1 -B1 "initialization failed" | tac
