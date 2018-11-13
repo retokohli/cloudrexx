@@ -757,7 +757,7 @@ function cmd_env {
             environments+=("clxenv$(getenvname)")
             environments=($(tr ' ' '\n' <<< "${environments[@]}" | sort -u | tr '\n' ' '))
             for environment in "${environments[@]}"; do
-                echo "Shutting down environment clxenv$environment"
+                echo "Shutting down environment $environment"
                 if [[ "${ARGUMENTS["purge"]}" == true ]]; then
                     docker-compose --project-name "$environment" down -v
                 else
