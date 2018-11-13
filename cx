@@ -607,7 +607,15 @@ function cmd_envs {
         list)
             local containerlist
             if [[ "${ARGUMENTS["dir"]}" != "" ]]; then
-                containerlist=$(while read -r container; do if [[ "$(docker inspect "$container" | grep "${ARGUMENTS["dir"]}:")" != "" ]]; then echo "$container"; fi done <<< "$(docker ps --format '{{.Names}}')")
+                containerlist=$(
+                    while read -r container; do
+                        if [[ "$container" == "" ]]; then
+                            :
+                        elif [[ "$(docker inspect "$container" | grep "${ARGUMENTS["dir"]}:")" != "" ]]; then
+                            echo "$container"
+                        fi
+                    done <<< "$(docker ps --format '{{.Names}}')"
+                )
             elif [[ ${ARGUMENTS["all"]} ]]; then
                 containerlist=$(dockerexec ps -f "name=<container-prefix>" --format "{{.Names}}" | grep web)
             else
@@ -618,6 +626,9 @@ function cmd_envs {
                 containerlist="${containerlist//"${ARGUMENTS["root-domain"]//./}_web_1"/}"
             fi
             containerlist="${containerlist//"_web_1"/}"
+            if [[ "$containerlist" == "" ]]; then
+                return 1
+            fi
             echo "$containerlist"
             ;;
         locate)
