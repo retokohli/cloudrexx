@@ -802,7 +802,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
 
                     foreach ($arrAlphaGroups as $strAlphaIndex => $arrEntries) {
-                        if(intval($objTpl->blockExists($this->moduleNameLC.'AlphabeticalTitle')) != 0) {
+                        if ($objTpl->blockExists($this->moduleNameLC.'AlphabeticalTitle')) {
                             $objTpl->setVariable(array(
                                 $this->moduleLangVar.'_ALPHABETICAL_ANCHOR' => $strAlphaIndex,
                                 'TXT_'.$this->moduleLangVar.'_ALPHABETICAL_TITLE' => $strAlphaIndex
@@ -903,6 +903,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->parse($this->moduleNameLC.'EntryList');
                                 $objTpl->clearVariables();
                             }
+                        }
+
+                        if ($objTpl->blockExists($this->moduleNameLC.'AlphabeticalList')) {
+                            $objTpl->parse($this->moduleNameLC.'AlphabeticalList');
                         }
                     }
                 } else {
