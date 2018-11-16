@@ -161,6 +161,10 @@ class Config
                     'value'  => 'session',
                     'values' => '{src:\\' . __CLASS__ . '::getCookieNoteTtlOptions()}',
                 ),
+                'useVirtualLanguageDirectories' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
             ),
             'administrationArea' => array(
                 'dashboardNews' => array(
@@ -554,12 +558,6 @@ class Config
                 'cacheUserCacheMemcachedConfig' => array(
                     'value' => '{"ip":"127.0.0.1","port":11211}',
                     'componentDependencies' => array('SystemInfo'),
-                ),
-            ),
-            'lang' => array(
-                'useVirtualLanguageDirectories' => array(
-                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                    'value' => 'on',
                 ),
             ),
         );

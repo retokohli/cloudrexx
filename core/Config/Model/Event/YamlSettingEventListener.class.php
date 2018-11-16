@@ -195,6 +195,22 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                         );
                     }
                     break;
+                case 'useVirtualLanguageDirectories':
+                    $locale = $this->cx->getDb()->getEntityManager()
+                        ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
+                        ->findAll();
+                    if ($value === 'off' && count($locale) > 1) {
+                        \Message::error(
+                            sprintf(
+                                $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_USEVIRTUALLANGUAGEDIRECTORIES'],
+                                $_ARRAYLANG['TXT_CORE_CONFIG_USEVIRTUALLANGUAGEDIRECTORIES']
+                            )
+                        );
+                        $objSetting->setValue('on');
+                    }
+                    break;
+                default :
+                    break;
             }
         } catch (YamlSettingEventListenerException $e) {
             \DBG::msg($e->getMessage());
