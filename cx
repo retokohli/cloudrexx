@@ -723,6 +723,12 @@ function cmd_env {
                     exit 1
                 fi
             fi
+            ARGUMENTS["dir"]="$(pwd -P)"
+            envname="$(cmd_envs list)"
+            if [[ "$?" == "0" ]]; then
+                echo "There's already an environment up and running (\"$envname\") for this directory."
+                exit 2
+            fi
             [ -d ./tmp/db ] || mkdir -p ./tmp/db
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 dockercomposeexec up -d
