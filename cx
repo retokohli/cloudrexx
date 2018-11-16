@@ -1319,7 +1319,7 @@ function get_config_array {
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
         CONFIG["php-version"]="5.6"
         if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
-            CONFIG["php-version"]="7.0"
+            CONFIG["php-version"]="7.2"
         elif [[ "${CONFIG["cms-version"]:0:1}" -lt 3 ]]; then
             CONFIG["php-version"]="5.3"
         fi
