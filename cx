@@ -158,6 +158,16 @@ Available options are:
 Synopsis
     ./cx envs shell"
                     ;;
+                exec)
+                    echo "Executes the given subcommand for 'env' on each environment.
+
+Synopsis
+    ./cx envs exec <command> [<options>]
+
+Available options are:
+    --silent            Does not output current environment's name
+    --real              Shows environment name as docker-compose's project name"
+                    ;;
                 *)
                     echo "This command manages the environment for multiple Cloudrexx installations on one host.
 
@@ -641,6 +651,24 @@ function cmd_envs {
             REGEX="\"([^:]+):"
             [[ "$mountline" =~ $REGEX ]]
             echo "${BASH_REMATCH[1]}"
+            ;;
+        exec)
+            envs="$(cmd_envs list)"
+            if [[ "$envs" == "" ]]; then
+                echo "No env up"
+                return
+            fi
+            shift
+            # TODO: Allow interactive decision whether to execute command on this env
+            for env in "${envs[@]}"; do
+                prevPwd="$(pwd -P)"
+                cd "$(cmd_envs locate "$env")" || continue
+                if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "Execute env command for $env"
+                fi
+                ./cx env "$@"
+                cd "$prevPwd"
+            done
             ;;
         *)
             (>&2 echo "No such subcommand")
