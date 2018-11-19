@@ -1312,7 +1312,7 @@ class Newsletter extends NewsletterLib
             // meta data
             $email,
             $date,
-            ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id,
+            ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&code='.$code.'&email='.$email.'&id='.$id,
             $subject,
 
             // subscription
