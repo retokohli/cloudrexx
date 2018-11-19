@@ -1086,7 +1086,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'DataSource',
                 'DateTime',
                 'Error',
-                'FileBrowser',
                 'GeoIp',
                 'Home',
                 'Html',
