@@ -95,11 +95,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Returns the description for a command provided by this component
      *
-     * @param string $command The name of the command to fetch the description from
-     * @param boolean $short Whether to return short or long description
+     * @param string  $command The name of the command to fetch the description from
+     * @param boolean $short   Whether to return short or long description
      * @return string Command description
      */
-    public function getCommandDescription($command, $short = false) {
+    public function getCommandDescription($command, $short = false)
+    {
         switch ($command) {
             case 'Model':
                 $desc = 'Provides cleanup function for database table';
@@ -119,8 +120,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Execute api command
      *
-     * @param string $command Name of command to execute
-     * @param array  $arguments List of arguments for the command
+     * @param string $command       Name of command to execute
+     * @param array  $arguments     List of arguments for the command
      * @param array  $dataArguments (optional) List of data arguments for the command
      */
     public function executeCommand($command, $arguments, $dataArguments = array())
