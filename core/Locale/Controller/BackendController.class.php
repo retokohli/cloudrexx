@@ -1082,7 +1082,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'Cron',
                 'Csrf',
                 'DataAccess',
-                'DatabaseManager',
                 'DataSource',
                 'DateTime',
                 'Error',
