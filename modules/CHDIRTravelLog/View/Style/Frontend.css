@@ -1,0 +1,27 @@
+.message_ok,
+.message_info,
+.message_warning,
+.message_error {
+  border: 1px solid;
+  color: #111;
+  float: left;
+  margin: 0px 0px 15px 0px;
+  padding: 6px;
+  width: 100%;
+}
+.message_ok {
+  background-color: #dfd;
+  border-color: #484;
+}
+.message_info {
+  background-color: #ddf;
+  border-color: #448;
+}
+.message_warning {
+  background-color: #ffd;
+  border-color: #884;
+}
+.message_error {
+  background-color: #fdd;
+  border-color: #844;
+}
