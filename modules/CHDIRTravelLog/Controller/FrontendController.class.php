@@ -40,6 +40,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         );
         $this->importCsv();
         $this->viewSearch($template);
+        \Message::show($template);
     }
 
     /**
