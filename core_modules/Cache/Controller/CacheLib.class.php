@@ -629,6 +629,12 @@ class CacheLib
         );
     }
 
+    /**
+     * Parses the dynamic ESI variables and functions in the given content
+     *
+     * @param string $content Content to parse
+     * @return string Parsed content
+     */
     public function parseEsiVars($content) {
         // apply ESI dynamic variables
         foreach ($this->dynVars as $groupName => $var) {
