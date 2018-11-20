@@ -395,7 +395,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($short) {
             return 'Allows to clear caches';
         }
-        return 'Cache clear user [<engine> [<pattern>]]
+        return 'Cache clear user [<engine>]
 Cache clear page [<pageId>]
 Cache clear (esi|proxy) [<urlPattern>]
 Cache clear opcode [<engine>]
@@ -424,11 +424,7 @@ Cache clear all';
                         if (count($arguments)) {
                             $options = array_shift($arguments);
                         }
-                        $pattern = '';
-                        if (count($arguments)) {
-                            $pattern = array_shift($arguments);
-                        }
-                        $this->clearCacheCommand($type, $options, $pattern);
+                        $this->clearCacheCommand($type, $options);
                         break;
                     default:
                         echo 'No such command' . "\n";
@@ -450,10 +446,8 @@ Cache clear all';
      * - all: Drop all of the above
      * @param string $type Cache type to clear
      * @param string $options (optional) Engine for user or opcode cache, filter for page, esi and reverse proxy cache
-     * @param   string  $pattern    Optional pattern to restrict the
-     *                              invalidation of the cache by.
      */
-    protected function clearCacheCommand($type, $options = '', $pattern = '') {
+    protected function clearCacheCommand($type, $options = '') {
         $types = array('user', 'page', 'esi', 'proxy', 'opcode');
         if ($type == 'all') {
             $this->clearCache();
@@ -479,15 +473,7 @@ Cache clear all';
                         echo 'Unknown cache engine' . "\n";
                         return;
                     }
-                    if ($options == CacheLib::CACHE_ENGINE_MEMCACHED) {
-                        if (!extension_loaded('memcached')) {
-                            dl('memcached');
-                        }
-                        $droppedKeys = $this->cache->clearMemcached($pattern);
-                        echo $droppedKeys . ' keys dropped from Memcached' . "\n";
-                        return;
-                    }
-                    $this->cache->_deleteAllFiles($options);
+                    $this->cache->forceClearCache(CacheLib::CACHE_ENGINE_MEMCACHED);
                     break;
                 }
                 $this->cache->_deleteAllFiles();
