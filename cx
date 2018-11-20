@@ -1759,6 +1759,10 @@ if ! $found; then
         COMMANDS=("${COMMANDS[@]:1}")
         cmd_envs "${COMMANDS[@]/#/}"
         exit
+    elif [[ "$1" == "help" && ( "$2" == "" || "$2" == "envs" || ( "$2" == "env" && "$3" == "init" ) ) ]]; then
+        shift
+        cmd_help "$@"
+        exit
     fi
     echo "cx not found, you may want to call \`cx env init\`";
     exit
