@@ -972,10 +972,8 @@ class CacheLib
 
     /**
      * Clears all Memcacheddata related to this Domain if Memcache is installed
-     * @param   string  $pattern    Optional pattern to restrict the
-     *                              invalidation of the cache by.
      */
-    protected function clearMemcached($pattern = '')
+    protected function clearMemcached()
     {
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
