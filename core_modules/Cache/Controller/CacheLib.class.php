@@ -1355,4 +1355,42 @@ class CacheLib
         $file = new \Cx\Lib\FileSystem\File($filename);
         $file->write(serialize($localeData));
     }
+
+    /**
+     * Calls the Clear Function for the given cache engine
+     * @param string $cacheEngine
+     */
+    public function forceClearCache($cacheEngine = null){
+        switch ($cacheEngine) {
+            case 'cxEntries':
+            case 'cxPages':
+                $this->_deleteAllFiles($cacheEngine);
+                break;
+            case 'cxEsi':
+                $this->clearSsiCache();
+                break;
+            case self::CACHE_ENGINE_APC:
+            case 'apc':
+                $this->clearCache(static::CACHE_ENGINE_APC);
+                break;
+            case self::CACHE_ENGINE_ZEND_OPCACHE:
+            case 'zendop':
+                $this->clearCache(static::CACHE_ENGINE_ZEND_OPCACHE);
+                break;
+            case self::CACHE_ENGINE_MEMCACHE:
+            case 'memcache':
+                $this->clearCache(static::CACHE_ENGINE_MEMCACHE);
+                break;
+            case 'memcached':
+                $this->clearCache(static::CACHE_ENGINE_MEMCACHED);
+                break;
+            case self::CACHE_ENGINE_XCACHE:
+            case 'xcache':
+                $this->clearCache(static::CACHE_ENGINE_XCACHE);
+                break;
+            default:
+                $this->clearCache(null);
+                break;
+        }
+    }
 }
