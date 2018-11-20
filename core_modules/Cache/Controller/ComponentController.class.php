@@ -473,7 +473,12 @@ Cache clear all';
                         echo 'Unknown cache engine' . "\n";
                         return;
                     }
-                    $this->cache->forceClearCache(CacheLib::CACHE_ENGINE_MEMCACHED);
+                    if ($options == CacheLib::CACHE_ENGINE_MEMCACHED) {
+                        if (!extension_loaded('memcached')) {
+                            dl('memcached');
+                        }
+                    }
+                    $this->cache->forceClearCache($options);
                     break;
                 }
                 $this->cache->_deleteAllFiles();
