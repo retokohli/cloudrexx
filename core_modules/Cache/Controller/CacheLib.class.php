@@ -142,6 +142,13 @@ class CacheLib
     protected $cachePrefix;
 
     /**
+     * Number added to $cachePrefix to allow "invalidating" the cache
+     *
+     * @var int
+     */
+    protected $cacheIncrement = 1;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -315,6 +322,13 @@ class CacheLib
                     if (!empty($servers) &&
                         isset($servers[$memcachedConfiguration['ip'] . ':' . $memcachedConfiguration['port']])
                     ) {
+                        // sync increment with cache
+                        $cachedIncrement = $memcached->get($this->getCachePrefix(true));
+                        if (!$cachedIncrement || $this->cacheIncrement > $cachedIncrement) {
+                            $memcached->set($this->getCachePrefix(true), $this->cacheIncrement);
+                        } else if ($cachedIncrement > $this->cacheIncrement) {
+                            $this->cacheIncrement = $cachedIncrement;
+                        }
                         $this->memcached = $memcached;
                     }
                 }
@@ -965,32 +979,17 @@ class CacheLib
 
     /**
      * Clears all Memcacheddata related to this Domain if Memcache is installed
-     * @param   string  $pattern    Optional pattern to restrict the
-     *                              invalidation of the cache by.
-     * @return  integer Returns the number of invalidated keys
      */
-    public function clearMemcached($pattern = '')
+    protected function clearMemcached()
     {
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
-        //$this->memcache->flush(); //<- not like this!!!
-        $keys = $this->memcached->getAllKeys();
-        $n = 0;
-        foreach($keys as $key){
-            if(strpos($key, $this->getCachePrefix()) !== false){
-                if (
-                    !empty($pattern) &&
-                    !preg_match('/' . $pattern . '/', $key)
-                ) {
-                    continue;
-                }
-                $this->memcached->delete($key);
-                $n++;
-            }
-        }
-
-        return $n;
+        $this->cacheIncrement++;
+        $this->memcached->set(
+            $this->getCachePrefix(true),
+            $this->cacheIncrement
+        );
     }
 
     /**
@@ -1015,17 +1014,20 @@ class CacheLib
 
     /**
      * Retunrns the CachePrefix related to this Domain
+     * @param boolean $withoutIncrement (optional) If set to true returns the prefix without the increment
      * @global string $_DBCONFIG
      * @return string CachePrefix
      */
-    protected function getCachePrefix()
+    protected function getCachePrefix($withoutIncrement = false)
     {
         global $_DBCONFIG;
 
-        // TODO: check if the initialization of the prefix could be moved into
-        //       the constructor
+        $prefix = $_DBCONFIG['database'] . '.' . $_DBCONFIG['tablePrefix'] . '.';
+        if ($withoutIncrement) {
+            return $prefix;
+        }
         if (empty($this->cachePrefix)) {
-            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+            $this->cachePrefix = $prefix . $this->cacheIncrement . '.';
         }
 
         return $this->cachePrefix;
@@ -1354,5 +1356,43 @@ class CacheLib
         }
         $file = new \Cx\Lib\FileSystem\File($filename);
         $file->write(serialize($localeData));
+    }
+
+    /**
+     * Calls the Clear Function for the given cache engine
+     * @param string $cacheEngine
+     */
+    public function forceClearCache($cacheEngine = null){
+        switch ($cacheEngine) {
+            case 'cxEntries':
+            case 'cxPages':
+                $this->_deleteAllFiles($cacheEngine);
+                break;
+            case 'cxEsi':
+                $this->clearSsiCache();
+                break;
+            case self::CACHE_ENGINE_APC:
+            case 'apc':
+                $this->clearCache(static::CACHE_ENGINE_APC);
+                break;
+            case self::CACHE_ENGINE_ZEND_OPCACHE:
+            case 'zendop':
+                $this->clearCache(static::CACHE_ENGINE_ZEND_OPCACHE);
+                break;
+            case self::CACHE_ENGINE_MEMCACHE:
+            case 'memcache':
+                $this->clearCache(static::CACHE_ENGINE_MEMCACHE);
+                break;
+            case 'memcached':
+                $this->clearCache(static::CACHE_ENGINE_MEMCACHED);
+                break;
+            case self::CACHE_ENGINE_XCACHE:
+            case 'xcache':
+                $this->clearCache(static::CACHE_ENGINE_XCACHE);
+                break;
+            default:
+                $this->clearCache(null);
+                break;
+        }
     }
 }
