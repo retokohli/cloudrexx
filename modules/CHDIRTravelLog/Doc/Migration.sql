@@ -50,6 +50,7 @@ ADD INDEX `rbn` (`rbn`),
 ADD INDEX `d` (`d`);
 -- You may run these optionally, given that the original tables are present.
 -- Otherwise, the import is initially triggered by opening the frontend view.
+-- Mind that other "projects" may be added using the new module version.
 -- INSERT INTO `contrexx_module_chdirtravellog_connection` (
 --   `project`, `verbindungsnummer`, `sequenznummer`, `verbindungsstring`
 -- )
@@ -66,3 +67,6 @@ ADD INDEX `d` (`d`);
 --       `VERBNR`, `RBN`, `REISEN`, `D`, `AT_START`, `AT_RECS`
 --   FROM `contrexx_module_travellog_journey`
 -- );
+-- Drop the old, now obsolete tables
+DROP TABLE `contrexx_module_travellog_connection`;
+DROP TABLE `contrexx_module_travellog_journey`;
