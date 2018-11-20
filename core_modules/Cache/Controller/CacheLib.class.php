@@ -560,6 +560,9 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
+        foreach ($params as &$param) {
+            $param = $this->parseEsiVars($param);
+        }
         $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
         $settings = $this->getSettings();
         if (
@@ -590,6 +593,9 @@ class CacheLib
      * @return string ESI randomized include code
      */
     public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
+        foreach ($params as &$param) {
+            $param = $this->parseEsiVars($param);
+        }
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
             $urls[] = $this->getUrlFromApi(
