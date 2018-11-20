@@ -142,6 +142,13 @@ class CacheLib
     protected $cachePrefix;
 
     /**
+     * Number added to $cachePrefix to allow "invalidating" the cache
+     *
+     * @var int
+     */
+    protected $cacheIncrement = 1;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -967,30 +974,19 @@ class CacheLib
      * Clears all Memcacheddata related to this Domain if Memcache is installed
      * @param   string  $pattern    Optional pattern to restrict the
      *                              invalidation of the cache by.
-     * @return  integer Returns the number of invalidated keys
      */
-    public function clearMemcached($pattern = '')
+    protected function clearMemcached($pattern = '')
     {
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
-        //$this->memcache->flush(); //<- not like this!!!
-        $keys = $this->memcached->getAllKeys();
-        $n = 0;
-        foreach($keys as $key){
-            if(strpos($key, $this->getCachePrefix()) !== false){
-                if (
-                    !empty($pattern) &&
-                    !preg_match('/' . $pattern . '/', $key)
-                ) {
-                    continue;
-                }
-                $this->memcached->delete($key);
-                $n++;
-            }
-        }
-
-        return $n;
+        // initialize memcached if not yet done
+        $this->getDoctrineCacheDriver();
+        $this->cacheIncrement++;
+        $this->getDoctrineCacheDriver()->getMemcached()->set(
+            $this->getCachePrefix(true),
+            $this->cacheIncrement
+        );
     }
 
     /**
@@ -1015,17 +1011,21 @@ class CacheLib
 
     /**
      * Retunrns the CachePrefix related to this Domain
+     * @param boolean $withoutIncrement (optional) If set to true returns the prefix without the increment
      * @global string $_DBCONFIG
      * @return string CachePrefix
      */
-    protected function getCachePrefix()
+    protected function getCachePrefix($withoutIncrement = false)
     {
         global $_DBCONFIG;
 
+        if ($withoutIncrement) {
+            return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+        }
         // TODO: check if the initialization of the prefix could be moved into
         //       the constructor
         if (empty($this->cachePrefix)) {
-            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'] . '.' . $this->cacheIncrement;
         }
 
         return $this->cachePrefix;
@@ -1067,6 +1067,13 @@ class CacheLib
                 break;
             case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHED:
                 $memcached = $this->getMemcached();
+                // sync increment with cache
+                $cachedIncrement = $memcached->get($this->getCachePrefix(true));
+                if (!$cachedIncrement || $this->cacheIncrement > $cachedIncrement) {
+                    $memcached->set($this->getCachePrefix(true), $this->cacheIncrement);
+                } else if ($cachedIncrement > $this->cacheIncrement) {
+                    $this->cacheIncrement = $cachedIncrement;
+                }
                 $cache = new \Doctrine\Common\Cache\MemcachedCache();
                 $cache->setMemcached($memcached);
                 $cache->setNamespace($this->getCachePrefix());
