@@ -322,6 +322,13 @@ class CacheLib
                     if (!empty($servers) &&
                         isset($servers[$memcachedConfiguration['ip'] . ':' . $memcachedConfiguration['port']])
                     ) {
+                        // sync increment with cache
+                        $cachedIncrement = $memcached->get($this->getCachePrefix(true));
+                        if (!$cachedIncrement || $this->cacheIncrement > $cachedIncrement) {
+                            $memcached->set($this->getCachePrefix(true), $this->cacheIncrement);
+                        } else if ($cachedIncrement > $this->cacheIncrement) {
+                            $this->cacheIncrement = $cachedIncrement;
+                        }
                         $this->memcached = $memcached;
                     }
                 }
@@ -978,10 +985,8 @@ class CacheLib
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
-        // initialize memcached if not yet done
-        $this->getDoctrineCacheDriver();
         $this->cacheIncrement++;
-        $this->getDoctrineCacheDriver()->getMemcached()->set(
+        $this->memcached->set(
             $this->getCachePrefix(true),
             $this->cacheIncrement
         );
@@ -1065,13 +1070,6 @@ class CacheLib
                 break;
             case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHED:
                 $memcached = $this->getMemcached();
-                // sync increment with cache
-                $cachedIncrement = $memcached->get($this->getCachePrefix(true));
-                if (!$cachedIncrement || $this->cacheIncrement > $cachedIncrement) {
-                    $memcached->set($this->getCachePrefix(true), $this->cacheIncrement);
-                } else if ($cachedIncrement > $this->cacheIncrement) {
-                    $this->cacheIncrement = $cachedIncrement;
-                }
                 $cache = new \Doctrine\Common\Cache\MemcachedCache();
                 $cache->setMemcached($memcached);
                 $cache->setNamespace($this->getCachePrefix());
