@@ -593,11 +593,11 @@ class CacheLib
      * @return string ESI randomized include code
      */
     public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
-        foreach ($params as &$param) {
-            $param = $this->parseEsiVars($param);
-        }
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
+            foreach ($esiContentInfo[2] as &$param) {
+                $param = $this->parseEsiVars($param);
+            }
             $urls[] = $this->getUrlFromApi(
                 $esiContentInfo[0],
                 $esiContentInfo[1],
