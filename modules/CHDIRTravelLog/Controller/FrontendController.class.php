@@ -428,28 +428,28 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $thisSyncTime = time();
         $failed = [];
         foreach ($projectNames as $projectName) {
-            $connectionsFile = new \Cx\Lib\FileSystem\FileSystemFile(
-                $dataRoot . $projectName . '_Verbindungen.csv'
-            );
-            $journeysFile = new \Cx\Lib\FileSystem\FileSystemFile(
-                $dataRoot . $projectName . '_FAHRT.csv'
-            );
-            if (filemtime($connectionsFile->getAbsoluteFilePath())
-                    < $lastSyncTime
-                && filemtime($journeysFile->getAbsoluteFilePath())
-                    < $lastSyncTime
+            $connectionsFilePath =
+                $this->cx->getWebsiteDocumentRootPath() . '/'
+                . $dataRoot . $projectName . '_Verbindungen.csv';
+            $journeysFilePath =
+                $this->cx->getWebsiteDocumentRootPath() . '/'
+                . $dataRoot . $projectName . '_FAHRT.csv';
+            if (filemtime($connectionsFilePath) < $lastSyncTime
+                && filemtime($journeysFilePath) < $lastSyncTime
             ) {
                 continue;
             }
-            if (!$this->csv2db('connection', $projectName, $connectionsFile)) {
-                $failed[$connectionsFile] = $projectName;
+            if (!$this->csv2db('connection', $projectName, $connectionsFilePath)) {
+                $failed[$connectionsFilePath] = $projectName;
             }
-            if (!$this->csv2db('journey', $projectName, $journeysFile)) {
-                $failed[$journeysFile] = $projectName;
+            if (!$this->csv2db('journey', $projectName, $journeysFilePath)) {
+                $failed[$journeysFilePath] = $projectName;
             }
         }
         if ($failed) {
-            \Message::warning($_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_IMPORT']);
+            \Message::warning(
+                $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_IMPORT']
+            );
             foreach ($failed as $path => $projectName) {
                 \Message::warning(sprintf(
                     $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_IMPORT_FORMAT'],
@@ -468,24 +468,32 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Skips the first row (headers).
      * @param   string  $tablename
      * @param   string  $projectName
-     * @param   \Cx\Lib\FileSystem\FileSystemFile   $file
+     * @param   string  $absoluteFilePath
      * @return  bool                    True on success, false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function csv2db(
-        string $tablename, string $projectName,
-        \Cx\Lib\FileSystem\FileSystemFile $file
+        string $tablename, string $projectName, string $absoluteFilePath
     ): bool {
         global $_ARRAYLANG;
-        $filePath = $file->getAbsoluteFilePath();
-        $handle = fopen($filePath, 'r');
-        if (!$handle) {
+        $data = null;
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($absoluteFilePath);
+            $data = $objFile->getData();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \Message::warning(sprintf(
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_ERROR_FILE_READ_FORMAT'],
-                $file
+                $absoluteFilePath
             ));
             return false;
         }
+        // Mind that these CSV files use ISO-8859-1!
+        $rows = preg_split('/[\\n\\r]+/',
+            mb_convert_encoding(
+                $data, 'UTF-8', 'ISO-8859-1'
+            ),
+            -1, PREG_SPLIT_NO_EMPTY
+        );
         $em = $this->cx->getDb()->getEntityManager();
         $className = 'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\'
             . ucfirst($tablename);
@@ -498,7 +506,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $enclosure = static::getCsvEnclosure();
         $escape = static::getCsvEscape();
         // Skip headers in first row
-        $row = fgetcsv($handle, 10500, $delimiter, $enclosure, $escape);
+        unset($rows[0]);
         // NOTE: Trying to create and persist entities causes either
         // a timeout, or an out of memory error.
         // Fallback to the Connection in order to get the job done.
@@ -508,14 +516,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $db = $this->cx->getDb()->getEntityManager()->getConnection();
         $queries = [];
         $i = 0;
-        while (true) {
-            // "verbindungsstring" property values may be
-            // up to 10,000 characters (according to the YAML).
-            // Mind that these CSV files use ISO-8859-1!
-            $row = fgetcsv($handle, 10500, $delimiter, $enclosure, $escape);
-            if ($row === false) {
-                break;
-            }
+        foreach ($rows as $row) {
+            $row = str_getcsv($row, $delimiter, $enclosure, $escape);
             if ($tablename === 'connection') {
                 // project, verbindungsnummer, sequenznummer, verbindungsstring
                 $queries[] = sprintf('
@@ -549,7 +551,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             static::bulkInsert($db, $tablename, $queries);
             $queries = [];
         }
-        fclose($handle);
         return true;
     }
 
@@ -581,9 +582,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     `reisen`, `d`, `at_start`, `at_recs`
                 )';
         }
-        $query .= ' VALUES ' . mb_convert_encoding(
-            join(',', $queries), 'UTF-8', 'ISO-8859-1'
-        );
+        $query .= ' VALUES ' . join(',', $queries);
         $connection->exec($query);
     }
 
@@ -652,44 +651,75 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $filename = $filename . '.csv';
         $delimiter = static::getCsvDelimiter();
         $enclosure = static::getCsvEnclosure();
-        $escape = static::getCsvEscape();
         header('Content-Type: text/comma-separated-values; charset=' . CONTREXX_CHARSET);
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $handle = fopen('php://output', 'w');
-        fputcsv($handle,
-            [
+        echo static::arrayToCsvRow([
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_DATE'],
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_CONNECTION'],
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_NAME'],
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_COUNT'],
                 $_ARRAYLANG['TXT_MODULE_CHDIRTRAVELLOG_EXPORT_JOURNEY'],
             ],
-            $delimiter, $enclosure, $escape
+            $delimiter, $enclosure
         );
         $connectionRepo = $this->cx->getDb()->getEntityManager()->getRepository(
             'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
         );
         foreach ($journeys as $journey) {
             $connectionNr = intval($journey->getVerbnr());
-            $connection = $connectionRepo->find($connectionNr);
+            $connection = $connectionRepo->findOneBy(
+                ['verbindungsnummer' => $connectionNr]
+            );
             $connectionName = '';
             if ($connection) {
                 $connectionName = $connection->getVerbindungsstring();
             }
-            fputcsv($handle,
+            echo static::arrayToCsvRow(
                 [
                     $journey->getReisedat()
                         ->format(ASCMS_DATE_FORMAT_DATE),
                     $journey->getVerbnr(),
                     $connectionName,
-                    $journey->getReisen(),
+                    (string)$journey->getReisen(),
                     $this->getFileUrl($projectName, $journey->getRbn()),
                 ],
-                $delimiter, $enclosure, $escape
+                $delimiter, $enclosure
             );
         }
-        fclose($handle);
         throw new \Cx\Core\Core\Controller\InstanceException();
+    }
+
+    /**
+     * Return the array elements joined into a row in CSV format
+     *
+     * Escapes enclosure characters by duplicating.
+     * Encloses individual field values if they contain enclosure, delimiter,
+     * CR or LF characters.
+     * @param   array   $row        The field values
+     * @param   string  $delimiter
+     * @param   string  $enclosure
+     * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public static function arrayToCsvRow(
+        array $row, string $delimiter, string $enclosure
+    ) {
+        return join(
+            $delimiter,
+            array_map(function($value) use ($delimiter, $enclosure) {
+                if (preg_match(
+                    '/[' . $delimiter . $enclosure . '\\r\\n]/', $value
+                )) {
+                    $value = $enclosure
+                        . str_replace(
+                            $enclosure, $enclosure . $enclosure, $value
+                        )
+                        . $enclosure;
+                }
+                return $value;
+            }, $row)
+        )
+        . PHP_EOL;
     }
 
     /**
