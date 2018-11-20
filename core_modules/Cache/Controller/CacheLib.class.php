@@ -1022,13 +1022,12 @@ class CacheLib
     {
         global $_DBCONFIG;
 
+        $prefix = $_DBCONFIG['database'] . '.' . $_DBCONFIG['tablePrefix'];
         if ($withoutIncrement) {
-            return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+            return $prefix;
         }
-        // TODO: check if the initialization of the prefix could be moved into
-        //       the constructor
         if (empty($this->cachePrefix)) {
-            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'] . '.' . $this->cacheIncrement;
+            $this->cachePrefix = $prefix . '.' . $this->cacheIncrement;
         }
 
         return $this->cachePrefix;
