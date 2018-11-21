@@ -157,6 +157,91 @@ class CacheLib
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
+
+        // TODO: $dynVars needs to be built dynamically (via event handler)
+        $this->dynVars = array(
+            'GEO' => array(
+                // This is not specified by W3C but by Akamai
+                'country_code' => function() use ($cx) {
+                    return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
+                },
+            ),
+            'HTTP_COOKIE' => array(
+                // This only supports PHPSESSID instead of full cookie support
+                // as specified by W3C
+                'PHPSESSID' => function() {
+                    $sessId = 0;
+                    if (!empty($_COOKIE[session_name()])) {
+                        $sessId = $_COOKIE[session_name()];
+                    }
+                    return $sessId;
+                },
+            ),
+            // HTTP_ACCEPT_LANGUAGE
+            // HTTP_HOST
+            // HTTP_USER_AGENT
+            'HTTP_REFERER' => function() {
+                if (!isset($_SERVER['HTTP_REFERER'])) {
+                    return '';
+                }
+                return $_SERVER['HTTP_REFERER'];
+            },
+            'QUERY_STRING' => function () {
+                // This is not according to W3C specifications since it
+                // includes the leading "?" if there are params. This is due
+                // to backwards compatibility
+                $parameters = array();
+                parse_str($_SERVER['QUERY_STRING'], $parameters);
+                if (isset($parameters['__cap'])) {
+                    unset($parameters['__cap']);
+                }
+                $queryString = http_build_query($parameters, null, '&');
+                if (!empty($queryString)) {
+                    return '?' . $queryString;
+                }
+            },
+        );
+
+        // TODO: $dynFuncs needs to be built dynamically (via event handler)
+        $this->dynFuncs = array(
+            'strftime' => function($args) use ($cx) {
+                // Notes:
+                //   This function does not support the ESI dynamic function
+                //   modifiers %c, %E, %O, %x, %X and %+.
+
+                $time = time();
+                $format = '';
+
+                switch (count($args)) {
+                    case 1:
+                        $format = $args[0];
+                        break;
+                    case 2:
+                        $time = $args[0];
+                        $format = $args[1];
+                        break;
+
+                    default:
+                        \DBG::msg('Invalid arguments supplied to $strftime()');
+                        return;
+                }
+                $format = trim($format, '\'');
+
+                // TODO: drop this code as soon as strftime of DateTime
+                // component does no longer need any locale info.
+                $locale = '';
+                $cachedLocaleData = $this->getCachedLocaleData();
+                if (in_array($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode'])) {
+                    $locale = array_search($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode']);
+                }
+                // end of TODO
+                return \Cx\Core\DateTime\Controller\ComponentController::strftime(
+                    $format,
+                    $time,
+                    $locale
+                );
+            },
+        );
     }
 
     /**
@@ -489,6 +574,9 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
+        foreach ($params as &$param) {
+            $param = $this->parseEsiVars($param);
+        }
         $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
         $settings = $this->getSettings();
         if (
@@ -521,6 +609,9 @@ class CacheLib
     public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
+            foreach ($esiContentInfo[2] as &$param) {
+                $param = $this->parseEsiVars($param);
+            }
             $urls[] = $this->getUrlFromApi(
                 $esiContentInfo[0],
                 $esiContentInfo[1],
@@ -550,6 +641,71 @@ class CacheLib
             $urls,
             $count
         );
+    }
+
+    /**
+     * Parses the dynamic ESI variables and functions in the given content
+     *
+     * @param string $content Content to parse
+     * @return string Parsed content
+     */
+    public function parseEsiVars($content) {
+        // apply ESI dynamic variables
+        foreach ($this->dynVars as $groupName => $var) {
+            if (is_callable($var)) {
+                $esiPlaceholder = '$(' . $groupName . ')';
+                if (strpos($content, $esiPlaceholder) === false) {
+                    continue;
+                }
+                $varValue = $var();
+                $content = str_replace($esiPlaceholder, $varValue, $content);
+            } else {
+                foreach ($var as $varName => $callback) {
+                    $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                    if (strpos($content, $esiPlaceholder) === false) {
+                        continue;
+                    }
+                    $varValue = $callback();
+                    $content = str_replace($esiPlaceholder, $varValue, $content);
+                }
+            }
+        }
+
+        // apply ESI dynamic functions
+        foreach ($this->dynFuncs as $function => $callback) {
+            // execute ESI dynamic functions in content
+            $content = preg_replace_callback(
+                '/\$' . $function . '\(' . '([^)]*)' . '\)/',
+                function($matches) use ($callback) {
+                    // extract arguments from function call
+                    $arglist = $matches[1];
+                    $args = preg_split(
+                        '/
+                            # argument enclosed in double quotes
+                            [\s,]* "([^"]+)"[\s,]*
+
+                            |
+
+                            # argument enclosed in single quotes
+                            [\s,]* \'([^\']+)\'[\s,]*
+
+                            |
+
+                            # end of argument list
+                            [\s,]+
+                        /x',
+                        $arglist,
+                        0,
+                        PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                    );
+
+                    // pass extracted arguments to dynamic function
+                    return $callback($args);
+                },
+                $content
+            );
+        }
+        return $content;
     }
 
     /**
