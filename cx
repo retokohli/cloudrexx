@@ -30,6 +30,8 @@ declare -A DEFAULT_CONFIG
 declare -A CONFIG
 # list of commands which are handled completely within this script:
 INTERNAL_COMMANDS=("envs" "env" "debug")
+# proxy image
+PROXY_IMAGE="cloudrexx/web:proxy"
 # temp files:
 declare -A TEMP_FILES
 trap clean_temp_files EXIT
@@ -536,9 +538,9 @@ function cmd_envs {
             fi
             dockerexec network create "<proxy-network>"
             if [[ "${ARGUMENTS["certs-dir"]}" != "" ]]; then
-                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -p "${ARGUMENTS["ssl-port"]}":443 -v "${ARGUMENTS["certs-dir"]}":/etc/nginx/certs:ro -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -p "${ARGUMENTS["ssl-port"]}":443 -v "${ARGUMENTS["certs-dir"]}":/etc/nginx/certs:ro -v /var/run/docker.sock:/tmp/docker.sock:ro "$PROXY_IMAGE"
             else
-                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro "$PROXY_IMAGE"
             fi
             for env_dir in "${env_dirs[@]}"; do
                 (
