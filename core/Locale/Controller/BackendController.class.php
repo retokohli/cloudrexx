@@ -429,20 +429,34 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'Config'
                     ) === 'off'
                 ) {
-                    $showAddButton = 0;
-                    $languageData  = \Env::get('init')->loadLanguageData('Config');
+                    $showAddButton = false;
+                    $languageData  = \Env::get('init')->getComponentSpecificLanguageData(
+                        'Config',
+                        false
+                    );
                     $textElement   = $_ARRAYLANG['TXT_ADMINISTRATION'] . ' > '
                         . $languageData['TXT_SYSTEM_SETTINGS'] . ' > '
                         . $languageData['TXT_SETTINGS_MENU_SYSTEM'] . ' > '
                         . $languageData['TXT_CORE_CONFIG_SITE'];
                     // Set anchor tag to the text
                     $link = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
-                    $link->setAttribute('href', 'index.php?cmd=Config');
+                    $link->setAttribute(
+                        'href',
+                        \Cx\Core\Routing\Url::fromBackend('Config')
+                    );
                     $link->addChild(new \Cx\Core\Html\Model\Entity\TextElement($textElement));
+
+                    // Set strong tag to the text
+                    $strongText = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+                    $strongText->addChild(
+                        new \Cx\Core\Html\Model\Entity\TextElement(
+                            $languageData['TXT_CORE_CONFIG_USEVIRTUALLANGUAGEDIRECTORIES']
+                        )
+                    );
                     \Message::information(sprintf(
                         $_ARRAYLANG['TXT_CORE_LOCALE_ADD_NEW_INFORMATION'],
                         // %1$s
-                        $languageData['TXT_CORE_CONFIG_USEVIRTUALLANGUAGEDIRECTORIES'],
+                        $strongText,
                         // %2$s
                         $link
                     ));
