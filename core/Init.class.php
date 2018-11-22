@@ -722,7 +722,6 @@ class InitCMS
                             $this->arrModulePath[$objResult->fields['name']] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
                             $this->arrModulePath['Core'] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
                             break;
-                        case 'DatabaseManager':
                         case 'SystemInfo':
                         case 'ComponentManager':
                         case 'ViewManager':
