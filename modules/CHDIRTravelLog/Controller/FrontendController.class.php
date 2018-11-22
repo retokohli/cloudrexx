@@ -70,27 +70,35 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     * Return the data folder from the Settings
+     * Return the absolute data folder path
      *
      * Mind that the Settings must have been initialized.
+     * The path contains a trailing slash.
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    protected static function getDataFolder(): string
+    protected function getDataFolderPath(): string
     {
-        return \Cx\Core\Setting\Controller\Setting::getValue('data_folder');
+        return $this->cx->getWebsiteDocumentRootPath()
+            // Mind that the folder name starts with a slash
+            . \Cx\Core\Core\Controller\Cx::FOLDER_NAME_MEDIA . '/'
+            . \Cx\Core\Setting\Controller\Setting::getValue('data_folder') . '/';
     }
 
     /**
-     * Return the PDF folder from the Settings
+     * Return the PDF folder relative to the document root
      *
      * Mind that the Settings must have been initialized.
+     * The folder contains a trailing slash.
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected static function getPdfFolder(): string
     {
-        return \Cx\Core\Setting\Controller\Setting::getValue('pdf_folder');
+        return
+            // Mind that the folder name starts with a slash
+            substr(\Cx\Core\Core\Controller\Cx::FOLDER_NAME_MEDIA, 1) . '/'
+            . \Cx\Core\Setting\Controller\Setting::getValue('pdf_folder') . '/';
     }
 
     /**
@@ -420,7 +428,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function importCsv()
     {
         global $_ARRAYLANG;
-        $dataRoot = static::getDataFolder();
+        $dataRoot = $this->getDataFolderPath();
         $projectNames = static::getProjectNames();
         $lastSyncTime = static::getLastSyncTime();
         // Avoid race condition: Mark the time *before* starting the import
@@ -429,11 +437,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $failed = [];
         foreach ($projectNames as $projectName) {
             $connectionsFilePath =
-                $this->cx->getWebsiteDocumentRootPath() . '/'
-                . $dataRoot . $projectName . '_Verbindungen.csv';
+                $dataRoot . $projectName . '_Verbindungen.csv';
             $journeysFilePath =
-                $this->cx->getWebsiteDocumentRootPath() . '/'
-                . $dataRoot . $projectName . '_FAHRT.csv';
+                $dataRoot . $projectName . '_FAHRT.csv';
             if (filemtime($connectionsFilePath) < $lastSyncTime
                 && filemtime($journeysFilePath) < $lastSyncTime
             ) {
