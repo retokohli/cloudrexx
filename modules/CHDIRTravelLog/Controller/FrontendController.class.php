@@ -701,6 +701,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Escapes enclosure characters by duplicating.
      * Encloses individual field values if they contain enclosure, delimiter,
      * CR or LF characters.
+     * Converts the resulting string to ISO-8859-1 (latin1).
      * @param   array   $row        The field values
      * @param   string  $delimiter
      * @param   string  $enclosure
@@ -710,20 +711,23 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     public static function arrayToCsvRow(
         array $row, string $delimiter, string $enclosure
     ) {
-        return join(
-            $delimiter,
-            array_map(function($value) use ($delimiter, $enclosure) {
-                if (preg_match(
-                    '/[' . $delimiter . $enclosure . '\\r\\n]/', $value
-                )) {
-                    $value = $enclosure
-                        . str_replace(
-                            $enclosure, $enclosure . $enclosure, $value
-                        )
-                        . $enclosure;
-                }
-                return $value;
-            }, $row)
+        return mb_convert_encoding(
+            join(
+                $delimiter,
+                array_map(function($value) use ($delimiter, $enclosure) {
+                    if (preg_match(
+                        '/[' . $delimiter . $enclosure . '\\r\\n]/', $value
+                    )) {
+                        $value = $enclosure
+                            . str_replace(
+                                $enclosure, $enclosure . $enclosure, $value
+                            )
+                            . $enclosure;
+                    }
+                    return $value;
+                }, $row)
+            ),
+            'ISO-8859-1', 'UTF-8'
         )
         . PHP_EOL;
     }
