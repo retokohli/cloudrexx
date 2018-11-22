@@ -159,6 +159,7 @@ class CacheLib
         $this->getActivatedCacheEngines();
 
         // TODO: $dynVars needs to be built dynamically (via event handler)
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->dynVars = array(
             'GEO' => array(
                 // This is not specified by W3C but by Akamai
