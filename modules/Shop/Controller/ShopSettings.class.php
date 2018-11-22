@@ -393,7 +393,6 @@ class ShopSettings
 
         if (isset($_GET['currencyId']) && !empty($_GET['currencyId'])) {
             $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=".intval($_GET['currencyId'])." AND is_default=0");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
         }
     }
      */

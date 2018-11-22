@@ -943,7 +943,7 @@ die("MailTemplate::init(): Empty section!");
              WHERE `key`='".addslashes($key)."'")) {
             return \Message::error($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETING_FAILED']);
         }
-        $objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."core_mail_template`");
+
         return \Message::ok($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETED_SUCCESSFULLY']);
     }
 
