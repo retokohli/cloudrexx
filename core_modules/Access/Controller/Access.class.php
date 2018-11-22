@@ -84,6 +84,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->user($metaPageTitle, $pageTitle);
                 break;
 
+            case 'export':
+                $this->export();
+                break;
+
             default:
                 $this->dashboard();
                 break;
@@ -140,6 +144,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $nr = 0;
+            $objUser->objAttribute->first();
             while (!$objUser->objAttribute->EOF) {
                 $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
                 if ($objAttribute->checkReadPermission()) {
@@ -153,6 +158,68 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             // or would it be better to redirect to the home page?
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Access&cmd=members');
             exit;
+        }
+    }
+
+    /**
+     * Export user section
+     *
+     * This section lists the existing active frontend user groups.
+     * Additionally is provides the ability to export the members of the
+     * active frontend groups as CSV file.
+     */
+    protected function export() {
+        global $_CORELANG;
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $requestParams = $cx->getRequest()->getUrl()->getParamArray();
+
+        // check if CSV export has been requested
+        if ($cx->getRequest()->hasParam('export')) {
+            // filter export by group
+            $groupId = 0;
+            if ($cx->getRequest()->hasParam('groupId')) {
+                $groupId = intval($cx->getRequest()->getParam('groupId'));
+            }
+
+            // export users as CSV
+            $this->exportUsers($groupId);
+
+            // note: this code is never reached as exportUsers does throw an
+            // InstanceException
+        }
+
+        // abort in case the template block for listing the existing
+        // user groups is missing
+        if (!$this->_objTpl->blockExists('access_group_list')) {
+            return;
+        }
+
+        // fetch active frontend groups
+        $objGroup = \FWUser::getFWUserObject()->objGroup->getGroups(
+            array(
+                'type' => 'frontend',
+                'is_active' => true,
+            )
+        );
+
+        // all text-variable 'All'
+        $this->_objTpl->setVariable('TXT_USER_ALL', $_CORELANG['TXT_USER_ALL']);
+
+        // parse list of active frontend groups
+        while (!$objGroup->EOF) {
+            $this->_objTpl->setVariable(array(
+                'ACCESS_GROUP_ID'    => $objGroup->getId(),
+                'ACCESS_GROUP_NAME'  => contrexx_raw2xhtml(
+                    $objGroup->getName()
+                ),
+                'ACCESS_GROUP_DESCRIPTION'  => contrexx_raw2xhtml(
+                    $objGroup->getDescription()
+                ),
+            ));
+
+            $this->_objTpl->parse('access_group_list');
+            $objGroup->next();
         }
     }
 
@@ -205,8 +272,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $filterAttributePlaceholderPrefix = $this->modulePrefix.'FILTER_PROFILE_ATTRIBUTE_';
 
         // filter out special placeholders that identify allowed filter attributes
-        $attributeFilterPlaceholders = preg_grep('/^' . $filterAttributePlaceholderPrefix . '/', $placeholders);
-        $allowedFilterAttributes = preg_filter('/^' . $filterAttributePlaceholderPrefix . '/', '', $attributeFilterPlaceholders);
+        $allowedFilterAttributes = preg_filter('/^' . $filterAttributePlaceholderPrefix . '/', '', $placeholders);
 
         // verify that attributes are valid
         $objFWUser = \FWUser::getFWUserObject();
@@ -232,18 +298,58 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         return $allowedFilterAttributes;
     }
 
+    /**
+     * Fetch sort flags from current application template
+     *
+     * Identifies all sort flags (of the current request) to be used
+     * for sorting the users.
+     * Valid sort arguments can be specified in the application
+     * template in the form of template placeholders having the following
+     * scheme: {ACCESS_SORT_<attribute-ID>_<direction>}
+     * I.e. add the following placeholder to sort by attribute 'firstname'
+     * in descending order:
+     * {ACCESS_SORT_FIRSTNAME_DESC}
+     *
+     * @return  array   Array consisting of valid sort flagsto be used for
+     *                  sorting the users.
+     */
+    protected function fetchSortFlags() {
+        // fetch all placeholders from current application template
+        $placeholders = $this->_objTpl->getPlaceholderList();
+        $sortPlaceholderPrefix = $this->modulePrefix.'SORT_';
+
+        // filter out special placeholders that identify sort flags
+        $sortFlags = preg_filter('/^' . $sortPlaceholderPrefix . '/', '', $placeholders);
+
+        $sortBy = array();
+        foreach ($sortFlags as $sortFlag) {
+            list($attribute, $direction) = array_map('strtolower', explode('_', $sortFlag));
+            $sortBy[$attribute] = $direction;
+        }
+
+        return $sortBy;
+    }
 
     private function members($groupId = null)
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $groupId = !empty($groupId) ? $groupId : (isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0);
+        if (empty($groupId)) {
+            $groupId = isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0;
+        }
+
         $search = isset($_REQUEST['search']) && !empty($_REQUEST['search']) ? preg_split('#\s+#', $_REQUEST['search']) : array();
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
 
         $userFilter = array('AND' => array());
         $userFilter['AND'][] = array('active' => true);
+        $profileFilter = array();
+
+        $limit = $_CONFIG['corePagingLimit'];
+        if ($this->_objTpl->placeholderExists($this->modulePrefix . 'LIMIT_OFF')) {
+            $limit = null;
+        }
 
         if (isset($_REQUEST['profile_filter']) && is_array($_REQUEST['profile_filter'])) {
             $profileFilter = $_REQUEST['profile_filter'];
@@ -256,6 +362,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             if (!empty($profileFilter)) {
                 $userFilter['AND'][] = $profileFilter;
             }
+        }
+
+        $sort = array('username' => 'asc');
+        $sortFlags = $this->fetchSortFlags();
+        if ($sortFlags) {
+            $sort = $sortFlags;
         }
 
         $this->parseLetterIndexList('index.php?section=Access&amp;cmd=members&amp;groupId='.$groupId, 'username_filter', $usernameFilter);
@@ -271,10 +383,23 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objFWUser = \FWUser::getFWUserObject();
         $objGroup = $objFWUser->objGroup->getGroup($groupId);
-        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
+        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, $sort, null, $limit, $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
-            if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+            if ($limit && $userCount > $limit) {
+                $params = '';
+                if ($groupId) {
+                    $params .= '&groupId='.$groupId;
+                }
+                if (count($search)) {
+                    $params .= '&search='.htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET);
+                }
+                if ($usernameFilter) {
+                    $params .= '&username_filter='.$usernameFilter;
+                }
+                if (count($profileFilter)) {
+                    $params .= '&'.http_build_query(array('profile_filter' => $profileFilter));
+                }
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, $params, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
@@ -326,8 +451,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $this->_objTpl->parse('access_members');
+            if ($this->_objTpl->blockExists('access_no_members')) {
+                $this->_objTpl->hideBlock('access_no_members');
+            }
         } else {
             $this->_objTpl->hideBlock('access_members');
+            if ($this->_objTpl->blockExists('access_no_members')) {
+                $this->_objTpl->touchBlock('access_no_members');
+            }
         }
     }
 
@@ -469,6 +600,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         $this->attachJavaScriptFunction('accessSetWebsite');
+
+        $this->_objTpl->setGlobalVariable(array(
+            'ACCESS_USER_ID'  => $objFWUser->objUser->getId(),
+        ));
 
         $this->_objTpl->setVariable(array(
             'ACCESS_DELETE_ACCOUNT_BUTTON'  => '<input type="submit" name="access_delete_account" value="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'].'" />',

@@ -142,7 +142,7 @@ class UploaderController {
         $conf = self::$conf = array_merge(array(
             'file_data_name' => 'file',
             'tmp_dir' => $session->getTempPath(),
-            'target_dir' => 'images/content/',
+            'target_dir' => $session->getTempPath(),
             'cleanup' => true,
             'max_file_age' => 5 * 3600,
             'chunk' => isset($_REQUEST['chunk']) ? intval($_REQUEST['chunk']) : 0,
@@ -238,7 +238,7 @@ class UploaderController {
                         $thumbnail
                     ) {
                         $im->_createThumb(
-                            $rootPath, $conf['target_dir'], $fileName,
+                            $rootPath, '', $fileName,
                             $thumbnail['size'], $thumbnail['quality'],
                             $fileNamePlain . $thumbnail['value'] . '.'
                             . $fileExtension

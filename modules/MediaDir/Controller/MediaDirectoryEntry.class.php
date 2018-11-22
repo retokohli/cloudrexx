@@ -687,7 +687,28 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->setVariable(array(
                                     'MEDIADIR_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
                                 ));
-                                }
+                            }
+
+                            if (
+                                $objTpl->blockExists(
+                                    $this->moduleNameLC . 'EntryRelatedList'
+                                ) && (
+                                    $this->countEntries() == 1 ||
+                                    $this->intLimitEnd == 1
+                                )
+                            ) {
+                                // parse related entries
+                                $objEntry = new MediaDirectoryEntry($this->moduleName);
+                                $objMediadir = new MediaDirectory('', $this->moduleName);
+                                $objMediadir->parseRelatedEntries(
+                                    $objTpl,
+                                    $objEntry,
+                                    $arrEntry['entryId'],
+                                    $this->intCatId,
+                                    $this->intLevelId,
+                                    'Entry'
+                                );
+                            }
 
                             if($this->arrSettings['settingsAllowVotes']) {
                                 $objVoting = new MediaDirectoryVoting($this->moduleName);
@@ -781,7 +802,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
 
                     foreach ($arrAlphaGroups as $strAlphaIndex => $arrEntries) {
-                        if(intval($objTpl->blockExists($this->moduleNameLC.'AlphabeticalTitle')) != 0) {
+                        if ($objTpl->blockExists($this->moduleNameLC.'AlphabeticalTitle')) {
                             $objTpl->setVariable(array(
                                 $this->moduleLangVar.'_ALPHABETICAL_ANCHOR' => $strAlphaIndex,
                                 'TXT_'.$this->moduleLangVar.'_ALPHABETICAL_TITLE' => $strAlphaIndex
@@ -882,6 +903,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->parse($this->moduleNameLC.'EntryList');
                                 $objTpl->clearVariables();
                             }
+                        }
+
+                        if ($objTpl->blockExists($this->moduleNameLC.'AlphabeticalList')) {
+                            $objTpl->parse($this->moduleNameLC.'AlphabeticalList');
                         }
                     }
                 } else {

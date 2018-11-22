@@ -1571,13 +1571,18 @@ namespace Cx\Core\Core\Controller {
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
-                    $dataArguments = array();
+                    $input = '';
                     if (php_sapi_name() == 'cli') {
-                        // the following does block if there's no data:
-                        //$input = trim(stream_get_contents(STDIN));
+                        $read = array(fopen('php://stdin', 'r'));
+                        $write = null;
+                        $except = null;
+                        if (stream_select($read, $write, $except, 0) === 1) {
+                            $input = file_get_contents('php://stdin');
+                        }
                     } else {
                         $input = file_get_contents('php://input');
                     }
+                    $dataArguments = array();
                     parse_str($input, $dataArguments);
                     $dataArguments = contrexx_input2raw($dataArguments);
 
@@ -1809,6 +1814,22 @@ namespace Cx\Core\Core\Controller {
             $this->ch->callPreContentLoadHooks();
 
             if ($this->mode == self::MODE_FRONTEND) {
+                // Set parse target
+                $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                $page = $this->getPage();
+                $resolvedTheme = $themeRepo->getDefaultTheme(
+                    \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                    $page->getLang()
+                );
+                if ($page->getSkin()) {
+                    $theme = $themeRepo->findById($page->getSkin());
+                    if ($theme) {
+                        $resolvedTheme = $theme;
+                    }
+                }
+                // TODO: Move template initialization to here instead
+                $this->template->setParseTarget($resolvedTheme);
+
                 // load content.html template (or customized version)
                 $this->template->setTemplate($themesPages['index']);
                 $this->template->addBlock('CONTENT_FILE', 'page_template', $page_template);

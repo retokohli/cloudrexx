@@ -312,6 +312,7 @@ CREATE TABLE `contrexx_core_modules_access_permission` (
   `requires_login` tinyint(1) DEFAULT NULL,
   `valid_user_groups` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
   `valid_access_ids` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
+  `callback` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_data_access` (

@@ -512,7 +512,6 @@ class Url {
             if (isset($array['csrf'])) {
                 unset($array['csrf']);
             }
-            $array = self::encodeParams($array);
         }
         return $array;
     }
@@ -529,59 +528,7 @@ class Url {
             unset($array['csrf']);
         }
 
-        // Decode parameters since http_build_query() encodes them by default.
-        // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
-        $array = self::decodeParams($array);
-
-        return http_build_query($array, null, '&');
-    }
-
-    /**
-     * Url encode passed array (key and value).
-     *
-     * @access  public
-     * @param   array       $input
-     * @return  array       $output
-     */
-    public static function encodeParams($input = array()) {
-        $output = array();
-
-        foreach ($input as $key => $value) {
-            // First decode url before encode them (in case that the given string is already encoded).
-            // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
-            $key = urlencode(urldecode($key));
-
-            if (is_array($value)) {
-                $output[$key] = self::encodeParams($value);
-            } else {
-                $output[$key] = urlencode(urldecode($value));
-            }
-        }
-
-        return $output;
-    }
-
-    /**
-     * Url decode passed array (key and value).
-     *
-     * @access  public
-     * @param   array       $input
-     * @return  array       $output
-     */
-    public static function decodeParams($input = array()) {
-        $output = array();
-
-        foreach ($input as $key => $value) {
-            $key = urldecode($key);
-
-            if (is_array($value)) {
-                $output[$key] = self::decodeParams($value);
-            } else {
-                $output[$key] = urldecode($value);
-            }
-        }
-
-        return $output;
+        return http_build_query($array, null, '&', PHP_QUERY_RFC3986);
     }
 
     public function getTargetPath() {
@@ -872,7 +819,12 @@ class Url {
             }
             $getParams = '?' . implode('&', $paramArray);
         }
-        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
+        $url = new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
+        if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
+            $langDir = '';
+            $url->setMode('backend');
+        }
+        return $url;
     }
     
     /**
@@ -885,9 +837,47 @@ class Url {
     public static function fromApi($command, $arguments, $parameters = array()) {
         $url = \Cx\Core\Routing\Url::fromDocumentRoot();
         $url->setMode('backend');
-        $url->setPath('api/' . $command . '/' . implode('/', $arguments));
+        $url->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::FOLDER_NAME_COMMAND_MODE,
+                1
+            ) . '/' . $command . '/' . implode('/', $arguments)
+        );
         $url->removeAllParams();
         $url->setParams($parameters);
+        return $url;
+    }
+
+    /**
+     * Returns an Url object for a backend section
+     * @param string $componentName Component name
+     * @param string $act (optional) The component's action, default is empty string
+     * @param int $lang (optional) Language to use, default is BACKEND_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\Url Url object for the supplied info
+     */
+    public static function fromBackend($componentName, $cmd = '', $lang = 0, $parameters = array(), $protocol = '') {
+        $langForced = true;
+        if ($lang == 0) {
+            $langForced = false;
+            $lang = BACKEND_LANG_ID;
+        }
+        $url = static::fromDocumentRoot($parameters, '', $protocol);
+        $url->setMode('backend');
+        $cmdPath = '';
+        if (!empty($cmd)) {
+            $cmdPath = '/' . $cmd;
+        }
+        $url->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::FOLDER_NAME_BACKEND,
+                1
+            ) . '/' . $componentName . $cmdPath
+        );
+        if ($langForced) {
+            $url->setParam('setLang', $lang);
+        }
         return $url;
     }
 
