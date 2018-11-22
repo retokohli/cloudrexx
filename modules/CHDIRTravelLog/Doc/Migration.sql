@@ -68,5 +68,5 @@ ADD INDEX `d` (`d`);
 --   FROM `contrexx_module_travellog_journey`
 -- );
 -- Drop the old, now obsolete tables
-DROP TABLE `contrexx_module_travellog_connection`;
-DROP TABLE `contrexx_module_travellog_journey`;
+DROP TABLE IF EXISTS `contrexx_module_travellog_connection`;
+DROP TABLE IF EXISTS `contrexx_module_travellog_journey`;
