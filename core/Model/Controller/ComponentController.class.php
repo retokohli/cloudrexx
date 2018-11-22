@@ -131,11 +131,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $subcommand = $arguments[0];
         }
 
-        // define frontend language
-        if (!defined('FRONTEND_LANG_ID')) {
-            define('FRONTEND_LANG_ID', 1);
-        }
-
         switch ($command) {
             case 'Model':
                 switch ($subcommand) {
