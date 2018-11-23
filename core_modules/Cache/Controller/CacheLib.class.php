@@ -260,7 +260,7 @@ class CacheLib
     function _deleteAllFiles($cacheEngine = null)
     {
         if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
-            $this->getDoctrineCacheDriver()->deleteAll();
+            $this->clearCache($cacheEngine, false);
             return;
         }
         $handleDir = opendir(
@@ -984,9 +984,11 @@ class CacheLib
 
     /**
      * Flush all cache instances
+     * @param string $cacheEngine See CACHE_ENGINE_* constants
+     * @param boolean $includingEsi (optional) Whether to drop ESI cache
      * @see \Cx\Core\ContentManager\Model\Event\PageEventListener on update of page objects
      */
-    public function clearCache($cacheEngine = null)
+    public function clearCache($cacheEngine = null, $includingEsi = true)
     {
         if (!$this->strCachePath) {
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -1029,8 +1031,10 @@ class CacheLib
                 break;
         }
 
-        $this->clearReverseProxyCache('*');
-        $this->clearSsiCache();
+        if ($includingEsi) {
+            $this->clearReverseProxyCache('*');
+            $this->clearSsiCache();
+        }
     }
 
     /**
