@@ -773,11 +773,6 @@ class MemberDirManager extends MemberDirLibrary
                 WHERE dirid = '$dirid'";
             $objDatabase->Execute($query);
 
-            // Little optimisation
-            $objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."_module_memberdir_name` ");
-            $objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."_module_memberdir_values` ");
-            $objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."_module_memberdir_directories` ");
-
             return true;
         } else {
             echo $objDatabase->ErrorMsg();

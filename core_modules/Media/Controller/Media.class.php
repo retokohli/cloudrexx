@@ -425,7 +425,7 @@ class Media extends MediaLibrary
                 $uploader->setCallback('mediaCallbackJs');
                 $uploader->setFinishedCallback(array(
                     \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath().'/Media/Controller/MediaLibrary.class.php',
-                    '\Cx\Core_modules\Media\Controller\MediaLibrary',
+                    '\Cx\Core_Modules\Media\Controller\MediaLibrary',
                     'uploadFinished'
                 ));
 
