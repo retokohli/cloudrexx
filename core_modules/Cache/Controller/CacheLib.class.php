@@ -157,6 +157,15 @@ class CacheLib
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
+    }
+
+    /**
+     * Loads dynamic ESI variables and functions
+     */
+    public function initEsiDynVars() {
+        if (count($this->dynVars)) {
+            return;
+        }
 
         // TODO: $dynVars needs to be built dynamically (via event handler)
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -651,6 +660,7 @@ class CacheLib
      * @return string Parsed content
      */
     public function parseEsiVars($content) {
+        $this->initEsiDynVars();
         // apply ESI dynamic variables
         foreach ($this->dynVars as $groupName => $var) {
             if (is_callable($var)) {

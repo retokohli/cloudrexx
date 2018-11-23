@@ -339,6 +339,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function endContrexxCaching($page, $endcode)
     {
+        $this->initEsiDynVars();
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
             if (is_callable($vars)) {
@@ -549,6 +550,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @return string Parsed HTML code
      */
     public function internalEsiParsing($htmlCode, $cxNotYetInitialized = false) {
+        $this->initEsiDynVars();
         
         if (!is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
             return $htmlCode;
