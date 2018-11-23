@@ -391,6 +391,11 @@ namespace Cx\Core\Model {
 
             $config->setSqlLogger(new \Cx\Lib\DBG\DoctrineSQLLogger());
 
+            $config->addCustomHydrationMode(
+                'IndexedArray',
+                'Cx\Core\DataSource\Model\Entity\IndexedArrayHydrator'
+            );
+
             $em = \Cx\Core\Model\Controller\EntityManager::create($connectionOptions, $config, $evm);
 
             //resolve enum, set errors

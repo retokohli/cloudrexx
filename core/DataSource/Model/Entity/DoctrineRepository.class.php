@@ -54,6 +54,8 @@ class DoctrineRepository extends DataSource {
      * So if this is called without any arguments, all entries of this
      * DataSource are returned.
      * If no entry is found, an empty array is returned.
+     * @todo test relations with composite key
+     * @todo test n:n relations
      * @param array $elementId (optional) field=>value-type condition array identifying an entry
      * @param array $filter (optional) field=>value-type condition array, only supports = for now
      * @param array $order (optional) field=>order-type array, order is either "ASC" or "DESC"
@@ -71,7 +73,6 @@ class DoctrineRepository extends DataSource {
         $offset = 0,
         $fieldList = array()
     ) {
-        $repo = $this->getRepository();
         $em = $this->cx->getDb()->getEntityManager();
 
         $criteria = array();
@@ -103,19 +104,46 @@ class DoctrineRepository extends DataSource {
             }
         }
 
-        // order, limit and offset are not supported by our doctrine version
-        // yet! This would be the nice way to solve this:
-        /*$result = $repo->findBy(
-            $criteria,
-            $order,
-            (int) $limit,
-            (int) $offset
-        );//*/
+        // if recursion is on we recurse for all "to 1" and n:n relations.
+        // additionally we recurse for recursions forced by options.
+        $configuredRecursions = array();
+        if ($this->getOption('recurse')) {
+            $configValues = array(
+                'forcedRecursions' => array(),
+                'skippedRecursions' => array(),
+            );
+            foreach ($configValues as $config=>&$configValue) {
+                $configValue = $this->getOption($config);
+                if (!is_array($configValue)) {
+                    $configValue = array();
+                }
+            }
+            $configuredRecursions = $this->resolveRecursedRelations(
+                $configValues['forcedRecursions'],
+                $configValues['skippedRecursions']
+            );
+        }
 
-        // but for now we'll have to:
+        $mappingTable = array();
         $qb = $em->createQueryBuilder();
-        $qb->select('x')
-            ->from($this->getIdentifier(), 'x');
+        // Note: our hydrator takes over the indexing
+        $qb->select('x')->from($this->getIdentifier(), 'x');
+        // joins
+        $i = 1;
+        foreach ($configuredRecursions as $property=>$class) {
+            $mappedProperty = str_replace(
+                array_keys($mappingTable),
+                array_values($mappingTable),
+                $property
+            );
+            $mappingTable[$mappedProperty . '.'] = 'x' . $i . '.';
+
+            $qb->addSelect('x' . $i);
+            // Note: our hydrator takes over the indexing
+            $qb->leftJoin($mappedProperty, 'x' . $i);
+            $i++;
+        }
+
         // $filter
         $i = 1;
         foreach ($criteria as $field=>$value) {
@@ -134,7 +162,7 @@ class DoctrineRepository extends DataSource {
                 $qb->setFirstResult($offset);
             }
         }
-        $result = $qb->getQuery()->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        $result = $qb->getQuery()->getResult('IndexedArray');
 
         // $fieldList
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($result);
@@ -152,6 +180,61 @@ class DoctrineRepository extends DataSource {
         }
 
         return $dataSet->toArray();
+    }
+
+    /**
+     * Prepares an array with all relation recursions to do for this DataSource
+     *
+     * Automatically recurses all "to 1" and n:n reltions
+     * @param array $forcedRecursions List of relations to force anyway
+     * @param array $skippedRecursions List of relations to not recurse to
+     * @param string? $entityClass Fully qualified entity class name to parse relations of
+     * @param array? $output Previously generated part of end result
+     * @param string? $prefix Prefix for keys in $output
+     * @param array? $exclusionList List of fully qualified class names to ignore
+     */
+    protected function resolveRecursedRelations($forcedRecursions, $skippedRecursions, $entityClass = '', $output = array(), $prefix = 'x.', $exclusionList = array()) {
+        if (empty($entityClass)) {
+            $entityClass = $this->getIdentifier();
+        }
+        if (in_array($entityClass, $exclusionList)) {
+            return $output;
+        }
+        $exclusionList[] = $entityClass;
+        $em = $this->cx->getDb()->getEntityManager();
+        $metaData = $em->getClassMetadata($entityClass);
+        // foreach relation
+        foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+            if (in_array($associationMapping['targetEntity'], $exclusionList)) {
+                continue;
+            }
+            // if is "to 1" or n:n or is forced by config
+            if (
+                (
+                    in_array($associationMapping['type'], array(
+                        \Doctrine\ORM\Mapping\ClassMetadata::ONE_TO_ONE,
+                        \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_ONE,
+                        \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_MANY,
+                    )) ||
+                    in_array(substr($prefix . $relationField, 2), $forcedRecursions)
+                ) &&
+                !in_array(substr($prefix . $relationField, 2), $skippedRecursions)
+            ) {
+                // add to array
+                $output[$prefix . $relationField] = $associationMapping['targetEntity'];
+                // recurse
+                $output = $this->resolveRecursedRelations(
+                    $forcedRecursions,
+                    $skippedRecursion,
+                    $associationMapping['targetEntity'],
+                    $output,
+                    $prefix . $relationField . '.',
+                    $exclusionList
+                );
+            }
+        }
+        ksort($output);
+        return $output;
     }
 
     /**
