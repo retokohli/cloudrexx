@@ -759,14 +759,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     }
 
     /**
-     * Delete all cache files from tmp directory
-     */
-    public function cleanContrexxCaching()
-    {
-        $this->_deleteAllFiles();
-    }
-
-    /**
      * Forces page cache to be stored per user
      */
     public function forceUserbasedPageCache() {
