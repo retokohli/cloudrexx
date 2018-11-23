@@ -1157,6 +1157,12 @@ class CacheLib
             $this->getCachePrefix(true),
             $this->cacheIncrement
         );
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (!in_array('SystemInfo', $cx->getLicense()->getLegalComponentsList())) {
+            return;
+        }
+        $cx->getClassLoader()->flushCache();
     }
 
     /**
