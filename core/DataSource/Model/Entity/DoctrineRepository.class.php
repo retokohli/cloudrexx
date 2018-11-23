@@ -108,7 +108,10 @@ class DoctrineRepository extends DataSource {
         // additionally we recurse for recursions forced by options.
         $configuredRecursions = array();
         if ($this->getOption('recurse')) {
-            $configValues = array('forcedRecursions', 'skippedRecursions');
+            $configValues = array(
+                'forcedRecursions' => array(),
+                'skippedRecursions' => array(),
+            );
             foreach ($configValues as $config=>&$configValue) {
                 $configValue = $this->getOption($config);
                 if (!is_array($configValue)) {
