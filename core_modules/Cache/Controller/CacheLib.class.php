@@ -259,8 +259,14 @@ class CacheLib
      */
     function _deleteAllFiles($cacheEngine = null)
     {
-        if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
+        if (
+            !in_array($cacheEngine, array('cxPages', 'cxEntries')) &&
+            $cacheEngine != null
+        ) {
             $this->clearCache($cacheEngine, false);
+            return;
+        }
+        if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
             return;
         }
         $handleDir = opendir(
