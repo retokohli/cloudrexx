@@ -60,7 +60,6 @@ class IndexedArrayHydratorException extends \Exception {}
  * passed to ArrayHydrator as the column to use as index. Since the column is
  * not in the list of fields selected by the ResultSetMapping ArrayHydrator does
  * not add this "virtual column" to the output (except as index).
- * @todo Test if composite keys work
  * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
