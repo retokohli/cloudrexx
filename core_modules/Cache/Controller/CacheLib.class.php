@@ -157,8 +157,18 @@ class CacheLib
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
+    }
+
+    /**
+     * Loads dynamic ESI variables and functions
+     */
+    public function initEsiDynVars() {
+        if (count($this->dynVars)) {
+            return;
+        }
 
         // TODO: $dynVars needs to be built dynamically (via event handler)
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->dynVars = array(
             'GEO' => array(
                 // This is not specified by W3C but by Akamai
@@ -650,6 +660,7 @@ class CacheLib
      * @return string Parsed content
      */
     public function parseEsiVars($content) {
+        $this->initEsiDynVars();
         // apply ESI dynamic variables
         foreach ($this->dynVars as $groupName => $var) {
             if (is_callable($var)) {
