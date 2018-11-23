@@ -45,6 +45,14 @@ namespace Cx\Core\ClassLoader;
  * @subpackage  core_classloader
  */
 class ClassLoader {
+
+    /**
+     * Cache key for the cached increment
+     *
+     * @var string
+     */
+    const CACHE_INCREMENT_KEY = 'cx.cl.incr';
+
     private $basePath;
     private $customizingPath;
     private $legacyClassLoader = null;
@@ -55,6 +63,13 @@ class ClassLoader {
      * @var \Memcached
      */
     protected $memcached = null;
+
+    /**
+     * Number used as prefix for Memcached entries to allow "invalidating" the cache
+     *
+     * @var int
+     */
+    protected $memcachedIncrement = 1;
 
     /**
      * List of loaded classes and their path
@@ -146,7 +161,9 @@ class ClassLoader {
         // fetch the class map from cache (if not yet done)
         if (!isset($this->classMap[$this->classMapKey])) {
             $this->classMap[$this->classMapKey] = array();
-            $this->classMap[$this->classMapKey] = $this->memcached->get($this->classMapKey);
+            $this->classMap[$this->classMapKey] = $this->memcached->get(
+                $this->memcachedIncrement . '.' . $this->classMapKey
+            );
         }
 
         if (!isset($this->classMap[$this->classMapKey][$name])) {
@@ -219,12 +236,33 @@ class ClassLoader {
                 if (!@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
                     break;
                 }
+
+                // sync increment with cache
+                $cachedIncrement = $memcached->get(static::CACHE_INCREMENT_KEY);
+                if (!$cachedIncrement || $this->memcachedIncrement > $cachedIncrement) {
+                    $memcached->set(static::CACHE_INCREMENT_KEY, $this->memcachedIncrement);
+                } else if ($cachedIncrement > $this->memcachedIncrement) {
+                    $this->memcachedIncrement = $cachedIncrement;
+                }
                 $this->memcached = $memcached;
                 break;
 
             default:
                 break;
         }
+    }
+
+    /**
+     * Flushes cached entries from usercache
+     *
+     * This does not drop the cache files!
+     */
+    public function flushCache() {
+        if (!$this->memcached) {
+            return;
+        }
+        $this->memcachedIncrement++;
+        $this->memcached->set(static::CACHE_INCREMENT_KEY, $this->memcachedIncrement);
     }
 
     private function load($name, &$resolvedPath) {
@@ -344,7 +382,10 @@ class ClassLoader {
                 $this->classMap[$this->classMapKey] = array();
             }
             $this->classMap[$this->classMapKey][$name] = $path;
-            $this->memcached->set($this->classMapKey, $this->classMap[$this->classMapKey]);
+            $this->memcached->set(
+                $this->memcachedIncrement . '.' . $this->classMapKey,
+                $this->classMap[$this->classMapKey]
+            );
         }
 
         return true;
