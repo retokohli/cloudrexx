@@ -46,13 +46,6 @@ namespace Cx\Core\ClassLoader;
  */
 class ClassLoader {
 
-    /**
-     * Cache key for the cached increment
-     *
-     * @var string
-     */
-    const CACHE_INCREMENT_KEY = 'cx.cl.incr';
-
     private $basePath;
     private $customizingPath;
     private $legacyClassLoader = null;
@@ -63,13 +56,6 @@ class ClassLoader {
      * @var \Memcached
      */
     protected $memcached = null;
-
-    /**
-     * Number used as prefix for Memcached entries to allow "invalidating" the cache
-     *
-     * @var int
-     */
-    protected $memcachedIncrement = 1;
 
     /**
      * List of loaded classes and their path
@@ -162,7 +148,7 @@ class ClassLoader {
         if (!isset($this->classMap[$this->classMapKey])) {
             $this->classMap[$this->classMapKey] = array();
             $this->classMap[$this->classMapKey] = $this->memcached->get(
-                $this->memcachedIncrement . '.' . $this->classMapKey
+                $this->classMapKey
             );
         }
 
@@ -236,14 +222,6 @@ class ClassLoader {
                 if (!@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
                     break;
                 }
-
-                // sync increment with cache
-                $cachedIncrement = $memcached->get(static::CACHE_INCREMENT_KEY);
-                if (!$cachedIncrement || $this->memcachedIncrement > $cachedIncrement) {
-                    $memcached->set(static::CACHE_INCREMENT_KEY, $this->memcachedIncrement);
-                } else if ($cachedIncrement > $this->memcachedIncrement) {
-                    $this->memcachedIncrement = $cachedIncrement;
-                }
                 $this->memcached = $memcached;
                 break;
 
@@ -261,8 +239,7 @@ class ClassLoader {
         if (!$this->memcached) {
             return;
         }
-        $this->memcachedIncrement++;
-        $this->memcached->set(static::CACHE_INCREMENT_KEY, $this->memcachedIncrement);
+        $this->memcached->delete($this->classMapKey);
     }
 
     private function load($name, &$resolvedPath) {
@@ -383,7 +360,7 @@ class ClassLoader {
             }
             $this->classMap[$this->classMapKey][$name] = $path;
             $this->memcached->set(
-                $this->memcachedIncrement . '.' . $this->classMapKey,
+                $this->classMapKey,
                 $this->classMap[$this->classMapKey]
             );
         }
