@@ -287,7 +287,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 if (is_array($headers)) {
                     foreach ($headers as $name=>$value) {
                         if ($name == static::HTTP_STATUS_CODE_HEADER) {
-                            http_response_code($value);
+                            http_response_code(intval($value));
                             continue;
                         }
                         if (is_numeric($name)) {
@@ -301,12 +301,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                             $expireDate = new \DateTime($value);
                             if ($expireDate < new \DateTime()) {
                                 // cache is no longer valid
-                                $headerFile = new \Cx\Lib\FileSystem\File(
-                                    $headerFile
-                                );
-                                $headerFile->delete();
-                                $file = new \Cx\Lib\FileSystem\File($file);
-                                $file->delete();
+                                try {
+                                    $headerFile = new \Cx\Lib\FileSystem\File(
+                                        $headerFile
+                                    );
+                                    $headerFile->delete();
+                                    $file = new \Cx\Lib\FileSystem\File($file);
+                                    $file->delete();
+                                } catch (\Throwable $e) {}
                                 return;
                             }
                         }
@@ -324,15 +326,16 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             \DBG::writeFinishLine($cx, true);
             exit;
         } else {
-            if (file_exists($headerFile)) {
-                $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
-                $headerFile->delete();
-            }
-            $file = new \Cx\Lib\FileSystem\File($file);
-            $file->delete();
+            try {
+                if (file_exists($headerFile)) {
+                    $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
+                    $headerFile->delete();
+                }
+                $file = new \Cx\Lib\FileSystem\File($file);
+                $file->delete();
+            } catch (\Throwable $e) {}
         }
     }
-
 
     /**
      * End caching functions. Check for a sessionId: if not set, write pagecontent to a file.
@@ -352,7 +355,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 }
             }
         }
-        
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
         $this->exceptions = array(
@@ -539,8 +542,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             if (!file_exists($cacheFileName)) {
                 continue;
             }
-            $file = new \Cx\Lib\FileSystem\File($cacheFileName);
-            $file->delete();
+            try {
+                $file = new \Cx\Lib\FileSystem\File($cacheFileName);
+                $file->delete();
+            } catch (\Throwable $e) {}
         }
     }
 
@@ -589,8 +594,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     return file_get_contents($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
                 } else {
                     \DBG::msg('Drop expired cached file ' . $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
-                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
-                    $file->delete();
+                    try {
+                        $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
+                        $file->delete();
+                    } catch (\Throwable $e) {}
                 }
             }
 
