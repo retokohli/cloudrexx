@@ -149,6 +149,18 @@ class CacheLib
     protected $cacheIncrement = 1;
 
     /**
+     * Dynamic ESI variable callbacks
+     * @var array
+     */
+    protected $dynVars = array();
+
+    /**
+     * Dynamic ESI variable callbacks
+     * @var array
+     */
+    protected $dynFuncs = array();
+
+    /**
      * Constructor
      */
     public function __construct()
