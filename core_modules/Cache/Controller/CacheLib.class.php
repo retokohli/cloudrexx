@@ -149,6 +149,24 @@ class CacheLib
     protected $cacheIncrement = 1;
 
     /**
+     * Dynamic ESI variable callbacks
+     * @var array
+     */
+    protected $dynVars = array();
+
+    /**
+     * Dynamic ESI variable callbacks
+     * @var array
+     */
+    protected $dynFuncs = array();
+
+    /**
+     * Page info (url, locale, ...)
+     * @var array
+     */
+    protected $arrPageContent = array();
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -249,6 +267,7 @@ class CacheLib
                 // TODO: drop this code as soon as strftime of DateTime
                 // component does no longer need any locale info.
                 $locale = '';
+                $this->initRequestInfo();
                 $cachedLocaleData = $this->getCachedLocaleData();
                 if (in_array($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode'])) {
                     $locale = array_search($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode']);
@@ -261,6 +280,119 @@ class CacheLib
                 );
             },
         );
+    }
+
+    /**
+     * Initializes basic request info (url, locale, ...)
+     */
+    protected function initRequestInfo() {
+        if (count($this->arrPageContent)) {
+            return;
+        }
+        // in case the request's origin is from a mobile devie
+        // and this is the first request (the InitCMS object wasn't yet
+        // able to determine of the mobile device wishes to be served
+        // with the system's mobile view), we shall cache the request separately
+        $isMobile = (
+            \InitCMS::_is_mobile_phone() &&
+            !\InitCMS::_is_tablet() &&
+            !isset($_REQUEST['smallscreen'])
+        );
+
+        // Use data of $_GET and $_POST to uniquely identify a request.
+        // Important: You must not use $_REQUEST instead. $_REQUEST also contains
+        //            the data of $_COOKIE. Whereas the cookie information might
+        //            change in each request, which might break the caching-
+        //            system.
+        $request = array_merge_recursive($_GET, $_POST);
+        ksort($request);
+
+        $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
+
+        $this->arrPageContent = array(
+            'url' => $this->currentUrl,
+            'request' => $request,
+            'isMobile' => $isMobile,
+        );
+        $cachedLocaleData = $this->getCachedLocaleData();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (!$cachedLocaleData) {
+            $this->arrPageContent += $this->selectBestLanguageFromRequest($cx);
+        } else {
+            $requestedLocale = '';
+            // fetch locale from requested url
+            if (
+                count($cachedLocaleData['Hashtables']['IdByCode']) > 1 ||
+                $_CONFIG['useVirtualLanguageDirectories'] != 'off'
+            ) {
+                $requestUrl = new \Cx\Lib\Net\Model\Entity\Url($this->currentUrl);
+                $requestedLocale = current($requestUrl->getPathParts());
+            }
+
+            if (
+                !empty($requestedLocale) &&
+                isset($cachedLocaleData['Hashtables']['IdByCode'][$requestedLocale])
+            ) {
+                // use locale from requested url
+                $this->arrPageContent['locale'] = $cachedLocaleData['Hashtables']['IdByCode'][$requestedLocale];
+            } else {
+                // select locale based on user agent
+                $this->arrPageContent['locale'] = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+                    $cx,
+                    $cachedLocaleData
+                );
+            }
+        }
+    }
+
+    /**
+     * Returns the necessary data to later identify the matching locale
+     *
+     * This method does not use database or cached database data
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     * @return array Locale info
+     */
+    protected function selectBestLanguageFromRequest(
+        \Cx\Core\Core\Controller\Cx $cx
+    ) {
+        $localeInfo = array(
+            'country' => '',
+        );
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $localeInfo['country'] = $countryInfo['content'];
+            }
+        }
+        // since crawlers do not send accept language header, we make it optional
+        // in order to keep the logs clean
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $localeInfo['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
+        return $localeInfo;
+    }
+
+    /**
+     * Returns the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @return array Cached locale data or empty array
+     */
+    protected function getCachedLocaleData() {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        if (!file_exists($filename)) {
+            return array();
+        }
+        $cachedData = unserialize(file_get_contents($filename));
+        if ($cachedData === false) {
+            return array();
+        }
+        return $cachedData;
     }
 
     /**
