@@ -608,7 +608,7 @@ class CacheLib
                 return '';
             }
         }
-        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
+        return trim($this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString()));
     }
 
     /**
@@ -653,9 +653,11 @@ class CacheLib
                 return '';
             }
         }
-        return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode(
-            $urls,
-            $count
+        return trim(
+            $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode(
+                $urls,
+                $count
+            )
         );
     }
 

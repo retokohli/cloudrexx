@@ -287,7 +287,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 if (is_array($headers)) {
                     foreach ($headers as $name=>$value) {
                         if ($name == static::HTTP_STATUS_CODE_HEADER) {
-                            http_response_code($value);
+                            http_response_code(intval($value));
                             continue;
                         }
                         if (is_numeric($name)) {
