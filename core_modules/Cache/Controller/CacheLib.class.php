@@ -210,6 +210,15 @@ class CacheLib
                     return '?' . $queryString;
                 }
             },
+            'REMOTE_ADDR' => function() {
+                if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                    return $_SERVER['HTTP_X_FORWARDED_FOR'];
+                }
+                if (isset($_SERVER['REMOTE_ADDR'])) {
+                    return $_SERVER['REMOTE_ADDR'];
+                }
+                return '';
+            },
         );
 
         // TODO: $dynFuncs needs to be built dynamically (via event handler)
