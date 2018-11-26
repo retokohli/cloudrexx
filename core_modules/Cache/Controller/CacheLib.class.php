@@ -751,6 +751,8 @@ class CacheLib
             $pathParts[0] != 'Data' ||
             $pathParts[1] != 'Plain'
         ) {
+            \DBG::msg(__METHOD__ . ': invalid URL ' . $url . ' | evaluated pathParts:');
+            \DBG::dump($pathParts);
             return '';
         }
         $adapter = contrexx_input2raw($pathParts[2]);
@@ -783,7 +785,11 @@ class CacheLib
             !isset($response['data']) ||
             !isset($response['data']['content'])
         ) {
-            throw new \Exception('JsonAdapter returned with an error: "' . $response['message'] . '"');
+            \DBG::msg(__METHOD__ . ': JsonData request failed | adapter: ' . $adapter . ' | method: ' . $method . ' | arguments:');
+            \DBG::dump($arguments);
+            \DBG::msg(__METHOD__ . ': JsonData response:');
+            \DBG::dump($response);
+            throw new \Exception('JsonAdapter returned with an error');
         }
         return $response['data']['content'];
     }
@@ -1352,6 +1358,7 @@ class CacheLib
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
         } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            \DBG::msg(__METHOD__ . ' failed');
             parse_str(substr($url, 1), $params);
         }
         $correctIndexOrder = array(
