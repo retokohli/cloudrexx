@@ -337,7 +337,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
     }
 
-
     /**
      * End caching functions. Check for a sessionId: if not set, write pagecontent to a file.
      */
@@ -356,7 +355,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 }
             }
         }
-        
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
         $this->exceptions = array(
