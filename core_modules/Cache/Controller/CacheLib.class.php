@@ -161,6 +161,12 @@ class CacheLib
     protected $dynFuncs = array();
 
     /**
+     * Page info (url, locale, ...)
+     * @var array
+     */
+    protected $arrPageContent = array();
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -280,6 +286,9 @@ class CacheLib
      * Initializes basic request info (url, locale, ...)
      */
     protected function initRequestInfo() {
+        if (count($this->arrPageContent)) {
+            return;
+        }
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
         // able to determine of the mobile device wishes to be served

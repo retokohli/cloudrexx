@@ -51,8 +51,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     var $strCachePath; //Path to cache-directory
     var $strCacheFilename; //Name of the current cache-file
 
-    var $arrPageContent = array(); //array containing $_SERVER['REQUEST_URI'] and $_REQUEST
-
     var $arrCacheablePages = array(); //array of all pages with activated caching
     
     /**
