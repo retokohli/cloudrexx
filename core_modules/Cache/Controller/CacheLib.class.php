@@ -269,7 +269,10 @@ class CacheLib
                 $locale = '';
                 $this->initRequestInfo();
                 $cachedLocaleData = $this->getCachedLocaleData();
-                if (in_array($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode'])) {
+                if (
+                    isset($this->arrPageContent['locale']) &&
+                    in_array($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode'])
+                ) {
                     $locale = array_search($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode']);
                 }
                 // end of TODO
