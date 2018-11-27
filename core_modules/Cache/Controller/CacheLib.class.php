@@ -289,6 +289,8 @@ class CacheLib
      * Initializes basic request info (url, locale, ...)
      */
     protected function initRequestInfo() {
+        global $_CONFIG;
+
         if (count($this->arrPageContent)) {
             return;
         }
