@@ -367,5 +367,28 @@ class MemberDirLibrary
         }
     }
 
+    /**
+     * Get media browser button
+     *
+     * @param string $id       Id of the button
+     * @param string $callback Media browser callback function
+     * @return string HTML element of browse button
+     */
+    public function getMediaBrowserButton($id, $callback = '')
+    {
+        $options = array(
+            'type'             => 'button',
+            'data-cx-mb-views' => 'filebrowser',
+            'id'               => 'imageSelectionButton' . ucfirst($id),
+            'style'            => 'display: none;',
+        );
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions($options);
+        if ($callback) {
+            $mediaBrowser->setCallback($callback);
+        }
+
+        return $mediaBrowser->getXHtml();
+    }
 }
-?>
