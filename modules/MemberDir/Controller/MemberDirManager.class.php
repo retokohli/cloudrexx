@@ -1121,7 +1121,7 @@ class MemberDirManager extends MemberDirLibrary
                 "MEMBERDIR_IMAGE_SRC"   => "../core/Core/View/Media/icons/images.gif",
                 "MEMBERDIR_IMAGE_SIZE"  => "21",
                 'MEMBERDIR_MEDIABROWSER_BUTTON' => $this->getMediaBrowserButton(
-                    'one',
+                    'imageSelectionButtonOne',
                     'mbImageSelectionOne'
                 ),
             ));
@@ -1139,7 +1139,7 @@ class MemberDirManager extends MemberDirLibrary
                 "MEMBERDIR_IMAGE_SRC"   => "../core/Core/View/Media/icons/images.gif",
                 "MEMBERDIR_IMAGE_SIZE"  => "21",
                 'MEMBERDIR_MEDIABROWSER_BUTTON' => $this->getMediaBrowserButton(
-                    'two',
+                    'imageSelectionButtonTwo',
                     'mbImageSelectionTwo'
                 ),
             ));
@@ -1407,7 +1407,7 @@ class MemberDirManager extends MemberDirLibrary
                 "MEMBERDIR_HIDDEN_VALUE"    => ($objResult->fields['pic1'] == "none") ? "" : $objResult->fields['pic1'],
                 "MEMBERDIR_IMAGE_SIZE"  => ($objResult->fields['pic1'] == "none") ? "21" : "60",
                 'MEMBERDIR_MEDIABROWSER_BUTTON' => $this->getMediaBrowserButton(
-                    'one',
+                    'imageSelectionButtonOne',
                     'mbImageSelectionOne'
                 ),
             ));
@@ -1425,7 +1425,7 @@ class MemberDirManager extends MemberDirLibrary
                 "MEMBERDIR_HIDDEN_VALUE"    => ($objResult->fields['pic2'] == "none") ? "" : $objResult->fields['pic2'],
                 "MEMBERDIR_IMAGE_SIZE"  => ($objResult->fields['pic2'] == "none") ? "21" : "60",
                 'MEMBERDIR_MEDIABROWSER_BUTTON' => $this->getMediaBrowserButton(
-                    'two',
+                    'imageSelectionButtonTwo',
                     'mbImageSelectionTwo'
                 ),
             ));

@@ -371,7 +371,7 @@ class MemberDirLibrary
      * Get media browser button
      *
      * @param string $id       Id of the button
-     * @param string $callback Media browser callback function
+     * @param string $callback Name of the callback function
      * @return string HTML element of browse button
      */
     public function getMediaBrowserButton($id, $callback = '')
@@ -379,10 +379,9 @@ class MemberDirLibrary
         $options = array(
             'type'             => 'button',
             'data-cx-mb-views' => 'filebrowser',
-            'id'               => 'imageSelectionButton' . ucfirst($id),
+            'id'               => $id,
             'style'            => 'display: none;',
         );
-        // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions($options);
         if ($callback) {

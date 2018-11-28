@@ -3,7 +3,7 @@
 <script type="text/javascript">
   cx.jQuery(document).ready(function(){
     cx.jQuery('.triggerMediaBrowser').click(function(){
-      cx.jQuery(this).parent().find('button').trigger('click');
+      cx.jQuery(this).parent('td').find('button').trigger('click');
     });
   });
 
