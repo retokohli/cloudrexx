@@ -53,7 +53,7 @@ class DoctrineRepository extends DataSource {
      */
     public function listFields() {
         $em = $this->cx->getDb()->getEntityManager();
-        return $em->getClassMetadata($this->getIdentifier())->getColumnNames();
+        return $em->getClassMetadata($this->getIdentifier())->getFieldNames();
     }
 
     /**
