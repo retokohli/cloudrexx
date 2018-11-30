@@ -185,16 +185,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             
             $order = array();
-            if (isset($arguments['order'])) {
-                $order = $arguments['order'];
-            }
-            $order = array();
-            if (isset($arguments['order'])) {
-                $orderStrings = explode(';', $arguments['order']);
-                foreach ($orderStrings as $orderString) {
-                    $orderStringParts = explode('/', $orderString);
-                    $order[$orderStringParts[0]] = $orderStringParts[1];
+            if (isset($arguments['order']) && is_array($arguments['order'])) {
+                foreach ($arguments['order'] as $field=>$sortOrder) {
+                    if (!$dataSource->hasField($field)) {
+                        throw new \InvalidArgumentsException(
+                            'Unknown field "' . $field . '"'
+                        );
+                    }
+                    if (!in_array(strtolower($sortOrder), array('asc', 'desc'))) {
+                        throw new \InvalidArgumentsException(
+                            'Unknown sort order "' . $sortOrder . '"'
+                        );
+                    }
                 }
+                $order = $arguments['order'];
             }
             
             $filter = array();
