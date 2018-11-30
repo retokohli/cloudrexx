@@ -48,6 +48,21 @@ namespace Cx\Core\DataSource\Model\Entity;
 class DoctrineRepository extends DataSource {
 
     /**
+     * List of operations supported by this DataSource
+     * @var array List of operations
+     */
+    protected $supportedOperations = array('lt', 'gt', 'lte', 'gte', 'in', 'eq', 'not');
+
+    /**
+     * Returns a list of field names this DataSource consists of
+     * @return array List of field names
+     */
+    public function listFields() {
+        $em = $this->cx->getDb()->getEntityManager();
+        return $em->getClassMetadata($this->getIdentifier())->getFieldNames();
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.
@@ -77,20 +92,28 @@ class DoctrineRepository extends DataSource {
 
         $criteria = array();
 
-        // $filter
-        if (count($fieldList)) {
-            foreach ($filter as $field=>$value) {
-                if (!in_array($field, $fieldList)) {
-                    continue;
+        // Add filters
+        foreach ($filter as $field => $filterExpr) {
+            foreach ($filterExpr as $operation=>$value) {
+                if (!$this->supportsOperation($operation)) {
+                    throw new \InvalidArgumentException(
+                        'Operation "' . $operation . '" is not supported'
+                    );
                 }
-                $criteria[$field] = $value;
+                if ($operation == 'in') {
+                    $value = explode(',', $value);
+                }
+                $criteria[$field] = array($operation => $value);
             }
         }
 
-        // $elementId
+        // Add id to filter (after other filters to prevent override)
         if (isset($elementId) && count($elementId)) {
             foreach ($elementId as $field=>$id) {
-                $criteria[$field] = $id;
+                if (empty($id)) {
+                    continue;
+                }
+                $criteria[$field] = array('eq' => $id);
             }
         }
 
@@ -146,10 +169,12 @@ class DoctrineRepository extends DataSource {
 
         // $filter
         $i = 1;
-        foreach ($criteria as $field=>$value) {
-            $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
-            $qb->setParameter($i, $value);
-            $i++;
+        foreach ($criteria as $field=>$filterExpr) {
+            foreach ($filterExpr as $operation=>$value) {
+                $qb->andWhere($qb->expr()->$operation('x.' . $field, '?' . $i));
+                $qb->setParameter($i, $value);
+                $i++;
+            }
         }
         // $order, $limit, $offset
         foreach ($order as $field=>$ascdesc) {
