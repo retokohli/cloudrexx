@@ -193,6 +193,21 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Returns a list of field names this DataSource consists of
+     * @return array List of field names
+     */
+    public abstract function listFields();
+
+    /**
+     * Tells whether this DataSource has a field named $field
+     * @param string $field Name of a field
+     * @return boolean True if $field exists in this DataSource, false otherwise
+     */
+    public function hasField($field) {
+        return in_array($field, $this->listFields());
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.

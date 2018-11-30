@@ -48,6 +48,15 @@ namespace Cx\Core\DataSource\Model\Entity;
 class DoctrineRepository extends DataSource {
 
     /**
+     * Returns a list of field names this DataSource consists of
+     * @return array List of field names
+     */
+    public function listFields() {
+        $em = $this->cx->getDb()->getEntityManager();
+        return $em->getClassMetadata($this->getIdentifier())->getColumnNames();
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.

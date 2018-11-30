@@ -47,6 +47,32 @@ namespace Cx\Core\DataSource\Model\Entity;
 class LegacyDatabaseRepository extends DataSource {
 
     /**
+     * Field list cache
+     * @var array List of fields
+     */
+    protected $fieldList = array();
+
+    /**
+     * Returns a list of field names this DataSource consists of
+     * @return array List of field names
+     */
+    public function listFields() {
+        if (count($this->fieldList)) {
+            return $this->fieldList;
+        }
+
+        $tableName = DBPREFIX . $this->getIdentifier();
+        $result = $this->cx->getDb()->getAdoDb()->query(
+            'SHOW COLUMNS FROM `' . $tableName . '`'
+        );
+        while (!$result->EOF) {
+            $this->fieldList[] = $result->fields['Field'];
+            $result->MoveNext();
+        }
+        return $this->fieldList;
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.
