@@ -100,8 +100,13 @@ class LegacyDatabaseRepository extends DataSource {
         $whereList = array();
 
         // $filter
-        if (count($filter)) {
-            foreach ($filter as $field => $value) {
+        foreach ($filter as $field => $filterExpr) {
+            foreach ($filterExpr as $operation=>$value) {
+                if ($operation != 'eq') {
+                    throw new \InvalidArgumentException(
+                        'Operation "' . $operation . '" is not supported'
+                    );
+                }
                 if (count($fieldList) && !in_array($field, $fieldList)) {
                     continue;
                 }

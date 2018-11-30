@@ -202,11 +202,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             
             $filter = array();
-            if (isset($arguments['filter'])) {
-                $filterStrings = explode(';', $arguments['filter']);
-                foreach ($filterStrings as $filterString) {
-                    $filterStringParts = explode('=', $filterString);
-                    $filter[$filterStringParts[0]] = $filterStringParts[1];
+            if (isset($arguments['filter']) && is_array($arguments['filter'])) {
+                foreach ($arguments['filter'] as $field=>$filterExpr) {
+                    if (!is_array($filterExpr)) {
+                        $filterExpr = array('eq' => $filterExpr);
+                    }
+                    foreach ($filterExpr as $operation=>$value) {
+                        if (!$dataSource->hasField($field)) {
+                            throw new \InvalidArgumentException(
+                                'Unknown field "' . $field . '"'
+                            );
+                        }
+                        if (!$dataSource->supportsOperation($operation)) {
+                            throw new \InvalidArgumentsException(
+                                'Unsupported operation "' . $operation . '"'
+                            );
+                        }
+                        $filter[$field][$operation] = $value;
+                    }
                 }
             }
             

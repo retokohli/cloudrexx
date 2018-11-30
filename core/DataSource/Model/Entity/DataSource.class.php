@@ -72,6 +72,12 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     protected $dataAccesses;
 
     /**
+     * List of operations supported by this DataSource
+     * @var array List of operations
+     */
+    protected $supportedOperations = array('eq');
+
+    /**
      * Constructor
      */
     public function __construct() {
@@ -205,6 +211,23 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
      */
     public function hasField($field) {
         return in_array($field, $this->listFields());
+    }
+
+    /**
+     * Returns the list of operations supported by this DataSource
+     * @return array List of supported operations
+     */
+    public function getSupportedOperations() {
+        return $this->supportedOperations;
+    }
+
+    /**
+     * Tells whether operation $operation is supported by this DataSource
+     * @param string $operation Name of an operation
+     * @return boolean True if $operation is supported by this DataSource
+     */
+    public function supportsOperation($operation) {
+        return in_array($operation, $this->getSupportedOperations());
     }
 
     /**
