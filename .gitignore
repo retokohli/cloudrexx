@@ -1,4 +1,6 @@
-docker-compose.yml
-tmp/*
-_meta
-cx.bat
+/_meta/
+/cx
+/docker-compose.yml
+/images/
+/sitemap*
+/tmp/
