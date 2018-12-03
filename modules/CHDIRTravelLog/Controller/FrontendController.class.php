@@ -239,7 +239,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $connectionRepo = $this->cx->getDb()->getEntityManager()->getRepository(
             'Cx\\Modules\\CHDIRTravelLog\\Model\\Entity\\Connection'
         );
-        $connection = $connectionRepo->find($arrConnection[0]);
+        $connection = $connectionRepo->findOneBy([
+            'project' => $projectName,
+            'verbindungsnummer' => $arrConnection[0]
+        ]);
         $connectionName = '';
         if ($connection) {
             $connectionName = $connection->getVerbindungsstring();
@@ -389,8 +392,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         foreach ($journeys as $journey) {
             $connectionNr = intval($journey->getVerbnr());
             $connection = $connectionRepo->findOneBy([
-                'verbindungsnummer' => $connectionNr,
                 'project' => $projectName,
+                'verbindungsnummer' => $connectionNr,
             ]);
             $connectionName = '';
             if ($connection) {
@@ -628,7 +631,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     ): string
     {
         $pdfRoot = static::getPdfFolder();
-        $projectName = static::getProjectName();
         $journeyPath = $pdfRoot . $projectName . '_' . $journeyNr . '.pdf';
         if (\Cx\Lib\FileSystem\FileSystem::exists($journeyPath)) {
             return $journeyPath;
@@ -673,9 +675,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         );
         foreach ($journeys as $journey) {
             $connectionNr = intval($journey->getVerbnr());
-            $connection = $connectionRepo->findOneBy(
-                ['verbindungsnummer' => $connectionNr]
-            );
+            $connection = $connectionRepo->findOneBy([
+                'project' => $projectName,
+                'verbindungsnummer' => $connectionNr,
+            ]);
             $connectionName = '';
             if ($connection) {
                 $connectionName = $connection->getVerbindungsstring();
