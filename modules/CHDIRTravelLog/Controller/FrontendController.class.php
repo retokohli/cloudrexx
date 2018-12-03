@@ -367,6 +367,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'CHDIRTRAVELLOG_PDF_FOLDER_PATH' => static::getPdfFolder(),
             'CHDIRTRAVELLOG_PROJECT_NAME' => static::getProjectName(),
             'CHDIRTRAVELLOG_JOURNEY_COUNT' => $count,
+            'CHDIRTRAVELLOG_JOURNEY_RBN_URL' => '#',
             'CHDIRTRAVELLOG_PAGING' => $paging,
         ]);
         $template->touchBlock('chdirtravellog_journey_info');
