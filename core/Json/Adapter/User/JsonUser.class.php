@@ -128,10 +128,6 @@ class JsonUser implements JsonAdapter {
         $term = !empty($_GET['term']) ? trim($_GET['term']) : '';
         $term = '%' . $term . '%';
 
-        $limit = 0;
-        if (isset($_GET['limit'])) {
-            $limit = intval($_GET['limit']);
-        }
 
         $arrFilter = array(
             'OR' => array(
@@ -145,6 +141,12 @@ class JsonUser implements JsonAdapter {
         $arrAttributes = array(
             'company', 'firstname', 'lastname', 'username', 'email',
         );
+
+        $limit = 0;
+        if (isset($_GET['limit'])) {
+            $limit = intval($_GET['limit']);
+        }
+
         $arrUsers = array();
         $objUser = $objFWUser->objUser->getUsers(
             $arrFilter,
