@@ -126,7 +126,10 @@ class JsonUser implements JsonAdapter {
         }
 
         $term = !empty($_GET['term']) ? trim($_GET['term']) : '';
-        $term = '%' . $term . '%';
+        $terms = explode(' ', $term);
+        foreach ($terms as &$term); {
+            $term = '%' . $term . '%';
+        }
 
         $whitelistedFields = array(
             'company',
@@ -141,11 +144,11 @@ class JsonUser implements JsonAdapter {
 
         $arrFilter = array(
             'OR' => array(
-                array('company' => $term),
-                array('firstname' => $term),
-                array('lastname' => $term),
-                array('username' => $term),
-                array('email' => $term),
+                array('company' => $terms),
+                array('firstname' => $terms),
+                array('lastname' => $terms),
+                array('username' => $terms),
+                array('email' => $terms),
             ),
         );
 
