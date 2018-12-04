@@ -154,9 +154,49 @@ class JsonUser implements JsonAdapter {
                 $searchFields = $possibleSearchFields;
             }
         }
-        $arrFilter = array('OR' => array());
-        foreach ($searchFields as $field) {
-            $arrFilter['OR'][][$field] = $terms;
+        // AND-ed search is only available if 2 or less search fields are
+        // in use and no more than 2 search terms are specified. With higher
+        // values there are an increasing amount of possibilities.
+        // If there's but one search field the sensful search query
+        // results in the same as the OR-ed one. If there's but one term the
+        // same happens.
+        if (
+            count($searchFields) == 2 &&
+            count($terms) == 2 &&
+            isset($_GET['searchAnd']) &&
+            $_GET['searchAnd'] == 'true'
+        ) {
+            // We can search for "Peter Muster" or "Muster Peter"
+            // (field1 = term1 AND field2 = term2) OR (field2 = term1 AND field1 = term2)
+            $arrFilter = array(
+                'OR' => array(
+                    0 => array(
+                        'AND' => array(
+                            0 => array(
+                                $searchFields[0] => $terms[0],
+                            ),
+                            1 => array(
+                                $searchFields[1] => $terms[1],
+                            ),
+                        ),
+                    ),
+                    1 => array(
+                        'AND' => array(
+                            0 => array(
+                                $searchFields[1] => $terms[0],
+                            ),
+                            1 => array(
+                                $searchFields[0] => $terms[1],
+                            ),
+                        ),
+                    ),
+                ),
+            );
+        } else {
+            $arrFilter = array('OR' => array());
+            foreach ($searchFields as $field) {
+                $arrFilter['OR'][][$field] = $terms;
+            }
         }
 
         $arrAttributes = $whitelistedFields;
