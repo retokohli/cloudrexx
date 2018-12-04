@@ -128,6 +128,13 @@ class JsonUser implements JsonAdapter {
         $term = !empty($_GET['term']) ? trim($_GET['term']) : '';
         $term = '%' . $term . '%';
 
+        $whitelistedFields = array(
+            'company',
+            'firstname',
+            'lastname',
+            'username',
+            'email',
+        );
 
         $arrFilter = array(
             'OR' => array(
