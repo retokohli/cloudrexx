@@ -1011,8 +1011,9 @@ class FWUser extends User_Setting
         // Options for the dialog
         $arrOptions['minLength'] = empty($arrOptions['minLength']) ? 3 : intval($arrOptions['minLength']);
         $arrOptions['canCancel'] = empty($arrOptions['canCancel']) ? 0 : 1;
-        $arrOptions['canClear']  = empty($arrOptions['canClear'])  ? 0 : 1;
-        $arrOptions['limit']  = !empty($arrOptions['limit']) ? $arrOptions['limit'] : 0;
+        $arrOptions['canClear'] = empty($arrOptions['canClear'])  ? 0 : 1;
+        $arrOptions['limit'] = !empty($arrOptions['limit']) ? $arrOptions['limit'] : 0;
+        $arrOptions['resultFormat'] = !empty($arrOptions['resultFormat']) ? $arrOptions['resultFormat'] : 0;
 
         $txtUserSearchInfo = sprintf($_CORELANG['TXT_CORE_SEARCH_USER_INFO'], $arrOptions['minLength']);
 
@@ -1023,6 +1024,7 @@ class FWUser extends User_Setting
         $objCx->setVariable('userCanCancel',     $arrOptions['canCancel'],           $scope);
         $objCx->setVariable('userCanClear',      $arrOptions['canClear'],            $scope);
         $objCx->setVariable('limit',             $arrOptions['limit'],               $scope);
+        $objCx->setVariable('resultFormat',      $arrOptions['resultFormat'],        $scope);
         $objCx->setVariable('txtUserSearch',     $_CORELANG['TXT_CORE_SEARCH_USER'], $scope);
         $objCx->setVariable('txtUserCancel',     $_CORELANG['TXT_CANCEL'],           $scope);
         $objCx->setVariable('txtUserSearchInfo', $txtUserSearchInfo,                 $scope);
