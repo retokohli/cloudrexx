@@ -127,9 +127,9 @@ class JsonUser implements JsonAdapter {
 
         $term = !empty($_GET['term']) ? trim($_GET['term']) : '';
         $terms = explode(' ', $term);
-        foreach ($terms as &$term); {
-            $term = '%' . $term . '%';
-        }
+        array_walk($terms, function(&$value, $key) {
+            $value = '%' . $value . '%';
+        });
 
         $whitelistedFields = array(
             'company',
