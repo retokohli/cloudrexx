@@ -130,6 +130,9 @@ class JsonUser implements JsonAdapter {
 
         $whitelistedFields = array(
             'company',
+            'address',
+            'city',
+            'zip',
             'firstname',
             'lastname',
             'username',
@@ -145,9 +148,8 @@ class JsonUser implements JsonAdapter {
                 array('email' => $term),
             ),
         );
-        $arrAttributes = array(
-            'company', 'firstname', 'lastname', 'username', 'email',
-        );
+
+        $arrAttributes = $whitelistedFields;
 
         $limit = 0;
         if (isset($_GET['limit'])) {
@@ -162,16 +164,33 @@ class JsonUser implements JsonAdapter {
             $arrAttributes,
             $limit ? $limit : null
         );
-        if ($objUser) {
-            while (!$objUser->EOF) {
-                $id = $objUser->getId();
-                $title = $objFWUser->getParsedUserTitle($objUser);
 
-                $arrUsers[$id] = $title;
-                $objUser->next();
-            }
+        if (!$objUser) {
+            return array();
         }
+        $resultFormat = '%title%';
+        if (isset($_GET['resultFormat'])) {
+            $resultFormat = contrexx_input2raw($_GET['resultFormat']);
+        }
+        while (!$objUser->EOF) {
+            $id = $objUser->getId();
+            $title = $objFWUser->getParsedUserTitle($objUser);
 
+            $result = str_replace('%id%', $id, $resultFormat);
+            $result = str_replace('%title%', $title, $result);
+            $result = str_replace('%username%', $objUser->getUsername(), $result);
+            $result = str_replace('%email%', $objUser->getEmail(), $result);
+            foreach ($whitelistedFields as $field) {
+                $result = str_replace(
+                    '%' . $field . '%',
+                    $objUser->getProfileAttribute($field),
+                    $result
+                );
+            }
+
+            $arrUsers[$id] = $result;
+            $objUser->next();
+        }
         return $arrUsers;
     }
 
