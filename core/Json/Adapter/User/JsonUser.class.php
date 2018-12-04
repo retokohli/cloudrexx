@@ -162,16 +162,17 @@ class JsonUser implements JsonAdapter {
             $arrAttributes,
             $limit ? $limit : null
         );
-        if ($objUser) {
-            while (!$objUser->EOF) {
-                $id = $objUser->getId();
-                $title = $objFWUser->getParsedUserTitle($objUser);
 
-                $arrUsers[$id] = $title;
-                $objUser->next();
-            }
+        if (!$objUser) {
+            return array();
         }
+        while (!$objUser->EOF) {
+            $id = $objUser->getId();
+            $title = $objFWUser->getParsedUserTitle($objUser);
 
+            $arrUsers[$id] = $title;
+            $objUser->next();
+        }
         return $arrUsers;
     }
 
