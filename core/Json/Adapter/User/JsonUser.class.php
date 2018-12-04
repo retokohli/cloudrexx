@@ -145,6 +145,23 @@ class JsonUser implements JsonAdapter {
                 array('email' => $term),
             ),
         );
+
+        $arrSort = null;
+        if (isset($_GET['sort'])) {
+            $sort = contrexx_input2raw($_GET['sort']);
+            if (is_array($sort)) {
+                foreach ($sort as $field=>$order) {
+                    if (!in_array($field, $whitelistedFields)) {
+                        continue;
+                    }
+                    if (!in_array(strtolower($order), array('asc', 'desc'))) {
+                        continue;
+                    }
+                    $arrSort[$field] = strtolower($order);
+                }
+            }
+        }
+
         $arrAttributes = array(
             'company', 'firstname', 'lastname', 'username', 'email',
         );
@@ -158,7 +175,7 @@ class JsonUser implements JsonAdapter {
         $objUser = $objFWUser->objUser->getUsers(
             $arrFilter,
             null,
-            null,
+            $arrSort,
             $arrAttributes,
             $limit ? $limit : null
         );
