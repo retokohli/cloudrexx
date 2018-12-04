@@ -142,15 +142,22 @@ class JsonUser implements JsonAdapter {
             'email',
         );
 
-        $arrFilter = array(
-            'OR' => array(
-                array('company' => $terms),
-                array('firstname' => $terms),
-                array('lastname' => $terms),
-                array('username' => $terms),
-                array('email' => $terms),
-            ),
-        );
+        $searchFields = array('company', 'firstname', 'lastname', 'username', 'email');
+        if (!empty($_GET['searchFields'])) {
+            $possibleSearchFields = explode(',', $_GET['searchFields']);
+            foreach ($possibleSearchFields as $key=>$possibleSearchField) {
+                if (!in_array($possibleSearchField, $whitelistedFields)) {
+                    unset($possibleSearchFields[$key]);
+                }
+            }
+            if (count($possibleSearchFields)) {
+                $searchFields = $possibleSearchFields;
+            }
+        }
+        $arrFilter = array('OR' => array());
+        foreach ($searchFields as $field) {
+            $arrFilter['OR'][][$field] = $terms;
+        }
 
         $arrAttributes = $whitelistedFields;
 
