@@ -1020,10 +1020,14 @@ SET FOREIGN_KEY_CHECKS = 1;"
             set_config_array
             ;;
         shell)
-            if [[ ${ARGUMENTS["root"]} ]]; then
-                dockerexec exec -ti "<web-container>" bash
+            if [[ ${ARGUMENTS["db"]} ]]; then
+                dockerexec exec -ti "<db-container>" sh -c "cd /tmp/import; /bin/bash"
             else
-                dockerexec exec -ti --user www-data "<web-container>" bash
+                if [[ ${ARGUMENTS["root"]} ]]; then
+                    dockerexec exec -ti "<web-container>" bash
+                else
+                    dockerexec exec -ti --user www-data "<web-container>" bash
+                fi
             fi
             ;;
         exec)
