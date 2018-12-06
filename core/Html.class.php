@@ -2450,7 +2450,8 @@ alert("change: ID mismatch: "+id);
     static function getRelativeUri()
     {
         // returns the relative uri from url request object
-        return (string) clone \Env::get('Resolver')->getUrl();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        return (string) clone $cx->getRequest()->getUrl();
     }
 
 
