@@ -1769,7 +1769,9 @@ if ! $found; then
     echo "cx not found, you may want to call \`cx env init\`";
     exit
 fi
-if [[ "$(pwd -P)" != "$result" ]]; then
+# get the directory this script lies in
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd -P )"
+if [[ "$(pwd -P)" != "$result" || "$DIR" != "$result" ]]; then
     prevPwd="$(pwd -P)"
     cd "$result" || exit
     ./cx "$@"
