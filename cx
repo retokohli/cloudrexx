@@ -655,6 +655,7 @@ function cmd_envs {
             echo "${BASH_REMATCH[1]}"
             ;;
         exec)
+            ARGUMENTS["real"]=true
             envs="$(cmd_envs list)"
             if [[ "$envs" == "" ]]; then
                 echo "No env up"
@@ -662,7 +663,13 @@ function cmd_envs {
             fi
             shift
             # TODO: Allow interactive decision whether to execute command on this env
-            for env in "${envs[@]}"; do
+            first=true
+            while read env; do
+                if "$first"; then
+                    first=false
+                else
+                    echo ""
+                fi
                 prevPwd="$(pwd -P)"
                 cd "$(cmd_envs locate "$env")" || continue
                 if [[ ${ARGUMENTS["silent"]} != true ]]; then
@@ -670,7 +677,7 @@ function cmd_envs {
                 fi
                 ./cx env "$@"
                 cd "$prevPwd"
-            done
+            done <<< "$envs"
             ;;
         *)
             (>&2 echo "No such subcommand")
