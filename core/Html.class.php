@@ -31,7 +31,7 @@
  * Provides some commonly used HTML elements
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @deprecated  This class is deprected in favor of using Sigma or \Cx\Core\Html\Model\Entity\...
+ * @deprecated  This class is deprecated in favor of using Sigma or \Cx\Core\Html\Model\Entity\...
  * @version     3.0.0
  * @package     cloudrexx
  * @subpackage  core
@@ -43,7 +43,7 @@
  * Provides some commonly used HTML elements
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @deprecated  This class is deprected in favor of using Sigma or \Cx\Core\Html\Model\Entity\...
+ * @deprecated  This class is deprecated in favor of using Sigma or \Cx\Core\Html\Model\Entity\...
  * @version     3.0.0
  * @package     cloudrexx
  * @subpackage  core
