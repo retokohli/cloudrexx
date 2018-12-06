@@ -250,7 +250,7 @@ class DoctrineRepository extends DataSource {
                 // recurse
                 $output = $this->resolveRecursedRelations(
                     $forcedRecursions,
-                    $skippedRecursion,
+                    $skippedRecursions,
                     $associationMapping['targetEntity'],
                     $output,
                     $prefix . $relationField . '.',
