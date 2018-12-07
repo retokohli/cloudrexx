@@ -87,6 +87,8 @@ class ContrexxJavascript {
         else //backend
             $langCode = FWLanguage::getBackendLanguageCodeById($objInit->getBackendLangId());
 
+        \JS::activate('cx');
+
         $this->setVariable(
             array(
                 'path' => ASCMS_PATH_OFFSET . '/' . $langCode . '/',
