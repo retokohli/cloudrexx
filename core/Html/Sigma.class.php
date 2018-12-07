@@ -192,6 +192,15 @@ class Sigma extends \HTML_Template_Sigma {
     }
 
     /**
+     * Triggers an event on setGlobalVariable()
+     * @inheritDoc
+     */
+    function setGlobalVariable($variable, $value = '') {
+        $this->internalSetVariables($variable, $value);
+        parent::setVariable($variables, $value);
+    }
+
+    /**
      * Triggers an event on setVariable()
      * @inheritDoc
      */
