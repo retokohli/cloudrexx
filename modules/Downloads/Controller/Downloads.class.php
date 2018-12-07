@@ -1796,7 +1796,7 @@ JS_CODE;
      * Placeholder can have the following form:
      * - DOWNLOADS_CONFIG_LIMIT_<limit>
      * Example:
-     *  - DOWNLOADS_CONFIG_LIMIT_3
+     * - DOWNLOADS_CONFIG_LIMIT_3
      *
      * @param   string  $block Name of the template block to look up for
      *                         functional placeholder
@@ -1817,15 +1817,17 @@ JS_CODE;
         }
 
         $placeholderList = $template->getPlaceholderList($block);
-        $placeholderListAsString = join("\n", $placeholderList);
+        $placeholderListAsString = implode("\n", $placeholderList);
         $match = null;
 
         // abort in case the functional placeholder does not exist
-        if (!preg_match(
+        if (
+            !preg_match(
                 '/DOWNLOADS_CONFIG_LIMIT_([0-9]+)/',
                 $placeholderListAsString,
                 $match
-        )) {
+            )
+        ) {
             return $defaultPagingLimit;
         }
 
