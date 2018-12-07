@@ -196,6 +196,20 @@ class Sigma extends \HTML_Template_Sigma {
      * @inheritDoc
      */
     function setVariable($variable, $value = '') {
+        $this->internalSetVariables($variable, $value);
+        parent::setVariable($variables, $value);
+    }
+
+    /**
+     * Triggers events on setVariable() and setGlobalVariable()
+     * @param string|array $variable Variable name or key/value array
+     * @param string|array $value Value or key/value array for sub-keys
+     */
+    protected function internalSetVariables(&$variable, &$value = '') {
+        $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
+        if (!$evm) {
+            return;
+        }
         $variables = array();
         if (is_array($variable)) {
             $variables = $variable;
@@ -203,10 +217,6 @@ class Sigma extends \HTML_Template_Sigma {
             $variables = $this->_flattenVariables($variable, $value);
         } else {
             $variables = array($variable => $value);
-        }
-        $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
-        if (!$evm) {
-            parent::setVariable($variable, $value);
         }
         try {
             foreach ($variables as $key=>&$val) {
@@ -221,7 +231,8 @@ class Sigma extends \HTML_Template_Sigma {
         } catch (\Exception $e) {
             throw $e;
         }
-        parent::setVariable($variables);
+        $variable = $variables;
+        $value = '';
     }
 
     function replaceBlock($block, $template, $keepContent = false, $outer = false) {
