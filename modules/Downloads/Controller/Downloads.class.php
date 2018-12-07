@@ -1172,12 +1172,17 @@ JS_CODE;
             $this->arrConfig['downloads_sorting_order'],
             $this->downloadsSortingOptions
         );
+        $pagingLimit = $this->fetchPagingLimitFromTemplate(
+            'downloads_' . strtolower($variablePrefix) . 'file_list',
+            $this->objTemplate,
+            $_CONFIG['corePagingLimit']
+        );
         $objDownload->loadDownloads(
             $filter,
             $this->searchKeyword,
             $sortOrder,
             null,
-            $_CONFIG['corePagingLimit'],
+            $pagingLimit,
             $limitOffset,
             $includeDownloadsOfSubcategories,
             $this->arrConfig['list_downloads_current_lang']
@@ -1215,11 +1220,14 @@ JS_CODE;
             }
 
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
-            if ($downloadCount > $_CONFIG['corePagingLimit']) {
+            if (
+                $pagingLimit &&
+                $downloadCount > $pagingLimit
+            ) {
                 if($this->requestedPage->getModule() != 'Downloads'){
-                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>", false, $pagingLimit));
                 }else{
-                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>", false, $pagingLimit));
                 }
             }
 
@@ -1780,5 +1788,48 @@ JS_CODE;
         // return identified sort order from functional placeholder
         // from template
         return $orderOptions[current($options)];
+    }
+
+    /**
+     * Identify a functional placeholder in the block $block of template
+     * $template that will determine a custom paging limit.
+     * Placeholder can have the following form:
+     * - DOWNLOADS_CONFIG_LIMIT_<limit>
+     * Example:
+     *  - DOWNLOADS_CONFIG_LIMIT_3
+     *
+     * @param   string  $block Name of the template block to look up for
+     *                         functional placeholder
+     * @param   \Cx\Core\Html\Sigma $template   Template object where the block
+     *                                          $block is located in
+     * @param   integer $defaultPagingLimit Fallback paging limit in case no
+     *                                      functional placeholder can be
+     *                                      located in the supplied template.
+     * @return  integer Identified paging limit. If no functional placeholder
+     *                  has been found in the supplied template, then the
+     *                  default paging limit (defined by $defaultPagingLimit)
+     *                  is returned.
+     */
+    protected function fetchPagingLimitFromTemplate($block, $template, $defaultPagingLimit) {
+        // abort in case the template is invalid
+        if (!$template->blockExists($block)) {
+            return $defaultPagingLimit;
+        }
+
+        $placeholderList = $template->getPlaceholderList($block);
+        $placeholderListAsString = join("\n", $placeholderList);
+        $match = null;
+
+        // abort in case the functional placeholder does not exist
+        if (!preg_match(
+                '/DOWNLOADS_CONFIG_LIMIT_([0-9]+)/',
+                $placeholderListAsString,
+                $match
+        )) {
+            return $defaultPagingLimit;
+        }
+
+        // set custom identified paging limit
+        return $match[1];
     }
 }
