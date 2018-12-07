@@ -711,7 +711,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (119,'Country','c
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (120,'View','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (121,'Locale','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (122, 'Widget','core_module');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (123, 'Locale','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (123, 'Legacy','core_module');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES(1, NULL, 1, 56, 0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES(2, 1, 2, 3, 1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES(3, 1, 4, 17, 1);
