@@ -197,7 +197,7 @@ class Sigma extends \HTML_Template_Sigma {
      */
     function setGlobalVariable($variable, $value = '') {
         $this->internalSetVariables($variable, $value);
-        parent::setGlobalVariable($variables, $value);
+        parent::setGlobalVariable($variable, $value);
     }
 
     /**
@@ -206,7 +206,7 @@ class Sigma extends \HTML_Template_Sigma {
      */
     function setVariable($variable, $value = '') {
         $this->internalSetVariables($variable, $value);
-        parent::setVariable($variables, $value);
+        parent::setVariable($variable, $value);
     }
 
     /**
