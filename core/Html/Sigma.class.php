@@ -196,26 +196,32 @@ class Sigma extends \HTML_Template_Sigma {
      * @inheritDoc
      */
     function setVariable($variable, $value = '') {
-        if (is_array($variable) || is_array($value)) {
-            parent::setVariable($variable, $value);
-            return;
+        $variables = array();
+        if (is_array($variable)) {
+            $variables = $variable;
+        } else if (is_array($value)) {
+            $variables = $this->_flattenVariables($variable, $value);
+        } else {
+            $variables = array($variable => $value);
         }
         $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
         if (!$evm) {
             parent::setVariable($variable, $value);
         }
         try {
-            $evm->triggerEvent(
-                'View.Sigma:setVariable',
-                array(
-                    'content' => &$value,
-                    'template' => $this,
-                )
-            );
+            foreach ($variables as $key=>&$val) {
+                $evm->triggerEvent(
+                    'View.Sigma:setVariable',
+                    array(
+                        'content' => &$val,
+                        'template' => $this,
+                    )
+                );
+            }
         } catch (\Exception $e) {
             throw $e;
         }
-        parent::setVariable($variable, $value);
+        parent::setVariable($variables);
     }
 
     function replaceBlock($block, $template, $keepContent = false, $outer = false) {
