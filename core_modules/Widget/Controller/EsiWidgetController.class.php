@@ -181,7 +181,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         $targetId = $params['get']['targetId'];
         if ($widget->hasCustomParseTarget()) {
             $targetComponent = $widget->getCustomParseTarget()->getComponentController()->getName();
-            $targetEntity = end(explode('\\', get_class($widget->getCustomParseTarget())));
+            $targetEntity = (new \ReflectionClass($widget->getCustomParseTarget()))->getShortName();
             $targetId = $widget->getCustomParseTarget()->getId();
         }
         $this->getComponent('Widget')->parseWidgets(
