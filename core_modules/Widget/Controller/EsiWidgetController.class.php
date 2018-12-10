@@ -153,6 +153,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $_REQUEST += $params['post'];
         }
 
+        $params = $this->objectifyParams($params);
         if ($widget->getType() != \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK) {
             $widgetContent = '{' . $params['get']['name'] . '}';
         } else {
@@ -191,7 +192,6 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $targetId,
             array($params['get']['name'])
         );
-        $params = $this->objectifyParams($params);
         $this->parseWidget(
             $params['get']['name'],
             $widgetTemplate,
