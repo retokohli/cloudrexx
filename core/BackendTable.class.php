@@ -144,30 +144,6 @@ class BackendTable extends HTML_Table {
                 }
                 foreach ($rows as $header=>$data) {
 
-                    $type = null;
-
-                    if (!empty($options[$header]['type'])) {
-                        $type = $options[$header]['type'];
-                    }
-
-                    if (is_object($data)) {
-                        if ($data instanceof \Cx\Model\Base\EntityBase) {
-                            $type = 'Cx\Model\Base\EntityBase';
-                        } elseif ($data instanceof \Doctrine\Common\Collections\Collection) {
-                            continue;
-                        } else {
-                            $type = get_class($data);
-                        }
-                    }
-                    $fieldOptions = array();
-                    if (isset($options['fields']) && isset($options['fields'][$header])) {
-                        $fieldOptions = $options['fields'][$header];
-                    }
-
-                    if (!empty($fieldOptions['type'])) {
-                        $type = $fieldOptions['type'];
-                    }
-
                     if (!empty($sortingKey) && $header === $sortingKey) {
                         //Add the additional attribute id, for getting the updated sort order after the row sorting
                         $this->updateRowAttributes($row, array('id' => 'sorting' . $entity . '_' . $data), true);
@@ -183,7 +159,7 @@ class BackendTable extends HTML_Table {
                     }
 
                     if (isset($options['fields'][$header]['editable'])) {
-                        $data = $formGenerator->getDataElement($header, $header .'-'. $rowname, $type, 0, $data, $options, 0);
+                        $data = $formGenerator->getDataElementWithoutType($header, $header .'-'. $rowname, 0, $data, $options, 0);
 
                         $encode = false;
                     }

@@ -144,31 +144,8 @@ class FormGenerator {
         }
         // foreach entity field
         foreach ($entity as $field=>$value) {
-            $type = null;
+            $dataElement = $this->getDataElementWithoutType($field, $field, 0, $value, $fieldOptions, $entityId);
 
-            if (!empty($options[$field]['type'])) {
-                $type = $options[$field]['type'];
-            }
-
-            if (is_object($value)) {
-                if ($value instanceof \Cx\Model\Base\EntityBase) {
-                    $type = 'Cx\Model\Base\EntityBase';
-                } elseif ($value instanceof \Doctrine\Common\Collections\Collection) {
-                    continue;
-                } else {
-                    $type = get_class($value);
-                }
-            }
-            $length = 0;
-            $value = $entity[$field];
-            $fieldOptions = array();
-            if (isset($options['fields']) && isset($options['fields'][$field])) {
-                $fieldOptions = $options['fields'][$field];
-            }
-            if (!empty($fieldOptions['type'])) {
-                $type = $fieldOptions['type'];
-            }
-            $dataElement = $this->getDataElement($field, $field, $type, $length, $value, $fieldOptions, $entityId);
             if (empty($dataElement)) {
                 continue;
             }
@@ -183,6 +160,46 @@ class FormGenerator {
         if (isset($options['cancelUrl'])) {
             $this->form->cancelUrl = $options['cancelUrl'];
         }
+    }
+
+    /**
+     * Return a DataElement without previously defining the type.
+     *
+     * @param string $name name of the DataElement
+     * @param string $title used title instead of name if html tag should not
+     *                      be called like the attribute
+     * @param int $length length of the DataElement
+     * @param mixed $value value of the DataElement
+     * @param array $options options for the DataElement
+     * @param int $entityId id of the DataElement
+     * @return \Cx\Core\Html\Model\Entity\DataElement
+     */
+    public function getDataElementWithoutType($name, $title, $length, $value, &$options, $entityId)
+    {
+        $type = null;
+
+        if (!empty($options[$name]['type'])) {
+            $type = $options[$name]['type'];
+        }
+
+        if (is_object($value)) {
+            if ($value instanceof \Cx\Model\Base\EntityBase) {
+                $type = 'Cx\Model\Base\EntityBase';
+            } elseif ($value instanceof \Doctrine\Common\Collections\Collection) {
+                return null;
+            } else {
+                $type = get_class($value);
+            }
+        }
+        $fieldOptions = array();
+        if (isset($options['fields']) && isset($options['fields'][$name])) {
+            $fieldOptions = $options['fields'][$name];
+        }
+        if (!empty($fieldOptions['type'])) {
+            $type = $fieldOptions['type'];
+        }
+
+        return $this->getDataElement($name, $title, $type, $length, $value, $fieldOptions, $entityId);
     }
 
     /**
