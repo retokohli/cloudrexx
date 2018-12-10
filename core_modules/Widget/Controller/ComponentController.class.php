@@ -215,21 +215,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $target = new \Cx\Modules\Block\Model\Entity\Block($entityId);
             $this->cache[$entityName][$entityId] = $target;
             return $target;
-        } else if ($componentName == 'View' && $entityName == 'Theme') {
-            $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
-            $target = $themeRepo->findById($entityId);
-            $this->cache[$entityName][$entityId] = $target;
-            return $target;
         }
         $em = $this->cx->getDb()->getEntityManager();
         $component = $this->getComponent($componentName);
         if (!$component) {
             throw new \Exception('Component not found: "' . $componentName . '"');
         }
-        $target = $em->find(
-            'Cx\\' . ucfirst($component->getType()) . '\\' . $component->getName() . '\\Model\\Entity\\' . $entityName,
-            $entityId
-        );
+        $entityNs = $component->getNamespace() . '\\Model\\Entity\\' . $entityName;
+        $findMethod = 'find';
+        try {
+            $repo = $em->getRepository($entityNs);
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            // This catch block can be dropped as soon as there's a possibility
+            // to load non-doctrine entities via EM
+            $repoClass = $component->getNamespace() . '\\Model\\Repository\\' . $entityName . 'Repository';
+            $repo = new $repoClass();
+            $findMethod = 'findById';
+        }
+        $target = $repo->$findMethod($entityId);
         if (!is_a($target, $this->getNamespace() . '\Model\Entity\WidgetParseTarget')) {
             throw new \Exception('Invalid parse target specified');
         }
