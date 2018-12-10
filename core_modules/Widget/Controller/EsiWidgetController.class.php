@@ -175,11 +175,20 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         \LinkGenerator::parseTemplate($widgetContent);
         $this->cx->parseGlobalPlaceholders($widgetContent);
         $widgetTemplate->setTemplate($widgetContent);
+
+        $targetComponent = $params['get']['targetComponent'];
+        $targetEntity = $params['get']['targetEntity'];
+        $targetId = $params['get']['targetId'];
+        if ($widget->hasCustomParseTarget()) {
+            $targetComponent = $widget->getCustomParseTarget()->getComponentController()->getName();
+            $targetEntity = (new \ReflectionClass($widget->getCustomParseTarget()))->getShortName();
+            $targetId = $widget->getCustomParseTarget()->getId();
+        }
         $this->getComponent('Widget')->parseWidgets(
             $widgetTemplate,
-            $params['get']['targetComponent'],
-            $params['get']['targetEntity'],
-            $params['get']['targetId'],
+            $targetComponent,
+            $targetEntity,
+            $targetId,
             array($params['get']['name'])
         );
         $params = $this->objectifyParams($params);
