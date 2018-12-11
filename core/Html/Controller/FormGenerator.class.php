@@ -166,12 +166,12 @@ class FormGenerator {
     /**
      * Return a DataElement without previously defining the type.
      *
-     * @param string $name name of the DataElement
-     * @param string $title used title instead of name if html tag should not
-     *                      be called like the attribute
-     * @param int $length length of the DataElement
-     * @param mixed $value value of the DataElement
-     * @param int $entityId id of the DataElement
+     * @param string $name     name of the DataElement
+     * @param string $title    used title instead of name if html tag should not
+     *                         be called like the attribute
+     * @param int    $length   length of the DataElement
+     * @param mixed  $value    value of the DataElement
+     * @param int    $entityId id of the DataElement
      * @return \Cx\Core\Html\Model\Entity\DataElement
      */
     public function getDataElementWithoutType($name, $title, $length, $value, $entityId)

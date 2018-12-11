@@ -1181,6 +1181,8 @@ class ViewGenerator {
     }
 
     /**
+     * Save multiple entities.
+     *
      * @param string $entityWithNS class name with namespace
      * @param array  $entities     array with all entities and their content
      *
