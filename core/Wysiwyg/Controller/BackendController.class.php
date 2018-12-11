@@ -87,7 +87,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if(isset($_POST) && isset($_POST['bsubmit'])) {
                     \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST['specificStylesheet'])?1:0);
                     \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST['replaceActualContents'])?1:0);
-
+                    \Cx\Core\Setting\Controller\Setting::set(
+                        'sortBehaviour',
+                        isset($_POST['sortBehaviour']) ? $_POST['sortBehaviour'] : 'custom'
+                    );
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
 
@@ -100,6 +103,19 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('replaceActualContents')
                     && !\Cx\Core\Setting\Controller\Setting::add('replaceActualContents', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
                 ){
+                    throw new \Exception("Failed to add new configuration option");
+                }
+                if (
+                    !\Cx\Core\Setting\Controller\Setting::isDefined('sortBehaviour') &&
+                    !\Cx\Core\Setting\Controller\Setting::add(
+                        'sortBehaviour',
+                        'custom',
+                        ++$i,
+                        \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                        'alphabetical:TXT_CORE_WYSIWYG_ALPHABETICAL,custom:TXT_CORE_WYSIWYG_CUSTOM',
+                        'config'
+                    )
+                ) {
                     throw new \Exception("Failed to add new configuration option");
                 }
 
@@ -320,6 +336,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
+                'sortBy'    => ['field' => ['order' => SORT_ASC]],
             ),
             'fields' => array(
                 'id' => array(
@@ -365,6 +382,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'showOverview' => false,
                     'type' => 'sourcecode',
                     'options' => array('mode' => 'html'),
+                ),
+                'order' => array(
+                    'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ORDER'],
+                    'showOverview' => false,
                 ),
             ),
         );
