@@ -77,24 +77,7 @@ class BackendTable extends HTML_Table {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if ($entityClass != 'array') {
-            try {
-                $entityObject = \Env::get('em')->getClassMetadata($entityClass);
 
-                $entityColumnNames = $entityObject->getColumnNames();
-                $primaryKeyNames = $entityObject->getIdentifierFieldNames();
-                foreach ($entityColumnNames as $column) {
-                    $field = $entityObject->getFieldName($column);
-                    if (in_array($field, $primaryKeyNames)) {
-                        continue;
-                    }
-                    $fieldDefinition = $entityObject->getFieldMapping($field);
-                    $options[$field]['type'] = $fieldDefinition['type'];
-                }
-            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
-                \Message::add($e->getMessage());
-            }
-        }
         if (!empty($options['functions']['editable'])) {
             $this->editable = true;
         }
