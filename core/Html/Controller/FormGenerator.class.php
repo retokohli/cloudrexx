@@ -150,17 +150,12 @@ class FormGenerator {
         }
         // foreach entity field
         foreach ($entity as $field=>$value) {
-            $dataElement = $this->getDataElementWithoutType($field, $field, 0, $value, $fieldOptions, $entityId);
+            $element = $this->getDataElementWithoutType($field, $field, 0, $value, $entityId);
 
-            if (empty($dataElement)) {
+            if (empty($element)) {
                 continue;
             }
-            $dataElement->setAttribute('id', 'form-' . $this->formId . '-' . $field);
-            if ($type == 'hidden') {
-                $element = $dataElement;
-            } else {
-                $element = $this->getDataElementGroup($field, $dataElement, $fieldOptions);
-            }
+
             $this->form->addChild($element);
         }
         if (isset($options['cancelUrl'])) {
@@ -176,16 +171,15 @@ class FormGenerator {
      *                      be called like the attribute
      * @param int $length length of the DataElement
      * @param mixed $value value of the DataElement
-     * @param array $options options for the DataElement
      * @param int $entityId id of the DataElement
      * @return \Cx\Core\Html\Model\Entity\DataElement
      */
-    public function getDataElementWithoutType($name, $title, $length, $value, &$options, $entityId)
+    public function getDataElementWithoutType($name, $title, $length, $value, $entityId)
     {
         $type = null;
 
-        if (!empty($options[$name]['type'])) {
-            $type = $options[$name]['type'];
+        if (!empty($this->options[$name]['type'])) {
+            $type = $this->options[$name]['type'];
         }
 
         if (is_object($value)) {
@@ -197,15 +191,28 @@ class FormGenerator {
                 $type = get_class($value);
             }
         }
+
         $fieldOptions = array();
-        if (isset($options['fields']) && isset($options['fields'][$name])) {
-            $fieldOptions = $options['fields'][$name];
+        if (isset($this->options['fields']) && isset($this->options['fields'][$name])) {
+            $fieldOptions = $this->options['fields'][$name];
         }
+
         if (!empty($fieldOptions['type'])) {
             $type = $fieldOptions['type'];
         }
 
-        return $this->getDataElement($name, $title, $type, $length, $value, $fieldOptions, $entityId);
+        $dataElement = $this->getDataElement($name, $title, $type, $length, $value, $fieldOptions, $entityId);
+        if (empty($dataElement)) {
+            return null;
+        }
+        $dataElement->setAttribute('id', 'form-' . $this->formId . '-' . $name);
+        if ($type == 'hidden' || $this->noView) {
+            $element = $dataElement;
+        } else {
+            $element = $this->getDataElementGroup($name, $dataElement, $fieldOptions);
+        }
+
+        return $element;
     }
 
     /**
