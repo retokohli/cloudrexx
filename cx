@@ -664,6 +664,7 @@ function cmd_envs {
             shift
             # TODO: Allow interactive decision whether to execute command on this env
             first=true
+            ORIG_ARGS=("${ORIG_ARGS[@]:2}")
             while read env; do
                 if "$first"; then
                     first=false
@@ -675,7 +676,7 @@ function cmd_envs {
                 if [[ ${ARGUMENTS["silent"]} != true ]]; then
                     echo "Execute env command for $env"
                 fi
-                ./cx env "$@"
+                ./cx env "${ORIG_ARGS[@]}"
                 cd "$prevPwd"
             done <<< "$envs"
             ;;
@@ -1790,6 +1791,7 @@ if [[ "$(pwd -P)" != "$result" || "$DIR" != "$result" ]]; then
     exit
 fi
 
+ORIG_ARGS=("$@")
 case "${COMMANDS[0]}" in
     envs)
         COMMANDS=("${COMMANDS[@]:1}")
