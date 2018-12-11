@@ -3190,6 +3190,8 @@ INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (19,'list_downloads_current_lang','0');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (20,'integrate_into_search_component','1');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (21,'global_search_linking','detail');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (22,'auto_file_naming','off');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (23,'pretty_regex_pattern','');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('emailText','[[ECARD_SENDER_NAME]] hat Ihnen eine E-Card geschickt.<br />\r\nSie können diese während den nächsten [[ECARD_VALID_DAYS]] Tagen unter [[ECARD_URL]] abrufen.');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxCharacters','100');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxHeight','300');

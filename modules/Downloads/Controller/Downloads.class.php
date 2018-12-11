@@ -562,8 +562,9 @@ class Downloads extends DownloadsLibrary
         // parse name and description attributres
         $arrLanguageIds = array_keys(\FWLanguage::getLanguageArray());
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $downloadName = $objDownloads->getPrettyFormatFileName($sourceName);
         foreach ($arrLanguageIds as $langId) {
-            $arrNames[$langId] = $sourceName;
+            $arrNames[$langId] = $downloadName;
             $arrMetakeys[$langId] = '';
             $arrDescriptions[$langId] = '';
             $arrSourcePaths[$langId] = \Cx\Core\Core\Controller\Cx::FOLDER_NAME_IMAGES . '/Downloads/'.$fileName.$suffix.'.'.$fileExtension;
@@ -603,8 +604,7 @@ class Downloads extends DownloadsLibrary
         $objDownload->setCategories(array($objCategory->getId()));
         $objDownload->setDownloads(array());
 
-
-        if (!$objDownload->store($objCategory)) {
+        if (!$objDownload->store($objCategory, \FWLanguage::getActiveFrontendLanguages())) {
             $objDownloads->arrStatusMsg['error'] = array_merge($objDownloads->arrStatusMsg['error'], $objDownload->getErrorMsg());
             return false;
         } else {

@@ -1356,6 +1356,10 @@ class DownloadsManager extends DownloadsLibrary
         $objDownload = new Download();
         $objDownload->load($id);
 
+        \ContrexxJavascript::getInstance()->setVariable(
+            array('autoFileNaming' => $this->arrConfig['auto_file_naming']),
+            'downloads'
+        );
         if ($objDownload->getId()
             && !\Permission::checkAccess(143, 'static', true)
             && (($objFWUser = \FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objDownload->getOwnerId() != $objFWUser->objUser->getId())
@@ -2755,6 +2759,8 @@ class DownloadsManager extends DownloadsLibrary
                     current($linkMethods);
             }
 
+            $this->arrConfig['auto_file_naming']            = isset($_POST['downloads_setting_auto_naming']) ? contrexx_input2raw($_POST['downloads_setting_auto_naming']) : $this->arrConfig['auto_file_naming'];
+            $this->arrConfig['pretty_regex_pattern']        = isset($_POST['downloads_setting_pretty_format']) ? contrexx_input2raw($_POST['downloads_setting_pretty_format']) : $this->arrConfig['pretty_regex_pattern'];
             $this->arrConfig['most_viewed_file_count']      = !empty($_POST['downloads_settings_most_viewed_file_count']) ? intval($_POST['downloads_settings_most_viewed_file_count']) : $this->arrConfig['most_viewed_file_count'];
             $this->arrConfig['most_downloaded_file_count']  = !empty($_POST['downloads_settings_most_downloaded_file_count']) ? intval($_POST['downloads_settings_most_downloaded_file_count']) : $this->arrConfig['most_downloaded_file_count'];
             $this->arrConfig['most_popular_file_count']     = !empty($_POST['downloads_settings_most_popular_file_count']) ? intval($_POST['downloads_settings_most_popular_file_count']) : $this->arrConfig['most_popular_file_count'];
@@ -2765,10 +2771,10 @@ class DownloadsManager extends DownloadsLibrary
             $this->arrConfig['associate_user_to_groups']    = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
             $this->arrConfig['downloads_sorting_order']     = (     !empty($_POST['downloads_settings_sorting_downloads'])
                                                                 && array_key_exists($_POST['downloads_settings_sorting_downloads'], $this->downloadsSortingOptions)
-                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_downloads']) : $this->arrConfig['downloads_sorting_order'];
+                                                              ) ? $_POST['downloads_settings_sorting_downloads'] : $this->arrConfig['downloads_sorting_order'];
             $this->arrConfig['categories_sorting_order']    = (     !empty($_POST['downloads_settings_sorting_categories'])
                                                                 &&  array_key_exists($_POST['downloads_settings_sorting_categories'], $this->categoriesSortingOptions)
-                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_categories']) : $this->arrConfig['categories_sorting_order'];
+                                                              ) ? $_POST['downloads_settings_sorting_categories'] : $this->arrConfig['categories_sorting_order'];
 
             $this->updateSettings();
         }
@@ -2864,6 +2870,11 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_CHECK_ALL'                       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
             'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
             'TXT_DOWNLOADS_INTERFACES'                      => $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'],
+            'TXT_DOWNLOADS_SETTINGS_ASSET_SELECTION'        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_ASSET_SELECTION'],
+            'TXT_DOWNLOADS_SETTINGS_AUTO_NAMING'            => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_AUTO_NAMING'],
+            'TXT_DOWNLOADS_SETTINGS_AUTO_NAMING_DISABLE'    => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_AUTO_NAMING_DISABLE'],
+            'TXT_DOWNLOADS_SETTINGS_AUTO_NAMING_ENABLE'     => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_AUTO_NAMING_ENABLE'],
+            'TXT_DOWNLOADS_SETTINGS_PRETTY_FORMAT_TOOLTIP'  => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_PRETTY_FORMAT_TOOLTIP'],
             'TXT_DOWNLOADS_EMAIL_TEMPLATES'                 => $_ARRAYLANG['TXT_DOWNLOADS_EMAIL_TEMPLATES'],
             'TXT_DOWNLOADS_USER_ADMIN'                      => $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'],
             'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'     => $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'],
@@ -2888,6 +2899,9 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_SETTINGS_ATTRIBUTE_WEBSITE_CHECKED'  => $this->arrConfig['use_attr_website'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_LIST_DOWNLOADS_CURRENT_LANG'=> $this->arrConfig['list_downloads_current_lang'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_INTEGRATE_INTO_SEARCH_COMPONENT'=> $this->arrConfig['integrate_into_search_component'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_AUTO_NAMING_DISABLE_CHECKED' => $this->arrConfig['auto_file_naming'] == 'off' ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_AUTO_NAMING_ENABLE_CHECKED' => $this->arrConfig['auto_file_naming'] == 'on' ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_PRETTY_FORMAT'              => contrexx_raw2xhtml($this->arrConfig['pretty_regex_pattern']),
             'DOWNLOADS_SETTINGS_SEARCH_LINK_OPTIONS'        => $linkMethodOptions,
             'DOWNLOADS_SETTINGS_MOST_VIEWED_FILE_COUNT'     => $this->arrConfig['most_viewed_file_count'],
             'DOWNLOADS_SETTINGS_MOST_DOWNLOADED_FILE_COUNT' => $this->arrConfig['most_downloaded_file_count'],
