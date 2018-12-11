@@ -67,6 +67,11 @@ class FormGenerator {
     protected $entityClass;
 
     /**
+     * @var bool $noView to set if a view should be created
+     */
+    protected $noView;
+
+    /**
      * FormGenerator constructor.
      *
      * @param array $entity       entity to display
@@ -86,8 +91,9 @@ class FormGenerator {
         $this->options = $options;
         $this->entity = $entity;
         $this->entityClass = $entityClass;
+        $this->noView = $noView;
 
-        if ($noView) {
+        if ($this->noView) {
             return;
         }
         // Remove the virtual element from array
