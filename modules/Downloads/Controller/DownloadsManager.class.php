@@ -2759,8 +2759,8 @@ class DownloadsManager extends DownloadsLibrary
                     current($linkMethods);
             }
 
-            $this->arrConfig['auto_file_naming']            = $_POST['downloads_setting_auto_naming'] ?? $this->arrConfig['auto_file_naming'];
-            $this->arrConfig['pretty_regex_pattern']        = $_POST['downloads_setting_pretty_format'] ?? $this->arrConfig['pretty_regex_pattern'];
+            $this->arrConfig['auto_file_naming']            = isset($_POST['downloads_setting_auto_naming']) ? contrexx_input2raw($_POST['downloads_setting_auto_naming']) : $this->arrConfig['auto_file_naming'];
+            $this->arrConfig['pretty_regex_pattern']        = isset($_POST['downloads_setting_pretty_format']) ? contrexx_input2raw($_POST['downloads_setting_pretty_format']) : $this->arrConfig['pretty_regex_pattern'];
             $this->arrConfig['most_viewed_file_count']      = !empty($_POST['downloads_settings_most_viewed_file_count']) ? intval($_POST['downloads_settings_most_viewed_file_count']) : $this->arrConfig['most_viewed_file_count'];
             $this->arrConfig['most_downloaded_file_count']  = !empty($_POST['downloads_settings_most_downloaded_file_count']) ? intval($_POST['downloads_settings_most_downloaded_file_count']) : $this->arrConfig['most_downloaded_file_count'];
             $this->arrConfig['most_popular_file_count']     = !empty($_POST['downloads_settings_most_popular_file_count']) ? intval($_POST['downloads_settings_most_popular_file_count']) : $this->arrConfig['most_popular_file_count'];
