@@ -116,7 +116,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'config'
                     )
                 ) {
-                    throw new \Exception("Failed to add new configuration option");
+                    throw new \Exception('Failed to add new configuration option');
                 }
 
                 $tmpl = new \Cx\Core\Html\Sigma();
