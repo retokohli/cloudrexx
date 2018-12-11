@@ -166,25 +166,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Looks up the template content of a widget
      * @param string $widgetName Name of the widget to get content for
-     * @param int $themeId ID of the theme to get Widget content for
-     * @param int $pageId ID of the page to get Widget content for
+     * @param \Cx\Core\View\Model\Entity\Theme $theme Theme to get Widget content for
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get Widget content for
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
      * @param string $channel Channel identifier
      * @return \Cx\Core\Html\Sigma Widget content as template
      */
-    public function getWidgetContent($widgetName, $themeId, $pageId, $targetComponent, $targetEntity, $targetId, $channel) {
-        $em = $this->cx->getDb()->getEntityManager();
-        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $theme = $themeRepo->findById($themeId);
+    public function getWidgetContent($widgetName, $theme, $page, $targetComponent, $targetEntity, $targetId, $channel) {
         // Since version number is not yet defined (XY), we do not check this yet
         if (false) {//version_compare($theme->getVersionNumber(), 'XY' '>=') {
             // load theme file contents:
             // /themes/<theme>/<widgetComponentType>/<widgetComponentName>/Widget/<widgetName>/<targetComponentName>/<targetEntityName>/<targetId>.html
             return;
         }
-        $page = $em->find('Cx\Core\ContentManager\Model\Entity\Page', $pageId);
         $parseTarget = $this->getParseTarget(
             $targetComponent,
             $targetEntity,
