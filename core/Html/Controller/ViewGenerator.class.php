@@ -1427,17 +1427,13 @@ class ViewGenerator {
     protected function removeEntries($entityWithNS, $deleteIds)
     {
         $this->cx->getRequest()->getUrl()->setParam('deleteids', null);
-        $doRedirect = false;
 
         $deleteIdsArray = explode(',', $deleteIds);
         $count = count($deleteIdsArray);
 
         foreach($deleteIdsArray as $deleteId) {
             --$count;
-            if (!$count) {
-                $doRedirect = true;
-            }
-            $this->removeEntry($entityWithNS, $deleteId, $doRedirect);
+            $this->removeEntry($entityWithNS, $deleteId, !$count);
         }
     }
 
