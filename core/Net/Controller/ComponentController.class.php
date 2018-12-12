@@ -82,6 +82,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             } else {
                 $ascii = idn_to_ascii($name);
             }
+
+            // check if conversion was successful
+            if (!empty($ascii)) {
+                // in case the INTL extension is misconfigured on
+                // the server, then the return value of idn_to_ascii()
+                // will be empty. in that case let's return the
+                // original domain's name
+                $name = $ascii;
+            }
         }
 
         return $name;
@@ -110,6 +119,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $utf8 = idn_to_utf8($name, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
             } else {
                 $utf8 = idn_to_utf8($name);
+            }
+
+            // check if conversion was successful
+            if (!empty($utf8)) {
+                // in case the INTL extension is misconfigured on
+                // the server, then the return value of idn_to_utf8()
+                // will be empty. in that case let's return the
+                // original domain's name
+                $name = $utf8;
             }
         }
 
