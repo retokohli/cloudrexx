@@ -59,6 +59,13 @@ class DomainRepositoryException extends \Exception {};
  * @subpackage  core_model
  */
 class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
+
+    /**
+     * The domain (in the repository) that represents the server's hostname
+     * @var \Cx\Core\Net\Model\Entity\Domain    Server's hostname domain
+     */
+    protected $hostnameDomain = null;
+
     /**
      * Constructor to initialize the YamlRepository with source
      * file config/DomainRepository.yml.
@@ -81,21 +88,13 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
 
             //attach the hostname domain entity to repository
             $this->add($hostName);
+
+            // set ID to 0 to make it having the same ID constantly
+            $hostName->setId(0);
         }
 
-        // Since YamlRepo handles virtual entities wrong, we can not change the
-        // ID of an existing entry (see
-        // http://bugs.cloudrexx.com/cloudrexx/ticket/2762 and
-        // http://bugs.cloudrexx.com/cloudrexx/ticket/2763).
-        // This else statement can be removed as soon as YamlRepository can
-        // handle ID changes of virtual entities.
-        else {
-            throw new \Exception('Duplicate entry for this domain, see http://bugs.cloudrexx.com/cloudrexx/ticket/2763');
-        }
-
-        $hostName->setVirtual(true);
-        // set ID to 0 to make it having the same ID constantly
-        $hostName->setId(0);
+        // remember server's hostname domain
+        $this->hostnameDomain = $hostName;
     }
 
     public function getMainDomain() {
@@ -107,5 +106,14 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
 
         $objDomain = $this->findBy(array('name' => $_SERVER['SERVER_NAME']));
         return $objDomain[0];
+    }
+
+    /**
+     * Get the server's hostname domain
+     *
+     * @return \Cx\Core\Net\Model\Entity\Domain The server's hostname domain
+     */
+    public function getHostDomain() {
+        return $this->hostnameDomain;
     }
 }
