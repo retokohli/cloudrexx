@@ -90,6 +90,10 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
             $this->add($hostName);
 
             // set ID to 0 to make it having the same ID constantly
+            // note: this is required as the YamlRepository can't properly
+            // handle virtual entiries. As a result, if we would not overwrite
+            // the ID to 0, the YamlRepository would constantly increment the
+            // auto-increment ID of the repository.
             $hostName->setId(0);
         }
 
