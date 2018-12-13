@@ -736,17 +736,26 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
-        foreach ($params as &$param) {
-            $param = $this->parseEsiVars($param);
-        }
-        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
         $settings = $this->getSettings();
+        $inPlaceReplacement = false;
+        if (
+            !isset($settings['internalSsiCache']) ||
+            $settings['internalSsiCache'] != 'on'
+        ) {
+            $inPlaceReplacement = true;
+        }
+
+        if ($inPlaceReplacement) {
+            foreach ($params as &$param) {
+                $param = $this->parseEsiVars($param);
+            }
+        }
+
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+
         if (
             is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
-            (
-                !isset($settings['internalSsiCache']) ||
-                $settings['internalSsiCache'] != 'on'
-            )
+            $inPlaceReplacement
         ) {
             try {
                 return $this->getApiResponseForUrl($url);
@@ -769,10 +778,21 @@ class CacheLib
      * @return string ESI randomized include code
      */
     public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
+        $settings = $this->getSettings();
+        $inPlaceReplacement = false;
+        if (
+            !isset($settings['internalSsiCache']) ||
+            $settings['internalSsiCache'] != 'on'
+        ) {
+            $inPlaceReplacement = true;
+        }
+
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
-            foreach ($esiContentInfo[2] as &$param) {
-                $param = $this->parseEsiVars($param);
+            if ($inPlaceReplacement) {
+                foreach ($esiContentInfo[2] as &$param) {
+                    $param = $this->parseEsiVars($param);
+                }
             }
             $urls[] = $this->getUrlFromApi(
                 $esiContentInfo[0],
@@ -786,10 +806,7 @@ class CacheLib
                 $this->getSsiProxy(),
                 '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx'
             ) &&
-            (
-                !isset($settings['internalSsiCache']) ||
-                $settings['internalSsiCache'] != 'on'
-            )
+            $inPlaceReplacement
         ) {
             try {
                 return $this->getApiResponseForUrl(
