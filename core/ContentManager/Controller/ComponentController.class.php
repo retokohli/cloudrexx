@@ -167,7 +167,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return  \Cx\Core\Html\Model\Entity\HtmlElement  Instance of type link
      * @throws  \Exeception In case no canonical-link has been set so far
      */
-    public function fetchSetCanonicalLink($response) {
+    public function fetchAlreadySetCanonicalLink($response) {
         $headers = $response->getHeaders();
         $linkHeader = '';
         if (isset($headers['Link'])) {

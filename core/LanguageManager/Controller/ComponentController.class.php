@@ -248,7 +248,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // check if current page has a different canonical-link
         try {
             // fetch set canonical-link
-            $link = $this->getComponent('ContentManager')->fetchSetCanonicalLink($this->cx->getResponse());
+            $link = $this->getComponent('ContentManager')->fetchAlreadySetCanonicalLink($this->cx->getResponse());
             $canonicalLinkUrl = $link->getAttribute('href');
             $currentPageUrl = \Cx\Core\Routing\Url::fromPage($currentPage)->toString();
 
