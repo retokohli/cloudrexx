@@ -164,6 +164,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Get the set canonical-link of this request
      *
+     * @param   \Cx\Core\Routing\Model\Entity\Response  $response Response
+     *                                          object of current request
      * @return  \Cx\Core\Html\Model\Entity\HtmlElement  Instance of type link
      * @throws  \Exeception In case no canonical-link has been set so far
      */
