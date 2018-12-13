@@ -182,7 +182,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
                 // fetch canonical-link
                 try {
-                    $link = $this->getComponent('ContentManager') ->fetchSetCanonicalLink($response);
+                    $link = $this->cx->getComponent('ContentManager')->fetchSetCanonicalLink($response);
                 } catch (\Exception $e) {
                     // no Link header set -> page doesn't have a canonical-link
                     break;

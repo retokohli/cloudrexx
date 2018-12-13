@@ -177,7 +177,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // we have to check them as well as fallback.
             // This code code be removed once all headers are only
             // set on the instance of \Cx\Core\Routing\Model\Entity\Response
-            $headers = $this->cx->getResolver()->getHeaders();
+            $headers = \Env::get('Resolver')->getHeaders();
             if (isset($headers['Link'])) {
                 $linkHeader = $headers['Link'];
             }
