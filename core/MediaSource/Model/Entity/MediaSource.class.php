@@ -233,6 +233,13 @@ class MediaSource extends DataSource {
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getIdentifierFieldNames() {
+        return array('filename');
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.

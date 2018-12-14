@@ -161,16 +161,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (empty($arguments[1])) {
                 throw new \InvalidArgumentException('Not enough arguments');
             }
-            $em = $this->cx->getDb()->getEntityManager();
             $dataSource = $this->getDataSource($arguments[1]);
             $elementId = array();
-            if (
-                isset($arguments[2]) &&
-                $dataSource instanceof \Cx\Core\DataSource\Model\Entity\DoctrineRepository
-            ) {
+            if (isset($arguments[2])) {
                 $argumentKeys = array_keys($arguments);
-                $metaData = $em->getClassMetadata($dataSource->getIdentifier());
-                $primaryKeyNames = $metaData->getIdentifierFieldNames();
+                $primaryKeyNames = $dataSource->getIdentifierFieldNames();
                 for ($i = 0; $i < count($arguments) - 2; $i++) {
                     if (!is_numeric($argumentKeys[$i + 2])) {
                         break;
