@@ -318,7 +318,8 @@ class MediaSource extends DataSource {
      * @throws \Exception If something did not go as planned
      */
     public function update($elementId, $data) {
-        throw new \Exception('Not yet implemented');
+        $this->remove($elementId);
+        return $this->add($data);
     }
 
     /**
@@ -327,6 +328,13 @@ class MediaSource extends DataSource {
      * @throws \Exception If something did not go as planned
      */
     public function remove($elementId) {
-        throw new \Exception('Not yet implemented');
+        $mediaSource = $this->getMediaSource();
+        $fs = $mediaSource->getFileSystem();
+        $filename = '/' . implode('/', $elementId);
+        $file = $fs->getFileFromPath($filename);
+        if (!$file) {
+            throw new \Exception('File "' . $filename . '" not found!');
+        }
+        return $fs->removeFile($file);
     }
 }
