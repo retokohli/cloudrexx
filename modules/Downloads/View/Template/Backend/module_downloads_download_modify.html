@@ -453,13 +453,17 @@ function switchBox(element, contentId) {
         var existingDescription = document.getElementById('downloads_download_description_' + firstLanguageId).value;
         var existingSourceFile = document.getElementById('downloads_download_file_source_' + firstLanguageId).value;
         var existingSourceUrl = document.getElementById('downloads_download_url_source_' + firstLanguageId).value;
-        var existingMetaKeywords = document.getElementById('downloads_download_metakeys_' + firstLanguageId).value;
+        if (jQuery('textarea[name^="downloads_download_metakeys"').length) {
+            var existingMetaKeywords = document.getElementById('downloads_download_metakeys_' + firstLanguageId).value;
+        }
         var tab = document.getElementById(contentId);
         tab.querySelector('input[id^="downloads_download_name_"]').value = existingName;
         tab.querySelector('textarea[id^="downloads_download_description_"]').value = existingDescription;
         tab.querySelector('input[id^="downloads_download_file_source_"]').value = existingSourceFile;
         tab.querySelector('input[id^="downloads_download_url_source_"]').value = existingSourceUrl;
-        tab.querySelector('textarea[id^="downloads_download_metakeys_"]').value = existingMetaKeywords;
+        if (jQuery('textarea[name^="downloads_download_metakeys"').length) {
+            tab.querySelector('textarea[id^="downloads_download_metakeys_"]').value = existingMetaKeywords;
+        }
 
         document.getElementById('downloadsLanguage_' + contentId).style.display = 'block';
         selectTab(contentId);
