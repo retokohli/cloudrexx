@@ -489,7 +489,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
         );
         foreach ($iterator as $thumbnail){
             \Cx\Lib\FileSystem\FileSystem::delete_file(
-                $thumbnail
+                $thumbnail->getPathName()
             );
         }
     }
