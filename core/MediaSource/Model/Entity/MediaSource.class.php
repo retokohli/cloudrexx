@@ -47,6 +47,12 @@ use Cx\Core\DataSource\Model\Entity\DataSource;
 class MediaSource extends DataSource {
 
     /**
+     * List of operations supported by this DataSource
+     * @var array List of operations
+     */
+    protected $supportedOperations = array();
+
+    /**
      * Name of the mediatype e.g. files, shop, media1
      * @var string
      */
@@ -250,7 +256,32 @@ class MediaSource extends DataSource {
         $offset = 0,
         $fieldList = array()
     ) {
-        throw new \Exception('Not yet implemented');
+        return $this->getMediaSource()->getFileSystem()->getFileList('');
+    }
+
+    /**
+     * Returns the real instance of this MediaSource
+     *
+     * DataSources are loaded from DB, MediaSources are loaded via event hooks,
+     * MediaSource is a DataSource  -->  MediaSources cannot be loaded from
+     * DB yet. As soon as this is possible this can be removed.
+     * @return MediaSource Real instance of this MediaSource
+     */
+    protected function getMediaSource() {
+        // force access
+        try {
+            $mediaSource = $this->cx->getMediaSourceManager()->getMediaType(
+                $this->getIdentifier()
+            );
+        } catch (\Cx\Core\MediaSource\Model\Entity\MediaSourceManagerException $e) {
+            $mediaSource = $this->cx->getMediaSourceManager()->getLockedMediaType(
+                $this->getIdentifier()
+            );
+        }
+        if (!$mediaSource) {
+            throw new \Exception('MediaSource not found');
+        }
+        return $mediaSource;
     }
 
     /**
@@ -259,7 +290,18 @@ class MediaSource extends DataSource {
      * @throws \Exception If something did not go as planned
      */
     public function add($data) {
-        throw new \Exception('Not yet implemented');
+        $mediaSource = $this->getMediaSource();
+        $data['path'] = $this->getIdentifier() . '/';
+        $jd = new \Cx\Core\Json\JsonData();
+        $res = $jd->data(
+            'Uploader',
+            'upload',
+            array('get' => '', 'post' => $data, 'mediaSource' => $mediaSource)
+        );
+        if ($res['status'] != 'success' || $res['data']['OK'] !== 1) {
+            throw new \Exception('Upload failed: ' . $res['message']);
+        }
+        return true;
     }
 
     /**
