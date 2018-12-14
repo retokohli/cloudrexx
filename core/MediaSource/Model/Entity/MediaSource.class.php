@@ -263,7 +263,11 @@ class MediaSource extends DataSource {
         $offset = 0,
         $fieldList = array()
     ) {
-        return $this->getMediaSource()->getFileSystem()->getFileList('');
+        $fileList = $this->getMediaSource()->getFileSystem()->getFileList('');
+        if (count($elementId) && $fileList[current($elementId)]) {
+            return array(current($elementId) => $fileList[current($elementId)]);
+        }
+        return $fileList;
     }
 
     /**
