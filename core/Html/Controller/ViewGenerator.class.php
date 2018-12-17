@@ -1356,7 +1356,7 @@ class ViewGenerator {
      * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Exception
      */
-    protected function removeEntry($entityWithNS, $deleteId, $doRedirect) {
+    protected function removeEntry($entityWithNS, $deleteId, $doRedirect = true) {
         global $_ARRAYLANG;
 
         $em = $this->cx->getDb()->getEntityManager();
