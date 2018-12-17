@@ -1350,10 +1350,12 @@ class ViewGenerator {
      * This function is used to delete an entry
      *
      * @param string $entityWithNS class name including namespace
+     * @param int    $deleteId     id of entity to delete
+     * @param bool   $doRedirect   return or redirect
+     * @param bool   $showMessage  if message should be displayed if the remove
+     *                             was successful.
      * @access protected
      * @global array $_ARRAYLANG array containing the language variables
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Exception
      */
     protected function removeEntry($entityWithNS, $deleteId, $doRedirect = true, $showMessage = true) {
