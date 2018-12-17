@@ -69,7 +69,14 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      */
     protected $identifier = '';
 
-    // TODO: DataSet must be extended, that it can handle objects
+
+    /**
+     * Constructor for DataSet
+     *
+     * @param array $data (optional) Array of data to convert and store
+     * @param callable $converter (optional) Custom data converter
+     * @todo: DataSet must be extended, that it can handle objects
+     */
     public function __construct($data = array(), callable $converter = null) {
         if (!count($data)) {
             return;
@@ -144,7 +151,16 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         return $convertedData;
     }
 
-    protected function convertObject($object, &$key) {
+    /**
+     * Default conversion of objects
+     * @param Object $object Object to convert
+     * @param string $key (Reference) Object key, might get replaced by object's ID
+     * @return array Converted data
+     */
+    protected function convertObject(
+        $object,
+        &$key
+    ) {
         $data = array();
         if ($object instanceof \Cx\Model\Base\EntityBase) {
             $em = \Env::get('em');
