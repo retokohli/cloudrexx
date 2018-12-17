@@ -187,10 +187,17 @@ class DoctrineRepository extends DataSource {
                 $qb->setFirstResult($offset);
             }
         }
-        $result = $qb->getQuery()->getResult('IndexedArray');
+        $result = $qb->getQuery()->getResult();
 
         // $fieldList
-        $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($result);
+        $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
+            $result,
+            null,
+            array(
+                'recursiveParsing' => true,
+                'skipVirtual' => true,
+            )
+        );
         if (count($fieldList)) {
             $dataFlipped = $dataSet->flip()->toArray();
             foreach ($dataFlipped as $key=>$value) {
