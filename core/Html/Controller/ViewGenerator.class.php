@@ -1356,7 +1356,7 @@ class ViewGenerator {
      * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Exception
      */
-    protected function removeEntry($entityWithNS, $deleteId, $doRedirect = true) {
+    protected function removeEntry($entityWithNS, $deleteId, $doRedirect = true, $showMessage = true) {
         global $_ARRAYLANG;
 
         $em = $this->cx->getDb()->getEntityManager();
@@ -1401,7 +1401,9 @@ class ViewGenerator {
                     $em->remove($entityObj);
                     $em->flush();
                 }
-                \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
+                if ($showMessage) {
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
+                }
             }
         }
 
@@ -1426,15 +1428,30 @@ class ViewGenerator {
      */
     protected function removeEntries($entityWithNS, $deleteIds)
     {
+        global $_ARRAYLANG;
+
         $this->cx->getRequest()->getUrl()->setParam('deleteids', null);
 
         $deleteIdsArray = explode(',', $deleteIds);
         $count = count($deleteIdsArray);
+        $doRedirect = false;
+        $showMessage = false;
+        if ($count == 1) {
+            $doRedirect = true;
+            $showMessage = true;
+        }
 
         foreach($deleteIdsArray as $deleteId) {
-            --$count;
-            $this->removeEntry($entityWithNS, $deleteId, !$count);
+            $this->removeEntry($entityWithNS, $deleteId, $doRedirect, $showMessage);
         }
+
+        if (!\Message::have(\Message::CLASS_ERROR)) {
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORDS_DELETED_SUCCESSFUL']);
+        }
+
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
+        $actionUrl->setParam('deleteids', null);
+        \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
 
 
