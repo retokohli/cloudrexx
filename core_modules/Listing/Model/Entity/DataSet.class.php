@@ -194,7 +194,12 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                     $data[$field] = $object->$methodNameToFetchAssociation();
                 }
             }
-            $data['virtual'] = $object->isVirtual();
+            if (
+                !isset($this->options['skipVirtual']) ||
+                !$this->options['skipVirtual']
+            ) {
+                $data['virtual'] = $object->isVirtual();
+            }
             return $data;
         }
         foreach ($object as $attribute => $property) {
