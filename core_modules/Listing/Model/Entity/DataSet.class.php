@@ -69,18 +69,25 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      */
     protected $identifier = '';
 
+    /**
+     * List of options
+     * @var array
+     */
+    protected $options = array();
 
     /**
      * Constructor for DataSet
      *
      * @param array $data (optional) Array of data to convert and store
      * @param callable $converter (optional) Custom data converter
+     * @param array $options (optional): Options for conversion
      * @todo: DataSet must be extended, that it can handle objects
      */
-    public function __construct($data = array(), callable $converter = null) {
+    public function __construct($data = array(), callable $converter = null, $options = array()) {
         if (!count($data)) {
             return;
         }
+        $this->options = $options;
         if (is_callable($converter)) {
             $this->data = $converter($data);
         } else {
