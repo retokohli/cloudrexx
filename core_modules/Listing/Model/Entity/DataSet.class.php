@@ -162,11 +162,13 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      * Default conversion of objects
      * @param Object $object Object to convert
      * @param string $key (Reference) Object key, might get replaced by object's ID
+     * @param array $forbiddenClasses (Optional) List of classes to skip recursion of
      * @return array Converted data
      */
     protected function convertObject(
         $object,
-        &$key
+        &$key,
+        $forbiddenClasses = array('Doctrine\ORM\PersistentCollection')
     ) {
         $data = array();
         if ($object instanceof \Cx\Model\Base\EntityBase) {
@@ -192,6 +194,28 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 $methodNameToFetchAssociation = 'get'.ucfirst($field);
                 if (in_array($methodNameToFetchAssociation, $classMethods)) {
                     $data[$field] = $object->$methodNameToFetchAssociation();
+                    if (
+                        isset($this->options['recursiveParsing']) &&
+                        $this->options['recursiveParsing'] &&
+                        is_object($data[$field])
+                    ) {
+                        if (
+                            in_array(
+                                get_class($data[$field]),
+                                $forbiddenClasses
+                            )
+                        ) {
+                            unset($data[$field]);
+                            continue;
+                        }
+                        $forbiddenClasses[] = get_class($data[$field]);
+                        $foo = '';
+                        $data[$field] = $this->convertObject(
+                            $data[$field],
+                            $foo,
+                            $forbiddenClasses
+                        );
+                    }
                 }
             }
             if (
