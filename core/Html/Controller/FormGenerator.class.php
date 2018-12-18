@@ -392,6 +392,9 @@ class FormGenerator {
                         if (!isset($_SESSION['vgOptions'])) {
                             $_SESSION['vgOptions'] = array();
                         }
+                        // This is extremely slow as it stores the complete
+                        // view-generator configuration to session. This should
+                        // be added as a reference
                         $_SESSION['vgOptions'][$this->entityClass] = $this->componentOptions;
                         if ($entityId != 0) {
                             // if we edit the main form, we also want to show the existing associated values we already have
