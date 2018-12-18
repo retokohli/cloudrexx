@@ -973,7 +973,6 @@ CODE;
             $displayValue = (string) $foreignEntity;
 
             $foreignEntityMetadata = \Env::get('em')->getClassMetadata(get_class($foreignEntity));
-            $foreignEntityIdentifierField = $foreignEntityMetadata->getSingleIdentifierFieldName();
             $entityValueSerialized = 'vg_increment_number=' . $this->formId;
             $fieldsToParse = $foreignEntityMetadata->fieldNames;
             foreach ($fieldsToParse as $dbColName=>$fieldName) {
@@ -1000,6 +999,7 @@ CODE;
                     continue;
                 }
 
+                // get the second foreign entity (A->B->C)
                 $foreignForeignEntity = $foreignEntityMetadata->getFieldValue(
                     $foreignEntity,
                     $foreignAssocMapping['fieldName']
@@ -1007,15 +1007,21 @@ CODE;
                 if (!$foreignForeignEntity) {
                     continue;
                 }
-                $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
-                    $foreignEntityIdentifierField
-                );
-                $foreignEntityIdentifierGetter = 'get' . $methodBaseName;
-                // N:N relations don't have a getter with that name
-                if (!method_exists($foreignForeignEntity, $foreignEntityIdentifierGetter)) {
-                    continue;
+
+                // add C's relation to B to the data
+                $joinColumns = $foreignAssocMapping['targetToSourceKeyColumns'];
+                // C.$targetColumn = B.$sourceColumn
+                foreach ($joinColumns as $targetColumn=>$sourceColumn) {
+                    $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                        $targetColumn
+                    );
+                    $foreignEntityIdentifierGetter = 'get' . $methodBaseName;
+                    // N:N relations don't have a getter with that name
+                    if (!method_exists($foreignForeignEntity, $foreignEntityIdentifierGetter)) {
+                        continue;
+                    }
+                    $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->$foreignEntityIdentifierGetter();
                 }
-                $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->$foreignEntityIdentifierGetter();
             }
 
             $sorroundingDiv = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
