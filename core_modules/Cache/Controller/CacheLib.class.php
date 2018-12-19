@@ -142,6 +142,31 @@ class CacheLib
     protected $cachePrefix;
 
     /**
+     * Number added to $cachePrefix to allow "invalidating" the cache
+     *
+     * @var int
+     */
+    protected $cacheIncrement = 1;
+
+    /**
+     * Dynamic ESI variable callbacks
+     * @var array
+     */
+    protected $dynVars = array();
+
+    /**
+     * Dynamic ESI variable callbacks
+     * @var array
+     */
+    protected $dynFuncs = array();
+
+    /**
+     * Page info (url, locale, ...)
+     * @var array
+     */
+    protected $arrPageContent = array();
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -153,12 +178,241 @@ class CacheLib
     }
 
     /**
+     * Loads dynamic ESI variables and functions
+     */
+    public function initEsiDynVars() {
+        if (count($this->dynVars)) {
+            return;
+        }
+
+        // TODO: $dynVars needs to be built dynamically (via event handler)
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->dynVars = array(
+            'GEO' => array(
+                // This is not specified by W3C but by Akamai
+                'country_code' => function() use ($cx) {
+                    return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
+                },
+            ),
+            'HTTP_COOKIE' => array(
+                // This only supports PHPSESSID instead of full cookie support
+                // as specified by W3C
+                'PHPSESSID' => function() {
+                    $sessId = 0;
+                    if (!empty($_COOKIE[session_name()])) {
+                        $sessId = $_COOKIE[session_name()];
+                    }
+                    return $sessId;
+                },
+            ),
+            // HTTP_ACCEPT_LANGUAGE
+            // HTTP_HOST
+            // HTTP_USER_AGENT
+            'HTTP_REFERER' => function() {
+                if (!isset($_SERVER['HTTP_REFERER'])) {
+                    return '';
+                }
+                return $_SERVER['HTTP_REFERER'];
+            },
+            'QUERY_STRING' => function () {
+                // This is not according to W3C specifications since it
+                // includes the leading "?" if there are params. This is due
+                // to backwards compatibility
+                $parameters = array();
+                parse_str($_SERVER['QUERY_STRING'], $parameters);
+                if (isset($parameters['__cap'])) {
+                    unset($parameters['__cap']);
+                }
+                $queryString = http_build_query($parameters, null, '&');
+                if (!empty($queryString)) {
+                    return '?' . $queryString;
+                }
+            },
+            'REMOTE_ADDR' => function() {
+                if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                    return $_SERVER['HTTP_X_FORWARDED_FOR'];
+                }
+                if (isset($_SERVER['REMOTE_ADDR'])) {
+                    return $_SERVER['REMOTE_ADDR'];
+                }
+                return '';
+            },
+        );
+
+        // TODO: $dynFuncs needs to be built dynamically (via event handler)
+        $this->dynFuncs = array(
+            'strftime' => function($args) use ($cx) {
+                // Notes:
+                //   This function does not support the ESI dynamic function
+                //   modifiers %c, %E, %O, %x, %X and %+.
+
+                $time = time();
+                $format = '';
+
+                switch (count($args)) {
+                    case 1:
+                        $format = $args[0];
+                        break;
+                    case 2:
+                        $time = $args[0];
+                        $format = $args[1];
+                        break;
+
+                    default:
+                        \DBG::msg('Invalid arguments supplied to $strftime()');
+                        return;
+                }
+                $format = trim($format, '\'');
+
+                // TODO: drop this code as soon as strftime of DateTime
+                // component does no longer need any locale info.
+                $locale = '';
+                $this->initRequestInfo();
+                $cachedLocaleData = $this->getCachedLocaleData();
+                if (
+                    isset($this->arrPageContent['locale']) &&
+                    in_array($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode'])
+                ) {
+                    $locale = array_search($this->arrPageContent['locale'], $cachedLocaleData['Hashtables']['IdByCode']);
+                }
+                // end of TODO
+                return \Cx\Core\DateTime\Controller\ComponentController::strftime(
+                    $format,
+                    $time,
+                    $locale
+                );
+            },
+        );
+    }
+
+    /**
+     * Initializes basic request info (url, locale, ...)
+     */
+    protected function initRequestInfo() {
+        global $_CONFIG;
+
+        if (count($this->arrPageContent)) {
+            return;
+        }
+        // in case the request's origin is from a mobile devie
+        // and this is the first request (the InitCMS object wasn't yet
+        // able to determine of the mobile device wishes to be served
+        // with the system's mobile view), we shall cache the request separately
+        $isMobile = (
+            \InitCMS::_is_mobile_phone() &&
+            !\InitCMS::_is_tablet() &&
+            !isset($_REQUEST['smallscreen'])
+        );
+
+        // Use data of $_GET and $_POST to uniquely identify a request.
+        // Important: You must not use $_REQUEST instead. $_REQUEST also contains
+        //            the data of $_COOKIE. Whereas the cookie information might
+        //            change in each request, which might break the caching-
+        //            system.
+        $request = array_merge_recursive($_GET, $_POST);
+        ksort($request);
+
+        $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
+
+        $this->arrPageContent = array(
+            'url' => $this->currentUrl,
+            'request' => $request,
+            'isMobile' => $isMobile,
+        );
+        $cachedLocaleData = $this->getCachedLocaleData();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (!$cachedLocaleData) {
+            $this->arrPageContent += $this->selectBestLanguageFromRequest($cx);
+        } else {
+            $requestedLocale = '';
+            // fetch locale from requested url
+            if (
+                count($cachedLocaleData['Hashtables']['IdByCode']) > 1 ||
+                $_CONFIG['useVirtualLanguageDirectories'] != 'off'
+            ) {
+                $requestUrl = new \Cx\Lib\Net\Model\Entity\Url($this->currentUrl);
+                $requestedLocale = current($requestUrl->getPathParts());
+            }
+
+            if (
+                !empty($requestedLocale) &&
+                isset($cachedLocaleData['Hashtables']['IdByCode'][$requestedLocale])
+            ) {
+                // use locale from requested url
+                $this->arrPageContent['locale'] = $cachedLocaleData['Hashtables']['IdByCode'][$requestedLocale];
+            } else {
+                // select locale based on user agent
+                $this->arrPageContent['locale'] = \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+                    $cx,
+                    $cachedLocaleData
+                );
+            }
+        }
+    }
+
+    /**
+     * Returns the necessary data to later identify the matching locale
+     *
+     * This method does not use database or cached database data
+     * @param \Cx\Core\Core\Controller\Cx $cx Cx instance
+     * @return array Locale info
+     */
+    protected function selectBestLanguageFromRequest(
+        \Cx\Core\Core\Controller\Cx $cx
+    ) {
+        $localeInfo = array(
+            'country' => '',
+        );
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $localeInfo['country'] = $countryInfo['content'];
+            }
+        }
+        // since crawlers do not send accept language header, we make it optional
+        // in order to keep the logs clean
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $localeInfo['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
+        return $localeInfo;
+    }
+
+    /**
+     * Returns the cached locale data
+     *
+     * Default locale and the following hashtables are cached:
+     * <localeCode> to <localeId>
+     * <localeCountryCode> to <localeCodes>
+     * @return array Cached locale data or empty array
+     */
+    protected function getCachedLocaleData() {
+        $filename = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE .
+            static::LOCALE_CACHE_FILE_NAME;
+        if (!file_exists($filename)) {
+            return array();
+        }
+        $cachedData = unserialize(file_get_contents($filename));
+        if ($cachedData === false) {
+            return array();
+        }
+        return $cachedData;
+    }
+
+    /**
      * Delete all cached file's of the cache system
      */
     function _deleteAllFiles($cacheEngine = null)
     {
+        if (
+            !in_array($cacheEngine, array('cxPages', 'cxEntries')) &&
+            $cacheEngine != null
+        ) {
+            $this->clearCache($cacheEngine, false);
+            return;
+        }
         if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
-            $this->getDoctrineCacheDriver()->deleteAll();
             return;
         }
         $handleDir = opendir(
@@ -315,6 +569,13 @@ class CacheLib
                     if (!empty($servers) &&
                         isset($servers[$memcachedConfiguration['ip'] . ':' . $memcachedConfiguration['port']])
                     ) {
+                        // sync increment with cache
+                        $cachedIncrement = $memcached->get($this->getCachePrefix(true));
+                        if (!$cachedIncrement || $this->cacheIncrement > $cachedIncrement) {
+                            $memcached->set($this->getCachePrefix(true), $this->cacheIncrement);
+                        } else if ($cachedIncrement > $this->cacheIncrement) {
+                            $this->cacheIncrement = $cachedIncrement;
+                        }
                         $this->memcached = $memcached;
                     }
                 }
@@ -475,14 +736,26 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
-        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
         $settings = $this->getSettings();
+        $inPlaceReplacement = false;
+        if (
+            !isset($settings['internalSsiCache']) ||
+            $settings['internalSsiCache'] != 'on'
+        ) {
+            $inPlaceReplacement = true;
+        }
+
+        if ($inPlaceReplacement) {
+            foreach ($params as &$param) {
+                $param = $this->parseEsiVars($param);
+            }
+        }
+
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+
         if (
             is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
-            (
-                !isset($settings['internalSsiCache']) ||
-                $settings['internalSsiCache'] != 'on'
-            )
+            $inPlaceReplacement
         ) {
             try {
                 return $this->getApiResponseForUrl($url);
@@ -490,7 +763,7 @@ class CacheLib
                 return '';
             }
         }
-        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
+        return trim($this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString()));
     }
 
     /**
@@ -505,8 +778,22 @@ class CacheLib
      * @return string ESI randomized include code
      */
     public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
+        $settings = $this->getSettings();
+        $inPlaceReplacement = false;
+        if (
+            !isset($settings['internalSsiCache']) ||
+            $settings['internalSsiCache'] != 'on'
+        ) {
+            $inPlaceReplacement = true;
+        }
+
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
+            if ($inPlaceReplacement) {
+                foreach ($esiContentInfo[2] as &$param) {
+                    $param = $this->parseEsiVars($param);
+                }
+            }
             $urls[] = $this->getUrlFromApi(
                 $esiContentInfo[0],
                 $esiContentInfo[1],
@@ -519,10 +806,7 @@ class CacheLib
                 $this->getSsiProxy(),
                 '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx'
             ) &&
-            (
-                !isset($settings['internalSsiCache']) ||
-                $settings['internalSsiCache'] != 'on'
-            )
+            $inPlaceReplacement
         ) {
             try {
                 return $this->getApiResponseForUrl(
@@ -532,10 +816,78 @@ class CacheLib
                 return '';
             }
         }
-        return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode(
-            $urls,
-            $count
+        return trim(
+            $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode(
+                $urls,
+                $count
+            )
         );
+    }
+
+    /**
+     * Parses the dynamic ESI variables and functions in the given content
+     *
+     * @param string $content Content to parse
+     * @return string Parsed content
+     */
+    public function parseEsiVars($content) {
+        $this->initEsiDynVars();
+        // apply ESI dynamic variables
+        foreach ($this->dynVars as $groupName => $var) {
+            if (is_callable($var)) {
+                $esiPlaceholder = '$(' . $groupName . ')';
+                if (strpos($content, $esiPlaceholder) === false) {
+                    continue;
+                }
+                $varValue = $var();
+                $content = str_replace($esiPlaceholder, $varValue, $content);
+            } else {
+                foreach ($var as $varName => $callback) {
+                    $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                    if (strpos($content, $esiPlaceholder) === false) {
+                        continue;
+                    }
+                    $varValue = $callback();
+                    $content = str_replace($esiPlaceholder, $varValue, $content);
+                }
+            }
+        }
+
+        // apply ESI dynamic functions
+        foreach ($this->dynFuncs as $function => $callback) {
+            // execute ESI dynamic functions in content
+            $content = preg_replace_callback(
+                '/\$' . $function . '\(' . '([^)]*)' . '\)/',
+                function($matches) use ($callback) {
+                    // extract arguments from function call
+                    $arglist = $matches[1];
+                    $args = preg_split(
+                        '/
+                            # argument enclosed in double quotes
+                            [\s,]* "([^"]+)"[\s,]*
+
+                            |
+
+                            # argument enclosed in single quotes
+                            [\s,]* \'([^\']+)\'[\s,]*
+
+                            |
+
+                            # end of argument list
+                            [\s,]+
+                        /x',
+                        $arglist,
+                        0,
+                        PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                    );
+
+                    // pass extracted arguments to dynamic function
+                    return $callback($args);
+                },
+                $content
+            );
+        }
+        return $content;
     }
 
     /**
@@ -562,6 +914,8 @@ class CacheLib
             $pathParts[0] != 'Data' ||
             $pathParts[1] != 'Plain'
         ) {
+            \DBG::msg(__METHOD__ . ': invalid URL ' . $url . ' | evaluated pathParts:');
+            \DBG::dump($pathParts);
             return '';
         }
         $adapter = contrexx_input2raw($pathParts[2]);
@@ -594,7 +948,11 @@ class CacheLib
             !isset($response['data']) ||
             !isset($response['data']['content'])
         ) {
-            throw new \Exception('JsonAdapter returned with an error: "' . $response['message'] . '"');
+            \DBG::msg(__METHOD__ . ': JsonData request failed | adapter: ' . $adapter . ' | method: ' . $method . ' | arguments:');
+            \DBG::dump($arguments);
+            \DBG::msg(__METHOD__ . ': JsonData response:');
+            \DBG::dump($response);
+            throw new \Exception('JsonAdapter returned with an error');
         }
         return $response['data']['content'];
     }
@@ -803,9 +1161,11 @@ class CacheLib
 
     /**
      * Flush all cache instances
+     * @param string $cacheEngine See CACHE_ENGINE_* constants
+     * @param boolean $includingEsi (optional) Whether to drop ESI cache
      * @see \Cx\Core\ContentManager\Model\Event\PageEventListener on update of page objects
      */
-    public function clearCache($cacheEngine = null)
+    public function clearCache($cacheEngine = null, $includingEsi = true)
     {
         if (!$this->strCachePath) {
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -848,8 +1208,10 @@ class CacheLib
                 break;
         }
 
-        $this->clearReverseProxyCache('*');
-        $this->clearSsiCache();
+        if ($includingEsi) {
+            $this->clearReverseProxyCache('*');
+            $this->clearSsiCache();
+        }
     }
 
     /**
@@ -965,32 +1327,23 @@ class CacheLib
 
     /**
      * Clears all Memcacheddata related to this Domain if Memcache is installed
-     * @param   string  $pattern    Optional pattern to restrict the
-     *                              invalidation of the cache by.
-     * @return  integer Returns the number of invalidated keys
      */
-    public function clearMemcached($pattern = '')
+    protected function clearMemcached()
     {
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
-        //$this->memcache->flush(); //<- not like this!!!
-        $keys = $this->memcached->getAllKeys();
-        $n = 0;
-        foreach($keys as $key){
-            if(strpos($key, $this->getCachePrefix()) !== false){
-                if (
-                    !empty($pattern) &&
-                    !preg_match('/' . $pattern . '/', $key)
-                ) {
-                    continue;
-                }
-                $this->memcached->delete($key);
-                $n++;
-            }
-        }
+        $this->cacheIncrement++;
+        $this->memcached->set(
+            $this->getCachePrefix(true),
+            $this->cacheIncrement
+        );
 
-        return $n;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (!in_array('SystemInfo', $cx->getLicense()->getLegalComponentsList())) {
+            return;
+        }
+        $cx->getClassLoader()->flushCache();
     }
 
     /**
@@ -1015,17 +1368,20 @@ class CacheLib
 
     /**
      * Retunrns the CachePrefix related to this Domain
+     * @param boolean $withoutIncrement (optional) If set to true returns the prefix without the increment
      * @global string $_DBCONFIG
      * @return string CachePrefix
      */
-    protected function getCachePrefix()
+    protected function getCachePrefix($withoutIncrement = false)
     {
         global $_DBCONFIG;
 
-        // TODO: check if the initialization of the prefix could be moved into
-        //       the constructor
+        $prefix = $_DBCONFIG['database'] . '.' . $_DBCONFIG['tablePrefix'] . '.';
+        if ($withoutIncrement) {
+            return $prefix;
+        }
         if (empty($this->cachePrefix)) {
-            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+            $this->cachePrefix = $prefix . $this->cacheIncrement . '.';
         }
 
         return $this->cachePrefix;
@@ -1165,6 +1521,7 @@ class CacheLib
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
         } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            \DBG::msg(__METHOD__ . ' failed');
             parse_str(substr($url, 1), $params);
         }
         $correctIndexOrder = array(
@@ -1354,5 +1711,43 @@ class CacheLib
         }
         $file = new \Cx\Lib\FileSystem\File($filename);
         $file->write(serialize($localeData));
+    }
+
+    /**
+     * Calls the Clear Function for the given cache engine
+     * @param string $cacheEngine
+     */
+    public function forceClearCache($cacheEngine = null){
+        switch ($cacheEngine) {
+            case 'cxEntries':
+            case 'cxPages':
+                $this->_deleteAllFiles($cacheEngine);
+                break;
+            case 'cxEsi':
+                $this->clearSsiCache();
+                break;
+            case self::CACHE_ENGINE_APC:
+            case 'apc':
+                $this->clearCache(static::CACHE_ENGINE_APC);
+                break;
+            case self::CACHE_ENGINE_ZEND_OPCACHE:
+            case 'zendop':
+                $this->clearCache(static::CACHE_ENGINE_ZEND_OPCACHE);
+                break;
+            case self::CACHE_ENGINE_MEMCACHE:
+            case 'memcache':
+                $this->clearCache(static::CACHE_ENGINE_MEMCACHE);
+                break;
+            case 'memcached':
+                $this->clearCache(static::CACHE_ENGINE_MEMCACHED);
+                break;
+            case self::CACHE_ENGINE_XCACHE:
+            case 'xcache':
+                $this->clearCache(static::CACHE_ENGINE_XCACHE);
+                break;
+            default:
+                $this->clearCache(null);
+                break;
+        }
     }
 }

@@ -238,7 +238,7 @@ class ViewManager
 
     function __construct()
     {
-        global  $_ARRAYLANG, $objDatabase;
+        global  $_ARRAYLANG;
 
         $this->cx         = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->fileSystem = $this->cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem();
@@ -268,7 +268,6 @@ class ViewManager
             $this->webPath = $this->webPath . '/';
         }
 
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
 
         $this->themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();

@@ -227,10 +227,6 @@ class ViewGenerator {
             $entityClassName
         );
         $this->object = $this->listingController->getData();
-        if (!$this->listingController->getDataSize()) {
-            $this->object = new $entityClassName();
-            return $entityClassName;
-        }
         return $this->object->getDataType();
     }
 
@@ -736,7 +732,19 @@ class ViewGenerator {
         }
 
         // this case is used for the overview of all entities
-        if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet && !$isSingle) {
+        if (
+            !$isSingle &&
+            (
+                $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet ||
+                (
+                    $entityId == 0 &&
+                    (
+                        count($this->getVgParam($_GET['term'])) ||
+                        count($this->getVgParam($_GET['search']))
+                    )
+                )
+            )
+        ) {
             if(!empty($this->options['order']['overview'])) {
                 $renderObject->sortColumns($this->options['order']['overview']);
             }
@@ -753,23 +761,7 @@ class ViewGenerator {
                 $addBtn = '<br /><br /><input type="button" name="addEntity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />';
             }
             $template->setVariable('ADD_BUTTON', $addBtn);
-            if (!count($renderObject) || !count(current($renderObject))) {
-                // make this configurable
-                $template->parse('no-entries');
-                return $template->get();
-            }
 
-            $this->getListingController(
-                $renderObject,
-                $renderObject->getDataType()
-            );
-            $renderObject = $this->listingController->getData();
-            $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options);
-            $template->setVariable(array(
-                'TABLE' => $backendTable,
-                'PAGING' => $this->listingController,
-            ));
             $searching = (
                 isset($this->options['functions']['searching']) &&
                 $this->options['functions']['searching']
@@ -807,9 +799,22 @@ class ViewGenerator {
             }
             if ($filtering) {
                 // find all filter-able fields
-                $filterableFields = array_keys($renderObject->rewind());
+                if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                    $filterableFields = array_keys($renderObject->rewind());
+                } else {
+                    $filterableFields = array_map(
+                        function($element) {
+                            // some php versions prepent \NUL*\NUL to protected
+                            // properties (and \NUL<className>\NUL to private
+                            // properties which we ignore as private properties
+                            // are forbidden by guidelines.
+                            return preg_replace('/^\x0\*\x0/', '', $element);
+                        },
+                        array_keys((array) $renderObject)
+                    );
+                }
                 foreach ($filterableFields as $field) {
-                    if ($field == 'virtual') {
+                    if (in_array($field, array('virtual', 'validators'))) {
                         continue;
                     }
                     if (
@@ -861,6 +866,22 @@ class ViewGenerator {
                 $template->touchBlock('filter');
                 $template->parse('filter');
             }
+            if (!count($renderObject) || !count(current($renderObject))) {
+                // make this configurable
+                $template->touchBlock('no-entries');
+                return $template->get();
+            }
+            $this->getListingController(
+                $renderObject,
+                $renderObject->getDataType()
+            );
+            $renderObject = $this->listingController->getData();
+            $this->options['functions']['vg_increment_number'] = $this->viewId;
+            $backendTable = new \BackendTable($renderObject, $this->options);
+            $template->setVariable(array(
+                'TABLE' => $backendTable,
+                'PAGING' => $this->listingController,
+            ));
 
             return $template->get();
         }
@@ -1564,6 +1585,16 @@ class ViewGenerator {
     }
 
     /**
+     * Get the Url to copy an entry in this VG instance
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with copy arguments
+     */
+    public function getCopyUrl($entryOrId, $url = null) {
+        return static::getVgCopyUrl($this->viewId, $entryOrId, $url);
+    }
+
+    /**
      * Get the Url to delete an entry of this VG instance
      * @param int|string|array|object $entryOrId Entity or entity key
      * @return \Cx\Core\Routing\Url URL with delete arguments
@@ -1634,7 +1665,7 @@ class ViewGenerator {
             $url,
             $vgId,
             'editid',
-            static::getEditId($entryOrId)
+            static::getId($entryOrId)
         );
         return $url;
     }
@@ -1644,14 +1675,31 @@ class ViewGenerator {
      * @param int|string|array|object $entryOrId Entity or entity key
      * @return string Entity identifier
      */
-    protected static function getEditId($entryOrId) {
+    protected static function getId($entryOrId) {
         if (is_array($entryOrId)) {
             return implode('/', $entryOrId);
         }
-        if (is_object($entryOrId)) {
-            // find id using doctrine or dataset
+        return (string) $entryOrId;
+    }
+
+    /**
+     * Get the Url to copy an entry of a VG instance
+     * @param int $vgId ViewGenerator id
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with copy arguments
+     */
+    public static function getVgCopyUrl($vgId, $entryOrId, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
         }
-        return $entryOrId;
+        static::appendVgParam(
+            $url,
+            $vgId,
+            'copy',
+            static::getId($entryOrId)
+        );
+        return $url;
     }
 
     /**
@@ -1688,11 +1736,11 @@ class ViewGenerator {
     public static function getVgDeleteUrl($vgId, $entryOrId) {
         $url = static::getBaseUrl();
         // this is temporary:
-        $url->setParam('deleteid', static::getEditId($entryOrId));
+        $url->setParam('deleteid', static::getId($entryOrId));
         $url->setParam('vg_increment_number', $vgId);
         return $url;
         // this would be the way to go:
-        static::appendVgParam($url, $vgId, 'deleteid', static::getEditId($entryOrId));
+        static::appendVgParam($url, $vgId, 'deleteid', static::getId($entryOrId));
         return $url;
     }
 
