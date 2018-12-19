@@ -794,7 +794,7 @@ class MediaManager extends MediaLibrary
             $uploader->setCallback('mediaCallbackJs');
             $uploader->setFinishedCallback(array(
                 ASCMS_CORE_MODULE_PATH . '/Media/Controller/MediaLibrary.class.php',
-                '\Cx\Core_modules\Media\Controller\MediaLibrary',
+                '\Cx\Core_Modules\Media\Controller\MediaLibrary',
                 'uploadFinished'
             ));
             $uploader->setOptions(//Set html attributes for styling or javascript.

@@ -294,10 +294,10 @@ class BackendTable extends HTML_Table {
             // add multi-actions
             if (isset($options['multiActions'])) {
                 $multiActionsCode = '
-                    <img src="images/icons/arrow.gif" width="38" height="22" alt="^" title="^">
+                    <img src="'.$cx->getCodeBaseCoreWebPath().'/Html/View/Media/arrow.gif" width="38" height="22" alt="^" title="^">
                     <a href="#" onclick="jQuery(\'input[type=checkbox]\').prop(\'checked\', true);return false;">' . $_ARRAYLANG['TXT_SELECT_ALL'] . '</a> /
                     <a href="#" onclick="jQuery(\'input[type=checkbox]\').prop(\'checked\', false);return false;">' . $_ARRAYLANG['TXT_DESELECT_ALL'] . '</a>
-                    <img alt="-" title="-" src="images/icons/strike.gif">
+                    <img alt="-" title="-" src="'.$cx->getCodeBaseCoreWebPath().'/Html/View/Media/strike.gif">
                 ';
                 $multiActions = array(''=>$_ARRAYLANG['TXT_SUBMIT_SELECT']);
                 foreach ($options['multiActions'] as $actionName=>$actionProperties) {

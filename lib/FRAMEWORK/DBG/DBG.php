@@ -666,6 +666,8 @@ class DBG
 
     static function dump($val)
     {
+        global $_CONFIG;
+
         if (!self::$enable_dump) return;
 
         self::_escapeDoctrineDump($val);
@@ -684,7 +686,13 @@ class DBG
             // we're logging directly to the browser
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
-            self::_log('DUMP:   <p><pre>'.htmlentities($out, ENT_QUOTES, CONTREXX_CHARSET).'</pre></p>');
+            self::_log(
+                'DUMP:   <p><pre>' . htmlentities(
+                    $out,
+                    ENT_QUOTES,
+                    $_CONFIG['coreCharacterEncoding']
+                ) . '</pre></p>'
+            );
         } else {
             self::_log('DUMP:   '.$out);
         }
@@ -971,6 +979,8 @@ class DBG
 
     public static function logSQL($sql, $forceOutput = false)
     {
+        global $_CONFIG;
+
         $error = preg_match('#^[0-9]+:#', $sql);
 
         if ($error) {
@@ -1015,7 +1025,11 @@ class DBG
         ) {
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
-            $sql = htmlentities($sql, ENT_QUOTES, CONTREXX_CHARSET);
+            $sql = htmlentities(
+                $sql,
+                ENT_QUOTES,
+                $_CONFIG['coreCharacterEncoding']
+            );
         }
 
         self::_log('SQL: '.$sql, $status);
@@ -1044,12 +1058,20 @@ class DBG
 
 function DBG_log_adodb($msg)
 {
+    global $_CONFIG;
+
     if (strpos($msg, 'password') !== false) {
         DBG::logSQL('*LOGIN (query suppressed)*');
         return;
     }
 
-    $msg = trim(html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET));
+    $msg = trim(
+        html_entity_decode(
+            strip_tags($msg),
+            ENT_QUOTES,
+            $_CONFIG['coreCharacterEncoding']
+        )
+    );
     $sql = preg_replace('#^\([^\)]+\):\s*#', '', $msg);
     DBG::logSQL($sql);
 }
