@@ -367,7 +367,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'CHDIRTRAVELLOG_PDF_FOLDER_PATH' => static::getPdfFolder(),
             'CHDIRTRAVELLOG_PROJECT_NAME' => static::getProjectName(),
             'CHDIRTRAVELLOG_JOURNEY_COUNT' => $count,
-            'CHDIRTRAVELLOG_JOURNEY_RBN_URL' => '#',
             'CHDIRTRAVELLOG_PAGING' => $paging,
         ]);
         $template->touchBlock('chdirtravellog_journey_info');
@@ -403,7 +402,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             $url = $this->getFileUrl($projectName, $journey->getRbn());
             if ($url) {
                 $template->setVariable([
-                'CHDIRTRAVELLOG_JOURNEY_RBN_URL' => $url,
+                    'CHDIRTRAVELLOG_JOURNEY_RBN_URL' => $url,
                 ]);
             } else {
                 $template->touchBlock('chdirtravellog_journey_no_download');
