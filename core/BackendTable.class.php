@@ -737,7 +737,7 @@ class BackendTable extends HTML_Table {
         }
 
         if ($this->editable) {
-            $template->setVariable('FORM_ACTION', clone \Env::get('cx')->getRequest()->getUrl());
+            $template->setVariable('FORM_ACTION', contrexx_raw2xhtml(clone \Env::get('cx')->getRequest()->getUrl()));
             $template->setVariable('TXT_SAVE', $_ARRAYLANG['TXT_SAVE_CHANGES']);
 
             $template->touchBlock('form_open');
