@@ -894,7 +894,8 @@ class ViewGenerator {
             } else {
                 $entityClassWithNS = get_class($this->object);
             }
-            if ($_POST['saveEntry']) {
+            if ($this->cx->getRequest()->hasParam('vg-'. $this->viewId . '-saveEntry', false)) {
+
                 foreach ($renderObject as $rowname => $rows) {
                     foreach ($rows as $header => $data) {
                         $attr[$header] = $_POST[$header . '-' . $rowname];
@@ -918,7 +919,7 @@ class ViewGenerator {
             $entityClassWithNS = $renderOptions['entityClassWithNS'];
 
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS);
+            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS, $this->viewId);
             $template->setVariable(array(
                 'TABLE' => $backendTable,
                 'PAGING' => $this->listingController,
