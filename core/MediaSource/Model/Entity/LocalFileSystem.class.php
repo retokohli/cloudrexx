@@ -485,7 +485,8 @@ class LocalFileSystem extends EntityBase implements FileSystem
         $iterator = new \RegexIterator(
             new \DirectoryIterator(
                 $this->getFullPath($file)
-            ), '/' . preg_quote($file->getName(), '/') . '.thumb_[a-z]+/'
+            ),
+            '/' . preg_quote($file->getName(), '/') . '.thumb_[a-z]+\.' . $file->getExtension() . '/'
         );
         foreach ($iterator as $thumbnail){
             \Cx\Lib\FileSystem\FileSystem::delete_file(
