@@ -141,7 +141,7 @@ class BackendTable extends HTML_Table {
                         continue;
                     }
 
-                    if (isset($options['fields'][$header]['editable'])) {
+                    if (isset($options['fields'][$header]['editable']) && $this->editable) {
                         $data = $formGenerator->getDataElementWithoutType($header, $header .'-'. $rowname, 0, $data, $options, 0);
 
                         $encode = false;
