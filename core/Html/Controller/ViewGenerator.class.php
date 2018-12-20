@@ -148,7 +148,7 @@ class ViewGenerator {
                     \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);
                 }
                 $param = 'add';
-                $actionUrl = contrexx_raw2xhtml(clone $this->cx->getRequest()->getUrl());
+                $actionUrl = clone $this->cx->getRequest()->getUrl();
                 $actionUrl->setParam($param, null);
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
 
@@ -173,7 +173,7 @@ class ViewGenerator {
                     \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);
                 }
                 $param = 'editid';
-                $actionUrl = contrexx_raw2xhtml(clone $this->cx->getRequest()->getUrl());
+                $actionUrl = clone $this->cx->getRequest()->getUrl();
                 $actionUrl->setParam($param, null);
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
@@ -1195,7 +1195,7 @@ class ViewGenerator {
             }
         }
         \Message::add($_ARRAYLANG['TXT_CORE_RECORDS_UPDATED_SUCCESSFUL']);
-        $actionUrl = contrexx_raw2xhtml(clone $this->cx->getRequest()->getUrl());
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
 
@@ -1533,7 +1533,7 @@ class ViewGenerator {
                 \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
             }
         }
-        $actionUrl = contrexx_raw2xhtml(clone $this->cx->getRequest()->getUrl());
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
         $actionUrl->setParam('deleteid', null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
