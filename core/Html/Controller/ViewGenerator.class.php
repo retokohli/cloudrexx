@@ -1208,7 +1208,7 @@ class ViewGenerator {
      * @global array $_ARRAYLANG array containing the language variables
      * @return bool $showSuccessMessage if the save was successful
      */
-    protected function saveEntry($entityWithNS, $entityId, $entityData) {
+    protected function saveEntry($entityWithNS, $entityId = 0, $entityData = array()) {
         global $_ARRAYLANG;
 
         $em = $this->cx->getDb()->getEntityManager();
