@@ -297,6 +297,7 @@ class MediaSource extends DataSource {
 
     /**
      * Adds a new entry to this DataSource
+     * @todo Chunked upload is untested and will most likely not work
      * @param array $data Field=>value-type array. Not all fields may be required.
      * @throws \Exception If something did not go as planned
      */
