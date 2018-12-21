@@ -18,6 +18,9 @@ function getCustomFonts($mPdf) {
     $cx = \Cx\Core\Core\Controller\Cx::instanciate();
     $dir = $cx->getWebsiteDocumentRootPath() . \Cx\Core\Core\Controller\Cx::FOLDER_NAME_MEDIA
         . '/Pdf/ttfonts/';
+    if (!file_exists($dir)) {
+        return;
+    }
     $fileNames = array_diff(scandir($dir), array('..', '.'));
     $newFonts = array();
     foreach ($fileNames as $file) {
