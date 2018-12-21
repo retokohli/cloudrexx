@@ -68,7 +68,7 @@ class DoctrineRepository extends DataSource {
     public function getIdentifierFieldNames() {
         $em = $this->cx->getDb()->getEntityManager();
         $metaData = $em->getClassMetadata($this->getIdentifier());
-        $primaryKeyNames = $metaData->getIdentifierFieldNames();
+        return $metaData->getIdentifierFieldNames();
     }
 
     /**
