@@ -208,12 +208,14 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                             unset($data[$field]);
                             continue;
                         }
-                        $forbiddenClasses[] = get_class($data[$field]);
                         $foo = '';
                         $data[$field] = $this->convertObject(
                             $data[$field],
                             $foo,
-                            $forbiddenClasses
+                            array_merge(
+                                $forbiddenClasses,
+                                array(get_class($data[$field]))
+                            )
                         );
                     }
                 }
