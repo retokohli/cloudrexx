@@ -108,6 +108,8 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $path = $session->getTempPath() . '/'.$id.'/';
             $tmpPath = $path;
         } elseif (isset($params['post']['path'])) {
+            // This case is deprecated and should not be used!
+            \DBG::msg('Using deprecated upload case without upload ID!');
             $path_part = explode('/', $params['post']['path'], 2);
             if (!isset($params['mediaSource'])) {
                 $mediaSourceManager = $this->cx->getMediaSourceManager();
