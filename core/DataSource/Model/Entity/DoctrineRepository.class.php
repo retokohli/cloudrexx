@@ -76,6 +76,15 @@ class DoctrineRepository extends DataSource {
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getIdentifierFieldNames() {
+        $em = $this->cx->getDb()->getEntityManager();
+        $metaData = $em->getClassMetadata($this->getIdentifier());
+        return $metaData->getIdentifierFieldNames();
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.
