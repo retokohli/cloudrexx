@@ -1365,6 +1365,7 @@ $_ARRAYLANG['TXT_MODULE_PIM_DESCRIPTION'] = "Product Information Management";
 $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'] ='New entry has been added successfully.';
 $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'] ='The entry has been updated successfully.';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='The entry has been removed successfully.';
+$_ARRAYLANG['TXT_CORE_RECORDS_DELETED_SUCCESSFUL'] ='The entries have been removed successfully.';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Please confirm to remove the selected entry.';
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Edit entry';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Delete entry';

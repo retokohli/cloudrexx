@@ -173,7 +173,13 @@ class ViewGenerator {
                     )
                 )
             ) {
-                $this->removeEntry($entityWithNS);
+                $this->removeEntry($entityWithNS, $deleteId);
+            }
+
+            // remove multiple entries
+            if ($this->cx->getRequest()->hasParam('deleteids')) {
+                $deleteIds = $this->cx->getRequest()->getParam('deleteids');
+                $this->removeEntries($entityWithNS, $deleteIds);
             }
 
             // execute copy if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -1365,17 +1371,18 @@ class ViewGenerator {
      * This function is used to delete an entry
      *
      * @param string $entityWithNS class name including namespace
+     * @param int    $deleteId     id of entity to delete
+     * @param bool   $doRedirect   return or redirect
+     * @param bool   $showMessage  if message should be displayed if the remove
+     *                             was successful.
      * @access protected
      * @global array $_ARRAYLANG array containing the language variables
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Exception
      */
-    protected function removeEntry($entityWithNS) {
+    protected function removeEntry($entityWithNS, $deleteId, $doRedirect = true, $showMessage = true) {
         global $_ARRAYLANG;
 
         $em = $this->cx->getDb()->getEntityManager();
-        $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
         $entityObject = $this->object->getEntry($deleteId);
         if (empty($entityObject)) {
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
@@ -1406,7 +1413,6 @@ class ViewGenerator {
                 $em->remove($associatedEntity);
             }
         }
-
         if (!empty($id)) {
             $entityObj = $em->getRepository($entityWithNS)->find($id);
             if (!empty($entityObj)) {
@@ -1418,13 +1424,59 @@ class ViewGenerator {
                     $em->remove($entityObj);
                     $em->flush();
                 }
-                \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
+                if ($showMessage) {
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
+                }
             }
         }
+
+        if (!$doRedirect) {
+            return;
+        }
+
         $actionUrl = clone $this->cx->getRequest()->getUrl();
         $actionUrl->setParam('deleteid', null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
+
+    /**
+     * For each id in $deleteIds, call removeEntry to delete the entry.
+     * If it is the last ID in the array, set $doRedirect to true for the
+     * removeEntry function to redirect.
+     *
+     * @param $entityWithNS
+     * @param $deleteIds
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     */
+    protected function removeEntries($entityWithNS, $deleteIds)
+    {
+        global $_ARRAYLANG;
+
+        $this->cx->getRequest()->getUrl()->setParam('deleteids', null);
+
+        $deleteIdsArray = explode(',', $deleteIds);
+        $count = count($deleteIdsArray);
+        $doRedirect = false;
+        $showMessage = false;
+        if ($count == 1) {
+            $doRedirect = true;
+            $showMessage = true;
+        }
+
+        foreach($deleteIdsArray as $deleteId) {
+            $this->removeEntry($entityWithNS, $deleteId, $doRedirect, $showMessage);
+        }
+
+        if (!\Message::have(\Message::CLASS_ERROR)) {
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORDS_DELETED_SUCCESSFUL']);
+        }
+
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
+        $actionUrl->setParam('deleteids', null);
+        \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+    }
+
 
     /**
      * Creates a string out of the ViewGenerator object
