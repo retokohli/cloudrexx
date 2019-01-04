@@ -141,6 +141,10 @@ cx.ready(function() {
         }
     });
     cx.jQuery(".chzn").chosen();
+
+    cx.jQuery('.vg-function-status').click(function () {
+        cx.jQuery(this).toggleClass('active');
+    });
 });
 
 jQuery(document).ready(function(){
