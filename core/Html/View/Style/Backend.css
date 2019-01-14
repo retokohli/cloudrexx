@@ -200,3 +200,18 @@ body.loading {
 table.sortable .sorter-loading {
     background-image: url(../../../../core_modules/News/View/Media/loading.gif) !important;
 }
+
+table.adminlist .vg-function-status {
+    padding: 3px 12px;
+}
+
+table.adminlist .vg-function-status {
+    background-image: url(../Media/status_inactive.gif);
+    width: 10px;
+    height: 10px;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+table.adminlist .vg-function-status.active {
+    background-image: url(../Media/status_active.gif);
+}

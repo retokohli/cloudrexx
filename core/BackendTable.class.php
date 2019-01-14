@@ -99,6 +99,10 @@ class BackendTable extends HTML_Table {
             $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
                           ? $sortBy['pagingPosition']
                           : '';
+            $status     = ( isset($options['functions']['status'])
+                            && is_array($options['functions']['status'])
+                          ) ? $options['functions']['status']
+                          : array();
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -211,6 +215,18 @@ class BackendTable extends HTML_Table {
                             );
                         }
                         $encode = false; // todo: this should be set by callback
+                    } else if ( in_array($origHeader, $status)) {
+                        $status = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                        if ((boolean)$data) {
+                            $class = 'active';
+                        } else {
+                            $class = 'inactive';
+                        }
+                        $status->setAttribute(
+                            'class', 'vg-function-status ' . $class
+                        );
+                        $data = $status;
+                        $encode = false;
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
                     } else if (isset($options['fields'][$origHeader]) && isset($options['fields'][$origHeader]['type']) && $options['fields'][$origHeader]['type'] == '\Country') {
