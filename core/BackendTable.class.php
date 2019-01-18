@@ -75,6 +75,10 @@ class BackendTable extends HTML_Table {
                 $this->addRow(array(0 => $options['header']), null, 'th');
             }
             $first = true;
+            $em = $cx->getDb()->getEntityManager();
+            $identifiers = $em->getClassMetadata(
+                $attrs->getDataType()
+            )->getIdentifier();
             $row = 1 + $this->hasMasterTableHeader;
             $sortBy     = (    isset($options['functions']['sortBy'])
                             && is_array($options['functions']['sortBy'])
@@ -103,6 +107,15 @@ class BackendTable extends HTML_Table {
                             && is_array($options['functions']['status'])
                           ) ? $options['functions']['status']
                           : array();
+            $statusComponent  = !empty($status) && isset($status['component'])
+                ? $status['component']
+                : '';
+            $statusEntity     = !empty($status) && isset($status['entity'])
+                ? $status['entity']
+                : '';
+
+            $markIdentifier = !empty($status);
+
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -244,13 +257,19 @@ class BackendTable extends HTML_Table {
                         $data = '<i>(empty)</i>';
                         $encode = false;
                     }
+                    $cellAttrs = array();
                     if (
                         isset($options['fields']) &&
                         isset($options['fields'][$origHeader]['table']) &&
                         isset($options['fields'][$origHeader]['table']['attributes'])
                     ) {
-                        $this->setCellAttributes($row, $col, $options['fields'][$origHeader]['table']['attributes']);
+                        $cellAttrs = $options['fields'][$origHeader]['table']['attributes'];
                     }
+                    if ($markIdentifier && in_array($origHeader, $identifiers)) {
+                        $cellAttrs['class'] .= ' entity-id';
+                        $cellAttrs['data-field'] .= $origHeader;
+                    }
+                    $this->setCellAttributes($row, $col, $cellAttrs);
                     $this->setCellContents($row, $col, $data, 'TD', 0, $encode);
                     $col++;
                 }
