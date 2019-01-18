@@ -550,10 +550,10 @@ class ViewGenerator {
             return;
         }
 
-        $sortBy = (     isset($this->options['functions']['sortBy'])
-            &&  is_array($this->options['functions']['sortBy'])
+        $status = (     isset($this->options['functions']['status'])
+            &&  is_array($this->options['functions']['status'])
         )
-            ? $this->options['functions']['sortBy']
+            ? $this->options['functions']['status']
             : array();
 
         //If the 'sortBy' option does not have 'jsonadapter',
