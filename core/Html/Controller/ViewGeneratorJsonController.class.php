@@ -70,7 +70,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         }
         return array(
             'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, $backendGroups),
-            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true)
+            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
+            'updateStatus' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true)
         );
     }
 
@@ -299,5 +300,90 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         } catch (\Exception $e) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
+    }
+
+    /**
+     * Update the status of an entity attribute in DB
+     *
+     * @param array $params supplied arguments from JsonData-request
+     *
+     * @throws \Exception
+     */
+    public function updateStatus($params)
+    {
+        global $_ARRAYLANG;
+
+        $post = is_array($params['post']) ? $params['post'] : array();
+
+        if (    empty($post)
+            ||  !isset($post['entityId'])
+            ||  !isset($post['newStatus'])
+            ||  !isset($post['statusField'])
+            ||  !isset($post['component'])
+            ||  !isset($post['entity'])
+        ) {
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_STATUS_ORDER_FAILED']);
+        }
+
+        //Get all the 'POST' values
+        $componentName   = !empty($post['component'])
+            ? contrexx_input2raw($post['component'])
+            : '';
+        $entityName      = !empty($post['entity'])
+            ? contrexx_input2raw($post['entity'])
+            : '';
+        $entityId  = !empty($post['entityId'])
+            ? contrexx_input2int($post['entityId'])
+            : 0;
+        $newStatus  = !empty($post['newStatus'])
+            ? contrexx_input2int($post['newStatus'])
+            : 0;
+        $statusField = !empty($post['statusField'])
+            ? contrexx_input2raw($post['statusField'])
+            : '';
+
+        $em = $this->cx->getDb()->getEntityManager();
+        $componentRepo   = $em->getRepository(
+            'Cx\Core\Core\Model\Entity\SystemComponent'
+        );
+        $objComponent    = $componentRepo->findOneBy(
+            array('name' => $componentName)
+        );
+        $entityNameSpace = $objComponent->getNamespace() . '\\Model\\Entity\\'
+            . $entityName;
+
+        //check whether the entity namespace is a valid one or not
+        if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
+            throw new \Exception(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_HTML_STATUS_ENTITY_NOT_FOUND_ERROR'],
+                    $entityName,
+                    $componentName
+                )
+            );
+        }
+        $entity = $em->getRepository($entityNameSpace)->findOneBy(
+            array('id' => $entityId)
+        );
+        $entityObject = $em->getClassMetadata($entityNameSpace);
+        $classMethods = get_class_methods($entityObject->newInstance());
+        //check whether the updating entity set/get method is a valid one or not
+
+        $setter = 'set'.ucfirst($statusField);
+        if (    !in_array($setter, $classMethods)
+        ) {
+            throw new \Exception(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_HTML_STATUS_SETTER_NOT_FOUND_ERROR'],
+                    $entityName,
+                    $statusField
+                )
+            );
+        }
+
+        $entity->$setter($newStatus);
+        $em->persist($entity);
+        $em->flush();
+
     }
 }
