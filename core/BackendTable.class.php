@@ -229,16 +229,18 @@ class BackendTable extends HTML_Table {
                         }
                         $encode = false; // todo: this should be set by callback
                     } else if ( in_array($origHeader, $status)) {
-                        $status = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                        $statusField = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                        $class = '';
                         if ((boolean)$data) {
                             $class = 'active';
-                        } else {
-                            $class = 'inactive';
                         }
-                        $status->setAttribute(
-                            'class', 'vg-function-status ' . $class
+                        $statusField->setAttributes(
+                            array(
+                                'class' => 'vg-function-status ' . $class,
+                                'data-status-value' => $data
+                            )
                         );
-                        $data = $status;
+                        $data = $statusField;
                         $encode = false;
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
