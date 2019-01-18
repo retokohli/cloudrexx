@@ -543,6 +543,11 @@ class ViewGenerator {
         }
     }
 
+    /**
+     * Initialize the row status functionality
+     *
+     * @param string $entityNameSpace entity namespace
+     */
     protected function getStatusOption($entityNameSpace)
     {
         //If the entity namespace is empty or an array then disable the row sorting
