@@ -251,6 +251,9 @@ class ViewGenerator {
             $this->options = $options[''];
         }
 
+        //initialize the row status functionality
+        $this->getStatusOption($entityWithNS);
+
         //initialize the row sorting functionality
         $this->getSortingOption($entityWithNS);
     }
@@ -538,6 +541,43 @@ class ViewGenerator {
                 );
             }
         }
+    }
+
+    protected function getStatusOption($entityNameSpace)
+    {
+        //If the entity namespace is empty or an array then disable the row sorting
+        if (empty($entityNameSpace) && $entityNameSpace === 'array') {
+            return;
+        }
+
+        $sortBy = (     isset($this->options['functions']['sortBy'])
+            &&  is_array($this->options['functions']['sortBy'])
+        )
+            ? $this->options['functions']['sortBy']
+            : array();
+
+        //If the 'sortBy' option does not have 'jsonadapter',
+        //we need to get the component name and entity name for updating the sorting order in db
+        $componentName = '';
+        $entityName    = '';
+        if ( (    !isset($status['jsonadapter'])
+            ||  (    isset($status['jsonadapter'])
+                &&  (    empty($status['jsonadapter']['object'])
+                    ||  empty($status['jsonadapter']['act'])
+                )
+            )
+        )
+        ) {
+            $split          = explode('\\', $entityNameSpace);
+            $componentName  = isset($split[2]) ? $split[2] : '';
+            $entityName     = isset($split) ? end($split) : '';
+        }
+
+        $this->options['functions']['status']['component']  = $componentName;
+        $this->options['functions']['status']['entity']     = $entityName;
+
+        //Register the script Backend.js and activate the jqueryui and cx for the status update
+        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**

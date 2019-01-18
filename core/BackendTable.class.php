@@ -392,7 +392,7 @@ class BackendTable extends HTML_Table {
         //if the row sorting functionality is enabled
         $className = 'adminlist';
         if (!empty($sortField)) {
-            $className = 'adminlist sortable';
+            $className .= ' sortable';
             if (!empty($component)) {
                 $attrs['data-component'] = $component;
             }
@@ -416,6 +416,23 @@ class BackendTable extends HTML_Table {
             ) {
                 $attrs['data-object'] = $sortBy['jsonadapter']['object'];
                 $attrs['data-act']    = $sortBy['jsonadapter']['act'];
+            }
+        }
+
+        if (!empty($status)) {
+            $className .= ' status';
+            $attrs['data-status-component'] = $statusComponent;
+            $attrs['data-status-entity'] = $statusEntity;
+            $attrs['data-status-field'] = $status['field'];
+
+            $attrs['data-status-object'] = 'Html';
+            $attrs['data-status-act'] = 'updateStatus';
+            if (isset($status['jsonadapter'])
+                &&  !empty($status['jsonadapter']['object'])
+                &&  !empty($status['jsonadapter']['act'])
+            ) {
+                $attrs['data-status-object'] = $status['jsonadapter']['object'];
+                $attrs['data-status-act']    = $status['jsonadapter']['act'];
             }
         }
         parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
