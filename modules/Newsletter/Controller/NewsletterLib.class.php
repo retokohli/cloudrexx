@@ -1342,7 +1342,7 @@ class NewsletterLib
                 $notSentTo[] = $objUserRel->fields['email'];
             }
         }
-        if (count($notSentTo)) {
+        if (count($notSentTo) && isset(static::$strErrMessage)) {
             static::$strErrMessage = ' ' . sprintf(
                 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOME_NOT_SENT'],
                 implode('<br />', $notSentTo)
