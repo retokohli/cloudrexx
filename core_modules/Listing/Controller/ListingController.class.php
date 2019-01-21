@@ -170,6 +170,12 @@ class ListingController {
     protected $data = null;
 
     /**
+     * List all custom field names that are not as a field in the db
+     * @var array
+     */
+    protected $customFields;
+
+    /**
      * Handles a list
      * @param mixed $entities Entity class name as string or callback function
      * @param array $crit (optional) Doctrine style criteria array to use
@@ -195,6 +201,9 @@ class ListingController {
         $this->searching = isset($options['searching']) && $options['searching'];
         if (isset($options['searchFields'])) {
             $this->searchFields = $options['searchFields'];
+        }
+        if (isset($options['customFields'])) {
+            $this->customFields = $options['customFields'];
         }
         // init handlers (filtering, paging and sorting)
         $this->handlers[] = new FilteringController();
@@ -371,6 +380,12 @@ class ListingController {
 
         // return calculated data
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
+
+        // Add custom fields
+        foreach ($this->customFields as $customField) {
+            $data->addColumn($customField);
+        }
+
         $data->setDataType($this->entityClass);
         $this->data = $data;
         return $data;

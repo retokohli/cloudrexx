@@ -325,6 +325,11 @@ class ViewGenerator {
         } else {
             $lcOptions['filterFields'] = array();
         }
+        foreach ($this->options['fields'] as $fieldKey => $field) {
+            if ($field['custom']) {
+                $lcOptions['customFields'][] = $fieldKey;
+            }
+        }
         $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $renderObject,
             $searchCriteria,
