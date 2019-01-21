@@ -47,6 +47,11 @@ class FormGenerator {
     protected $formId;
 
     /**
+     * @var int Id of current ViewGenerator
+     */
+    protected $vgId;
+
+    /**
      * @var \Cx\Core\Html\Model\Entity\FormElement $form used to store the form data
      */
     protected $form = null;
@@ -66,12 +71,13 @@ class FormGenerator {
      */
     protected $entityClass;
 
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions) {
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $vgId) {
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
         static::$formIncrement++;
         $this->options = $options;
         $this->entity = $entity;
+        $this->vgId = $vgId;
         // Remove the virtual element from array
         unset($entity['virtual']);
         if (empty($entityClass) && is_object($entity)) {
