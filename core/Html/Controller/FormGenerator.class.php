@@ -47,6 +47,11 @@ class FormGenerator {
     protected $formId;
 
     /**
+     * @var int Id of current ViewGenerator
+     */
+    protected $vgId;
+
+    /**
      * @var \Cx\Core\Html\Model\Entity\FormElement $form used to store the form data
      */
     protected $form = null;
@@ -66,12 +71,13 @@ class FormGenerator {
      */
     protected $entityClass;
 
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions) {
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $vgId) {
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
         static::$formIncrement++;
         $this->options = $options;
         $this->entity = $entity;
+        $this->vgId = $vgId;
         // Remove the virtual element from array
         unset($entity['virtual']);
         if (empty($entityClass) && is_object($entity)) {
@@ -201,6 +207,47 @@ class FormGenerator {
      */
     public function getDataElement($name, $type, $length, $value, &$options, $entityId) {
         global $_ARRAYLANG, $_CORELANG;
+
+        if (isset($options['valueCallback'])) {
+            $valueCallback = $options['valueCallback'];
+            $vgId = null;
+            if (
+                isset($options['functions']) &&
+                isset($options['functions']['vg_increment_number'])
+            ) {
+                $vgId = $options['functions']['vg_increment_number'];
+            }
+            if (
+                is_array($valueCallback) &&
+                isset($valueCallback['adapter']) &&
+                isset($valueCallback['method'])
+            ) {
+                $json = new \Cx\Core\Json\JsonData();
+                $jsonResult = $json->data(
+                    $valueCallback['adapter'],
+                    $valueCallback['method'],
+                    array(
+                        'data' => $value,
+                        'name' => $name,
+                        'rows' => array(),
+                        'options' => $options,
+                        'vgId' => $this->vgId,
+                    )
+                );
+                if ($jsonResult['status'] == 'success') {
+                    $value = $jsonResult['data'];
+                }
+            } else if (is_callable($valueCallback)) {
+                $value = $valueCallback(
+                    $value,
+                    $name,
+                    array(),
+                    $options,
+                    $this->vgId
+                );
+            }
+        }
+
         if (isset($options['formfield'])) {
             $formFieldGenerator = $options['formfield'];
             $formField = '';
