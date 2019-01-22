@@ -143,7 +143,7 @@ class AccessLib
      * use this method to specify the template block prefix to be used when parsing
      * a user's profile attribute.
      * For instance when setting the prefix to 'shop_customer_profile_attribute',
-     * then the method {@link AccessLib::parseAttribute()) will try to parse the
+     * then the method {@link AccessLib::parseAttribute()} will try to parse the
      * \Cx\Core\Html\Sigma template block shop_customer_profile_attribute_firstname
      * in the case of the profile attribute firstname.
      * Defaults to 'access_profile_attribute'
@@ -161,7 +161,7 @@ class AccessLib
      * use this method to specify the template block prefix to be used when parsing
      * a user's account attributes (username, email, password, etc.).
      * For instance when setting the prefix to 'shop_customer_attribute',
-     * then the method {@link AccessLib::parseAccountAttribute()) will try to parse the
+     * then the method {@link AccessLib::parseAccountAttribute()} will try to parse the
      * \Cx\Core\Html\Sigma template block shop_customer_attribute_email
      * in the case of the account attribute email.
      * Defaults to 'access_user'
@@ -179,7 +179,7 @@ class AccessLib
      * use this method to specify the template placeholder prefix to be used when
      * parsing a user's profile attribute.
      * For instance when setting the prefix to 'SHOP_', then the method
-     * {@link AccessLib::parseAttribute()) will parse the \Cx\Core\Html\Sigma
+     * {@link AccessLib::parseAttribute()} will parse the \Cx\Core\Html\Sigma
      * variable SHOP_PROFILE_ATTRIBUTE_FIRSTNAME in the case of the profile
      * attribute firstname.
      * Defaults to 'ACCESS_'
