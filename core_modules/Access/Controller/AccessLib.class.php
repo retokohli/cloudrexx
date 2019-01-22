@@ -203,18 +203,18 @@ class AccessLib
         global $_CORELANG;
 
         \JS::activate('jqueryui');
-        \JS::registerCode("
+        \JS::registerCode('
             cx.ready(function() {
-                cx.jQuery('.access_date').datepicker({dateFormat: 'dd.mm.yy'});
+                cx.jQuery(".access_date").datepicker({dateFormat: "dd.mm.yy"});
                 nonAutofillPasswordEvent = function(el) {
-                    if (el.value == '') {
-                        el.setAttribute('type', 'text');
+                    if (el.value == "") {
+                        el.setAttribute("type", "text");
                     } else {
-                        el.setAttribute('type', 'password');
+                        el.setAttribute("type", "password");
                     }
                 };
             });
-        ");
+        ');
         $this->arrAttributeTypeTemplates = array(
             'textarea'        => '<textarea name="[NAME]" rows="1" cols="1">[VALUE]</textarea>',
             'text'            => '<input type="text" name="[NAME]" value="[VALUE]" autocomplete="foobar" />',
