@@ -206,19 +206,36 @@ class AccessLib
         \JS::registerCode('
             cx.ready(function() {
                 cx.jQuery(".access_date").datepicker({dateFormat: "dd.mm.yy"});
+
                 nonAutofillPasswordEvent = function(el) {
+                    if (el.setAttribute == undefined) {
+                        el = this;
+                    }
                     if (el.value == "") {
                         el.setAttribute("type", "text");
                     } else {
                         el.setAttribute("type", "password");
                     }
                 };
+                cx.jQuery(".access-pw-noauto").live("keyup", nonAutofillPasswordEvent);
+                cx.jQuery(".access-pw-noauto").live(
+                    "paste drop",
+                    function() {
+                        var el = this;
+                        setTimeout(
+                            function() {
+                                nonAutofillPasswordEvent(el);
+                            },
+                            100
+                        );
+                    }
+                );
             });
         ');
         $this->arrAttributeTypeTemplates = array(
             'textarea'        => '<textarea name="[NAME]" rows="1" cols="1">[VALUE]</textarea>',
             'text'            => '<input type="text" name="[NAME]" value="[VALUE]" autocomplete="foobar" />',
-            'password'        => '<input type="text" name="[NAME]" value="" onkeyup="nonAutofillPasswordEvent(this);" onpaste="var el = this; setTimeout(function() { nonAutofillPasswordEvent(el); }, 100);" style="text-security: disc; -webkit-text-security: disc;" />',
+            'password'        => '<input type="text" name="[NAME]" value="" class="access-pw-noauto" style="text-security: disc; -webkit-text-security: disc;" />',
             'checkbox'        => '<input type="hidden" name="[NAME]" /><input type="checkbox" name="[NAME]" value="1" [CHECKED] />',
             'menu'            => '<select name="[NAME]"[STYLE]>[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED][STYLE]>[VALUE_TXT]</option>',
