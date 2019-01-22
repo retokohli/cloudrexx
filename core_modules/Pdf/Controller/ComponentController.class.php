@@ -112,7 +112,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // parse blocks
         $tplContent = preg_replace(
-            '/\[\[(BLOCK_[A-Z0-9]+)\]\]/',
+            '/\[\[(BLOCK_[A-Z_0-9]+)\]\]/',
             '{\1}',
             $tplContent
         );
