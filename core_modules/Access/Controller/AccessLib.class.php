@@ -217,8 +217,13 @@ class AccessLib
                         el.setAttribute("type", "password");
                     }
                 };
-                cx.jQuery(".access-pw-noauto").live("keyup", nonAutofillPasswordEvent);
-                cx.jQuery(".access-pw-noauto").live(
+                cx.jQuery("body").delegate(
+                    ".access-pw-noauto",
+                    "keyup",
+                    nonAutofillPasswordEvent
+                );
+                cx.jQuery("body").delegate(
+                    ".access-pw-noauto",
                     "paste drop",
                     function() {
                         var el = this;
