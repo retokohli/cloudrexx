@@ -109,6 +109,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         $tplContent = $pdfTemplates->getHtmlContent();
+
+        // parse blocks
+        $tplContent = preg_replace(
+            '/\[\[(BLOCK_[A-Z0-9]+)\]\]/',
+            '{\1}',
+            $tplContent
+        );
+        \Cx\Modules\Block\Controller\Block::setBlocks($tplContent);
+        $tplContent = $this->getComponent('Cache')->internalEsiParsing(
+            $tplContent
+        );
+
         \Cx\Core\MailTemplate\Controller\MailTemplate::substitute(
             $tplContent,
             $substitution,
