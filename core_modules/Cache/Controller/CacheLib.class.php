@@ -167,14 +167,23 @@ class CacheLib
     protected $arrPageContent = array();
 
     /**
+     * @var int Cache lease time in seconds
+     */
+    protected $intCacingTime;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        global $_CONFIG;
+
         $this->setCachePath();
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
+
+        $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
     }
 
     /**

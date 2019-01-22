@@ -46,7 +46,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 {
     const HTTP_STATUS_CODE_HEADER = 'X-StatusCode';
     var $boolIsEnabled = false; //Caching enabled?
-    var $intCachingTime; //Expiration time for cached file
 
     var $strCachePath; //Path to cache-directory
     var $strCacheFilename; //Name of the current cache-file
@@ -120,8 +119,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
 
         $this->boolIsEnabled = true;
-
-        $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
 
         $this->initRequestInfo();
 
