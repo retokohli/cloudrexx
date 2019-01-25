@@ -50,6 +50,17 @@ class BackendTable extends HTML_Table {
     protected $templateFile = '';
 
     /**
+     * @var bool if table is editable
+     */
+    protected $editable = false;
+
+    /**
+     * @var int $viewId This ID is used as html id for the view so we can load
+     * more than one view
+     */
+    protected $viewId;
+
+    /**
      * Whether or not the table has a master table header.
      * A master table header is used as a title and is being
      * parsed as TH tags.
@@ -61,13 +72,25 @@ class BackendTable extends HTML_Table {
      */
     protected $hasMasterTableHeader = false;
 
-    public function __construct($attrs = array(), $options = array()) {
+    /**
+     * BackendTable constructor.
+     * @param array $attrs        attributes of view generator
+     * @param array $options      options of view generator
+     * @param string $entityClass class name of entity
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
+    public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewId = 0) {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        $this->viewId = $viewId;
+        if (!empty($options['functions']['editable'])) {
+            $this->editable = true;
+        }
         $this->templateFile = empty($options['template']) || !file_exists($options['template'])
-                  ? $cx->getCodeBaseCorePath().'/Html/View/Template/Generic/Table.html'
-                  : $options['template'];
+            ? $cx->getCodeBaseCorePath().'/Html/View/Template/Generic/Table.html'
+            : $options['template'];
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $this->hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -99,6 +122,8 @@ class BackendTable extends HTML_Table {
             $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
                           ? $sortBy['pagingPosition']
                           : '';
+            $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, true, $this->viewId);
+
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -108,6 +133,7 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+
                     if (!empty($sortingKey) && $header === $sortingKey) {
                         //Add the additional attribute id, for getting the updated sort order after the row sorting
                         $this->updateRowAttributes($row, array('id' => 'sorting' . $entity . '_' . $data), true);
@@ -120,6 +146,12 @@ class BackendTable extends HTML_Table {
                         !$options['fields'][$header]['showOverview']
                     ) {
                         continue;
+                    }
+
+                    if (isset($options['fields'][$header]['editable']) && $this->editable) {
+                        $data = $formGenerator->getDataElementWithoutType($header, $header .'-'. $rowname, 0, $data, $options, 0);
+
+                        $encode = false;
                     }
 
                     if (!empty($sortField) && $header === $sortField) {
@@ -644,10 +676,13 @@ class BackendTable extends HTML_Table {
      * Returns the table structure as HTML
      * Override in order to use Sigma for parsing
      * @access  public
+     * @global  array $_ARRAYLANG array containing the language variables
      * @return  string
      */
     function toHtml()
     {
+        global $_ARRAYLANG;
+
         $strHtml = '';
         $tabs = $this->_getTabs();
         $tab = $this->_getTab();
@@ -748,6 +783,16 @@ class BackendTable extends HTML_Table {
                 }
             }
         }
+
+        if ($this->editable) {
+            $template->setVariable('HTML_FORM_ACTION', contrexx_raw2xhtml(clone \Env::get('cx')->getRequest()->getUrl()));
+            $template->setVariable('HTML_VG_ID', $this->viewId);
+            $template->setVariable('TXT_HTML_SAVE', $_ARRAYLANG['TXT_SAVE_CHANGES']);
+
+            $template->touchBlock('form_open');
+            $template->touchBlock('form_close');
+        }
+
         return $template->get();
     }
 }
