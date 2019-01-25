@@ -588,7 +588,6 @@ $_ARRAYLANG['TXT_MODULE_SUPPORT_SYSTEM_DESCRIPTION'] = "Support System zum gener
 $_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend";
 $_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend";
 $_ARRAYLANG['TXT_DATABASE_MANAGER'] = "Datenbank";
-$_ARRAYLANG['TXT_DATABASEMANAGER_MODULE_DESCRIPTION'] = "Database Manager";
 $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sortierung";
 $_ARRAYLANG['TXT_THEME_PDF'] = "PDF-Ansicht";
 $_ARRAYLANG['TXT_VISIBLE'] = "Sichtbar";
@@ -1436,7 +1435,9 @@ $_ARRAYLANG['TXT_MODULE_PIM'] = "Produkte";
 
 $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'] ='Der neue Eintrag wurde erfolgreich hinzugefügt.';
 $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'] ='Der Eintrag wurde erfolgreich aktualisiert.';
+$_ARRAYLANG['TXT_CORE_RECORDS_UPDATED_SUCCESSFUL'] ='Die Einträge wurden erfolgreich aktualisiert.';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='Der Eintrag wurde erfolgreich gelöscht.';
+$_ARRAYLANG['TXT_CORE_RECORDS_DELETED_SUCCESSFUL'] ='Die Einträge wurden erfolgreich gelöscht.';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Bitte bestätigen Sie den Löschvorgang des ausgewählten Eintrages.';
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Eintrag bearbeiten';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Eintrag löschen';

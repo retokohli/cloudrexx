@@ -45,6 +45,7 @@ namespace Cx\Core\ClassLoader;
  * @subpackage  core_classloader
  */
 class ClassLoader {
+
     private $basePath;
     private $customizingPath;
     private $legacyClassLoader = null;
@@ -146,7 +147,9 @@ class ClassLoader {
         // fetch the class map from cache (if not yet done)
         if (!isset($this->classMap[$this->classMapKey])) {
             $this->classMap[$this->classMapKey] = array();
-            $this->classMap[$this->classMapKey] = $this->memcached->get($this->classMapKey);
+            $this->classMap[$this->classMapKey] = $this->memcached->get(
+                $this->classMapKey
+            );
         }
 
         if (!isset($this->classMap[$this->classMapKey][$name])) {
@@ -225,6 +228,18 @@ class ClassLoader {
             default:
                 break;
         }
+    }
+
+    /**
+     * Flushes cached entries from usercache
+     *
+     * This does not drop the cache files!
+     */
+    public function flushCache() {
+        if (!$this->memcached) {
+            return;
+        }
+        $this->memcached->delete($this->classMapKey);
     }
 
     private function load($name, &$resolvedPath) {
@@ -344,7 +359,10 @@ class ClassLoader {
                 $this->classMap[$this->classMapKey] = array();
             }
             $this->classMap[$this->classMapKey][$name] = $path;
-            $this->memcached->set($this->classMapKey, $this->classMap[$this->classMapKey]);
+            $this->memcached->set(
+                $this->classMapKey,
+                $this->classMap[$this->classMapKey]
+            );
         }
 
         return true;
