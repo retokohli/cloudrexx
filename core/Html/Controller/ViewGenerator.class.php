@@ -380,19 +380,19 @@ class ViewGenerator {
 
         //If the view is sortable, get the 'sortBy' field name and store it to the variable
         $sortByFieldName = (    isset($this->options['functions']['sortBy'])
-                            &&  isset($this->options['functions']['sortBy']['field'])
-                            &&  !empty($this->options['functions']['sortBy']['field'])
-                           )
-                           ? key($this->options['functions']['sortBy']['field'])
-                           : '';
+            &&  isset($this->options['functions']['sortBy']['field'])
+            &&  !empty($this->options['functions']['sortBy']['field'])
+        )
+            ? key($this->options['functions']['sortBy']['field'])
+            : '';
         //check the 'sortBy' field is self-healing or not
         $isSortSelfHealing = (    isset($this->options['fields'])
-                              &&  isset($this->options['fields'][$sortByFieldName])
-                              &&  isset($this->options['fields'][$sortByFieldName]['showDetail'])
-                              &&  !$this->options['fields'][$sortByFieldName]['showDetail']
-                             )
-                             ? true
-                             : false;
+            &&  isset($this->options['fields'][$sortByFieldName])
+            &&  isset($this->options['fields'][$sortByFieldName]['showDetail'])
+            &&  !$this->options['fields'][$sortByFieldName]['showDetail']
+        )
+            ? true
+            : false;
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
@@ -620,10 +620,10 @@ class ViewGenerator {
 
         $em = $this->cx->getDb()->getEntityManager();
         $sortBy = (     isset($this->options['functions']['sortBy'])
-                    &&  is_array($this->options['functions']['sortBy'])
-                  )
-                  ? $this->options['functions']['sortBy']
-                  : array();
+            &&  is_array($this->options['functions']['sortBy'])
+        )
+            ? $this->options['functions']['sortBy']
+            : array();
         //If the option 'sortBy' is not set in the function array
         // then disable the row sorting.
         if (empty($sortBy)) {
@@ -634,9 +634,9 @@ class ViewGenerator {
         //is not equal to 'sortBy' => 'field' then disable the row sorting
         $sortField   = key($this->options['functions']['sortBy']['field']);
         $orderOption = (    isset($this->options['functions']['order'])
-                        &&  is_array($this->options['functions']['order'])
-                       )
-                       ? key($this->options['functions']['order']) : array();
+            &&  is_array($this->options['functions']['order'])
+        )
+            ? key($this->options['functions']['order']) : array();
         if (!empty($orderOption) && stripos($orderOption, $sortField) === false) {
             return;
         }
@@ -647,10 +647,10 @@ class ViewGenerator {
         $entityName    = '';
         if (    !isset($sortBy['jsonadapter'])
             ||  (    isset($sortBy['jsonadapter'])
-                 &&  (    empty($sortBy['jsonadapter']['object'])
-                      ||  empty($sortBy['jsonadapter']['act'])
-                    )
+                &&  (    empty($sortBy['jsonadapter']['object'])
+                    ||  empty($sortBy['jsonadapter']['act'])
                 )
+            )
         ) {
             $split          = explode('\\', $entityNameSpace);
             $componentName  = isset($split[2]) ? $split[2] : '';
@@ -676,8 +676,8 @@ class ViewGenerator {
         //Get the paging position value
         $pagingPosName  = $entityName . 'Pos';
         $pagingPosition = isset($_GET[$pagingPosName])
-                          ? contrexx_input2int($_GET[$pagingPosName])
-                          : 0;
+            ? contrexx_input2int($_GET[$pagingPosName])
+            : 0;
 
         //get the primary key names
         $entityObject   = $em->getClassMetadata($entityNameSpace);
@@ -945,7 +945,8 @@ class ViewGenerator {
             } else {
                 $entityClassWithNS = get_class($this->object);
             }
-            if ($_POST['saveEntry']) {
+            if ($this->cx->getRequest()->hasParam('vg-'. $this->viewId . '-saveEntry', false)) {
+
                 foreach ($renderObject as $rowname => $rows) {
                     foreach ($rows as $header => $data) {
                         $attr[$header] = $_POST[$header . '-' . $rowname];
@@ -969,7 +970,7 @@ class ViewGenerator {
             $entityClassWithNS = $renderOptions['entityClassWithNS'];
 
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS);
+            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS, $this->viewId);
             $template->setVariable(array(
                 'TABLE' => $backendTable,
                 'PAGING' => $this->listingController,
@@ -1127,7 +1128,7 @@ class ViewGenerator {
                     $renderArray[$field] = '';
                 }
                 // This is necessary to load default values set by constructor
-                $this->object = new $entityClassWithNS(); 
+                $this->object = new $entityClassWithNS();
                 $associationMappings = $entityObject->getAssociationMappings();
                 $classMethods = get_class_methods($entityObject->newInstance());
                 foreach ($associationMappings as $field => $associationMapping) {
@@ -1142,7 +1143,7 @@ class ViewGenerator {
                         }
                         $renderArray[$field] = new $associationMapping['targetEntity']();
                     } else if (
-                        $entityObject->isCollectionValuedAssociation($field)
+                    $entityObject->isCollectionValuedAssociation($field)
                     ) {
                         $renderArray[$field] = new $associationMapping['targetEntity']();
                     }
@@ -1228,6 +1229,8 @@ class ViewGenerator {
     }
 
     /**
+     * Save multiple entities.
+     *
      * @param string $entityWithNS class name with namespace
      * @param array  $entities     array with all entities and their content
      *
@@ -1257,7 +1260,7 @@ class ViewGenerator {
      * @global array $_ARRAYLANG array containing the language variables
      * @return bool $showSuccessMessage if the save was successful
      */
-    protected function saveEntry($entityWithNS, $entityId, $entityData) {
+    protected function saveEntry($entityWithNS, $entityId = 0, $entityData = array()) {
         global $_ARRAYLANG;
 
         $em = $this->cx->getDb()->getEntityManager();
@@ -1325,14 +1328,14 @@ class ViewGenerator {
                 );
                 $foreignEntityGetter = 'get' . $methodBaseName;
                 $foreignEntityAdder = 'add' . \Doctrine\Common\Inflector\Inflector::singularize(
-                    $methodBaseName
-                );
+                        $methodBaseName
+                    );
                 $foreignEntityRemover = 'remove' . \Doctrine\Common\Inflector\Inflector::singularize(
-                    $methodBaseName
-                );
+                        $methodBaseName
+                    );
                 $currentlyAssociated = $entity->$foreignEntityGetter();
                 if (
-                    count($associatedIds) == 0 && 
+                    count($associatedIds) == 0 &&
                     count($currentlyAssociated) == 0
                 ) {
                     continue;
@@ -1359,8 +1362,8 @@ class ViewGenerator {
                             $value['mappedBy']
                         );
                         $method = 'remove' . \Doctrine\Common\Inflector\Inflector::singularize(
-                            $foreignMethodBaseName
-                        );
+                                $foreignMethodBaseName
+                            );
                         if (method_exists($associatedEntity, $method)) {
                             $associatedEntity->$method($entity);
                         }
@@ -1860,7 +1863,7 @@ class ViewGenerator {
      * Appends a VG-style parameter to an Url object
      *
      * VG-style means:
-     * {<vgIncrementNumber>,(<key>=)<value>}(,...) 
+     * {<vgIncrementNumber>,(<key>=)<value>}(,...)
      * @param \Cx\Core\Routing\Url $url Url object to apply params to
      * @param int $vgId ID of the VG for the parameter
      * @param string $name Parameter name
