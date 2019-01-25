@@ -208,8 +208,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         if (
             empty($params['get']) ||
             empty($params['get']['block']) ||
-            empty($params['get']['lang']) ||
-            empty($params['get']['page'])
+            empty($params['get']['lang'])
         ) {
             throw new NotEnoughArgumentsException('not enough arguments');
         }
