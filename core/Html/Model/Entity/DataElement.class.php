@@ -57,7 +57,7 @@ class DataElement extends HtmlElement {
                     $option->addChild(
                         new \Cx\Core\Html\Model\Entity\TextElement($val)
                     );
-                    if ($key == $value) {
+                    if ($key === $value) {
                         $option->setAttribute('selected');
                     }
                     $this->addChild($option);
