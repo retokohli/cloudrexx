@@ -146,7 +146,6 @@ cx.ready(function() {
 
 
 cx.ready(function() {
-    var jQuery = cx.jQuery;
     var cadminPath = cx.variables.get('cadminPath', 'contrexx'),
         status = {
             ajaxCall : function(opt) {
@@ -163,34 +162,34 @@ cx.ready(function() {
                             'entity': opt.entity,
                         },
                         beforeSend: function() {
-                            jQuery('body').addClass('loading');
+                            cx.jQuery('body').addClass('loading');
                         },
                         success: function(json) {
                             cx.jQuery(opt.that).toggleClass('active');
                         },
                         error: function(xhr, status, error) {
-                            jQuery(this).data('status-value', (jQuery(this).hasClass('active') ? 0 : 1));
+                            cx.jQuery(this).data('status-value', (cx.jQuery(this).hasClass('active') ? 0 : 1));
                         },
                         complete: function() {
-                            jQuery('body').removeClass('loading');
+                            cx.jQuery('body').removeClass('loading');
                         }
                     }
                 );
             },
         };
     cx.jQuery('.vg-function-status').click(function () {
-        var table    = jQuery(this).closest('table.status');
-        jQuery(this).data('status-value', (jQuery(this).hasClass('active') ? 0 : 1));
+        var table    = cx.jQuery(this).closest('table.status');
+        cx.jQuery(this).data('status-value', (cx.jQuery(this).hasClass('active') ? 0 : 1));
 
         var params = {
-            that       : jQuery(this),
-            entityId   : jQuery(this).data('entity-id'),
+            that       : cx.jQuery(this),
+            entityId   : cx.jQuery(this).data('entity-id'),
             jsonObject : table.data('status-object'),
             jsonAct    : table.data('status-act'),
             component  : table.data('status-component'),
             entity     : table.data('status-entity'),
             statusField: table.data('status-field'),
-            statusValue: jQuery(this).data('status-value'),
+            statusValue: cx.jQuery(this).data('status-value'),
         };
         status.ajaxCall(params);
     });
