@@ -307,7 +307,9 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      *
      * @param array $params supplied arguments from JsonData-request
      *
-     * @throws \Exception
+     * @throws \Exception if vars are empty. They have to be defined.
+     * @throws \Exception if entity not found. Entity is needed to store status.
+     * @throws \Exception if setter for status not found
      */
     public function updateStatus($params)
     {
