@@ -589,7 +589,6 @@ $_ARRAYLANG['TXT_MODULE_SUPPORT_SYSTEM_DESCRIPTION'] = "Support system to create
 $_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "ascending";
 $_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "descending";
 $_ARRAYLANG['TXT_DATABASE_MANAGER'] = "Database";
-$_ARRAYLANG['TXT_DATABASEMANAGER_MODULE_DESCRIPTION'] = "Database Manager";
 $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sorting";
 $_ARRAYLANG['TXT_THEME_PDF'] = "PDF view";
 $_ARRAYLANG['TXT_VISIBLE'] = "Visible";
@@ -1366,7 +1365,9 @@ $_ARRAYLANG['TXT_MODULE_PIM_DESCRIPTION'] = "Product Information Management";
 
 $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'] ='New entry has been added successfully.';
 $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'] ='The entry has been updated successfully.';
+$_ARRAYLANG['TXT_CORE_RECORDS_UPDATED_SUCCESSFUL'] ='The entries have been updated successfully.';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='The entry has been removed successfully.';
+$_ARRAYLANG['TXT_CORE_RECORDS_DELETED_SUCCESSFUL'] ='The entries have been removed successfully.';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Please confirm to remove the selected entry.';
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Edit entry';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Delete entry';
