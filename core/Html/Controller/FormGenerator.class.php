@@ -85,7 +85,6 @@ class FormGenerator {
      */
     public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $noView = false)
     {
-        global $_ARRAYLANG;
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
         static::$formIncrement++;
@@ -124,6 +123,8 @@ class FormGenerator {
      */
     protected function constructView($entity, $actionUrl, $entityClass, $title, $options, $entityId)
     {
+        global $_ARRAYLANG;
+
         if (empty($title)) {
             $title = $entityClass;
         }
@@ -159,9 +160,6 @@ class FormGenerator {
             $editIdField->setAttribute('type', 'hidden');
             $this->form->addChild($editIdField);
         }
-        // foreach entity field
-        foreach ($entity as $field=>$value) {
-            $element = $this->getDataElementWithoutType($field, $field, 0, $value, $entityId);
 
         $overviewFields = array_keys($entity);
         foreach ($tabs as $tabName=>$tabData) {
@@ -179,9 +177,6 @@ class FormGenerator {
                 }
             }
         }
-        if (isset($options['cancelUrl'])) {
-            $this->form->cancelUrl = $options['cancelUrl'];
-        }
 
         // add list with all unsigned fields to overview tab
         $tabs['overview']['fields'] = $overviewFields;
@@ -190,6 +185,106 @@ class FormGenerator {
 
         if (empty($tabs['overview']['header'])) {
             $tabs['overview']['header'] = $_ARRAYLANG['TXT_CORE_OVERVIEW'];
+        }
+
+        // foreach entity field
+        foreach ($tabs as $tabName=>$tabData) {
+
+            if ($hasTabs) {
+                $tabItem = new \Cx\Core\Html\Model\Entity\HtmlElement('li');
+                $tabLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                $tabHeader = new \Cx\Core\Html\Model\Entity\TextElement($tabData['header']);
+
+                $tabLink->setAttributes(
+                    array(
+                        'id' => 'tabs_' . $tabName,
+                        'onclick' => 'selectTab("' . $tabName . '", true)',
+                    )
+                );
+
+                $tabLink->addChild($tabHeader);
+                $tabItem->addChild($tabLink);
+                $tabMenu->addChild($tabItem);
+            }
+
+            $tab = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+            $tab->setAttributes(
+                array(
+                    'id' => $tabName,
+                    'class' => 'tabs'
+                )
+            );
+
+            // foreach entity field
+            foreach ($entity as $field => $value) {
+                if (!in_array($field, $tabData['fields'])) {
+                    continue;
+                }
+
+                $type = null;
+
+                if (!empty($options[$field]['type'])) {
+                    $type = $options[$field]['type'];
+                }
+
+                if (is_object($value)) {
+                    if ($value instanceof \Cx\Model\Base\EntityBase) {
+                        $type = 'Cx\Model\Base\EntityBase';
+                    } elseif ($value instanceof \Doctrine\Common\Collections\Collection) {
+                        continue;
+                    } else {
+                        $type = get_class($value);
+                    }
+                }
+                $length = 0;
+                $value = $entity[$field];
+                $fieldOptions = array();
+                if (isset($options['fields']) && isset($options['fields'][$field])) {
+                    $fieldOptions = $options['fields'][$field];
+                }
+                if (!empty($fieldOptions['type'])) {
+                    $type = $fieldOptions['type'];
+                }
+                $dataElement = $this->getDataElement($field, $field, $type, $length, $value, $fieldOptions, $entityId);
+                if (empty($dataElement)) {
+                    continue;
+                }
+                $dataElement->setAttribute('id', 'form-' . $this->formId . '-' . $field);
+                if ($type == 'hidden') {
+                    $element = $dataElement;
+                } else {
+                    $element = $this->getDataElementGroup($field, $dataElement, $fieldOptions);
+                }
+                if (empty($element)) {
+                    continue;
+                }
+                $tab->addChild($element);
+            }
+            if (isset($options['cancelUrl'])) {
+                $this->form->cancelUrl = $options['cancelUrl'];
+            }
+            $this->form->addChild($tab);
+        }
+    }
+
+    /**
+     * Return a DataElement without previously defining the type.
+     *
+     * @param string $name     name of the DataElement
+     * @param string $title    used title instead of name if html tag should not
+     *                         be called like the attribute
+     * @param int    $length   length of the DataElement
+     * @param mixed  $value    value of the DataElement
+     * @param int    $entityId id of the DataElement
+     * @return \Cx\Core\Html\Model\Entity\DataElement
+     */
+    public function getDataElementWithoutType($name, $title, $length, $value, $entityId)
+    {
+        $type = null;
+
+        if (!empty($this->options[$name]['type'])) {
+            $type = $this->options[$name]['type'];
         }
 
         if (is_object($value)) {
