@@ -96,7 +96,10 @@ class FormGenerator {
             )
         );
         $hasTabs = false;
-        if (!empty($options['tabs'])) {
+
+        $tabs = isset($options['tabs']) ? $options['tabs'] : array();
+
+        if (!empty($tabs)) {
             $hasTabs = true;
             $tabMenu = new \Cx\Core\Html\Model\Entity\HtmlElement('ul');
             $tabMenu->setAttribute('id', 'tabmenu');
@@ -113,8 +116,9 @@ class FormGenerator {
             $editIdField->setAttribute('type', 'hidden');
             $this->form->addChild($editIdField);
         }
+
         $overviewFields = array_keys($entity);
-        foreach ($options['tabs'] as $tabName=>$tabData) {
+        foreach ($tabs as $tabName=>$tabData) {
             foreach ($entity as $field => $value) {
                 if (in_array($field, $tabData['fields'])) {
                     $overviewKey = array_search($field, $overviewFields);
@@ -124,22 +128,22 @@ class FormGenerator {
                     } else {
                         // Search duplicated keys and delete them
                         $tabKey = array_search($field, $tabData['fields']);
-                        unset($options['tabs'][$tabName]['fields'][$tabKey]);
+                        unset($tabs[$tabName]['fields'][$tabKey]);
                     }
                 }
             }
         }
 
         // add list with all unsigned fields to overview tab
-        $options['tabs']['overview']['fields'] = $overviewFields;
+        $tabs['overview']['fields'] = $overviewFields;
         // move overview tab to first place
-        $options['tabs'] = array('overview' => $options['tabs']['overview']) + $options['tabs'];
+        $tabs = array('overview' => $tabs['overview']) + $tabs;
 
-        if (empty($options['tabs']['overview']['header'])) {
-            $options['tabs']['overview']['header'] = $_ARRAYLANG['TXT_CORE_OVERVIEW'];
+        if (empty($tabs['overview']['header'])) {
+            $tabs['overview']['header'] = $_ARRAYLANG['TXT_CORE_OVERVIEW'];
         }
 
-        foreach ($options['tabs'] as $tabName=>$tabData) {
+        foreach ($tabs as $tabName=>$tabData) {
 
             if ($hasTabs) {
                 $tabItem = new \Cx\Core\Html\Model\Entity\HtmlElement('li');
