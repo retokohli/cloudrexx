@@ -201,7 +201,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
             throw new \Exception(
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_HTML_SORTING_ENTITY_NOT_FOUND_ERROR'],
+                    $_ARRAYLANG['TXT_CORE_HTML_ENTITY_NOT_FOUND_ERROR'],
                     $entityName,
                     $componentName
                 )
@@ -218,7 +218,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         ) {
             throw new \Exception(
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_HTML_SORTING_GETTER_SETTER_NOT_FOUND_ERROR'],
+                    $_ARRAYLANG['TXT_CORE_HTML_GETTER_SETTER_NOT_FOUND_ERROR'],
                     $entityName,
                     $sortField,
                     $primaryKeyName
@@ -358,7 +358,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
             throw new \Exception(
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_HTML_STATUS_ENTITY_NOT_FOUND_ERROR'],
+                    $_ARRAYLANG['TXT_CORE_HTML_ENTITY_NOT_FOUND_ERROR'],
                     $entityName,
                     $componentName
                 )
@@ -376,7 +376,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         ) {
             throw new \Exception(
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_HTML_STATUS_SETTER_NOT_FOUND_ERROR'],
+                    $_ARRAYLANG['TXT_CORE_HTML_GETTER_SETTER_NOT_FOUND_ERROR'],
                     $entityName,
                     $statusField
                 )
