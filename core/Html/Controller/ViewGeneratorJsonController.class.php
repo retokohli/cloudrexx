@@ -369,7 +369,9 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         $classMethods = get_class_methods($entityObject->newInstance());
         //check whether the updating entity set/get method is a valid one or not
 
-        $setter = 'set'.ucfirst($statusField);
+        $setter = 'set'. \Doctrine\Common\Inflector\Inflector::classify(
+            $statusField
+        );
         if (    !in_array($setter, $classMethods)
         ) {
             throw new \Exception(
