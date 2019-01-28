@@ -150,11 +150,6 @@ cx.ready(function() {
     var cadminPath = cx.variables.get('cadminPath', 'contrexx'),
         status = {
             ajaxCall : function(opt) {
-                var data = 'entityId=' + opt.entityId + '&newStatus=' + opt.statusValue + '&statusField=' + opt.statusField;
-                if (opt.component && opt.entity) {
-                    data += '&component=' + opt.component + '&entity=' + opt.entity;
-                }
-
                 cx.ajax(
                     opt.jsonObject,
                     opt.jsonAct,
@@ -186,15 +181,10 @@ cx.ready(function() {
     cx.jQuery('.vg-function-status').click(function () {
         var table    = jQuery(this).closest('table.status');
         jQuery(this).data('status-value', (jQuery(this).hasClass('active') ? 0 : 1));
-        var entityIds = [];
-        jQuery(this).closest('tr').find('.entity-id').each(function(){
-            var entityField = cx.jQuery(this).data('field');
-            entityIds[entityField] = Number.parseInt(jQuery(this).text());
-        });
 
-        params = {
+        var params = {
             that       : jQuery(this),
-            entityId   : Number.parseInt(jQuery(this).closest('tr').find('.entity-id').text()),
+            entityId   : jQuery(this).data('entity-id'),
             jsonObject : table.data('status-object'),
             jsonAct    : table.data('status-act'),
             component  : table.data('status-component'),
