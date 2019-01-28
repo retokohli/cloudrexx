@@ -86,10 +86,10 @@ class FormGenerator {
      * @param array $options      options from ViewGenerator
      * @param int $entityId       id of a specific entity
      * @param $componentOptions   options of the component
-     * @param bool $noView        to set if a view should be created
      * @param int  $vgId          id of ViewGenerator
+     * @param bool $noView        to set if a view should be created
      */
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $noView = false, $vgId)
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $vgId, $noView = false)
     {
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
