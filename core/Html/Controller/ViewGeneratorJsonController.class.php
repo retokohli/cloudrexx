@@ -71,7 +71,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         return array(
             'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, $backendGroups),
             'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
-            'updateStatus' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true)
+            'updateStatus' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
         );
     }
 
