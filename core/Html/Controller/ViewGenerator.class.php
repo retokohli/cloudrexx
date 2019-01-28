@@ -271,7 +271,7 @@ class ViewGenerator {
         }
 
         //initialize the row status functionality
-        $this->getStatusOption($entityWithNS);
+        $this->inizializeStatusOption($entityWithNS);
 
         //initialize the row sorting functionality
         $this->getSortingOption($entityWithNS);
@@ -567,7 +567,7 @@ class ViewGenerator {
      *
      * @param string $entityNameSpace entity namespace
      */
-    protected function getStatusOption($entityNameSpace)
+    protected function inizializeStatusOption($entityNameSpace)
     {
         //If the entity namespace is empty or an array then disable the row sorting
         if (empty($entityNameSpace) && $entityNameSpace === 'array') {
