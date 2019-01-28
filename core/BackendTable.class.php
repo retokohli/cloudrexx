@@ -210,35 +210,14 @@ class BackendTable extends HTML_Table {
                         ) {
                             $vgId = $options['functions']['vg_increment_number'];
                         }
-                        if (
-                            is_array($valueCallback) &&
-                            isset($valueCallback['adapter']) &&
-                            isset($valueCallback['method'])
-                        ) {
-                            $json = new \Cx\Core\Json\JsonData();
-                            $jsonResult = $json->data(
-                                $valueCallback['adapter'],
-                                $valueCallback['method'],
-                                array(
-                                    'data' => $data,
-                                    'name' => $origHeader,
-                                    'rows' => $rows,
-                                    'options' => $options['fields'][$origHeader],
-                                    'vgId' => $vgId,
-                                )
-                            );
-                            if ($jsonResult['status'] == 'success') {
-                                $data = $jsonResult['data'];
-                            }
-                        } else if (is_callable($valueCallback)) {
-                            $data = $valueCallback(
-                                $data,
-                                $origHeader,
-                                $rows,
-                                $options['fields'][$origHeader],
-                                $vgId
-                            );
-                        }
+                        $data = \Cx\Core\Html\Controller\ViewGenerator::callValueCallback(
+                            $valueCallback,
+                            $data,
+                            $origHeader,
+                            $rows,
+                            $options['fields'][$origHeader],
+                            $vgId
+                        );
                     }
                     /* We use json to do parse the field function. The 'else if' is for backwards compatibility so you can declare
                     * the function directly without using json. This is not recommended and not working over session */

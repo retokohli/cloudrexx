@@ -1922,4 +1922,49 @@ class ViewGenerator {
         }
         return $url;
     }
+
+    /**
+     * Return the value of the value callback.
+     *
+     * @param $callback    array  callback options
+     * @param $fieldvalue  string value to modify
+     * @param $fieldname   string name of option
+     * @param $rowData     array  entity data
+     * @param $fieldoption array  option config
+     * @param $vgId        int    id of active ViewGenerator
+     * @return mixed
+     */
+    public static function callValueCallback($callback, $fieldvalue, $fieldname, $rowData, $fieldoption, $vgId)
+    {
+        if (
+            is_array($callback) &&
+            isset($callback['adapter']) &&
+            isset($callback['method'])
+        ) {
+            $json = new \Cx\Core\Json\JsonData();
+            $jsonResult = $json->data(
+                $callback['adapter'],
+                $callback['method'],
+                array(
+                    'fieldvalue' => $fieldvalue,
+                    'fieldname' => $fieldname,
+                    'rowData' => $rowData,
+                    'fieldoption' => $fieldoption,
+                    'vgId' => $vgId,
+                )
+            );
+            if ($jsonResult['status'] == 'success') {
+                $value = $jsonResult['data'];
+            }
+        } else if (is_callable($callback)) {
+            $value = $callback(
+                $fieldvalue,
+                $fieldname,
+                $rowData,
+                $fieldoption,
+                $vgId
+            );
+        }
+        return $value;
+    }
 }
