@@ -197,7 +197,7 @@ class FormGenerator {
 
                 $tabLink->setAttributes(
                     array(
-                        'id' => 'tabs_' . $tabName,
+                        'id' => 'vg-tabs_' . $tabName,
                         'onclick' => 'selectTab("' . $tabName . '", true)',
                     )
                 );
@@ -212,7 +212,7 @@ class FormGenerator {
             $tab->setAttributes(
                 array(
                     'id' => $tabName,
-                    'class' => 'tabs'
+                    'class' => 'vg-tabs'
                 )
             );
 

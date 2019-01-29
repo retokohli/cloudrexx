@@ -142,7 +142,7 @@ cx.ready(function() {
     });
 
     // Get first element from tabmenu and select tab
-    var firstTab = document.getElementsByClassName('tabs')[0];
+    var firstTab = document.getElementsByClassName('vg-tabs')[0];
     document.getElementsByTagName('legend')[0].style.display = 'block';
     if (document.getElementById('tabmenu') != null) {
         selectTab(firstTab.id, true);

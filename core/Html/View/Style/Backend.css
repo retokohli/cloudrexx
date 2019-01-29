@@ -200,6 +200,6 @@ body.loading {
 table.sortable .sorter-loading {
     background-image: url(../../../../core_modules/News/View/Media/loading.gif) !important;
 }
-.tabs {
+.vg-tabs {
     display:none;
 }
