@@ -58,7 +58,6 @@ form.cx-ui > fieldset + fieldset {
 
 form.cx-ui > fieldset > legend {
     float: left;
-    display: none;
     width: 100%;
     height: 28px;
     line-height: 28px;
@@ -69,6 +68,7 @@ form.cx-ui > fieldset > legend {
     color: #ffffff;
     text-align: left;
     white-space: nowrap;
+    box-sizing: border-box;
 }
 
 form.cx-ui > fieldset .group {
