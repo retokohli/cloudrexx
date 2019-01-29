@@ -141,7 +141,7 @@ cx.ready(function() {
         }
     });
 
-    // Get fist a element from tabmenu and select tab
+    // Get first element from tabmenu and select tab
     var firstTab = document.getElementsByClassName('tabs')[0];
     document.getElementsByTagName('legend')[0].style.display = 'block';
     if (document.getElementById('tabmenu') != null) {
