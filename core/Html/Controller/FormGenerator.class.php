@@ -146,7 +146,8 @@ class FormGenerator {
         if (!empty($tabs)) {
             $hasTabs = true;
             $tabMenu = new \Cx\Core\Html\Model\Entity\HtmlElement('ul');
-            $tabMenu->setAttribute('id', 'tabmenu');
+            $tabMenu->setAttribute('id', 'form-'.$this->formId.'-tabmenu');
+            $tabMenu->addClass('tabmenu');
             $this->form->addChild($tabMenu);
         }
         $this->form->setAttribute('id', 'form-' . $this->formId);
@@ -195,12 +196,11 @@ class FormGenerator {
                 $tabLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
                 $tabHeader = new \Cx\Core\Html\Model\Entity\TextElement($tabData['header']);
 
-                $tabLink->setAttributes(
-                    array(
-                        'id' => 'vg-tabs_' . $tabName,
-                        'onclick' => 'selectTab("' . $tabName . '", true)',
-                    )
+                $tabLink->setAttribute(
+                    'id',
+                    'vg-tabs_form-'.$this->formId . '-' . $tabName
                 );
+                $tabLink->addClass('vg-tab-links');
 
                 $tabLink->addChild($tabHeader);
                 $tabItem->addChild($tabLink);
@@ -211,7 +211,7 @@ class FormGenerator {
 
             $tab->setAttributes(
                 array(
-                    'id' => $tabName,
+                    'id' => 'form-'. $this->formId . '-' . $tabName,
                     'class' => 'vg-tabs'
                 )
             );
