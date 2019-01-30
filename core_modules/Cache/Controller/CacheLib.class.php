@@ -167,14 +167,23 @@ class CacheLib
     protected $arrPageContent = array();
 
     /**
+     * @var int Cache lease time in seconds
+     */
+    protected $intCacingTime;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        global $_CONFIG;
+
         $this->setCachePath();
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
+
+        $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
     }
 
     /**
@@ -736,17 +745,26 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
-        foreach ($params as &$param) {
-            $param = $this->parseEsiVars($param);
-        }
-        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
         $settings = $this->getSettings();
+        $inPlaceReplacement = false;
+        if (
+            !isset($settings['internalSsiCache']) ||
+            $settings['internalSsiCache'] != 'on'
+        ) {
+            $inPlaceReplacement = true;
+        }
+
+        if ($inPlaceReplacement) {
+            foreach ($params as &$param) {
+                $param = $this->parseEsiVars($param);
+            }
+        }
+
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+
         if (
             is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
-            (
-                !isset($settings['internalSsiCache']) ||
-                $settings['internalSsiCache'] != 'on'
-            )
+            $inPlaceReplacement
         ) {
             try {
                 return $this->getApiResponseForUrl($url);
@@ -769,10 +787,21 @@ class CacheLib
      * @return string ESI randomized include code
      */
     public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
+        $settings = $this->getSettings();
+        $inPlaceReplacement = false;
+        if (
+            !isset($settings['internalSsiCache']) ||
+            $settings['internalSsiCache'] != 'on'
+        ) {
+            $inPlaceReplacement = true;
+        }
+
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
-            foreach ($esiContentInfo[2] as &$param) {
-                $param = $this->parseEsiVars($param);
+            if ($inPlaceReplacement) {
+                foreach ($esiContentInfo[2] as &$param) {
+                    $param = $this->parseEsiVars($param);
+                }
             }
             $urls[] = $this->getUrlFromApi(
                 $esiContentInfo[0],
@@ -786,10 +815,7 @@ class CacheLib
                 $this->getSsiProxy(),
                 '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx'
             ) &&
-            (
-                !isset($settings['internalSsiCache']) ||
-                $settings['internalSsiCache'] != 'on'
-            )
+            $inPlaceReplacement
         ) {
             try {
                 return $this->getApiResponseForUrl(
@@ -1732,5 +1758,152 @@ class CacheLib
                 $this->clearCache(null);
                 break;
         }
+    }
+
+    /**
+     * Parses ESI directives internally if configured to do so
+     * @param string $htmlCode HTML code to replace ESI directives in
+     * @return string Parsed HTML code
+     */
+    public function internalEsiParsing($htmlCode, $cxNotYetInitialized = false) {
+        $this->initEsiDynVars();
+        
+        if (!is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
+            return $htmlCode;
+        }
+        
+        // Replace include tags
+        $settings = $this->getSettings();
+        $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
+            // return cached content if available
+            $cacheFile = $this->getCacheFileNameFromUrl(
+                $matches[1],
+                $this->currentUrl
+            );
+            if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile)) {
+                $expireTimestamp = -1;
+                if (file_exists($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile . '_h')) {
+                    $expireTimestamp = file_get_contents(
+                        $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile . '_h'
+                    );
+                }
+
+                if (
+                    (
+                        $expireTimestamp >= 0 && $expireTimestamp > time()
+                    ) ||
+                    (
+                        $expireTimestamp < 0 && filemtime(
+                            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile
+                        ) > (
+                            time() - $this->intCachingTime
+                        )
+                    )
+                ) {
+                    \DBG::dump($matches[1]);
+                    \DBG::dump($cacheFile);
+                    return file_get_contents($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
+                } else {
+                    \DBG::msg('Drop expired cached file ' . $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
+                    try {
+                        $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
+                        $file->delete();
+                    } catch (\Throwable $e) {}
+                }
+            }
+
+            if ($cxNotYetInitialized) {
+                \Cx\Core\Core\Controller\Cx::instanciate(
+                    \Cx\Core\Core\Controller\Cx::MODE_MINIMAL,
+                    true,
+                    null,
+                    true
+                );
+                $cxNotYetInitialized = false;
+            }
+
+            // TODO: Somehow FRONTEND_LANG_ID is sometimes undefined here...
+            $esiUrl = new \Cx\Lib\Net\Model\Entity\Url($matches[1]);
+            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('locale'));
+            if (!defined('FRONTEND_LANG_ID')) {
+                define('FRONTEND_LANG_ID', $langId);
+            }
+            if (!defined('BACKEND_LANG_ID')) {
+                define('BACKEND_LANG_ID', $langId);
+            }
+            if (!defined('LANG_ID')) {
+                define('LANG_ID', $langId);
+            }
+
+            try {
+                $content = $this->getApiResponseForUrl($matches[1]);
+
+                if ($settings['internalSsiCache'] == 'on') {
+                    // back-replace ESI variables that are url encoded
+                    foreach ($this->dynVars as $groupName=>$vars) {
+                        if (is_callable($vars)) {
+                            $esiPlaceholder = '$(' . $groupName . ')';
+                            $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                        } else {
+                            foreach ($vars as $varName=>$url) {
+                                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                                $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                            }
+                        }
+                    }
+
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_ESI . $cacheFile);
+                    $file->write($content);
+                }
+            } catch (\Exception $e) {
+                $content = '';
+            }
+
+            return $content;
+        };
+
+        do {
+            $htmlCode = $this->parseEsiVars($htmlCode);
+
+            // Random include tags
+            $htmlCode = preg_replace_callback(
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>([\s\S]*)<!-- ESI_RANDOM_END -->#U',
+                function($matches) {
+                    $includeCount = substr_count(
+                        $matches[2],
+                        '<esi:include src="'
+                    );
+                    $randomIncludes = '';
+                    $uris = explode('\',\'', substr($matches[1], 1, -1));
+                    for ($i = 0; $i < $includeCount; $i++) {
+                        if (!count($uris)) {
+                            continue;
+                        }
+                        $randomNumber = rand(0, count($uris) - 1);
+                        $uri = $uris[$randomNumber];
+                        unset($uris[$randomNumber]);
+                        // re-index array
+                        $uris = array_values($uris);
+
+                        // this needs to match the format below!
+                        $randomIncludes .= '<esi:include src="' . $uri . '" onerror="continue"/>';
+                    }
+
+                    return $randomIncludes;
+                },
+                $htmlCode
+            );
+
+            $htmlCode = preg_replace_callback(
+                '#<esi:include src="([^"]+)" onerror="continue"/>#',
+                $replaceEsiFn,
+                $htmlCode,
+                -1,
+                $count
+            );
+            // repeat replacement to recursively parse ESI-tags 
+        } while ($count);
+
+        return $htmlCode;
     }
 }

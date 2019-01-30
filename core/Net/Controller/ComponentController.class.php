@@ -73,7 +73,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!function_exists('idn_to_ascii')) {
             \DBG::msg('Idn is not supported in this system.');
         } else {
-            $name = idn_to_ascii($name);
+            // Test if UTS #46 (http://unicode.org/reports/tr46/) is available.
+            // Important: PHP7.2 has deprecated any other use than UTS #46.
+            // Therefore after PHP7.2, Cloudrexx requires ICU 4.6 or newer
+            // as minimum system requirement
+            if (defined('INTL_IDNA_VARIANT_UTS46')) {
+                $ascii = idn_to_ascii($name, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+            } else {
+                $ascii = idn_to_ascii($name);
+            }
+
+            // check if conversion was successful
+            if (!empty($ascii)) {
+                // in case the INTL extension is misconfigured on
+                // the server, then the return value of idn_to_ascii()
+                // will be empty. in that case let's return the
+                // original domain's name
+                $name = $ascii;
+            }
         }
 
         return $name;
@@ -94,7 +111,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!function_exists('idn_to_utf8')) {
             \DBG::msg('Idn is not supported in this system.');
         } else {
-            $name = idn_to_utf8($name);
+            // Test if UTS #46 (http://unicode.org/reports/tr46/) is available.
+            // Important: PHP7.2 has deprecated any other use than UTS #46.
+            // Therefore after PHP7.2, Cloudrexx requires ICU 4.6 or newer
+            // as minimum system requirement
+            if (defined('INTL_IDNA_VARIANT_UTS46')) {
+                $utf8 = idn_to_utf8($name, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+            } else {
+                $utf8 = idn_to_utf8($name);
+            }
+
+            // check if conversion was successful
+            if (!empty($utf8)) {
+                // in case the INTL extension is misconfigured on
+                // the server, then the return value of idn_to_utf8()
+                // will be empty. in that case let's return the
+                // original domain's name
+                $name = $utf8;
+            }
         }
 
         return $name;
