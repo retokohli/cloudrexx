@@ -482,7 +482,7 @@ cx.ready(function() {
     })();
 });
 
-cx.bind('fixTabFormId', function(formId) {
+cx.bind('Html:fixPostForm', function(formId) {
     cx.jQuery('#form-' + formId).find('*[id*="form-0-"]').each(function () {
         var id = cx.jQuery(this).attr('id');
         cx.jQuery(this).attr('id', id.replace('-0-', '-' + formId + '-'));
