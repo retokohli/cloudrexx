@@ -47,11 +47,6 @@ class FormGenerator {
     protected $formId;
 
     /**
-     * @var int Id of current ViewGenerator
-     */
-    protected $vgId;
-
-    /**
      * @var \Cx\Core\Html\Model\Entity\FormElement $form used to store the form data
      */
     protected $form = null;
@@ -77,6 +72,12 @@ class FormGenerator {
     protected $noView;
 
     /**
+     * @var \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of
+     * ViewGenerator
+     */
+    protected $viewGenerator;
+
+    /**
      * FormGenerator constructor.
      *
      * @param array $entity       entity to display
@@ -86,10 +87,10 @@ class FormGenerator {
      * @param array $options      options from ViewGenerator
      * @param int $entityId       id of a specific entity
      * @param $componentOptions   options of the component
+     * @param \Cx\Core\Html\Controller\ $viewGenerator instance of ViewGenerator
      * @param bool $noView        to set if a view should be created
-     * @param int  $vgId          id of ViewGenerator
      */
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $noView = false, $vgId)
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $viewGenerator = null, $noView = false)
     {
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
@@ -98,7 +99,7 @@ class FormGenerator {
         $this->entity = $entity;
         $this->entityClass = $entityClass;
         $this->noView = $noView;
-        $this->vgId = $vgId;
+        $this->viewGenerator = $viewGenerator;
 
         if ($this->noView) {
             return;
@@ -281,43 +282,13 @@ class FormGenerator {
         global $_ARRAYLANG, $_CORELANG;
 
         if (isset($options['valueCallback'])) {
-            $valueCallback = $options['valueCallback'];
-            $vgId = null;
-            if (
-                isset($options['functions']) &&
-                isset($options['functions']['vg_increment_number'])
-            ) {
-                $vgId = $options['functions']['vg_increment_number'];
-            }
-            if (
-                is_array($valueCallback) &&
-                isset($valueCallback['adapter']) &&
-                isset($valueCallback['method'])
-            ) {
-                $json = new \Cx\Core\Json\JsonData();
-                $jsonResult = $json->data(
-                    $valueCallback['adapter'],
-                    $valueCallback['method'],
-                    array(
-                        'data' => $value,
-                        'name' => $name,
-                        'rows' => array(),
-                        'options' => $options,
-                        'vgId' => $this->vgId,
-                    )
-                );
-                if ($jsonResult['status'] == 'success') {
-                    $value = $jsonResult['data'];
-                }
-            } else if (is_callable($valueCallback)) {
-                $value = $valueCallback(
-                    $value,
-                    $name,
-                    array(),
-                    $options,
-                    $this->vgId
-                );
-            }
+            $value = $this->viewGenerator->callValueCallback(
+                $options['valueCallback'],
+                $value,
+                $name,
+                array(),
+                $options
+            );
         }
 
         if (isset($options['formfield'])) {

@@ -55,10 +55,10 @@ class BackendTable extends HTML_Table {
     protected $editable = false;
 
     /**
-     * @var int $viewId This ID is used as html id for the view so we can load
-     * more than one view
+     * @var \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of
+     * ViewGenerator so we can load more than one view
      */
-    protected $viewId;
+    protected $viewGenerator;
 
     /**
      * Whether or not the table has a master table header.
@@ -77,14 +77,15 @@ class BackendTable extends HTML_Table {
      * @param array $attrs        attributes of view generator
      * @param array $options      options of view generator
      * @param string $entityClass class name of entity
+     * @param \Cx\Core\Html\Controller\ $viewGenerator instance of ViewGenerator
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewId = 0) {
+    public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewGenerator = null) {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
-        $this->viewId = $viewId;
+        $this->viewGenerator = $viewGenerator;
         if (!empty($options['functions']['editable'])) {
             $this->editable = true;
         }
@@ -122,7 +123,7 @@ class BackendTable extends HTML_Table {
             $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
                           ? $sortBy['pagingPosition']
                           : '';
-            $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, true, $this->viewId);
+            $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, $this->viewGenerator, true);
 
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
@@ -210,35 +211,13 @@ class BackendTable extends HTML_Table {
                         ) {
                             $vgId = $options['functions']['vg_increment_number'];
                         }
-                        if (
-                            is_array($valueCallback) &&
-                            isset($valueCallback['adapter']) &&
-                            isset($valueCallback['method'])
-                        ) {
-                            $json = new \Cx\Core\Json\JsonData();
-                            $jsonResult = $json->data(
-                                $valueCallback['adapter'],
-                                $valueCallback['method'],
-                                array(
-                                    'data' => $data,
-                                    'name' => $origHeader,
-                                    'rows' => $rows,
-                                    'options' => $options['fields'][$origHeader],
-                                    'vgId' => $vgId,
-                                )
-                            );
-                            if ($jsonResult['status'] == 'success') {
-                                $data = $jsonResult['data'];
-                            }
-                        } else if (is_callable($valueCallback)) {
-                            $data = $valueCallback(
-                                $data,
-                                $origHeader,
-                                $rows,
-                                $options['fields'][$origHeader],
-                                $vgId
-                            );
-                        }
+                        $data = $this->viewGenerator->callValueCallback(
+                            $valueCallback,
+                            $data,
+                            $origHeader,
+                            $rows,
+                            $options['fields'][$origHeader]
+                        );
                     }
                     /* We use json to do parse the field function. The 'else if' is for backwards compatibility so you can declare
                     * the function directly without using json. This is not recommended and not working over session */
@@ -784,9 +763,9 @@ class BackendTable extends HTML_Table {
             }
         }
 
-        if ($this->editable) {
+        if ($this->editable && $this->viewGenerator) {
             $template->setVariable('HTML_FORM_ACTION', contrexx_raw2xhtml(clone \Env::get('cx')->getRequest()->getUrl()));
-            $template->setVariable('HTML_VG_ID', $this->viewId);
+            $template->setVariable('HTML_VG_ID', $this->viewGenerator->getViewId());
             $template->setVariable('TXT_HTML_SAVE', $_ARRAYLANG['TXT_SAVE_CHANGES']);
 
             $template->touchBlock('form_open');
