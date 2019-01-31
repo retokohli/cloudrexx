@@ -227,22 +227,6 @@ function mbProductTargetUrlCallback(data)
   cx.jQuery('#productFormTargetUrl').val(url);
 }
 
-function openWindow(theURL,winName,features){
-  galleryPopup = window.open(theURL,"gallery",features);
-  galleryPopup.focus();
-}
-
-function SetUrl(url, width, height, alt) {
-  switch (newsElType) {
-  case 'image':
-    document.getElementById(newsElInsertBox).value = url;
-    break
-  case 'link':
-    newsInsertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'<\/a>');
-    break;
-  }
-}
-
 function showOrHide(strElement) {
   if (document.getElementById(strElement).style.display == 'none') {
     document.getElementById(strElement).style.display = 'block';

@@ -1365,13 +1365,18 @@ FORMTEMPLATE;
      * @param string $callback Name of the callback function
      * @return string HTML element of browse button
      */
-    public function getMediaBrowserButton($id, $callback = '')
+    protected function getMediaBrowserButton($id, $callback = '')
     {
         global $_ARRAYLANG;
 
+        $dataMbViews = 'filebrowser';
+        if ($id === 'productTargetUrlButton') {
+            $dataMbViews = 'filebrowser,sitestructure';
+        }
+
         $options = array(
             'type'             => 'button',
-            'data-cx-mb-views' => 'filebrowser',
+            'data-cx-mb-views' => $dataMbViews,
             'id'               => $id,
         );
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
