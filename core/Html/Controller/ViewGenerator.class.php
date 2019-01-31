@@ -310,6 +310,13 @@ class ViewGenerator {
                     $searchCriteria[$relationField] = $relationEntity;
                 }
             }
+            foreach ($this->options['fields'] as $fieldKey => $field) {
+                if ($field['custom'] && empty(
+                    $metaData->fieldMappings[$fieldKey]
+                )) {
+                    $lcOptions['customFields'][] = $fieldKey;
+                }
+            }
         }
         if (
             !isset($this->options['functions']) ||
@@ -354,11 +361,6 @@ class ViewGenerator {
         } else {
             $lcOptions['filterFields'] = array();
         }
-        foreach ($this->options['fields'] as $fieldKey => $field) {
-            if ($field['custom']) {
-                $lcOptions['customFields'][] = $fieldKey;
-            }
-        }
         $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $renderObject,
             $searchCriteria,
@@ -388,9 +390,7 @@ class ViewGenerator {
             }
             /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
              * the function directly without using json. This is not recommended and not working over session */
-            if (
-                is_array($storecallback) &&
-                isset($storecallback['adapter']) &&
+            if (is_array($storecallback) && isset($storecallback['adapter']) &&
                 isset($storecallback['method'])
             ) {
                 $json = new \Cx\Core\Json\JsonData();
@@ -407,8 +407,8 @@ class ViewGenerator {
             } else if (is_callable($storecallback)) {
                 $entityData[$name] = $storecallback($postedValue);
             }
-            return $entityData;
         }
+        return $entityData[$name];
     }
 
     /**
@@ -1202,18 +1202,18 @@ class ViewGenerator {
                 //var_dump($this->object->entryExists($entityId));
                 throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
             }
+
+            // Add custom fields
+            foreach ($this->options['fields'] as $name=>$option) {
+                if ($option['custom'] && empty($entityObject->fieldMappings[$name])) {
+                    $renderArray[$name] = '';
+                }
+            }
         } else {
             $renderArray = $this->object->toArray();
             $entityClassWithNS = '';
             $title = $entityTitle;
             $renderObject = null;
-        }
-
-        // Add custom fields
-        foreach ($this->options['fields'] as $name=>$option) {
-            if ($option['custom']) {
-                $renderArray[$name] = '';
-            }
         }
 
         return array(
