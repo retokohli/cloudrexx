@@ -1208,6 +1208,14 @@ class ViewGenerator {
             $title = $entityTitle;
             $renderObject = null;
         }
+
+        // Add custom fields
+        foreach ($this->options['fields'] as $name=>$option) {
+            if ($option['custom']) {
+                $renderArray[$name] = '';
+            }
+        }
+
         return array(
             'renderArray' => $renderArray,
             'renderObject' => $renderObject,
