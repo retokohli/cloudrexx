@@ -482,10 +482,14 @@ cx.ready(function() {
     })();
 });
 
-cx.bind('Html:fixPostForm', function(formId) {
-    cx.jQuery('#form-' + formId).find('*[id*="form-0-"]').each(function () {
-        var id = cx.jQuery(this).attr('id');
-        cx.jQuery(this).attr('id', id.replace('-0-', '-' + formId + '-'));
+cx.bind('Html:fixPostForm', function() {
+    var formId = 0;
+    cx.jQuery.each(cx.ui.forms.get(), function(index, el) {
+        formId = cx.jQuery(el).attr("id").split("-")[1];
+        cx.jQuery('#form-' + formId).find('*[id*="form-0-"]').each(function () {
+            var id = cx.jQuery(this).attr('id');
+            cx.jQuery(this).attr('id', id.replace('-0-', '-' + formId + '-'));
+        });
     });
 
     inizializeTabClickEvent(formId);
