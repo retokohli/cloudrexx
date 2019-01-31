@@ -216,6 +216,16 @@ class ViewGenerator {
     }
 
     /**
+     * Get view id
+     *
+     * @return int ViewGenerator id
+     */
+    public function getViewId()
+    {
+        return $this->viewId;
+    }
+
+    /**
      * This function is used to find the namespace of a passed object
      * This sets $this->object
      * @access protected
@@ -925,7 +935,7 @@ class ViewGenerator {
             $entityClassWithNS = $renderOptions['entityClassWithNS'];
 
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS, $this->viewId);
+            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS, $this);
             $template->setVariable(array(
                 'TABLE' => $backendTable,
                 'PAGING' => $this->listingController,
@@ -991,7 +1001,7 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions, $this->viewId);
+        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions, $this);
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';

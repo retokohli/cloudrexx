@@ -47,11 +47,6 @@ class FormGenerator {
     protected $formId;
 
     /**
-     * @var int Id of current ViewGenerator
-     */
-    protected $vgId;
-
-    /**
      * @var \Cx\Core\Html\Model\Entity\FormElement $form used to store the form data
      */
     protected $form = null;
@@ -77,6 +72,12 @@ class FormGenerator {
     protected $noView;
 
     /**
+     * @var \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of
+     * ViewGenerator
+     */
+    protected $viewGenerator;
+
+    /**
      * FormGenerator constructor.
      *
      * @param array $entity       entity to display
@@ -86,10 +87,10 @@ class FormGenerator {
      * @param array $options      options from ViewGenerator
      * @param int $entityId       id of a specific entity
      * @param $componentOptions   options of the component
-     * @param int  $vgId          id of ViewGenerator
+     * @param \Cx\Core\Html\Controller\ $viewGenerator instance of ViewGenerator
      * @param bool $noView        to set if a view should be created
      */
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $vgId, $noView = false)
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $viewGenerator = null, $noView = false)
     {
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
@@ -98,7 +99,7 @@ class FormGenerator {
         $this->entity = $entity;
         $this->entityClass = $entityClass;
         $this->noView = $noView;
-        $this->vgId = $vgId;
+        $this->viewGenerator = $viewGenerator;
 
         if ($this->noView) {
             return;
@@ -287,7 +288,7 @@ class FormGenerator {
                 $name,
                 array(),
                 $options,
-                $this->vgId
+                $this->viewGenerator->getViewId()
             );
         }
 
