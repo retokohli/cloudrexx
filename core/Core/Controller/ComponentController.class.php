@@ -303,4 +303,28 @@ Available commands:
         $command = static::CLI_SCRIPT_NAME . implode(' ', $arguments) . ' > /dev/null 2>&1 &';
         exec($command);
     }
+
+    /**
+     * Returns a publicly readable folder name with a unique random name
+     *
+     * Its intended use is for asynchronously generated files that need to be
+     * readable by a user.
+     * @todo: This should return a \Cx\Lib\FileSystem\File or similar
+     * @return string Unique absolute publicly readable folder path
+     */
+    public function getPublicUserTempFolder() {
+        $basePath = $this->cx->getWebsitePublicTempPath();
+        $folderName = substr(
+            str_replace(
+                ['+', '/', '='],
+                '',
+                base64_encode(random_bytes(32))
+            ),
+            0,
+            32
+        ); 
+        $path = $basePath . '/' . $folderName . '/';
+        \Cx\Lib\FileSystem\FileSystem::make_folder($path);
+        return $path;
+    }
 }
