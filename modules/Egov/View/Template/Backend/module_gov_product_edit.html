@@ -219,12 +219,14 @@ function mbProductFileCallback(data)
 
 function mbProductTargetUrlCallback(data)
 {
-  if (data.type !== 'file' || (typeof data.data[0] === 'undefined')) {
-    return;
+  if (data.type === 'file' && (typeof data.data[0] !== 'undefined')) {
+    var url = data.data[0].datainfo.filepath;
+    cx.jQuery('#productFormTargetUrl').val(url);
   }
-
-  var url = data.data[0].datainfo.filepath;
-  cx.jQuery('#productFormTargetUrl').val(url);
+  if (data.type === 'page') {
+    var url = data.data[0].node;
+    cx.jQuery('#productFormTargetUrl').val(url);
+  }
 }
 
 function showOrHide(strElement) {
