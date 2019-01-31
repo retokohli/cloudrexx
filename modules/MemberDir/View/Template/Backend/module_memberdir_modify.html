@@ -15,21 +15,6 @@
     document.getElementById("memberModifyForm").submit()
   }
 
-  var openBrowser = function openBrowser(url, id, attrs) {
-      fieldID=id;
-      try{
-      if(!browserPopup.closed){
-        return browserPopup.focus();
-      }
-    }catch(e){}
-    if (!window.focus){
-      return true;
-    }
-      browserPopup = window.open(url, "", attrs);
-      browserPopup.focus();
-      return false;
-    }
-
   function mbImageSelectionOne(data)
   {
     if (data.type !== 'file' || (typeof data.data[0] === 'undefined')) {
@@ -51,14 +36,6 @@
     cx.jQuery('#hi2').val(url);
     cx.jQuery('#img2').attr('src', url);
   }
-
-    var SetUrl = function(url, width, height, alt) {
-      image = document.getElementById("img"+fieldID);
-      image.src = url;
-      image.style.width = "40px";
-      hidden = document.getElementById("hi"+fieldID);
-      hidden.value = url;
-    }
 /* ]]> */
 </script>
 

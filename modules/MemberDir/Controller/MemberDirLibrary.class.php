@@ -374,7 +374,7 @@ class MemberDirLibrary
      * @param string $callback Name of the callback function
      * @return string HTML element of browse button
      */
-    public function getMediaBrowserButton($id, $callback = '')
+    protected function getMediaBrowserButton($id, $callback = '')
     {
         $options = array(
             'type'             => 'button',
