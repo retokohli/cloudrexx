@@ -70,7 +70,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         }
         return array(
             'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, $backendGroups),
-            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true)
+            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
+            'export' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get'), true),
         );
     }
 
@@ -299,5 +300,43 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         } catch (\Exception $e) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
+    }
+
+    /**
+     * Exports Doctrine entities to a file
+     * @param array $params The following get params are allowed:
+     *      type    required    string  Doctrine entity name
+     *      search  optional    VGparam Filters
+     *      term    optional    VGparam Search term
+     * @return array Generated file name
+     */
+    public function export($params) {
+        // todo: this should trigger an async job
+        if (!isset($params['get']['type'])) {
+            throw new \Exception();
+        }
+        $lc = new \Cx\Core_Modules\Listing\Controller\ListingController(
+            $params['get']['type'],
+            array(),
+            '',
+            array()
+        );
+        // todo: filter
+        // todo: field list
+        $ds = $lc->getData();
+        // todo: add method to get file name
+        // todo: add method to get folder contents
+        $file = $this->getComponent('Core')->getPublicUserTempFolder();
+        $file .= end(explode('\\', $params['get']['type'])) . '_Export_';
+        $file .= date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE) . '_';
+        $file .= date(ASCMS_DATE_FORMAT_INTERNATIONAL_TIME) . '.csv';
+        // todo: merge csv libraries
+        // todo: csv format, allow other formats?
+        $ds->exportToFile(
+            new \Cx\core_modules\Listing\Model\Entity\CsvInterface(),
+            $file
+        );
+        // todo: find nice way to get web path
+        return str_replace($this->cx->getCodeBasePath(), '', $file);
     }
 }

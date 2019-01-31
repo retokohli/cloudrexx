@@ -295,7 +295,13 @@ class BackendTable extends HTML_Table {
             // adjust colspan of master-table-header-row
             $this->altRowAttributes(1 + $this->hasMasterTableHeader, array('class' => 'row1'), array('class' => 'row2'), true);
             if ($this->hasMasterTableHeader) {
-                $this->setCellAttributes(0, 0, array('colspan' => $col + is_array($options['functions'])));
+                for ($i = 1; $i < $col; $i++) {
+                    $this->setHeaderContents(0, $i, '');
+                }
+                // prepare overall functions code
+                $overallFunctionsCode = $this->getOverallFunctionsCode($options['functions'], $attrs);
+                $this->setHeaderContents(0, $i, $overallFunctionsCode);
+                $this->updateCellAttributes(0, $col, array('style' => 'text-align:right;'));
                 $this->updateRowAttributes(1, array('class' => 'row3'), true);
             }
             // add multi-actions
@@ -546,6 +552,38 @@ class BackendTable extends HTML_Table {
             }
         }
         return $code . '</span>';
+    }
+
+    protected function getOverallFunctionsCode($functions, $renderObject) {
+        if (
+            isset($functions['export']) &&
+            is_array($functions['export']) &&
+            $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
+        ) {
+            $adapter = 'Html';
+            $method = 'export';
+            if (
+                isset($functions['export']['jsonadapter']) &&
+                isset($functions['export']['jsonadapter']['adapter']) &&
+                isset($functions['export']['jsonadapter']['method'])
+            ) {
+                $adapter = $functions['export']['jsonadapter']['adapter'];
+                $method = $functions['export']['jsonadapter']['method'];
+            }
+            $exportFunc = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+            $exportIcon = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+            $exportIcon->setAttribute('src', '/core/Html/View/Media/export.png');
+            $exportIcon->setAttribute('style', 'filter: invert(100%);');
+            $exportFunc->addChild($exportIcon);
+            $exportFunc->setAttributes(array(
+                'data-adapter' => $adapter,
+                'data-method' => $method,
+                'data-object' => $renderObject->getDataType(),
+            ));
+            $exportFunc->addClass('vg-export');
+            return (string) $exportFunc;
+        }
+        return '';
     }
 
     /**
