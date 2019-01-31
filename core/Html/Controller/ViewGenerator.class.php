@@ -450,13 +450,6 @@ class ViewGenerator {
             ? true
             : false;
 
-        // Foreach custom attribute we call the storecallback function if it exits
-        foreach ($this->options['fields'] as $name=>$field) {
-            if (!empty($field['custom'])) {
-                $entityData[$name] = $this->callStorecallback($name, $entityData);
-            }
-        }
-
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
@@ -592,6 +585,13 @@ class ViewGenerator {
                     $entity,
                     'set' . $methodBaseName
                 );
+            }
+        }
+
+        // Foreach custom attribute we call the storecallback function if it exits
+        foreach ($this->options['fields'] as $name=>$field) {
+            if (!empty($field['custom'])) {
+                $entityData[$name] = $this->callStorecallback($name, $entityData);
             }
         }
     }
