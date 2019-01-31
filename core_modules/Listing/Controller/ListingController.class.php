@@ -382,6 +382,8 @@ class ListingController {
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
 
         // Add custom fields
+        // TODO: Extend code so it works in all cases and not only for
+        // Doctrine views
         foreach ($this->customFields as $customField) {
             $data->addColumn($customField);
         }
