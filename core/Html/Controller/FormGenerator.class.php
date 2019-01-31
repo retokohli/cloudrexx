@@ -282,13 +282,12 @@ class FormGenerator {
         global $_ARRAYLANG, $_CORELANG;
 
         if (isset($options['valueCallback'])) {
-            $value = \Cx\Core\Html\Controller\ViewGenerator::callValueCallback(
+            $value = $this->viewGenerator->callValueCallback(
                 $options['valueCallback'],
                 $value,
                 $name,
                 array(),
-                $options,
-                $this->viewGenerator->getViewId()
+                $options
             );
         }
 

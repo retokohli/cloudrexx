@@ -1944,7 +1944,7 @@ class ViewGenerator {
      * @param $vgId        int    id of active ViewGenerator
      * @return mixed
      */
-    public static function callValueCallback($callback, $fieldvalue, $fieldname, $rowData, $fieldoption, $vgId)
+    public function callValueCallback($callback, $fieldvalue, $fieldname, $rowData, $fieldoption)
     {
         if (
             is_array($callback) &&
@@ -1960,7 +1960,7 @@ class ViewGenerator {
                     'fieldname' => $fieldname,
                     'rowData' => $rowData,
                     'fieldoption' => $fieldoption,
-                    'vgId' => $vgId,
+                    'vgId' => $this->viewId,
                 )
             );
             if ($jsonResult['status'] == 'success') {
@@ -1972,7 +1972,7 @@ class ViewGenerator {
                 $fieldname,
                 $rowData,
                 $fieldoption,
-                $vgId
+                $this->viewId
             );
         }
         return $value;

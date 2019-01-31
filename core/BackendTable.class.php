@@ -211,13 +211,12 @@ class BackendTable extends HTML_Table {
                         ) {
                             $vgId = $options['functions']['vg_increment_number'];
                         }
-                        $data = \Cx\Core\Html\Controller\ViewGenerator::callValueCallback(
+                        $data = $this->viewGenerator->callValueCallback(
                             $valueCallback,
                             $data,
                             $origHeader,
                             $rows,
-                            $options['fields'][$origHeader],
-                            $vgId
+                            $options['fields'][$origHeader]
                         );
                     }
                     /* We use json to do parse the field function. The 'else if' is for backwards compatibility so you can declare
