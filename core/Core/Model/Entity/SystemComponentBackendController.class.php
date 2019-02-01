@@ -344,10 +344,12 @@ class SystemComponentBackendController extends Controller {
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         global $_ARRAYLANG;
 
+        // last entry can be empty
+        $entityName = !empty(end($cmd)) ? end($cmd) : $cmd[count($cmd)-2];
         // Parse entity view generation pages
-        $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
+        $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . $entityName;
         if (in_array($entityClassName, $this->getEntityClasses())) {
-            return $this->parseEntityClassPage($template, $entityClassName, current($cmd), array(), $isSingle);
+            return $this->parseEntityClassPage($template, $entityClassName, $entityName, array(), $isSingle);
         }
 
         // Not an entity, parse overview or settings
