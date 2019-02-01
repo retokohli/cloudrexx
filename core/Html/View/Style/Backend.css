@@ -215,3 +215,7 @@ table.adminlist .vg-function-status {
 table.adminlist .vg-function-status.active {
     background-image: url(../Media/status_active.gif);
 }
+
+table.adminlist .vg-function-status.loading {
+    background-image: url(../Media/load.gif);
+}

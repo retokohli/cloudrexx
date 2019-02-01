@@ -18,3 +18,4 @@ $_ARRAYLANG['TXT_CORE_HTML_GETTER_SETTER_NOT_FOUND_ERROR'] = 'The entity <strong
 $_ARRAYLANG['TXT_CORE_HTML_SORTING_NO_ENTITY_FOUND_ERROR'] = 'No entries found for the sorting process.';
 $_ARRAYLANG['TXT_CORE_HTML_STATUS_NO_ENTITY_FOUND_ERROR'] = 'No entry found to update.';
 $_ARRAYLANG['TXT_CORE_HTML_PLEASE_CHOOSE'] = 'Please choose...';
+$_ARRAYLANG['TXT_CORE_HTML_CANT_UPDATE_STATUS'] = 'Status could not be updated.';

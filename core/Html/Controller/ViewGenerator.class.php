@@ -569,6 +569,8 @@ class ViewGenerator {
      */
     protected function inizializeStatusOption($entityNameSpace)
     {
+        global $_ARRAYLANG;
+
         //If the entity namespace is empty or an array then disable the status
         if (empty($entityNameSpace) && $entityNameSpace === 'array') {
             return;
@@ -601,6 +603,11 @@ class ViewGenerator {
         $this->options['functions']['status']['entity']     = $entityName;
 
         //Register the script Backend.js and activate the jqueryui and cx for the status update
+        \ContrexxJavascript::getInstance()->setVariable(
+            'TXT_CORE_HTML_CANT_UPDATE_STATUS',
+            $_ARRAYLANG['TXT_CORE_HTML_CANT_UPDATE_STATUS'],
+            'ViewGenerator'
+        );
         \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 

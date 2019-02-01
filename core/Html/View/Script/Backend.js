@@ -161,17 +161,19 @@ cx.ready(function() {
                             'component': opt.component,
                             'entity': opt.entity,
                         },
+                        showMessage: true,
                         beforeSend: function() {
-                            cx.jQuery('body').addClass('loading');
+                            cx.jQuery(opt.that).addClass('loading');
                         },
                         success: function(json) {
                             cx.jQuery(opt.that).toggleClass('active');
                         },
                         error: function(xhr, status, error) {
+                            cx.tools.StatusMessage.showMessage(cx.variables.get('TXT_CORE_HTML_CANT_UPDATE_STATUS', 'ViewGenerator'));
                             cx.jQuery(this).data('status-value', (cx.jQuery(this).hasClass('active') ? 0 : 1));
                         },
                         complete: function() {
-                            cx.jQuery('body').removeClass('loading');
+                            cx.jQuery(opt.that).removeClass('loading');
                         }
                     }
                 );
