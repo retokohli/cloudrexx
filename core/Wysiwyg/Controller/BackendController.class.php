@@ -89,7 +89,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST['replaceActualContents'])?1:0);
                     \Cx\Core\Setting\Controller\Setting::set(
                         'sortBehaviour',
-                        isset($_POST['sortBehaviour']) ? $_POST['sortBehaviour'] : 'custom'
+                        isset($_POST['sortBehaviour'])
+                            ? contrexx_raw2db($_POST['sortBehaviour'])
+                            : 'custom'
                     );
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
@@ -319,6 +321,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $classNameParts = explode('\\', $entityClassName);
         $classIdentifier = end($classNameParts);
 
+        $sortBy = false;
+        \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
+        if (\Cx\Core\Setting\Controller\Setting::getValue('sortBehaviour') === 'custom') {
+            $sortBy = array('field' => ['order' => $sortBy]);
+        }
+
         return array(
             'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
             'entityName' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ENTITY'],
@@ -336,7 +344,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
-                'sortBy'    => ['field' => ['order' => SORT_ASC]],
+                'sortBy'    => $sortBy,
             ),
             'fields' => array(
                 'id' => array(
