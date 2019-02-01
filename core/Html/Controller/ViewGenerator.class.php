@@ -569,19 +569,19 @@ class ViewGenerator {
      */
     protected function inizializeStatusOption($entityNameSpace)
     {
-        //If the entity namespace is empty or an array then disable the row sorting
+        //If the entity namespace is empty or an array then disable the status
         if (empty($entityNameSpace) && $entityNameSpace === 'array') {
             return;
         }
 
-        $status = (     isset($this->options['functions']['status'])
-            &&  is_array($this->options['functions']['status'])
-        )
-            ? $this->options['functions']['status']
-            : array();
+        $status = array();
+        if (isset($this->options['functions']['status'])
+            && is_array($this->options['functions']['status'])) {
+            $status = $this->options['functions']['status'];
+        }
 
-        //If the 'sortBy' option does not have 'jsonadapter',
-        //we need to get the component name and entity name for updating the sorting order in db
+        //If the 'status' option does not have 'jsonadapter',
+        //we need to get the component name and entity name for updating the status in db
         $componentName = '';
         $entityName    = '';
         if ( (    !isset($status['jsonadapter'])

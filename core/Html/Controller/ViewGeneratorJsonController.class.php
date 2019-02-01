@@ -372,8 +372,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         $setter = 'set'. \Doctrine\Common\Inflector\Inflector::classify(
             $statusField
         );
-        if (    !in_array($setter, $classMethods)
-        ) {
+        if (!in_array($setter, $classMethods)) {
             throw new \Exception(
                 sprintf(
                     $_ARRAYLANG['TXT_CORE_HTML_GETTER_SETTER_NOT_FOUND_ERROR'],

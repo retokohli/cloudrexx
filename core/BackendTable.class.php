@@ -135,7 +135,6 @@ class BackendTable extends HTML_Table {
 
             $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, true);
 
-
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -255,7 +254,7 @@ class BackendTable extends HTML_Table {
                             );
                         }
                         $encode = false; // todo: this should be set by callback
-                    } else if ( in_array($origHeader, $status)) {
+                    } else if (in_array($origHeader, $status)) {
                         $statusField = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
                         $class = '';
                         if ((boolean)$data) {
