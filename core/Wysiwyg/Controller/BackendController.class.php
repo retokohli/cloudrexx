@@ -89,9 +89,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST['replaceActualContents'])?1:0);
                     \Cx\Core\Setting\Controller\Setting::set(
                         'sortBehaviour',
-                        isset($_POST['sortBehaviour'])
-                            ? contrexx_raw2db($_POST['sortBehaviour'])
-                            : 'custom'
+                        isset($_POST['sortBehaviour']) ? $_POST['sortBehaviour'] : 'custom'
                     );
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
@@ -322,9 +320,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $classIdentifier = end($classNameParts);
 
         $sortBy = array();
+        $order  = array('title' => SORT_ASC);
         \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
         if (\Cx\Core\Setting\Controller\Setting::getValue('sortBehaviour') === 'custom') {
             $sortBy = array('field' => ['order' => SORT_ASC]);
+            $order  = array();
         }
 
         return array(
@@ -341,7 +341,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'add'       => true,
                 'edit'      => true,
                 'delete'    => true,
-                'sorting'   => true,
+                'order'     => $order,
                 'paging'    => true,
                 'filtering' => false,
                 'sortBy'    => $sortBy,
