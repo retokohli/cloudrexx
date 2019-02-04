@@ -142,10 +142,6 @@ cx.ready(function() {
     });
     cx.jQuery(".chzn").chosen();
 
-});
-
-
-cx.ready(function() {
     var cadminPath = cx.variables.get('cadminPath', 'contrexx'),
         status = {
             ajaxCall : function(opt) {
