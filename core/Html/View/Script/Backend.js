@@ -171,7 +171,8 @@ cx.ready(function() {
                         complete: function() {
                             cx.jQuery(opt.that).removeClass('loading');
                         }
-                    }
+                    },
+                    cx.variables.get('language', 'contrexx')
                 );
             },
         };
