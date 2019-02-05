@@ -1946,6 +1946,8 @@ class ViewGenerator {
      */
     public function callValueCallback($callback, $fieldvalue, $fieldname, $rowData, $fieldoption)
     {
+        $value = $fieldvalue;
+
         if (
             is_array($callback) &&
             isset($callback['adapter']) &&
