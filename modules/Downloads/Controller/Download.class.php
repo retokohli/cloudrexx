@@ -268,11 +268,20 @@ class Download {
 
     private $userId;
 
+    /**
+     * Local copy of the components config data
+     * @var array
+     */
+    protected $config = array();
 
-    public function __construct()
+    /**
+     * @param   array   $config Config data of DownloadsLibrary
+     */
+    public function __construct($config = array())
     {
         global $objInit;
 
+        $this->config = $config;
         $this->isFrontendMode = $objInit->mode == 'frontend';
 
         $objFWUser = \FWUser::getFWUserObject();
