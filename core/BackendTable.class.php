@@ -203,7 +203,8 @@ class BackendTable extends HTML_Table {
                     }
                     if (isset($options['fields']) &&
                         isset($options['fields'][$origHeader]) &&
-                        isset($options['fields'][$origHeader]['valueCallback'])
+                        isset($options['fields'][$origHeader]['valueCallback']) &&
+                        !empty($this->viewGenerator)
                     ) {
                         $valueCallback = $options['fields'][$origHeader]['valueCallback'];
                         $vgId = null;
