@@ -200,7 +200,8 @@ class BackendTable extends HTML_Table {
                             $this->setCellContents(0, $col, $header, 'th', 0);
                         }
                     }
-                    if (isset($options['fields']) &&
+                    if (
+                        isset($options['fields']) &&
                         isset($options['fields'][$origHeader]) &&
                         isset($options['fields'][$origHeader]['valueCallback']) &&
                         !empty($this->viewGenerator)
