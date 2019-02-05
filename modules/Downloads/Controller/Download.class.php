@@ -1309,7 +1309,14 @@ class Download {
         }
 
         $searchConditions = array();
-        foreach (array('name', 'description') as $fieldName) {
+        $fields = array('name', 'description');
+
+        // also lookup metakeys if the usage of meta-keys has been activated
+        if (!empty($this->config['use_attr_metakeys'])) {
+            $fields[] = 'metakeys';
+        }
+
+        foreach ($fields as $fieldName) {
             if (is_array($search)) {
                 $searchConditions[] = '`' . $fieldName . '` LIKE "%' . implode(
                     '%" OR `' . $fieldName . '` LIKE "%',
