@@ -77,8 +77,7 @@ class BackendTable extends HTML_Table {
      * @param array $attrs        attributes of view generator
      * @param array $options      options of view generator
      * @param string $entityClass class name of entity
-     * @param \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of
-     *                                                              ViewGenerator
+     * @param \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of ViewGenerator
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
     public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewGenerator = null) {
