@@ -125,7 +125,7 @@ class TestCommand extends Command {
             }
         }
 
-        $this->phpUnitPath = ASCMS_LIBRARY_PATH.'/PHPUnit';
+        $this->phpUnitPath = ASCMS_LIBRARY_PATH.'/PHPUnit/phpunit/phpunit/src';
         if(!file_exists($this->phpUnitPath)) {
             $this->interface->show("PhpUnit is not found in ". $this->phpUnitPath);
             return;
@@ -139,30 +139,27 @@ class TestCommand extends Command {
         // Sort the folders
         asort($this->testingFolders);
 
-        // Needs to change the dir because files might be loaded by its relative path inside PHPUnit
-        chdir($this->phpUnitPath);
-
         if (extension_loaded('xdebug')) {
             xdebug_disable();
-        }
-
-        if (strpos('@php_bin@', '@php_bin') === 0) {
-            set_include_path($this->phpUnitPath . PATH_SEPARATOR . get_include_path());
         }
 
         spl_autoload_register(array($this, 'phpunitAutoload'));
 
         unset($arguments[0]);
         unset($arguments[1]); // unset the arguments
-        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();
+        $command = new \PHPUnit\TextUI\Command();
         $options = array(
             $this->phpUnitPath,
-            '--testdox'
+            '--testdox',
+            '--test-suffix',
+            'Test.class.php',
         );
         foreach ($arguments as $arg) {
             $options[] = $arg;
         }
-        $options[] = $this->testingFolders;
+        // TODO: limit to component type or component
+        // TODO: dynamically load correct path
+        $options[] = '/var/www/html/';
 
         $_SERVER['argv'] = $argv = $options;
         $_SERVER['argc'] = count($argv);
@@ -319,20 +316,12 @@ class TestCommand extends Command {
      */
     function phpunitAutoload($class)
     {
-        require_once $this->phpUnitPath . '/PHPUnit/Util/Filesystem.php';
-
-        if (
-               strpos($class, 'PHPUnit_') === 0
-            || strpos($class, 'PHP_') === 0
-            || strpos($class, 'Text_') === 0
-            || strpos($class, 'File_') === 0
-            || strpos($class, 'Doctrine') === 0
-            || strpos($class, 'SebastianBergmann') === 0
-           ) {
-           $file = \PHPUnit_Util_Filesystem::classNameToFilename($class);
-           if (file_exists($this->phpUnitPath . '/'. $file)) {
-               require_once $file;
-           }
+        if (strpos($class, 'PHPUnit') === 0) {
+            $fileParts = explode('\\', $class, 2);
+            $file = str_replace('\\', '/', $fileParts[1]) . '.php';
+            if (file_exists($this->phpUnitPath . '/'. $file)) {
+                require_once $this->phpUnitPath . '/' . $file;
+            }
         }
     }
 
