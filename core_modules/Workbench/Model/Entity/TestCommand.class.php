@@ -144,7 +144,8 @@ class TestCommand extends Command {
             xdebug_disable();
         }
 
-        spl_autoload_register(array($this, 'phpunitAutoload'));
+        require_once(ASCMS_LIBRARY_PATH . '/PHPUnit/autoload.php');
+
         // Need to load session before PHPUnit is loaded. Otherwise session
         // init in a test case will fail.
         $session = $this->cx->getComponent('Session')->getSession();
@@ -169,20 +170,6 @@ class TestCommand extends Command {
         $command->run($_SERVER['argv'], false);
 
         $this->interface->show('Done');
-    }
-
-    /*
-     * Autoload function to load the PHPUnit class files.
-     */
-    function phpunitAutoload($class)
-    {
-        if (strpos($class, 'PHPUnit') === 0) {
-            $fileParts = explode('\\', $class, 2);
-            $file = str_replace('\\', '/', $fileParts[1]) . '.php';
-            if (file_exists($this->phpUnitPath . '/'. $file)) {
-                require_once $this->phpUnitPath . '/' . $file;
-            }
-        }
     }
 
     /**
