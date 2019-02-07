@@ -161,8 +161,7 @@ class TestCommand extends Command {
             $options[] = $arg;
         }
         // TODO: limit to component type or component
-        // TODO: dynamically load correct path
-        $options[] = '/var/www/html/';
+        $options[] = $this->cx->getCodeBaseDocumentRootPath();
 
         $_SERVER['argv'] = $argv = $options;
         $_SERVER['argc'] = count($argv);
