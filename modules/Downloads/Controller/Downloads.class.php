@@ -208,7 +208,7 @@ class Downloads extends DownloadsLibrary
 
         \Cx\Core\Csrf\Controller\Csrf::check_code();
         $id = isset($_GET['delete_file']) ? contrexx_input2int($_GET['delete_file']) : 0;
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']);
 
         if (!$objDownload->EOF) {
@@ -254,7 +254,7 @@ class Downloads extends DownloadsLibrary
             $this->objTemplate->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
         }
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objCategory = Category::getCategory($this->categoryId);
 
         if (!$objCategory->getActiveStatus()) {
@@ -557,7 +557,7 @@ class Downloads extends DownloadsLibrary
      */
     public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName, $data)
     {
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
 
         // parse name and description attributres
         $arrLanguageIds = array_keys(\FWLanguage::getLanguageArray());
@@ -1165,7 +1165,7 @@ JS_CODE;
             }
         }
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $sortOrder = $this->fetchSortOrderFromTemplate(
             'downloads_' . strtolower($variablePrefix) . 'file_list',
             $this->objTemplate,
@@ -1259,7 +1259,7 @@ JS_CODE;
             return;
         }
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->loadDownloads(
             $arrFilter,
             null,
@@ -1588,7 +1588,7 @@ JS_CODE;
     {
         global $objInit;
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $id = !empty($_GET['download']) ? contrexx_input2int($_GET['download']) : 0;
         $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']);
         if (!$objDownload->EOF) {

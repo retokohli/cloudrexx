@@ -554,6 +554,9 @@ class DownloadsLibrary
 
         // clear contrexx cache
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Downloads');
+
+        // clear search cache
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Search');
     }
 
     /**
