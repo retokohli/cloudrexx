@@ -577,23 +577,25 @@ class ViewGenerator {
         }
 
         $status = array();
-        if (isset($this->options['functions']['status'])
-            && is_array($this->options['functions']['status'])) {
+        if (
+            isset($this->options['functions']['status']) &&
+            is_array($this->options['functions']['status'])
+        ) {
             $status = $this->options['functions']['status'];
         }
 
         //If the 'status' option does not have 'jsonadapter',
-        //we need to get the component name and entity name for updating the status in db
+        //we need to get the component name and entity name for updating the
+        //status in db
         $componentName = '';
         $entityName    = '';
-        if ( (    !isset($status['jsonadapter'])
-            ||  (    isset($status['jsonadapter'])
-                &&  (    empty($status['jsonadapter']['object'])
-                    ||  empty($status['jsonadapter']['act'])
-                )
-            )
-        )
-        ) {
+        if ((
+            !isset($status['jsonadapter']) ||
+            (isset($status['jsonadapter']) && (
+                empty($status['jsonadapter']['object']) ||
+                empty($status['jsonadapter']['act'])
+            ))
+        )) {
             $split          = explode('\\', $entityNameSpace);
             $componentName  = isset($split[2]) ? $split[2] : '';
             $entityName     = isset($split) ? end($split) : '';
@@ -602,13 +604,18 @@ class ViewGenerator {
         $this->options['functions']['status']['component']  = $componentName;
         $this->options['functions']['status']['entity']     = $entityName;
 
-        //Register the script Backend.js and activate the jqueryui and cx for the status update
         \ContrexxJavascript::getInstance()->setVariable(
             'TXT_CORE_HTML_CANT_UPDATE_STATUS',
             $_ARRAYLANG['TXT_CORE_HTML_CANT_UPDATE_STATUS'],
             'ViewGenerator'
         );
-        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
+        //Register the script Backend.js
+        \JS::registerJS(
+            substr(
+                $this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js'
+                , 1
+            )
+        );
     }
 
     /**

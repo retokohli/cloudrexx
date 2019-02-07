@@ -317,14 +317,17 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
 
         $post = is_array($params['post']) ? $params['post'] : array();
 
-        if (    empty($post)
-            ||  !isset($post['entityId'])
-            ||  !isset($post['newStatus'])
-            ||  !isset($post['statusField'])
-            ||  !isset($post['component'])
-            ||  !isset($post['entity'])
+        if (
+            empty($post) ||
+            !isset($post['entityId']) ||
+            !isset($post['newStatus']) ||
+            !isset($post['statusField']) ||
+            !isset($post['component']) ||
+            !isset($post['entity'])
         ) {
-            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_STATUS_ORDER_FAILED']);
+            throw new \Exception(
+                $_ARRAYLANG['TXT_CORE_HTML_UPDATE_STATUS_ORDER_FAILED']
+            );
         }
 
         //Get all the 'POST' values
