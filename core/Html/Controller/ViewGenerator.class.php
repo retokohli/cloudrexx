@@ -216,6 +216,16 @@ class ViewGenerator {
     }
 
     /**
+     * Get view id
+     *
+     * @return int ViewGenerator id
+     */
+    public function getViewId()
+    {
+        return $this->viewId;
+    }
+
+    /**
      * This function is used to find the namespace of a passed object
      * This sets $this->object
      * @access protected
@@ -984,7 +994,7 @@ class ViewGenerator {
             $entityClassWithNS = $renderOptions['entityClassWithNS'];
 
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS, $this->viewId);
+            $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS, $this);
             $template->setVariable(array(
                 'TABLE' => $backendTable,
                 'PAGING' => $this->listingController,
@@ -1050,7 +1060,7 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions);
+        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions, $this);
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
@@ -1980,5 +1990,52 @@ class ViewGenerator {
             static::appendVgParam($url, $vgId, 'order', $field . '=' . $order);
         }
         return $url;
+    }
+
+    /**
+     * Return the value of the value callback.
+     *
+     * @param $callback    array  callback options
+     * @param $fieldvalue  string value to modify
+     * @param $fieldname   string name of option
+     * @param $rowData     array  entity data
+     * @param $fieldoption array  option config
+     * @param $vgId        int    id of active ViewGenerator
+     * @return mixed
+     */
+    public function callValueCallback($callback, $fieldvalue, $fieldname, $rowData, $fieldoption)
+    {
+        $value = $fieldvalue;
+
+        if (
+            is_array($callback) &&
+            isset($callback['adapter']) &&
+            isset($callback['method'])
+        ) {
+            $json = new \Cx\Core\Json\JsonData();
+            $jsonResult = $json->data(
+                $callback['adapter'],
+                $callback['method'],
+                array(
+                    'fieldvalue' => $fieldvalue,
+                    'fieldname' => $fieldname,
+                    'rowData' => $rowData,
+                    'fieldoption' => $fieldoption,
+                    'vgId' => $this->viewId,
+                )
+            );
+            if ($jsonResult['status'] == 'success') {
+                $value = $jsonResult['data'];
+            }
+        } else if (is_callable($callback)) {
+            $value = $callback(
+                $fieldvalue,
+                $fieldname,
+                $rowData,
+                $fieldoption,
+                $this->viewId
+            );
+        }
+        return $value;
     }
 }

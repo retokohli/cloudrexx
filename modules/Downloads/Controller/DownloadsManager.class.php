@@ -293,7 +293,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function getDownload()
     {
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->load(!empty($_GET['id']) ? intval($_GET['id']) : 0);
         if (!$objDownload->EOF) {
             if (// download is protected
@@ -838,7 +838,7 @@ class DownloadsManager extends DownloadsLibrary
         $arrAssociatedDownloads = array_keys($objCategory->getAssociatedDownloadIds());
         $associatedDownloads = '';
         $notAssociatedDownloads = '';
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $sortOrder   = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
         $objDownload->loadDownloads(null, null, $sortOrder);
         while (!$objDownload->EOF) {
@@ -948,7 +948,7 @@ class DownloadsManager extends DownloadsLibrary
             $filter = array('category_id' => $objCategory->getId());
         }
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->loadDownloads(
             $filter, $searchTerm, $arrOrder, null,
             $_CONFIG['corePagingLimit'], $limitOffset, true
@@ -1163,7 +1163,7 @@ class DownloadsManager extends DownloadsLibrary
     {
         global $_ARRAYLANG;
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->load(isset($_GET['id']) ? $_GET['id'] : 0);
 
         if (!$objDownload->EOF) {
@@ -1183,7 +1183,7 @@ class DownloadsManager extends DownloadsLibrary
 
         $succeded = true;
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         foreach ($arrDownloadIds as $downloadId) {
             $objDownload->load($downloadId);
 
@@ -1203,7 +1203,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function switchDownloadStatus()
     {
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->load(isset($_GET['id']) ? intval($_GET['id']) : 0);
         if (!$objDownload->EOF) {
             $objDownload->setActiveStatus(!$objDownload->getActiveStatus());
@@ -1215,7 +1215,7 @@ class DownloadsManager extends DownloadsLibrary
     private function unlinkDownloadFromCategory()
     {
         $categoryId = isset($_GET['parent_id']) ? intval($_GET['parent_id']) : 0;
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->load(isset($_GET['id']) ? intval($_GET['id']) : 0);
         if (!$objDownload->EOF) {
             $arrCategoryAssociations = $objDownload->getAssociatedCategoryIds();
@@ -1282,7 +1282,7 @@ class DownloadsManager extends DownloadsLibrary
         $hasRemoveRight = \Permission::checkAccess(143, 'static', true) || $objCategory->getId() && (!$objCategory->getManageFilesAccessId() || \Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true) || $objCategory->getOwnerId() == $objFWUser->objUser->getId());
         $associatedDownloads = '';
         $notAssociatedDownloads = '';
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $sortOrder   = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
         $objDownload->loadDownloads(null, null, $sortOrder);
         while (!$objDownload->EOF) {
@@ -1328,7 +1328,7 @@ class DownloadsManager extends DownloadsLibrary
 
         $arrFailedDownloads = array();
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         foreach ($arrDownloadOrder as $downloadId => $orderNr) {
             $objDownload->load($downloadId);
             if (!$objDownload->EOF) {
@@ -1353,7 +1353,7 @@ class DownloadsManager extends DownloadsLibrary
 
         $id = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
         $objFWUser = \FWUser::getFWUserObject();
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->load($id);
 
         \ContrexxJavascript::getInstance()->setVariable(
@@ -1701,7 +1701,7 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse related downloads
         $arrRelatedDownloads = $objDownload->getRelatedDownloadIds();
-        $objAvailableDownload = new Download();
+        $objAvailableDownload = new Download($this->arrConfig);
         $sortOrder = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
         $objAvailableDownload->loadDownloads(null, null, $sortOrder);
         while (!$objAvailableDownload->EOF) {
@@ -2430,7 +2430,7 @@ class DownloadsManager extends DownloadsLibrary
             );
         }
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $searchTerm, $arrOrder, null, $_CONFIG['corePagingLimit'], $downloadLimitOffset, true);
         $downloadsAvailable = $objDownload->EOF ? false : true;
         while (!$objDownload->EOF) {

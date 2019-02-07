@@ -396,7 +396,7 @@ class SystemComponentBackendController extends Controller {
                                 $this->getName(),
                                 'nonempty',
                                 $config['corePagingLimit'],
-                                'settings/email'
+                                'Settings/email'
                             )->get()
                         );
                         break;
