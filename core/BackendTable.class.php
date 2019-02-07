@@ -123,14 +123,14 @@ class BackendTable extends HTML_Table {
             $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
                           ? $sortBy['pagingPosition']
                           : '';
-            $status     = ( isset($options['functions']['status'])
-                            && is_array($options['functions']['status'])
+            $status     = (isset($options['functions']['status']) &&
+                           is_array($options['functions']['status'])
                           ) ? $options['functions']['status']
                           : array();
-            $statusComponent  = !empty($status) && isset($status['component'])
+            $statusComponent = !empty($status) && isset($status['component'])
                 ? $status['component']
                 : '';
-            $statusEntity     = !empty($status) && isset($status['entity'])
+            $statusEntity = !empty($status) && isset($status['entity'])
                 ? $status['entity']
                 : '';
 
@@ -160,8 +160,18 @@ class BackendTable extends HTML_Table {
                         continue;
                     }
 
-                    if (isset($options['fields'][$header]['editable']) && $this->editable && !in_array($header, $status)) {
-                        $data = $formGenerator->getDataElementWithoutType($header, $header .'-'. $rowname, 0, $data, $options, 0);
+                    if (
+                        isset($options['fields'][$header]['editable']) &&
+                        $this->editable && !in_array($header, $status)
+                    ) {
+                        $data = $formGenerator->getDataElementWithoutType(
+                            $header,
+                            $header .'-'. $rowname,
+                            0,
+                            $data,
+                            $options,
+                            0
+                        );
 
                         $encode = false;
                     }
@@ -473,9 +483,10 @@ class BackendTable extends HTML_Table {
 
             $attrs['data-status-object'] = 'Html';
             $attrs['data-status-act'] = 'updateStatus';
-            if (isset($status['jsonadapter'])
-                &&  !empty($status['jsonadapter']['object'])
-                &&  !empty($status['jsonadapter']['act'])
+            if (
+                isset($status['jsonadapter']) &&
+                !empty($status['jsonadapter']['object']) &&
+                !empty($status['jsonadapter']['act'])
             ) {
                 $attrs['data-status-object'] = $status['jsonadapter']['object'];
                 $attrs['data-status-act']    = $status['jsonadapter']['act'];
