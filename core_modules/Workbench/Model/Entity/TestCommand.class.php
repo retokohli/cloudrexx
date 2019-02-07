@@ -144,6 +144,9 @@ class TestCommand extends Command {
         }
 
         spl_autoload_register(array($this, 'phpunitAutoload'));
+        // Need to load session before PHPUnit is loaded. Otherwise session
+        // init in a test case will fail.
+        $session = $this->cx->getComponent('Session')->getSession();
 
         unset($arguments[0]);
         unset($arguments[1]); // unset the arguments
