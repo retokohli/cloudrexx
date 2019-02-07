@@ -63,10 +63,8 @@ class TestCommand extends Command {
     protected $help = 'To be defined';
 
     /**
-     * Array of testing folders
+     * @var string Path to PHPUnit library
      */
-    protected $testingFolders = array();
-
     protected $phpUnitPath;
 
     /**
@@ -112,27 +110,30 @@ class TestCommand extends Command {
             unset($arguments[3]);
         }
 
+        $path = $this->cx->getCodeBaseDocumentRootPath();
         if ($componentType && !$componentName) {
-            $this->getTestingFoldersByType($componentType, $useCustomizing);
-        } elseif ($componentName) {
-            $this->getTestingFoldersByName($componentName, $useCustomizing);
-        }
-
-        // get all testing folder when component type or name not specificed
-        if (empty($this->testingFolders)) {
-            foreach ($arrComponentTypes as $cType) {
-                $this->getTestingFoldersByType($cType, $useCustomizing);
+            // only component type
+            try {
+                $path .= \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType(
+                    $componentType
+                );
+            } catch (\Cx\Core\Core\Model\Entity\SystemComponentException $e) {
+                echo 'Component type "' . $componentType . '" not found' . PHP_EOL;
+                return;
             }
+        } elseif ($componentName) {
+            // component name
+            $component = $this->cx->getComponent($componentName);
+            if (!$component) {
+                echo 'Component "' . $componentName . '" not found' . PHP_EOL;
+                return;
+            }
+            $path = $component->getDirectory($useCustomizing);
         }
 
         $this->phpUnitPath = ASCMS_LIBRARY_PATH.'/PHPUnit/phpunit/phpunit/src';
         if(!file_exists($this->phpUnitPath)) {
             $this->interface->show("PhpUnit is not found in ". $this->phpUnitPath);
-            return;
-        }
-
-        if (empty($this->testingFolders)) {
-            $this->interface->show("Test cases not found!.\nPlease make sure the test cases are palced inside ([{component_name}|{component_type}])/Testing folder.");
             return;
         }
 
@@ -160,8 +161,7 @@ class TestCommand extends Command {
         foreach ($arguments as $arg) {
             $options[] = $arg;
         }
-        // TODO: limit to component type or component
-        $options[] = $this->cx->getCodeBaseDocumentRootPath();
+        $options[] = $path;
 
         $_SERVER['argv'] = $argv = $options;
         $_SERVER['argc'] = count($argv);
@@ -169,148 +169,6 @@ class TestCommand extends Command {
         $command->run($_SERVER['argv'], false);
 
         $this->interface->show('Done');
-    }
-
-    /**
-     * Get the testing folder by given component name
-     *
-     * @param string $componentName  Component name
-     * @param string $useCustomizing use customizing
-     *
-     * @return null
-     */
-    private function getTestingFoldersByName($componentName, $useCustomizing)
-    {
-        $arrComponentTypes = array('core', 'core_module', 'module');
-
-        foreach ($arrComponentTypes as $cType) {
-            $componentFolder = $this->getModuleFolder($componentName, $cType, $useCustomizing);
-            if ($this->addTestingFolderToArray($componentName, $componentFolder)) {
-                break;
-            }
-        }
-    }
-
-    /**
-     * Return the testing folders by component type
-     *
-     * @param  string $componentType Component type
-     *
-     * @return array Testing folders by given component type
-     */
-    private function getTestingFoldersByType($componentType, $useCustomizing) {
-
-        $cx = \Env::get('cx');
-        $em = $cx->getDb()->getEntityManager();
-
-        // if component type is core then there are possible to have the test files under /core
-        // so add that folder too
-        if ($componentType == 'core') {
-            $this->addTestingFolderToArray('core', $cx->getCodeBaseCorePath());
-        }
-
-        $systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
-        $systemComponents = $systemComponentRepo->findBy(array('type'=>$componentType));
-
-        if (!empty($systemComponents)) {
-            foreach ($systemComponents as $systemComponent) {
-                $this->addTestingFolderToArray($systemComponent->getName(), $systemComponent->getDirectory($useCustomizing));
-            }
-        }
-
-        // load the old legacy components. assume core_module, module can only possible
-        if (in_array($componentType, array('core_module', 'module'))) {
-            static $objModuleChecker = NULL;
-
-            if (!isset($objModuleChecker)) {
-                $objModuleChecker = \Cx\Core\ModuleChecker::getInstance(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'));
-            }
-
-            $arrModules = array();
-            switch ($componentType) {
-                case 'core_module':
-                    $arrModules = $objModuleChecker->getCoreModules();
-                    break;
-                case 'module':
-                    $arrModules = $objModuleChecker->getModules();
-                    break;
-                default:
-                    break;
-            }
-
-            foreach ($arrModules as $component) {
-                if (!array_key_exists($component, $this->testingFolders)) {
-                    $componentFolder = $this->getModuleFolder($component, $componentType, $useCustomizing);
-                    $this->addTestingFolderToArray($component, $componentFolder);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns module folder name
-     *
-     * @param string  $componentName     Component Name
-     * @param string  $componentType     Component Type
-     * @param boolean $allowCustomizing  Check for the customizing folder
-     *
-     * @return string module folder name
-     */
-    private function getModuleFolder($componentName, $componentType, $allowCustomizing = true)
-    {
-        $basepath      = ASCMS_DOCUMENT_ROOT . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType);
-        $componentPath = $basepath . '/' . $componentName;
-
-        if (!$allowCustomizing) {
-            return $componentPath;
-        }
-
-        return \Env::get('cx')->getClassLoader()->getFilePath($componentPath);
-    }
-
-    /**
-     * Added module testing folder to a array
-     *
-     * @param string $componentName Component name
-     * @param string $componentFolder Module Fodler path
-     *
-     * @return boolean true if added successfully otherwise false
-     */
-    private function addTestingFolderToArray($componentName, $componentFolder)
-    {
-        $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
-
-        if (!empty($componentFolder) && self::hasTestingFiles($componentTestingFolder) && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
-            $this->testingFolders[$componentName] = $componentTestingFolder;
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Return true if the folder has php unit test cases false otherwise
-     *
-     * @param string $foldername absolute path of the folder to check the testing files
-     *
-     * @return boolean Return true if the folder has php unit test cases false otherwise
-     */
-    private static function hasTestingFiles($foldername)
-    {
-        if (glob($foldername.'/*Test.class.php')) {
-            // phpunit test cases should end with Test.php
-            return true;
-        }
-        if (glob($foldername.'/*Test.php')) {
-            // phpunit test cases should end with Test.php
-            return true;
-        }
-
-        foreach (glob($foldername.'/*', GLOB_ONLYDIR) as $folder) {
-            return self::hasTestingFiles($folder);
-        }
-
-        return false;
     }
 
     /*
