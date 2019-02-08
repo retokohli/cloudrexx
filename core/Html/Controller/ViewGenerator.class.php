@@ -379,36 +379,37 @@ class ViewGenerator {
     protected function callStorecallback($name, $entityData)
     {
         if (
-            isset($this->options['fields']) &&
-            isset($this->options['fields'][$name]) &&
-            isset($this->options['fields'][$name]['storecallback'])
+            !isset($this->options['fields']) ||
+            !isset($this->options['fields'][$name]) ||
+            !isset($this->options['fields'][$name]['storecallback'])
         ) {
-            $storecallback = $this->options['fields'][$name]['storecallback'];
-            $postedValue = null;
-            if (isset($entityData[$name])) {
-                $postedValue = contrexx_input2raw($entityData[$name]);
-            }
-            /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
-             * the function directly without using json. This is not recommended and not working over session */
-            if (is_array($storecallback) && isset($storecallback['adapter']) &&
-                isset($storecallback['method'])
-            ) {
-                $json = new \Cx\Core\Json\JsonData();
-                $jsonResult = $json->data(
-                    $storecallback['adapter'],
-                    $storecallback['method'],
-                    array(
-                        'postedValue' => $postedValue,
-                    )
-                );
-                if ($jsonResult['status'] == 'success') {
-                    $entityData[$name] = $jsonResult["data"];
-                }
-            } else if (is_callable($storecallback)) {
-                $entityData[$name] = $storecallback($postedValue);
-            }
+            return $entityData[$name];
         }
-        return $entityData[$name];
+
+        $storecallback = $this->options['fields'][$name]['storecallback'];
+        $postedValue = null;
+        if (isset($entityData[$name])) {
+            $postedValue = contrexx_input2raw($entityData[$name]);
+        }
+        /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
+         * the function directly without using json. This is not recommended and not working over session */
+        if (is_array($storecallback) && isset($storecallback['adapter']) &&
+            isset($storecallback['method'])
+        ) {
+            $json = new \Cx\Core\Json\JsonData();
+            $jsonResult = $json->data(
+                $storecallback['adapter'],
+                $storecallback['method'],
+                array(
+                    'postedValue' => $postedValue,
+                )
+            );
+            if ($jsonResult['status'] == 'success') {
+                $entityData[$name] = $jsonResult["data"];
+            }
+        } else if (is_callable($storecallback)) {
+            $entityData[$name] = $storecallback($postedValue);
+        }
     }
 
     /**
