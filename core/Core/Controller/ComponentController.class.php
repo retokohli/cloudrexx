@@ -89,6 +89,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'install' => $cliOnlyPermission,
             'activate' => $cliOnlyPermission,
             'deactivate' => $cliOnlyPermission,
+            'cleanTempFiles' => $cliOnlyPermission,
         );
     }
 
@@ -141,6 +142,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return 'Deactivates a component. Usage:
 
 ./cx deactivate <component_type> <component_name>';
+                break;
+            case 'cleanTempFiles':
+                if ($short) {
+                    return 'Cleans up no longer used publicly accesible temp files';
+                }
+                return 'Cleans up no longer used publicly accesible temp files. Usage:
+
+./cx cleanTempFiles';
                 break;
         }
         return '';
@@ -260,6 +269,40 @@ Available commands:
                 $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1], $arguments[0]);
                 $component->deactivate();
                 echo 'Done';
+                break;
+            case 'cleanTempFiles':
+                $basePath = $this->cx->getWebsitePublicTempPath();
+
+                // step 1: delete all files older than XY
+                $di = new \RecursiveDirectoryIterator($basePath, \RecursiveDirectoryIterator::SKIP_DOTS);
+                $fi = new \RecursiveCallbackFilterIterator($di, function($file, $key, $iterator) {
+                    if ($iterator->hasChildren()) {
+                        return true;
+                    }
+                    return new \DateTime('@' . $file->getMTime()) < new \DateTime('1 hours ago');
+                });
+
+                foreach (new \RecursiveIteratorIterator($fi) as $file) {
+                    if ($arguments[0] == '-n') {
+                        echo $file->getRealPath() . PHP_EOL;
+                        continue;
+                    }
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($file->getRealPath());
+                }
+
+                // step 2: delete all empty directories
+                $fi = new \RecursiveCallbackFilterIterator($di, function($file, $key, $iterator) {
+                    if ($iterator->hasChildren()) {
+                        return true;
+                    }
+                    return false;
+                });
+                foreach (new \RecursiveIteratorIterator($fi, \RecursiveIteratorIterator::SELF_FIRST) as $file) {
+                    $file = new \SplFileObject($file->getRealPath());
+                    if (!$file->hasChildren()) {
+                        \Cx\Lib\FileSystem\FileSystem::delete_folder($file->getRealPath());
+                    }
+                }
                 break;
         }
         echo '
