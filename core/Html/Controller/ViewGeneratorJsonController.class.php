@@ -70,7 +70,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         }
         return array(
             'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, $backendGroups),
-            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true)
+            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
+            'export' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get'), true),
         );
     }
 
@@ -299,5 +300,53 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         } catch (\Exception $e) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
+    }
+
+    /**
+     * Exports Doctrine entities to a file
+     * @param array $params The following get params are allowed:
+     *      type    required    string  Doctrine entity name
+     *      search  optional    VGparam Filters
+     *      term    optional    VGparam Search term
+     * @todo This should trigger an async job
+     * @todo ViewGenerator config should be taken into account (exclude fields)
+     * @return array Generated file name
+     */
+    public function export($params) {
+        if (!isset($params['get']['type'])) {
+            throw new \Exception('No type supplied');
+        }
+        // need to security-check type as its used as part of the filename
+        if (!preg_match('/^[A-Za-z0-9_\\\\]+$/', $params['get']['type'])) {
+            throw new \Exception('Illegal type name');
+        }
+        // apply filters
+        $filter = array();
+        if (isset($params['get']['search'])) {
+            $filter = \Cx\Core\Html\Controller\ViewGenerator::getParam(0, $params['get']['search']);
+        }
+        $search = '';
+        if (isset($params['get']['term'])) {
+            $search = \Cx\Core\Html\Controller\ViewGenerator::getParam(0, $params['get']['term']);
+        }
+        $lc = new \Cx\Core_Modules\Listing\Controller\ListingController(
+            $params['get']['type'],
+            $filter,
+            $search,
+            array(
+                'searching' => true,
+                'filtering' => true,
+            )
+        );
+        $ds = $lc->getData();
+        $file = $this->getComponent('Core')->getPublicUserTempFolder();
+        $file .= end(explode('\\', $params['get']['type'])) . '_Export_';
+        $file .= date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE) . '_';
+        $file .= date(ASCMS_DATE_FORMAT_INTERNATIONAL_TIME) . '.csv';
+        $ds->exportToFile(
+            new \Cx\core_modules\Listing\Model\Entity\CsvInterface(),
+            $file
+        );
+        return str_replace($this->cx->getCodeBasePath(), '', $file);
     }
 }

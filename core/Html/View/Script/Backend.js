@@ -141,6 +141,31 @@ cx.ready(function() {
         }
     });
     cx.jQuery(".chzn").chosen();
+
+    cx.jQuery(".vg-export").click(function(e) {
+        e.preventDefault();
+        var url = new URL(window.location);
+        var params = {
+            type: cx.jQuery(this).data('object'),
+        };
+        if (url.searchParams.get('search')) {
+            params.search = url.searchParams.get('search');
+        }
+        if (url.searchParams.get('term')) {
+            params.term = url.searchParams.get('term');
+        }
+        cx.ajax(
+            cx.jQuery(this).data('adapter'),
+            cx.jQuery(this).data('method'),
+            {
+                showMessage: true,
+                data: params,
+                postSuccess: function(data) {
+                    window.location.href = data.data;
+                }
+            }
+        );
+    });
 });
 
 jQuery(document).ready(function(){

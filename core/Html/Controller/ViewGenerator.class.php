@@ -686,15 +686,26 @@ class ViewGenerator {
      * Extracts values for this VG instance from a combined VG-style variable
      * @see getEntryId() for a description of VG-style variable format
      * @param string $param VG-style param
-     * @return array|string The relevant contents of the supplied paramater
+     * @return array|string The relevant contents of the supplied parameter
      */
     protected function getVgParam($param) {
+        return static::getParam($this->viewId, $param);
+    }
+
+    /**
+     * Extracts values for a VG instance from a combined VG-style variable
+     * @see getEntryId() for a description of VG-style variable format
+     * @param int VG ID
+     * @param string $param VG-style param
+     * @return array|string The relevant contents of the supplied parameter
+     */
+    public static function getParam($vgId, $param) {
         $inner = preg_replace('/^(?:{|%7B)(.*)(?:}|%7D)$/', '\1', $param);
         $parts = preg_split('/},{|%7D%2C%7B/', $inner);
         $value = array();
         foreach ($parts as $part) {
             $part = preg_split('/,|%2C/', $part, 2);
-            if ($part[0] != $this->viewId) {
+            if ($part[0] != $vgId) {
                 continue;
             }
             $keyVal = preg_split('/=|%3D/', $part[1], 2);

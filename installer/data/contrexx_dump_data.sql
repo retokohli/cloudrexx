@@ -4736,4 +4736,5 @@ INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status
 INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (1,1,'@hourly','Newsletter autoclean','2018-06-11 09:00:00');
 INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (2,1,'@monthly','Access removeUselessProfileImages','2018-06-11 09:00:00');
 INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (3,1,'@weekly','Model optimize','2018-06-11 09:00:00');
+INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (4,1,'@hourly','cleanTempFiles','2018-06-11 09:00:00');
 SET FOREIGN_KEY_CHECKS = 1;
