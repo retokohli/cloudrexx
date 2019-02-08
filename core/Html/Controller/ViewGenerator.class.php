@@ -296,6 +296,17 @@ class ViewGenerator {
         }
         // replace foreign key search criteria
         $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
+        if (
+            !isset($this->options['functions']) ||
+            !isset($this->options['functions']['paging']) ||
+            $this->options['functions']['paging'] != false
+        ) {
+            if (!isset($this->options['functions'])) {
+                $this->options['functions'] = array();
+            }
+            $this->options['functions']['paging'] = true;
+        }
+        $lcOptions = $this->options['functions'];
         if ($entityClass !== 'array') {
             $em = $this->cx->getDb()->getEntityManager();
             $metaData = $em->getClassMetadata($entityClass);
@@ -310,18 +321,14 @@ class ViewGenerator {
                     $searchCriteria[$relationField] = $relationEntity;
                 }
             }
-        }
-        if (
-            !isset($this->options['functions']) ||
-            !isset($this->options['functions']['paging']) ||
-            $this->options['functions']['paging'] != false
-        ) {
-            if (!isset($this->options['functions'])) {
-                $this->options['functions'] = array();
+            foreach ($this->options['fields'] as $fieldKey => $field) {
+                if (!empty($field['custom']) && empty(
+                    $metaData->fieldMappings[$fieldKey]
+                )) {
+                    $lcOptions['customFields'][] = $fieldKey;
+                }
             }
-            $this->options['functions']['paging'] = true;
         }
-        $lcOptions = $this->options['functions'];
         if (!isset($lcOptions['searching'])) {
             $lcOptions['searching'] = false;
         }
@@ -363,6 +370,49 @@ class ViewGenerator {
     }
 
     /**
+     * Use custom callback to store an attribute
+     *
+     * @param $name       string name of attribute
+     * @param $entityData array  post values
+     * @return mixed      edited value
+     */
+    protected function callStorecallback($name, $entityData)
+    {
+        if (
+            !isset($this->options['fields']) ||
+            !isset($this->options['fields'][$name]) ||
+            !isset($this->options['fields'][$name]['storecallback'])
+        ) {
+            return $entityData[$name];
+        }
+
+        $storecallback = $this->options['fields'][$name]['storecallback'];
+        $postedValue = null;
+        if (isset($entityData[$name])) {
+            $postedValue = contrexx_input2raw($entityData[$name]);
+        }
+        /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
+         * the function directly without using json. This is not recommended and not working over session */
+        if (is_array($storecallback) && isset($storecallback['adapter']) &&
+            isset($storecallback['method'])
+        ) {
+            $json = new \Cx\Core\Json\JsonData();
+            $jsonResult = $json->data(
+                $storecallback['adapter'],
+                $storecallback['method'],
+                array(
+                    'postedValue' => $postedValue,
+                )
+            );
+            if ($jsonResult['status'] == 'success') {
+                $entityData[$name] = $jsonResult["data"];
+            }
+        } else if (is_callable($storecallback)) {
+            $entityData[$name] = $storecallback($postedValue);
+        }
+    }
+
+    /**
      * This function saves the data of an entity to its class.
      * This only prepares the database store, but does not store it in database
      * To store them in database use persist and flush from doctrine
@@ -400,6 +450,7 @@ class ViewGenerator {
         )
             ? true
             : false;
+
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
@@ -407,38 +458,8 @@ class ViewGenerator {
             $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($name);
             $fieldSetMethodName = 'set' . $methodBaseName;
             $fieldGetMethodName = 'get' . $methodBaseName;
-            if (
-                isset($this->options['fields']) &&
-                isset($this->options['fields'][$name]) &&
-                isset($this->options['fields'][$name]['storecallback'])
-            ) {
-                $storecallback = $this->options['fields'][$name]['storecallback'];
-                $postedValue = null;
-                if (isset($entityData[$name])) {
-                    $postedValue = contrexx_input2raw($entityData[$name]);
-                }
-                /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
-                 * the function directly without using json. This is not recommended and not working over session */
-                if (
-                    is_array($storecallback) &&
-                    isset($storecallback['adapter']) &&
-                    isset($storecallback['method'])
-                ) {
-                    $json = new \Cx\Core\Json\JsonData();
-                    $jsonResult = $json->data(
-                        $storecallback['adapter'],
-                        $storecallback['method'],
-                        array(
-                            'postedValue' => $postedValue,
-                        )
-                    );
-                    if ($jsonResult['status'] == 'success') {
-                        $entityData[$name] = $jsonResult["data"];
-                    }
-                } else if (is_callable($storecallback)) {
-                    $entityData[$name] = $storecallback($postedValue);
-                }
-            }
+            $entityData[$name] = $this->callStorecallback($name, $entityData);
+
             if (isset($entityData[$name]) && !in_array($name, $primaryKeyNames)) {
                 $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
                 if ($fieldDefinition['type'] == 'datetime') {
@@ -565,6 +586,13 @@ class ViewGenerator {
                     $entity,
                     'set' . $methodBaseName
                 );
+            }
+        }
+
+        // Foreach custom attribute we call the storecallback function if it exits
+        foreach ($this->options['fields'] as $name=>$field) {
+            if (!empty($field['custom'])) {
+                $entityData[$name] = $this->callStorecallback($name, $entityData);
             }
         }
     }
@@ -977,6 +1005,13 @@ class ViewGenerator {
         // the title is used for the heading. For example the heading in edit mode will be "edit [$entityTitle]"
         $entityTitle = isset($this->options['entityName']) ? $this->options['entityName'] : $_CORELANG['TXT_CORE_ENTITY'];
 
+        $customFields = array();
+        foreach ($this->options['fields'] as $key=>$field) {
+            if (!empty($field['custom'])) {
+                $customFields[$key] = $field;
+            }
+        }
+
         // get the class name including the whole namspace of the class
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClassWithNS = $this->object->getDataType();
@@ -1140,15 +1175,14 @@ class ViewGenerator {
                     if ($name == 'virtual' || in_array($name, $primaryKeyNames)) {
                         continue;
                     }
-
                     $classMetadata = \Env::get('em')->getClassMetadata($entityClassWithNS);
                     // check if the field isn't mapped and is not an associated one
-                    if (!$classMetadata->hasField($name) && !$classMetadata->hasAssociation($name)) {
+                    if (empty($customFields[$name]['custom']) && !$classMetadata->hasField($name) && !$classMetadata->hasAssociation($name)) {
                         continue;
                     }
 
                     $fieldDefinition['type'] = null;
-                    if (!$classMetadata->hasAssociation($name)) {
+                    if (empty($customFields[$name]['custom']) && !$classMetadata->hasAssociation($name)) {
                         $fieldDefinition = $entityObject->getFieldMapping($name);
                     }
                     $this->options[$name]['type'] = $fieldDefinition['type'];
@@ -1180,12 +1214,20 @@ class ViewGenerator {
                 //var_dump($this->object->entryExists($entityId));
                 throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
             }
+
+            // Add custom fields
+            foreach ($this->options['fields'] as $name=>$option) {
+                if (!empty($option['custom']) && empty($entityObject->fieldMappings[$name])) {
+                    $renderArray[$name] = '';
+                }
+            }
         } else {
             $renderArray = $this->object->toArray();
             $entityClassWithNS = '';
             $title = $entityTitle;
             $renderObject = null;
         }
+
         return array(
             'renderArray' => $renderArray,
             'renderObject' => $renderObject,

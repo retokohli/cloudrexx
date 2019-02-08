@@ -121,6 +121,18 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
     }
 
     /**
+     * Add column to each entry
+     *
+     * @param $column string title of column
+     */
+    public function addColumn($column)
+    {
+        foreach ($this->data as $key=>$data) {
+            $this->data[$key][$column] = '';
+        }
+    }
+
+    /**
      * Try to remove the declared key from the dataset
      * @param string $key
      * @throws DataSetException
