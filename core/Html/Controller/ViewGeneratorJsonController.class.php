@@ -319,13 +319,24 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         if (!preg_match('/^[A-Za-z0-9_\\\\]+$/', $params['get']['type'])) {
             throw new \Exception('Illegal type name');
         }
+        // apply filters
+        $filter = array();
+        if (isset($params['get']['search'])) {
+            $filter = \Cx\Core\Html\Controller\ViewGenerator::getParam(0, $params['get']['search']);
+        }
+        $search = '';
+        if (isset($params['get']['term'])) {
+            $search = \Cx\Core\Html\Controller\ViewGenerator::getParam(0, $params['get']['term']);
+        }
         $lc = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $params['get']['type'],
-            array(),
-            '',
-            array()
+            $filter,
+            $search,
+            array(
+                'searching' => true,
+                'filtering' => true,
+            )
         );
-        // todo: filter
         // todo: field list
         $ds = $lc->getData();
         // todo: add method to get file name
