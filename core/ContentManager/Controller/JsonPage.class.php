@@ -706,49 +706,49 @@ class JsonPage implements JsonAdapter {
                 case 'activate':
                     if ($page->isActive()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'deactivate':
                     if (!$page->isActive()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'show':
                     if ($page->isVisible()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'hide':
                     if (!$page->isVisible()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'protect':
                     if ($page->isFrontendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'unprotect':
                     if (!$page->isFrontendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'lock':
                     if ($page->isBackendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'unlock':
                     if (!$page->isBackendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 default:

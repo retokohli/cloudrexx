@@ -968,7 +968,9 @@ class Setting{
                             }
                         } else {
                             // No file uploaded.  Skip.
-                            if (empty($_FILES[$name]['name'])) continue;
+                            if (empty($_FILES[$name]['name'])) {
+                                continue 2;
+                            }
                             // $value is the target folder path
                             $target_path = $value . '/' . $_FILES[$name]['name'];
                             // TODO: Test if this works in all browsers:
