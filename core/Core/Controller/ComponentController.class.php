@@ -357,16 +357,19 @@ Available commands:
      */
     public function getPublicUserTempFolder() {
         $basePath = $this->cx->getWebsitePublicTempPath();
-        $folderName = substr(
-            str_replace(
-                ['+', '/', '='],
-                '',
-                base64_encode(random_bytes(32))
-            ),
-            0,
-            32
-        ); 
-        $path = $basePath . '/' . $folderName . '/';
+        $folderName = '';
+        do {
+            $folderName = substr(
+                str_replace(
+                    ['+', '/', '='],
+                    '',
+                    base64_encode(random_bytes(32))
+                ),
+                0,
+                32
+            );
+            $path = $basePath . '/' . $folderName . '/';
+        } while (file_exists($path));
         \Cx\Lib\FileSystem\FileSystem::make_folder($path);
         return $path;
     }
