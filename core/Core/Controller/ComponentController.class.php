@@ -352,7 +352,9 @@ Available commands:
      *
      * Its intended use is for asynchronously generated files that need to be
      * readable by a user.
-     * @todo: This should return a \Cx\Lib\FileSystem\File or similar
+     * @todo: This should be part of a component "Temp" of type "core_module"
+     *          which registers a MediaSource and returns a folder object. This
+     *          includes the CLI command to clean up no longer needed folders.
      * @return string Unique absolute publicly readable folder path
      */
     public function getPublicUserTempFolder() {
