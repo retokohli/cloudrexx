@@ -296,6 +296,17 @@ class ViewGenerator {
         }
         // replace foreign key search criteria
         $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
+        if (
+            !isset($this->options['functions']) ||
+            !isset($this->options['functions']['paging']) ||
+            $this->options['functions']['paging'] != false
+        ) {
+            if (!isset($this->options['functions'])) {
+                $this->options['functions'] = array();
+            }
+            $this->options['functions']['paging'] = true;
+        }
+        $lcOptions = $this->options['functions'];
         if ($entityClass !== 'array') {
             $em = $this->cx->getDb()->getEntityManager();
             $metaData = $em->getClassMetadata($entityClass);
@@ -311,24 +322,13 @@ class ViewGenerator {
                 }
             }
             foreach ($this->options['fields'] as $fieldKey => $field) {
-                if ($field['custom'] && empty(
+                if (!empty($field['custom']) && empty(
                     $metaData->fieldMappings[$fieldKey]
                 )) {
                     $lcOptions['customFields'][] = $fieldKey;
                 }
             }
         }
-        if (
-            !isset($this->options['functions']) ||
-            !isset($this->options['functions']['paging']) ||
-            $this->options['functions']['paging'] != false
-        ) {
-            if (!isset($this->options['functions'])) {
-                $this->options['functions'] = array();
-            }
-            $this->options['functions']['paging'] = true;
-        }
-        $lcOptions = $this->options['functions'];
         if (!isset($lcOptions['searching'])) {
             $lcOptions['searching'] = false;
         }
@@ -995,7 +995,7 @@ class ViewGenerator {
 
         $customFields = array();
         foreach ($this->options['fields'] as $key=>$field) {
-            if ($field['custom']) {
+            if (!empty($field['custom'])) {
                 $customFields[$key] = $field;
             }
         }
@@ -1205,7 +1205,7 @@ class ViewGenerator {
 
             // Add custom fields
             foreach ($this->options['fields'] as $name=>$option) {
-                if ($option['custom'] && empty($entityObject->fieldMappings[$name])) {
+                if (!empty($option['custom']) && empty($entityObject->fieldMappings[$name])) {
                     $renderArray[$name] = '';
                 }
             }
