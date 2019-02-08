@@ -177,20 +177,45 @@ cx.ready(function() {
             },
         };
     cx.jQuery('.vg-function-status').click(function () {
-        var table    = cx.jQuery(this).closest('table.status');
+        var table = cx.jQuery(this).closest('table.status');
         cx.jQuery(this).data('status-value', (cx.jQuery(this).hasClass('active') ? 0 : 1));
 
         var params = {
-            that       : cx.jQuery(this),
-            entityId   : cx.jQuery(this).data('entity-id'),
-            jsonObject : table.data('status-object'),
-            jsonAct    : table.data('status-act'),
-            component  : table.data('status-component'),
-            entity     : table.data('status-entity'),
+            that: cx.jQuery(this),
+            entityId: cx.jQuery(this).data('entity-id'),
+            jsonObject: table.data('status-object'),
+            jsonAct: table.data('status-act'),
+            component: table.data('status-component'),
+            entity: table.data('status-entity'),
             statusField: table.data('status-field'),
             statusValue: cx.jQuery(this).data('status-value'),
         };
         status.ajaxCall(params);
+    });
+
+    cx.jQuery(".vg-export").click(function(e) {
+        e.preventDefault();
+        var url = new URL(window.location);
+        var params = {
+            type: cx.jQuery(this).data('object'),
+        };
+        if (url.searchParams.get('search')) {
+            params.search = url.searchParams.get('search');
+        }
+        if (url.searchParams.get('term')) {
+            params.term = url.searchParams.get('term');
+        }
+        cx.ajax(
+            cx.jQuery(this).data('adapter'),
+            cx.jQuery(this).data('method'),
+            {
+                showMessage: true,
+                data: params,
+                postSuccess: function(data) {
+                    window.location.href = data.data;
+                }
+            }
+        );
     });
 });
 
