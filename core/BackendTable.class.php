@@ -589,6 +589,10 @@ class BackendTable extends HTML_Table {
             is_array($functions['export']) &&
             $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
         ) {
+            $_ARRAYLANG = \Env::get('init')->getComponentSpecificLanguageData(
+                'Html',
+                false
+            );
             $adapter = 'Html';
             $method = 'export';
             if (
@@ -608,6 +612,7 @@ class BackendTable extends HTML_Table {
                 'data-adapter' => $adapter,
                 'data-method' => $method,
                 'data-object' => $renderObject->getDataType(),
+                'title' => $_ARRAYLANG['TXT_CORE_HTML_EXPORT'],
             ));
             $exportFunc->addClass('vg-export');
             return (string) $exportFunc;
