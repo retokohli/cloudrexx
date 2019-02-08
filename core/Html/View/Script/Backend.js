@@ -172,7 +172,7 @@ cx.ready(function() {
                             cx.jQuery(opt.that).removeClass('loading');
                         }
                     },
-                    cx.variables.get('frontendLanguage', 'contrexx')
+                    cx.variables.get('frontendLocale', 'contrexx')
                 );
             },
         };
