@@ -577,6 +577,12 @@ class BackendTable extends HTML_Table {
         return $code . '</span>';
     }
 
+    /**
+     * Returns HTML code for functions regarding all entries
+     * @param array $functions Function config
+     * @param Object $renderObject Currently rendered object
+     * @return string HTML
+     */
     protected function getOverallFunctionsCode($functions, $renderObject) {
         if (
             isset($functions['export']) &&
