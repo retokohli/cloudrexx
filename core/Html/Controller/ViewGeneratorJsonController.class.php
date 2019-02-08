@@ -315,6 +315,10 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         if (!isset($params['get']['type'])) {
             throw new \Exception();
         }
+        // need to security-check type as its used as part of the filename
+        if (!preg_match('/^[A-Za-z0-9_\\\\]+$/', $params['get']['type'])) {
+            throw new \Exception('Illegal type name');
+        }
         $lc = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $params['get']['type'],
             array(),
