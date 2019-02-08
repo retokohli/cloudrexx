@@ -283,10 +283,6 @@ Available commands:
                 });
 
                 foreach (new \RecursiveIteratorIterator($fi) as $file) {
-                    if ($arguments[0] == '-n') {
-                        echo $file->getRealPath() . PHP_EOL;
-                        continue;
-                    }
                     \Cx\Lib\FileSystem\FileSystem::delete_file($file->getRealPath());
                 }
 
