@@ -314,7 +314,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      */
     public function export($params) {
         if (!isset($params['get']['type'])) {
-            throw new \Exception();
+            throw new \Exception('No type supplied');
         }
         // need to security-check type as its used as part of the filename
         if (!preg_match('/^[A-Za-z0-9_\\\\]+$/', $params['get']['type'])) {
