@@ -96,7 +96,7 @@ class ContrexxJavascript {
                 'cadminPath' => \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteBackendPath() . '/',
                 'mode' => $objInit->mode,
                 'language' => $langCode,
-                'frontendLanguage' => \FWLanguage::getLanguageCodeById(
+                'frontendLocale' => \FWLanguage::getLanguageCodeById(
                     \Env::get('init')->getUserFrontendLangId()
                 ),
                 'csrf' => \Cx\Core\Csrf\Controller\Csrf::code(),
