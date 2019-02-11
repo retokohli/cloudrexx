@@ -202,20 +202,17 @@ table.sortable .sorter-loading {
 }
 
 table.adminlist .vg-function-status {
-    padding: 3px 12px;
-}
-
-table.adminlist .vg-function-status {
-    background-image: url(../Media/status_inactive.gif);
+    background-image: url(/core/Html/View/Media/status_inactive.gif);
     width: 10px;
     height: 10px;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+    padding: 3px 12px;
 }
 table.adminlist .vg-function-status.active {
-    background-image: url(../Media/status_active.gif);
+    background-image: url(/core/Html/View/Media/status_active.gif);
 }
 
 table.adminlist .vg-function-status.loading {
-    background-image: url(../Media/load.gif);
+    background-image: url(/core/Html/View/Media/load.gif);
 }
