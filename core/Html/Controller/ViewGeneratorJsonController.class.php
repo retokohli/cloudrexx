@@ -373,6 +373,9 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
             );
         }
         $entity = $em->getRepository($entityNameSpace)->find($entityId);
+        if (!$entity) {
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_STATUS_NO_ENTITY_FOUND_ERROR']);
+        }
         $entityObject = $em->getClassMetadata($entityNameSpace);
         $classMethods = get_class_methods($entityObject->newInstance());
         //check whether the updating entity set/get method is a valid one or not
