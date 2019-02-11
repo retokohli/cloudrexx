@@ -638,7 +638,7 @@ class ViewGenerator {
     protected function getSortingOption($entityNameSpace)
     {
         //If the entity namespace is empty or an array then disable the row sorting
-        if (empty($entityNameSpace) && $entityNameSpace === 'array') {
+        if (empty($entityNameSpace) || $entityNameSpace === 'array') {
             return;
         }
 
