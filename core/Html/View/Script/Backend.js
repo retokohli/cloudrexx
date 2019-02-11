@@ -164,8 +164,8 @@ cx.ready(function() {
                         success: function(json) {
                             cx.jQuery(opt.that).toggleClass('active');
                         },
-                        error: function(xhr, status, error) {
-                            cx.tools.StatusMessage.showMessage(cx.variables.get('TXT_CORE_HTML_CANT_UPDATE_STATUS', 'ViewGenerator'));
+                        preError: function(xhr, status, error) {
+                            cx.tools.StatusMessage.showMessage(error);
                             cx.jQuery(this).data('status-value', (cx.jQuery(this).hasClass('active') ? 0 : 1));
                         },
                         complete: function() {
