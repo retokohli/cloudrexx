@@ -123,11 +123,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             false,
             array(),
             array(),
-            \Cx\Core_Modules\Access\Model\Entity\Callback::fromJsonAdapter(
+            new \Cx\Core_Modules\Access\Model\Entity\Callback(array(
                 'Html',
                 'checkWhitelistPermission',
-                array($method)
-            )
+                array($method),
+                array()
+            ))
         );
     }
 }
