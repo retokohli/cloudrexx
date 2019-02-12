@@ -441,6 +441,16 @@ class BackendTable extends HTML_Table {
                 $attrs['data-object'] = $sortBy['jsonadapter']['object'];
                 $attrs['data-act']    = $sortBy['jsonadapter']['act'];
             }
+
+            $cx->getComponent('Html')->whitelistParamSet(
+                'updateOrder',
+                array(),
+                array(
+                    'component' => $component,
+                    'entity' => $entity,
+                    'sortField' => $sortField,
+                )
+            );
         }
         parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
     }
@@ -615,6 +625,12 @@ class BackendTable extends HTML_Table {
                 'title' => $_ARRAYLANG['TXT_CORE_HTML_EXPORT'],
             ));
             $exportFunc->addClass('vg-export');
+
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getComponent('Html')->whitelistParamSet(
+                'export',
+                array('type' => $renderObject->getDataType())
+            );
             return (string) $exportFunc;
         }
         return '';

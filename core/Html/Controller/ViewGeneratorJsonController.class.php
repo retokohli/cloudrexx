@@ -56,22 +56,17 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      */
     public function getAccessableMethods()
     {
-        // at the moment we only allow backend users to edit ViewGenerator over json/ajax.
-        // As soon as we have permissions on entity level we can change this, so getViewOverJson can also be used from frontend
-        $objBackendGroups = \FWUser::getFWUserObject()->objGroup->getGroups(
-            array('is_active' => true, 'type' => 'backend'),
-            null,
-            array('group_id')
-        );
-        $backendGroups = array();
-        while (!$objBackendGroups->EOF) {
-            $backendGroups[] = $objBackendGroups->getId();
-            $objBackendGroups->next();
-        }
         return array(
-            'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, $backendGroups),
-            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
-            'export' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get'), true),
+            'checkWhitelistPermission' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get', 'post'), true),
+            'getViewOverJson' => $this->getSystemComponentController()->getWhitelistPermission(
+                'getViewOverJson'
+            ),
+            'updateOrder' => $this->getSystemComponentController()->getWhitelistPermission(
+                'updateOrder'
+            ),
+            'export' => $this->getSystemComponentController()->getWhitelistPermission(
+                'export'
+            ),
         );
     }
 
