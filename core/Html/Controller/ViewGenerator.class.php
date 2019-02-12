@@ -410,6 +410,7 @@ class ViewGenerator {
         } else if (is_callable($storecallback)) {
             $entityData[$name] = $storecallback($postedValue);
         }
+        return $entityData[$name];
     }
 
     /**
@@ -1209,10 +1210,10 @@ class ViewGenerator {
                     }
                 }
             } else {
-                //var_dump($entityId);
-                //var_dump($this->options['functions']['add']);
-                //var_dump($this->object->entryExists($entityId));
-                throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
+                // add view is deactivated and overview is to be shown
+                // In this case the only used return values are "renderObject"
+                // and "entityClassWithNS". The do not need to be altered,
+                // the default values are fine.
             }
 
             // Add custom fields
