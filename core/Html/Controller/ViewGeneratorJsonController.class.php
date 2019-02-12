@@ -349,4 +349,61 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         );
         return str_replace($this->cx->getCodeBasePath(), '', $file);
     }
+
+    /**
+     * Checks whether the supplied request info is allowed by the corresponding
+     * whitelist
+     *
+     * $arguments can either be
+     *      array(
+     *          'get' => <getArgs>
+     *          'post' => <postArgs>
+     *      )
+     * or
+     *      array(
+     *          'get' => array(
+     *              'get' => <getArgs>
+     *              'post' => <postArgs>
+     *          )
+     *      )
+     * This is because JsonAdapter method nesting currently leads to param
+     * nesting. <getArgs> needs to have index 0 set to the whitelist identifier.
+     * @param array $arguments Request info, see method description for more info
+     * @return boolean Returns true if request info is allowed by whitelist
+     */
+    public function checkWhitelistPermission($arguments) {
+        if (!isset($arguments['get']) || !isset($arguments['get'][0])) {
+            return false;
+        }
+        $getArgs = $arguments['get'];
+        $postArgs = $arguments['post'];
+        if (count($getArgs) == 3 && isset($getArgs['get']) && isset($getArgs['post'])) {
+            $postArgs = $getArgs['post'];
+            $getArgs = $getArgs['get'];
+        }
+        $method = $arguments['get'][0];
+        $this->getComponent('Session')->getSession();
+        if (
+            !isset($_SESSION['vg']) ||
+            !isset($_SESSION['vg']['whitelist']) ||
+            !isset($_SESSION['vg']['whitelist'][$method])
+        ) {
+            return false;
+        }
+        $permissionSets = $_SESSION['vg']['whitelist'][$method];
+        foreach ($permissionSets as $permissionSet) {
+            foreach ($permissionSet['get'] as $field=>$value) {
+                if (!isset($getArgs[$field]) || $getArgs[$field] != $value) {
+                    continue 2;
+                }
+            }
+            foreach ($permissionSet['post'] as $field=>$value) {
+                if (!isset($postArgs[$field]) || $postArgs[$field] != $value) {
+                    continue 2;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 }

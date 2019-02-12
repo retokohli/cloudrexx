@@ -74,4 +74,60 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm = $this->cx->getEvents();
         $evm->addEvent($this->getName() . '.ViewGenerator:initialize');
     }
+
+    /**
+     * Adds a request param set to the whitelist
+     *
+     * @param string $method Identifier for the whitelist
+     * @param array $getArguments Whitelisted GET arguments
+     * @param array $postArguments Whitelisted POST arguments
+     */
+    public function whitelistParamSet($method, $getArguments, $postArguments = array()) {
+        if ($this->getController('ViewGeneratorJson')->checkWhitelistPermission(
+            array(
+                'get' => array_merge(
+                    array(0 => $method),
+                    $getArguments
+                ),
+                'post' => $postArguments,
+            )
+        )) {
+            return;
+        }
+        if (!isset($_SESSION['vg'])) {
+            $_SESSION['vg'] = array();
+        }
+        if (!isset($_SESSION['vg']['whitelist'])) {
+            $_SESSION['vg']['whitelist'] = array();
+        }
+        if (!isset($_SESSION['vg']['whitelist'][$method])) {
+            $_SESSION['vg']['whitelist'][$method] = array();
+        }
+        $_SESSION['vg']['whitelist'][$method][] = array(
+            'get' => $getArguments,
+            'post' => $postArguments,
+        );
+    }
+
+    /**
+     * Returns the permission object to check a whitelist
+     *
+     * @see whitelistParamSet()
+     * @param string $method Identifier for the whitelist
+     * @return \Cx\Core_Modules\Access\Model\Entity\Permission Permission object
+     */
+    public function getWhitelistPermission($method) {
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            array('http', 'https'),
+            array('post', 'get'),
+            false,
+            array(),
+            array(),
+            \Cx\Core_Modules\Access\Model\Entity\Callback::fromJsonAdapter(
+                'Html',
+                'checkWhitelistPermission',
+                array($method)
+            )
+        );
+    }
 }
