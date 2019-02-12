@@ -410,6 +410,7 @@ class ViewGenerator {
         } else if (is_callable($storecallback)) {
             $entityData[$name] = $storecallback($postedValue);
         }
+        return $entityData[$name];
     }
 
     /**
