@@ -29,19 +29,27 @@ a.edit {
     cursor: pointer;
 }
 
+a.copy {
+    background-image: url(../Media/copy.gif);
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    margin-top: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
 form.cx-ui {
     float: none;
     clear: both;
     display: block;
     width: 100%;
-    overflow: hidden;
 }
 
 form.cx-ui > fieldset {
     border: 0;
     padding: 0;
     margin-left: 0;
-    overflow: hidden;
 }
 
 form.cx-ui > fieldset + fieldset {

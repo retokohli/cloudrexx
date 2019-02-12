@@ -136,7 +136,7 @@ class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\
 
                             $objInputfieldValue->MoveNext();
                         }
-                        $arrValue[0] = $arrValue[FRONTEND_LANG_ID];
+                        $arrValue[0] = $arrValue[static::getOutputLocale()->getId()];
                         $intNumElements = count($arrParents);
                     }
                 } else {
@@ -364,7 +364,7 @@ EOF;
         } else {
             $uploaderId = !empty($_POST['uploaderId']) ? $_POST['uploaderId'] : '';
             foreach($arrValue as $intKey => $arrValuesTmp) {
-                if ($_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey] != ''  && $intLangId == FRONTEND_LANG_ID) {
+                if ($_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey] != ''  && $intLangId == static::getOutputLocale()->getId()) {
                     $this->deleteFile($arrValuesTmp['file']);
                     $filePath   = $this->getUploadedFilePath($uploaderId, $_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey]);
                     if ($filePath) {
@@ -501,15 +501,16 @@ EOF;
         $intId = intval($arrInputfield['id']);
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
+        $langId = static::getOutputLocale()->getId();
 
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
-            if(in_array(FRONTEND_LANG_ID, $arrTranslationStatus)) {
-                $intLangId = FRONTEND_LANG_ID;
+            if(in_array($langId, $arrTranslationStatus)) {
+                $intLangId = $langId;
             } else {
                 $intLangId = $intEntryDefaultLang;
             }
         } else {
-            $intLangId = FRONTEND_LANG_ID;
+            $intLangId = $langId;
         }
 
         $objInputfieldValue = $objDatabase->Execute("

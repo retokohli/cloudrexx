@@ -453,6 +453,17 @@ class Registration extends \Cx\Modules\Calendar\Model\Entity\Registration implem
     /**
      * {@inheritDoc}
      */
+    public function removeRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeRegistrationFormFieldValue', array($registrationFormFieldValues));
+
+        return parent::removeRegistrationFormFieldValue($registrationFormFieldValues);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setRegistrationFormFieldValues($registrationFormFieldValues)
     {
 

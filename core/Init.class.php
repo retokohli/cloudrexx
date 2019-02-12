@@ -325,143 +325,12 @@ class InitCMS
      */
     function _selectBestLanguage()
     {
-        global $_CONFIG;
-
-        if (
-            !isset($_CONFIG['languageDetection']) ||
-            $_CONFIG['languageDetection'] == 'off'
-        ) {
-            return $this->defaultFrontendLangId;
-        }
-
-        // Try to find best locale with GeoIp
-        if (
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('GeoIp')
-                ->isGeoIpEnabled() &&
-            $bestLang = $this->selectLocaleByGeoIp()
-        ) {
-            return $bestLang;
-        }
-
-        // no locale found with GeoIp. Try over http
-        if (
-            $bestLang = $this->selectLocaleByHttp()
-        ) {
-            return $bestLang;
-        }
-
-        // no locale found, return default one
-        return $this->defaultFrontendLangId;
-    }
-
-    /**
-     * Finds all locales by a country, detected with GeoIp,
-     * and then checks if one of them matches any of the browser languages
-     * If no browser language matches, the first found locale is returned.
-     * If no locale is found, 0 is returned.
-     *
-     * @return int The found locale's id, otherwise 0
-     */
-    public function selectLocaleByGeoIp() {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-
-        // get country code
-        $country = $cx->getComponent('GeoIp')->getCountryCode(null);
-        if (!$country || !$countryCode = $country['content']) {
-            return 0;
-        }
-
-        // find locales with found country code
-        $em = $cx->getDb()->getEntityManager();
-        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-        $localesByCountry = $localeRepo->findBy(
-            array('country' => $countryCode)
+        return \Cx\Core\Locale\Controller\ComponentController::selectBestLocale(
+            $cx,
+            $cx->getComponent('Locale')->getLocaleData()
         );
-        if (!$localesByCountry) {
-            return 0;
-        }
-
-        // check if combination of country code and browser lang exists
-        $acceptedLanguages = array_keys($this->_getClientAcceptedLanguages());
-        foreach($acceptedLanguages as $acceptedLanguage) {
-            foreach($localesByCountry as $locale) {
-                if ($locale->getIso1()->getIso1() == $acceptedLanguage) {
-                    return $locale->getId();
-                }
-            }
-        }
-
-        // No combination found, return the first (most relevant) one
-        return $localesByCountry[0]->getId();
     }
-
-    /**
-     * Tries to find a locale by the browser language
-     *
-     * Loops over the client accepted languages (ordered by relevance)
-     * and checks for existing locale.
-     * For full locales with language and country (e.g "en-US")
-     * it strips it and tries to find a locale with the lang code only
-     *
-     * @return int The found locale's id, otherwise 0
-     */
-    public function selectLocaleByHttp() {
-        $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
-        $strippedMatch = 0;
-        foreach (array_keys($arrAcceptedLanguages) as $language) {
-            // check for full match
-            if ($langId = \FWLanguage::getLanguageIdByCode($language)) {
-                return $langId;
-            } elseif(!$strippedMatch) {
-                // stripped lang: e.g 'en-US' becomes 'en'
-                if ($pos = strpos($language, '-')) {
-                    $language = substr($language, 0, $pos);
-                }
-                // check for existence of stripped language
-                if (
-                    // only check for actual stripped languages
-                    $pos &&
-                    $langId = \FWLanguage::getLanguageIdByCode(
-                        $language
-                    )
-                ) {
-                    $strippedMatch = $langId;
-                }
-            }
-        }
-        // No match with full locale or geoip, try to return stripped match
-        if ($strippedMatch) {
-            return $strippedMatch;
-        }
-        return 0;
-    }
-
-
-    /**
-     * Returns an array with the accepted languages as keys and their
-     * quality as values
-     * @access  private
-     * @return  array
-     */
-    function _getClientAcceptedLanguages()
-    {
-        $arrLanguages = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) : array();
-        $arrAcceptedLanguages = array();
-        $q = 1;
-        foreach ($arrLanguages as $languageString) {
-            $arrLanguage = explode(';q=', trim($languageString));
-            $language = trim($arrLanguage[0]);
-            $quality = isset($arrLanguage[1]) ? trim($arrLanguage[1]) : $q;
-            isset($arrLanguage[1]) ? $q = trim($arrLanguage[1]) : '';
-            $q -= 0.1;
-            $arrAcceptedLanguages[$language] = (float) $quality;
-        }
-        arsort($arrAcceptedLanguages, SORT_NUMERIC);
-
-        return $arrAcceptedLanguages;
-    }
-
 
     /**
      * Returns the selected User Frontend Language id
@@ -853,7 +722,6 @@ class InitCMS
                             $this->arrModulePath[$objResult->fields['name']] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
                             $this->arrModulePath['Core'] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
                             break;
-                        case 'DatabaseManager':
                         case 'SystemInfo':
                         case 'ComponentManager':
                         case 'ViewManager':
@@ -1207,9 +1075,10 @@ class InitCMS
      *  See {@see getJavascript_activetab()} for details, and
      *  {@see \Cx\Core\Setting\Controller\Setting::show()} and {@see \Cx\Core\Setting\Controller\Setting::show_external()}
      *  for implementations.
+     * @param boolean $force (optional) Wheter to force a non-empty return value, default false
      * @return  string            The HTML language dropdown menu code
      */
-    function getUserFrontendLangMenu()
+    function getUserFrontendLangMenu($force = false)
     {
         global $_ARRAYLANG;
 
@@ -1220,27 +1089,15 @@ class InitCMS
         }
 
         $action = CONTREXX_DIRECTORY_INDEX;
-        $command = isset($_REQUEST['cmd']) ? contrexx_input2raw($_REQUEST['cmd']) : '';
+        if ($force) {
+            $command = 'force';
+        } else {
+            $command = isset($_REQUEST['cmd']) ? contrexx_input2raw($_REQUEST['cmd']) : '';
+        }
         switch ($command) {
-            /*case 'xyzzy':
-                // Variant 1:  Use selected GET parameters only
-                // Currently unused, but this could be extended by a few required
-                // parameters and might prove useful for some modules.
-                $query_string = '';
-                // Add more as needed
-                $arrParameter = array('cmd', 'act', 'tpl', 'key', );
-                foreach ($arrParameter as $parameter) {
-                    $value = (isset($_GET[$parameter])
-                      ? $_GET[$parameter] : null);
-                    if (isset($value)) {
-                        $query_string .= "&$parameter=".contrexx_input2raw($value);
-                    }
-                }
-                Html::replaceUriParameter($action, $query_string);
-                // The dropdown is built below
-                break;*/
             case 'Shop':
             case 'country':
+            case 'force':
                 // Variant 2:  Use any (GET) request parameters
                 // Note that this is generally unsafe, as most modules/methods do
                 // not rely on posted data only!

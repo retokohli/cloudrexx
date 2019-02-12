@@ -673,7 +673,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlock($id, &$code, $pageId)
+    function _setBlock($id, &$code, $pageId = 0)
     {
         $now = time();
 
@@ -732,7 +732,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setCategoryBlock($id, &$code, $pageId)
+    function _setCategoryBlock($id, &$code, $pageId = 0)
     {
         $category = $this->_getCategory($id);
         $separator = $category['seperator'];
@@ -788,7 +788,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockGlobal(&$code, $pageId)
+    function _setBlockGlobal(&$code, $pageId = 0)
     {
         global $objDatabase;
 
@@ -888,7 +888,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockRandom(&$code, $id, $pageId)
+    function _setBlockRandom(&$code, $id, $pageId = 0)
     {
         global $objDatabase;
 
@@ -941,6 +941,7 @@ class BlockLibrary
      * Replaces a placeholder with block content
      * @param string $placeholderName Name of placeholder to replace
      * @param string $query SQL query used to fetch blocks
+     * @param int $pageId ID of the current page, 0 if no page available
      * @param string $code (by reference) Code to replace placeholder in
      * @param string $separator (optional) Separator used to separate the blocks
      * @param boolean $randomize (optional) Wheter to randomize the blocks or not, default false

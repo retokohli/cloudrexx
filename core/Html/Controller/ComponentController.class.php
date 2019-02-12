@@ -66,4 +66,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllersAccessableByJson() {
         return array('ViewGeneratorJsonController');
     }
+
+    /**
+     * @{inheritdoc}
+     */
+    public function registerEvents() {
+        $evm = $this->cx->getEvents();
+        $evm->addEvent($this->getName() . '.ViewGenerator:initialize');
+    }
 }

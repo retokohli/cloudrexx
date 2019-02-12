@@ -140,6 +140,32 @@ cx.ready(function() {
             sortable.ajaxCall(params);
         }
     });
+    cx.jQuery(".chzn").chosen();
+
+    cx.jQuery(".vg-export").click(function(e) {
+        e.preventDefault();
+        var url = new URL(window.location);
+        var params = {
+            type: cx.jQuery(this).data('object'),
+        };
+        if (url.searchParams.get('search')) {
+            params.search = url.searchParams.get('search');
+        }
+        if (url.searchParams.get('term')) {
+            params.term = url.searchParams.get('term');
+        }
+        cx.ajax(
+            cx.jQuery(this).data('adapter'),
+            cx.jQuery(this).data('method'),
+            {
+                showMessage: true,
+                data: params,
+                postSuccess: function(data) {
+                    window.location.href = data.data;
+                }
+            }
+        );
+    });
 });
 
 jQuery(document).ready(function(){
@@ -169,14 +195,15 @@ function editAssociation (thisElement) {
         paramAssociativeArray['mappedBy'],
         paramAssociativeArray['cssName'],
         paramAssociativeArray['sessionKey'],
-        existingData
+        existingData,
+        thisElement
     );
 }
 /*
 * This function creates a cx dialag for the ViewGenerator and opens it
 *
 */
-function openDialogForAssociation(content, className, existingData)
+function openDialogForAssociation(content, className, existingData, currentElement)
 {
 
     buttons = [
@@ -308,7 +335,7 @@ function deleteAssociationMappingEntry(element)
  * we can insert the data for the mapped association
  *
  */
-function createAjaxRequest(entityClass, mappedBy, className, sessionKey, existingData){
+function createAjaxRequest(entityClass, mappedBy, className, sessionKey, existingData, currentElement){
     cx.ajax(
         'Html',
         'getViewOverJson',
@@ -322,7 +349,8 @@ function createAjaxRequest(entityClass, mappedBy, className, sessionKey, existin
             openDialogForAssociation(
                 data.data,
                 className,
-                existingData
+                existingData,
+                currentElement
             );
             jQuery('.datepicker').datepicker({
                 dateFormat: 'dd.mm.yy'

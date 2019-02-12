@@ -243,10 +243,7 @@ class Zones
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
              WHERE id=$zone_id");
         if (!$objResult) return false;
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper");
+
         return true;
     }
 

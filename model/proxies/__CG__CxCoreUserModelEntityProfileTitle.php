@@ -255,6 +255,17 @@ class ProfileTitle extends \Cx\Core\User\Model\Entity\ProfileTitle implements \D
     /**
      * {@inheritDoc}
      */
+    public function removeUserProfile(\Cx\Core\User\Model\Entity\UserProfile $userProfile)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeUserProfile', array($userProfile));
+
+        return parent::removeUserProfile($userProfile);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getUserProfile()
     {
 

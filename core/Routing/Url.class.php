@@ -109,6 +109,12 @@ class Url {
     protected $suggestedParams = '';
 
     /**
+     * #anchor
+     * @var string
+     */
+    protected $suggestedAnchor = '';
+
+    /**
      * The/Module
      * Found/Path/To/Module
      * The/Special/Module
@@ -187,6 +193,25 @@ class Url {
         // do not add virtual language dir in backend
         if (strpos($this->realPath, \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName()) === 0) {
             $this->setMode('backend');
+        } else if (
+            $this->isInternal() && $this->getMode() == 'frontend' &&
+            in_array($this->protocol, array('http', 'https'))
+        ) {
+            $forcedProtocol = \Cx\Core\Setting\Controller\Setting::getValue(
+                'forceProtocolFrontend',
+                'Config'
+            );
+            if ($forcedProtocol != 'none') {
+                $this->protocol = $forcedProtocol;
+                if (!$replacePorts) {
+                    $this->port = static::getSystemPortByServiceName(
+                        $this->protocol,
+                        'tcp'
+                    );
+                } else {
+                    $this->port = $this->getDefaultPort();
+                }
+            }
         }
 
         if(!empty($data['query'])) {
@@ -215,28 +240,42 @@ class Url {
 
     /**
      * Checks wheter this Url points to a location within this installation
+     *
+     * The check works by checking if the domain of the url is a registered
+     * domain in the repo of \Cx\Core\Net\Model\Entity\Domain.
+     * If for some reason, the domain repo can't be loaded and the check is
+     * therefore unable to perform its task, it will return TRUE as fallback.
+     *
      * @todo This does not work correctly if setPath() is called from outside
      * @return boolean True for internal URL, false otherwise
      */
     public function isInternal() {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        try {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
-        // check domain
-        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
-            'Cx\Core\Net\Model\Entity\Domain'
-        );
-        if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
-            return false;
-        }
+            // check domain
+            $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
+                'Cx\Core\Net\Model\Entity\Domain'
+            );
+            if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
+                return false;
+            }
 
-        // check offset
-        $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
-        $providedOffset = $this->realPath;
-        if (
-            $installationOffset !=
-            substr($providedOffset, 0, strlen($installationOffset))
-        ) {
-            return false;
+            // check offset
+            $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
+            $providedOffset = $this->realPath;
+            if (
+                $installationOffset !=
+                substr($providedOffset, 0, strlen($installationOffset))
+            ) {
+                return false;
+            }
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            // In case the domain repository can't be loaded,
+            // doctrine's entity manager will throw an exception.
+            // We catch this exception for that specific case to make
+            // the web-installer work.
+            \DBG::msg($e->getMessage());
         }
         return true;
     }
@@ -294,22 +333,14 @@ class Url {
             return;
         }
         $matches = array();
-        $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
-
-        if ($matchCount == 0) {//seemingly, no parameters are set.
-            $this->suggestedTargetPath = $this->path;
-            $this->suggestedParams = '';
-        } else {
-            $parts = explode('?', $this->path);
-            if ($parts[0] == '') { // we have no path or filename, just set parameters
-                $this->suggestedTargetPath = '';
-                $this->suggestedParams = $this->path;
-            } else {
-                $this->suggestedTargetPath = $matches[1];
-                $this->suggestedParams = $matches[2];
-            }
+        $this->suggestedTargetPath = $this->path;
+        $this->suggestedParams = '';
+        $this->suggestedAnchor = '';
+        if (preg_match('/([^\?#]*)([^#]*)(.*)/', $this->path, $matches)) {
+            $this->suggestedTargetPath = $matches[1];
+            $this->suggestedParams = $matches[2];
+            $this->suggestedAnchor = $matches[3];
         }
-
 
         $this->state = self::SUGGESTED;
     }
@@ -481,7 +512,6 @@ class Url {
             if (isset($array['csrf'])) {
                 unset($array['csrf']);
             }
-            $array = self::encodeParams($array);
         }
         return $array;
     }
@@ -498,59 +528,7 @@ class Url {
             unset($array['csrf']);
         }
 
-        // Decode parameters since http_build_query() encodes them by default.
-        // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
-        $array = self::decodeParams($array);
-
-        return http_build_query($array, null, '&');
-    }
-
-    /**
-     * Url encode passed array (key and value).
-     *
-     * @access  public
-     * @param   array       $input
-     * @return  array       $output
-     */
-    public static function encodeParams($input = array()) {
-        $output = array();
-
-        foreach ($input as $key => $value) {
-            // First decode url before encode them (in case that the given string is already encoded).
-            // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
-            $key = urlencode(urldecode($key));
-
-            if (is_array($value)) {
-                $output[$key] = self::encodeParams($value);
-            } else {
-                $output[$key] = urlencode(urldecode($value));
-            }
-        }
-
-        return $output;
-    }
-
-    /**
-     * Url decode passed array (key and value).
-     *
-     * @access  public
-     * @param   array       $input
-     * @return  array       $output
-     */
-    public static function decodeParams($input = array()) {
-        $output = array();
-
-        foreach ($input as $key => $value) {
-            $key = urldecode($key);
-
-            if (is_array($value)) {
-                $output[$key] = self::decodeParams($value);
-            } else {
-                $output[$key] = urldecode($value);
-            }
-        }
-
-        return $output;
+        return http_build_query($array, null, '&', PHP_QUERY_RFC3986);
     }
 
     public function getTargetPath() {
@@ -581,6 +559,9 @@ class Url {
         return $this->suggestedParams;
     }
 
+    public function getSuggestedAnchor() {
+        return $this->suggestedAnchor;
+    }
 
     public static function fromRequest() {
         if (php_sapi_name() === 'cli') {
@@ -709,10 +690,23 @@ class Url {
             $url = new static($url);
         }
 
+        // build regexp to identify system files
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $systemFolders = $cx->getSystemFolders();
+        array_walk($systemFolders, function(&$systemFolder) {
+            $systemFolder = preg_quote($systemFolder, '/');
+        });
+        $systemFolderRegexp = '/^'.
+            preg_quote($cx->getWebsiteOffsetPath(), '/') .
+            '(' . join('|', $systemFolders) . ')($|[#?\/])/';
+
         // disable virtual language dir if not in Backend
-        if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1 && $url->getProtocol() != 'file'){
+        if (
+            preg_match($systemFolderRegexp, '/' . $url->getPath()) < 1 && 
+            $url->getProtocol() != 'file'
+        ) {
             $url->setMode('frontend');
-        }else{
+        } else {
             $url->setMode('backend');
         }
         return $url;
@@ -825,7 +819,12 @@ class Url {
             }
             $getParams = '?' . implode('&', $paramArray);
         }
-        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
+        $url = new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
+        if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
+            $langDir = '';
+            $url->setMode('backend');
+        }
+        return $url;
     }
     
     /**
@@ -838,9 +837,47 @@ class Url {
     public static function fromApi($command, $arguments, $parameters = array()) {
         $url = \Cx\Core\Routing\Url::fromDocumentRoot();
         $url->setMode('backend');
-        $url->setPath('api/' . $command . '/' . implode('/', $arguments));
+        $url->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::FOLDER_NAME_COMMAND_MODE,
+                1
+            ) . '/' . $command . '/' . implode('/', $arguments)
+        );
         $url->removeAllParams();
         $url->setParams($parameters);
+        return $url;
+    }
+
+    /**
+     * Returns an Url object for a backend section
+     * @param string $componentName Component name
+     * @param string $act (optional) The component's action, default is empty string
+     * @param int $lang (optional) Language to use, default is BACKEND_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\Url Url object for the supplied info
+     */
+    public static function fromBackend($componentName, $cmd = '', $lang = 0, $parameters = array(), $protocol = '') {
+        $langForced = true;
+        if ($lang == 0) {
+            $langForced = false;
+            $lang = BACKEND_LANG_ID;
+        }
+        $url = static::fromDocumentRoot($parameters, '', $protocol);
+        $url->setMode('backend');
+        $cmdPath = '';
+        if (!empty($cmd)) {
+            $cmdPath = '/' . $cmd;
+        }
+        $url->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::FOLDER_NAME_BACKEND,
+                1
+            ) . '/' . $componentName . $cmdPath
+        );
+        if ($langForced) {
+            $url->setParam('setLang', $lang);
+        }
         return $url;
     }
 

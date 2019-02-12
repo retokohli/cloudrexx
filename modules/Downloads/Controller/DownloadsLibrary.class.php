@@ -34,6 +34,17 @@
  * @version     1.0.0
  */
 namespace Cx\Modules\Downloads\Controller;
+
+/**
+ * Digital Asset Management Library Exception
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_downloads
+ * @version     1.0.0
+ */
+class DownloadsLibraryException extends \Exception {};
+
 /**
  * Digital Asset Management Library
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -71,7 +82,10 @@ class DownloadsLibrary
         'new_file_time_limit'           => 604800,
         'updated_file_time_limit'       => 604800,
         'associate_user_to_groups'      => '',
-        'list_downloads_current_lang'   => 1
+        'list_downloads_current_lang'   => 1,
+        'integrate_into_search_component'=> 1,
+        'auto_file_naming'     => 'off',
+        'pretty_regex_pattern' => '',
     );
 
     /**
@@ -201,7 +215,7 @@ class DownloadsLibrary
                 // language
                 $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
                 $locale = $localeRepo->findOneByCode($iso1Code);
-            } catch (\Exception $e) {}
+            } catch (DownloadsLibraryException $e) {}
         }
 
         if (!$locale) {
@@ -213,7 +227,7 @@ class DownloadsLibrary
         }
 
         if (!$locale) {
-            throw new \Exception('Unable to initialize frontend locale');
+            throw new DownloadsLibraryException('Unable to initialize frontend locale');
         }
 
         static::$outputLocale = $locale;
@@ -224,7 +238,14 @@ class DownloadsLibrary
         global $objDatabase;
 
         foreach ($this->arrConfig as $key => $value) {
-            $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
+            $objDatabase->Execute('
+                UPDATE
+                    `' . DBPREFIX . 'module_downloads_settings`
+                SET
+                    `value` = "' . contrexx_input2db($value) . '"
+                WHERE
+                    `name` = "' . $key . '"
+            ');
         }
         //clear Esi Cache
         static::clearEsiCache();
@@ -394,7 +415,7 @@ class DownloadsLibrary
     {
         $menu = '<select name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$userId.' ? \'none\' : \'\'" style="width:300px;">';
         $objFWUser = \FWUser::getFWUserObject();
-        $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname'));
+        $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname', 'email'));
         while (!$objUser->EOF) {
             $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.contrexx_raw2xhtml($this->getParsedUsername($objUser->getId())).'</option>';
             $objUser->next();
@@ -533,5 +554,132 @@ class DownloadsLibrary
 
         // clear contrexx cache
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Downloads');
+
+        // clear search cache
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Search');
+    }
+
+    /**
+     * Get URL pointing to an application page of this component
+     *
+     * If one or more IDs of categories are supplied, then it will try to
+     * point to an application identified by an ID of a category as its CMD.
+     * 
+     * @param   array   $categoryIds    Array of category IDs to look for a
+     *                                  matching application page for.
+     * @throws  DownloadsLibraryException   In case no valid application page
+     *                                  is found, DownloadsLibraryException is
+     *                                  thrown
+     * @return  \Cx\Core\Routing\Url    URL pointing to an application page of
+     *                                  this component
+     */
+    public static function getApplicationUrl($categories = array()) {
+        try {
+            $page = static::getApplicationPage($categories);
+        } catch (DownloadsLibraryException $e) {
+            throw $e;
+        }
+
+        $url = \Cx\Core\Routing\Url::fromPage($page);
+        if (!$page->getCmd()) {
+            $url->setParam('category', current($categories));
+        }
+
+        return $url;
+    }
+
+    /**
+     * Find best matching application
+     *
+     * If one or more IDs of categories are supplied, then it will try to
+     * find an application identified by an ID of a category as its CMD.
+     *
+     * @param   array   $categoryIds    Array of category IDs to look for a
+     *                                  matching application page for.
+     * @throws  DownloadsLibraryException   In case no valid application page
+     *                                  is found, DownloadsLibraryException is
+     *                                  thrown
+     * @return  \Cx\Core\ContentManager\Model\Entity\Page   An application page
+     *                                  of this component.
+     */
+    protected static function getApplicationPage($categoryIds = array()) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $pageRepo = $cx->getDb()->getEntityManager()->getRepository(
+            'Cx\Core\ContentManager\Model\Entity\Page'
+        );
+
+        $langId = static::getOutputLocale()->getId();
+        $page = null;
+
+        while ($categoryId = array_shift($categoryIds)) {
+            // fetch category specific application page
+            // (i.e. section=Downloads&cmd=1337)
+            $page = $pageRepo->findOneByModuleCmdLang(
+                'Downloads',
+                $categoryId,
+                $langId
+            );
+
+            // verify that page is active
+            if ($page && $page->isActive()) {
+                return $page;
+            }
+
+            // add parent category ID to the list of possible
+            // application pages
+            $category = Category::getCategory($categoryId);
+            if ($category->getParentId()) {
+                $categoryIds[] = $category->getParentId();
+            }
+        }
+
+        // fetch generic application page (section=Downloads)
+        $page = $pageRepo->findOneByModuleCmdLang('Downloads', '', $langId);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        throw new DownloadsLibraryException('No active application page found');
+    }
+
+    /**
+     * Format a filename according to configuration option 'Pretty format'
+     * of currently loaded downloads file.
+     *
+     * @param string $fileName  The filename to pretty format
+     * @return string The pretty formatted filename. In case of any error
+     *                 or if the function to pretty format is disabled,
+     *                 then the original $filename is being returned.
+     */
+    public function getPrettyFormatFileName($fileName)
+    {
+        if (empty($fileName)) {
+            return '';
+        }
+
+        // return original filename in case pretty format function is disabled
+        if ($this->arrConfig['auto_file_naming'] == 'off') {
+            return $fileName;
+        }
+
+        // check if a regexp is set
+        $regexpConf = $this->arrConfig['pretty_regex_pattern'];
+
+        // generate pretty formatted filename
+        try {
+            $regularExpression = new \Cx\Lib\Helpers\RegularExpression($regexpConf);
+            $prettyFileName = $regularExpression->replace($fileName);
+
+            // return pretty filename if conversion was successful
+            if (!is_null($prettyFileName)) {
+                return $prettyFileName;
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+
+        // return original filename in case anything
+        // didn't work out as expected
+        return $fileName;
     }
 }

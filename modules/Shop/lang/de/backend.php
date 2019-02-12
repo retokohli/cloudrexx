@@ -26,6 +26,16 @@
  */
 
 global $_ARRAYLANG;
+/*** NEW ***/
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_ORDERS'] = 'Bestellungen';
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_CATEGORIES'] = 'Rubriken';
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_PRODUCTS'] = 'Produkte';
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_MANUFACTURER'] = 'Hersteller';
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_CUSTOMERS'] = 'Kunden';
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_STATISTICS'] = 'Statistik';
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_IMPORT'] = 'Schnittstellen';
+$_ARRAYLANG['TXT_MODULE_SHOP_ACT_SETTINGS'] = 'Stammdaten';
+
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht der Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Kreditinstitut";
@@ -62,7 +72,6 @@ $_ARRAYLANG['TXT_BEST_MONTH'] = "Bester Monat";
 $_ARRAYLANG['TXT_BILL'] = "Rechnung";
 $_ARRAYLANG['TXT_BILLING_ADDRESS'] = "Rechnungsadresse";
 $_ARRAYLANG['TXT_BROWSER_LANGUAGE'] = "Browser Sprache";
-$_ARRAYLANG['TXT_BROWSER_VERSION'] = "Browser Version";
 $_ARRAYLANG['TXT_CANCELLED'] = "Gelöscht";
 $_ARRAYLANG['TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE'] = "Die ausgewählte Sprache der aktuellen Vorlage kann nicht gelöscht werden, da sie noch nicht gespeichert wurde.";
 $_ARRAYLANG['TXT_CARD_NUMBER'] = "Kreditkartennummer";
@@ -72,7 +81,6 @@ $_ARRAYLANG['TXT_CATEGORY'] = "Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Die Rubrik konnte nicht gelöscht werden! Bitte löschen Sie zuerst alle Untergruppen.";
 $_ARRAYLANG['TXT_CITY'] = "Ort";
 $_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Bestehende Produkte und Rubriken vor dem Importieren löschen";
-$_ARRAYLANG['TXT_CLIENT_HOST'] = "Client Host:";
 $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'] = "Soll der Status wirklich geändert werden?";
@@ -373,6 +381,7 @@ $_ARRAYLANG['TXT_SHOP_CATEGORIES_ASSIGNED'] = "Zugewiesene Rubriken";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES_AVAILABLE'] = "Verfügbare Rubriken";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_UPDATED_SUCCESSFULLY'] = "Die Rubrik wurde erfolgreich aktualisiert";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES_UPDATED_SUCCESSFULLY'] = "Alle Rubriken wurden erfolgreich aktualisiert";
+$_ARRAYLANG['TXT_SHOP_CATEGORY_SHORT_DESCRIPTION'] = "Kurzbeschreibung";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_EDIT'] = "Bearbeiten";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_ERROR_UPDATING'] = "Fehler beim Aktualisieren der Rubrik ID %1\$u";
@@ -1027,3 +1036,5 @@ $_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND'] = "Anzahl Produ
 $_ARRAYLANG['TXT_SHOP_SETTING_NUM_CATEGORIES_PER_ROW'] = "Anzahl Rubriken pro Zeile";
 $_ARRAYLANG['TXT_SHOP_SETTING_NUM_CATEGORIES_PER_ROW_TOOLTIP'] = "Bestimmen Sie die Anzahl Rubriken, welche pro Zeile im Online Shop aufgeführt werden sollen.";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'] = 'Datei wählen';
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_TYPE'] = 'Pro Produkt';
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_TYPE_TIP'] = 'Gilt die Mindestmenge pro Produkt oder für alle Produkte mit dieser Rabattgruppe gemeinsam?';

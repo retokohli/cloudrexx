@@ -77,6 +77,8 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
         global $objDatabase, $_ARRAYLANG, $objInit;
 
+        $langId = static::getOutputLocale()->getId();
+
         switch ($intView) {
             default:
             case 1:
@@ -96,7 +98,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                             $arrValue[intval($objInputfieldValue->fields['lang_id'])] = contrexx_raw2xhtml($objInputfieldValue->fields['value']);
                             $objInputfieldValue->MoveNext();
                         }
-                        $arrValue[0] = isset($arrValue[FRONTEND_LANG_ID]) ? $arrValue[FRONTEND_LANG_ID] : null;
+                        $arrValue[0] = isset($arrValue[$langId]) ? $arrValue[$langId] : null;
                     }
                 } else {
                     $arrValue = null;
@@ -388,28 +390,40 @@ INPUT;
         return $this->imageWebPath.'images/'.$imageName;
     }
 
-
+    /**
+     * Create the thumbnail image file
+     *
+     * The given image path must be relative to the website root,
+     * but with a leading slash prepended.
+     * If the path represents a folder, or if the image file does not exist,
+     * this is a noop.
+     * @param   string  $strPathImage
+     * @return  void
+     */
     function createThumbnail($strPathImage)
     {
-        $arrImageInfo = getimagesize(\Env::get('cx')->getWebsitePath().$strPathImage);
-
-        if (   $arrImageInfo['mime'] == "image/gif"
-            || $arrImageInfo['mime'] == "image/jpeg"
-            || $arrImageInfo['mime'] == "image/jpg"
-            || $arrImageInfo['mime'] == "image/png") {
+        $path = \Env::get('cx')->getWebsitePath() . $strPathImage;
+        if (
+            empty($strPathImage) ||
+            !file_exists($path) ||
+            is_dir($path)
+        ) {
+            return;
+        }
+        $arrImageInfo = getimagesize($path);
+        if ($arrImageInfo['mime'] === 'image/gif'
+            || $arrImageInfo['mime'] === 'image/jpeg'
+            || $arrImageInfo['mime'] === 'image/jpg'
+            || $arrImageInfo['mime'] === 'image/png') {
             $objImage = new \ImageManager();
-
             $arrImageInfo = array_merge($arrImageInfo, pathinfo($strPathImage));
-
             $thumbWidth = intval($this->arrSettings['settingsThumbSize']);
             $thumbHeight = intval($thumbWidth / $arrImageInfo[0] * $arrImageInfo[1]);
-
-            $objImage->loadImage(\Env::get('cx')->getWebsitePath().$strPathImage);
+            $objImage->loadImage($path);
             $objImage->resizeImage($thumbWidth, $thumbHeight, 100);
-            $objImage->saveNewImage(\Env::get('cx')->getWebsitePath().$strPathImage . '.thumb', true);
+            $objImage->saveNewImage($path . '.thumb', true);
         }
     }
-
 
     function deleteContent($intEntryId, $intIputfieldId)
     {
@@ -484,11 +498,12 @@ INPUT;
 
         $intId = intval($arrInputfield['id']);
         $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
+        $langId = static::getOutputLocale()->getId();
 
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
-            $intLangId = in_array(FRONTEND_LANG_ID, $arrTranslationStatus) ? FRONTEND_LANG_ID : contrexx_input2int($intEntryDefaultLang);
+            $intLangId = in_array($langId, $arrTranslationStatus) ? $langId : contrexx_input2int($intEntryDefaultLang);
         } else {
-            $intLangId = FRONTEND_LANG_ID;
+            $intLangId = $langId;
         }
         $objResult = $objDatabase->Execute("
             SELECT `value`

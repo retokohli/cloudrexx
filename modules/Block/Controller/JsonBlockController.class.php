@@ -208,8 +208,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         if (
             empty($params['get']) ||
             empty($params['get']['block']) ||
-            empty($params['get']['lang']) ||
-            empty($params['get']['page'])
+            empty($params['get']['lang'])
         ) {
             throw new NotEnoughArgumentsException('not enough arguments');
         }
@@ -252,7 +251,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $cx->parseGlobalPlaceholders($content);
-        $template = new \Cx\Core\Html\Sigma();
+        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
         $template->setTemplate($content);
         $this->getComponent('Widget')->parseWidgets(
             $template,

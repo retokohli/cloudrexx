@@ -52,6 +52,12 @@ class Downloads extends DownloadsLibrary
     private $categoryId;
     private $cmd = '';
     private $pageTitle;
+
+    /**
+     * @var string $metaKeys The metakeys is used to set page metakeys
+     */
+    private $metaKeys;
+
     /**
      * @var \Cx\Core\Html\Sigma
      */
@@ -202,7 +208,7 @@ class Downloads extends DownloadsLibrary
 
         \Cx\Core\Csrf\Controller\Csrf::check_code();
         $id = isset($_GET['delete_file']) ? contrexx_input2int($_GET['delete_file']) : 0;
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']);
 
         if (!$objDownload->EOF) {
@@ -248,7 +254,7 @@ class Downloads extends DownloadsLibrary
             $this->objTemplate->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
         }
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objCategory = Category::getCategory($this->categoryId);
 
         if (!$objCategory->getActiveStatus()) {
@@ -287,7 +293,7 @@ class Downloads extends DownloadsLibrary
 
                 $metakeys = $objDownload->getMetakeys();
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
-                    $this->requestedPage->setMetakeys($metakeys);
+                    $this->metaKeys = $metakeys;
                 }
 
                 $this->parseRelatedCategories($objDownload);
@@ -551,13 +557,14 @@ class Downloads extends DownloadsLibrary
      */
     public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName, $data)
     {
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
 
         // parse name and description attributres
         $arrLanguageIds = array_keys(\FWLanguage::getLanguageArray());
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $downloadName = $objDownloads->getPrettyFormatFileName($sourceName);
         foreach ($arrLanguageIds as $langId) {
-            $arrNames[$langId] = $sourceName;
+            $arrNames[$langId] = $downloadName;
             $arrMetakeys[$langId] = '';
             $arrDescriptions[$langId] = '';
             $arrSourcePaths[$langId] = \Cx\Core\Core\Controller\Cx::FOLDER_NAME_IMAGES . '/Downloads/'.$fileName.$suffix.'.'.$fileExtension;
@@ -597,8 +604,7 @@ class Downloads extends DownloadsLibrary
         $objDownload->setCategories(array($objCategory->getId()));
         $objDownload->setDownloads(array());
 
-
-        if (!$objDownload->store($objCategory)) {
+        if (!$objDownload->store($objCategory, \FWLanguage::getActiveFrontendLanguages())) {
             $objDownloads->arrStatusMsg['error'] = array_merge($objDownloads->arrStatusMsg['error'], $objDownload->getErrorMsg());
             return false;
         } else {
@@ -682,6 +688,7 @@ class Downloads extends DownloadsLibrary
 
 //
 //            foreach ($this->arrPermissionTypes as $protectionType) {
+//                $arrCategoryPermissions[$protectionType]              = array();
 //                $arrCategoryPermissions[$protectionType]['protected'] = isset($_POST['downloads_category_'.$protectionType]) && $_POST['downloads_category_'.$protectionType];
 //                $arrCategoryPermissions[$protectionType]['groups'] = !empty($_POST['downloads_category_'.$protectionType.'_associated_groups']) ? array_map('intval', $_POST['downloads_category_'.$protectionType.'_associated_groups']) : array();
 //            }
@@ -943,6 +950,15 @@ JS_CODE;
         return $this->pageTitle;
     }
 
+    /**
+     * Get meta keywords
+     *
+     * @return string
+     */
+    public function getMetaKeywords()
+    {
+        return $this->metaKeys;
+    }
 
     private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null, $subPrefix = '')
     {
@@ -955,7 +971,13 @@ JS_CODE;
         $allowDeleteCategories = !$objCategory->getManageSubcategoriesAccessId()
                             || \Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
                             || $objCategory->getOwnerId() == $this->userId;
-        $sortOrder      = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $sortOrder = $this->fetchSortOrderFromTemplate(
+            $arrCategoryBlocks[0],
+            $this->objTemplate,
+            $this->arrConfig['categories_sorting_order'],
+            $this->categoriesSortingOptions
+        );
+
         $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId(), 'is_active' => true), null, $sortOrder, null, $categoryLimit);
 
         if ($objSubcategory->EOF) {
@@ -1143,14 +1165,24 @@ JS_CODE;
             }
         }
 
-        $objDownload = new Download();
-        $sortOrder   = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
+        $objDownload = new Download($this->arrConfig);
+        $sortOrder = $this->fetchSortOrderFromTemplate(
+            'downloads_' . strtolower($variablePrefix) . 'file_list',
+            $this->objTemplate,
+            $this->arrConfig['downloads_sorting_order'],
+            $this->downloadsSortingOptions
+        );
+        $pagingLimit = $this->fetchPagingLimitFromTemplate(
+            'downloads_' . strtolower($variablePrefix) . 'file_list',
+            $this->objTemplate,
+            $_CONFIG['corePagingLimit']
+        );
         $objDownload->loadDownloads(
             $filter,
             $this->searchKeyword,
             $sortOrder,
             null,
-            $_CONFIG['corePagingLimit'],
+            $pagingLimit,
             $limitOffset,
             $includeDownloadsOfSubcategories,
             $this->arrConfig['list_downloads_current_lang']
@@ -1188,11 +1220,14 @@ JS_CODE;
             }
 
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
-            if ($downloadCount > $_CONFIG['corePagingLimit']) {
+            if (
+                $pagingLimit &&
+                $downloadCount > $pagingLimit
+            ) {
                 if($this->requestedPage->getModule() != 'Downloads'){
-                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>", false, $pagingLimit));
                 }else{
-                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>", false, $pagingLimit));
                 }
             }
 
@@ -1224,7 +1259,7 @@ JS_CODE;
             return;
         }
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $objDownload->loadDownloads(
             $arrFilter,
             null,
@@ -1270,11 +1305,7 @@ JS_CODE;
         global $_ARRAYLANG, $_LANGID;
 
         $description = $objDownload->getDescription($_LANGID);
-        if (strlen($description) > 100) {
-            $shortDescription = substr($description, 0, 97).'...';
-        } else {
-            $shortDescription = $description;
-        }
+        $shortDescription = $objDownload->getTrimmedDescription($_LANGID);
 
         $imageSrc = $objDownload->getImage();
         if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$imageSrc)) {
@@ -1332,6 +1363,7 @@ JS_CODE;
             'DOWNLOADS_'.$variablePrefix.'FILE_FILE_TYPE_ICON'     => $this->getHtmlImageTag($objDownload->getFileIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'FILE_DELETE_ICON'        => $deleteIcon,
             'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;download=' . $objDownload->getId(),
+            'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_LINK_SRC_INLINE'=> CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;download=' . $objDownload->getId() . '&amp;disposition=' . HTTP_DOWNLOAD_INLINE,
             'DOWNLOADS_'.$variablePrefix.'FILE_OWNER'              => contrexx_raw2xhtml($this->getParsedUsername($objDownload->getOwnerId())),
             'DOWNLOADS_'.$variablePrefix.'FILE_OWNER_ID'           => $objDownload->getOwnerId(),
             'DOWNLOADS_'.$variablePrefix.'FILE_SRC'                => htmlentities($objDownload->getSourceName(), ENT_QUOTES, CONTREXX_CHARSET),
@@ -1421,7 +1453,12 @@ JS_CODE;
             return;
         }
 
-        $sortOrder          = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
+        $sortOrder = $this->fetchSortOrderFromTemplate(
+            'downloads_related_file_list',
+            $this->objTemplate,
+            $this->arrConfig['downloads_sorting_order'],
+            $this->downloadsSortingOptions
+        );
         $objRelatedDownload =
             $objDownload->getDownloads(
                 array('download_id' => $objDownload->getId()),
@@ -1437,11 +1474,7 @@ JS_CODE;
             $row = 1;
             while (!$objRelatedDownload->EOF) {
                 $description = $objRelatedDownload->getDescription($_LANGID);
-                if (strlen($description) > 100) {
-                    $shortDescription = substr($description, 0, 97).'...';
-                } else {
-                    $shortDescription = $description;
-                }
+                $shortDescription = $objRelatedDownload->getTrimmedDescription($_LANGID);
 
                 $imageSrc = $objRelatedDownload->getImage();
                 if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
@@ -1555,7 +1588,7 @@ JS_CODE;
     {
         global $objInit;
 
-        $objDownload = new Download();
+        $objDownload = new Download($this->arrConfig);
         $id = !empty($_GET['download']) ? contrexx_input2int($_GET['download']) : 0;
         $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']);
         if (!$objDownload->EOF) {
@@ -1592,7 +1625,15 @@ JS_CODE;
             $objDownload->incrementDownloadCount();
 
             if ($objDownload->getType() == 'file') {
-                $objDownload->send();
+                $disposition = HTTP_DOWNLOAD_ATTACHMENT;
+                if (!empty($_GET['disposition'])) {
+                    $disposition = contrexx_input2raw($_GET['disposition']);
+                }
+
+                $objDownload->send(
+                    DownloadsLibrary::getOutputLocale()->getId(),
+                    $disposition
+                );
             } else {
                 // add socket -> prevent to hide the source from the customer
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$objDownload->getSource());
@@ -1673,4 +1714,124 @@ JS_CODE;
         }
     }
 
+    /**
+     * Identify functional placeholder in the block $block of template
+     * $template that will determine the sort order of the downloads.
+     * Placeholder can have the following form:
+     * - DOWNLOADS_CONFIG_LIST_CUSTOM => Order by custom order
+     * - DOWNLOADS_CONFIG_LIST_ALPHABETIC => Order alphabetically
+     * - DOWNLOADS_CONFIG_LIST_NEWESTTOOLDEST => Order by latest
+     * - DOWNLOADS_CONFIG_LIST_OLDESTTONEWEST => Order by oldest
+     *
+     * @param   string  $block Name of the template block to look up for
+     *                         functional placeholder
+     * @param   \Cx\Core\Html\Sigma $template   Template object where the block
+     *                                          $block is located in
+     * @param   string  $defaultSortOrder   Fallback sort order in case no
+     *                                      functional placeholder can be
+     *                                      located in the supplied template.
+     * @param   array   List of available sort order definitions. Format:
+     *                  <code>array = (
+     *                      '<order_name>' => array(
+     *                          '<field>' => '<direction>',
+     *                          ...
+     *                      ),
+     *                      ...
+     *                  )
+     *                  </code>
+     *                  Example:
+     *                  <code>array(
+     *                      'custom' => array(
+     *                          'order' => 'ASC',
+     *                          'name'  => 'ASC',
+     *                          'id'    => 'ASC'
+     *                      ),
+     *                      'alphabetic' => array(
+     *                          'name' => 'ASC',
+     *                          'id'   => 'ASC'
+     *                      ),
+     *                  )</code>
+     * @return  array   Identified sort oder. If no functional placeholder has
+     *                  been found in the supplied template, then the default
+     *                  sort order (defined by $defaultSortOrder) is returned.
+     *                  The returned array is an element of $orderOptions.
+     */
+    protected function fetchSortOrderFromTemplate($block, $template, $defaultSortOrder, $orderOptions) {
+        $placeholderList = $template->getPlaceholderList($block);
+        $placeholderListAsString = join("\n", $placeholderList);
+
+        $orderKeys = array_keys($orderOptions);
+        $optionsRegex = join(
+            '|',
+            array_map('strtoupper', $orderKeys)
+        );
+
+        // check if functional placeholder exists in template
+        if (
+            !preg_match(
+                '/DOWNLOADS_CONFIG_LIST_(' . $optionsRegex . ')/',
+                $placeholderListAsString,
+                $match
+            )
+        ) {
+            // return default sort order as no functional placeholder
+            // exists in template
+            return $orderOptions[$defaultSortOrder];
+        }
+
+        // fetch case-sensitive writting of option
+        $options = preg_grep(
+            '/' . $match[1] . '/i',
+            $orderKeys
+        );
+
+        // return identified sort order from functional placeholder
+        // from template
+        return $orderOptions[current($options)];
+    }
+
+    /**
+     * Identify a functional placeholder in the block $block of template
+     * $template that will determine a custom paging limit.
+     * Placeholder can have the following form:
+     * - DOWNLOADS_CONFIG_LIMIT_<limit>
+     * Example:
+     * - DOWNLOADS_CONFIG_LIMIT_3
+     *
+     * @param   string  $block Name of the template block to look up for
+     *                         functional placeholder
+     * @param   \Cx\Core\Html\Sigma $template   Template object where the block
+     *                                          $block is located in
+     * @param   integer $defaultPagingLimit Fallback paging limit in case no
+     *                                      functional placeholder can be
+     *                                      located in the supplied template.
+     * @return  integer Identified paging limit. If no functional placeholder
+     *                  has been found in the supplied template, then the
+     *                  default paging limit (defined by $defaultPagingLimit)
+     *                  is returned.
+     */
+    protected function fetchPagingLimitFromTemplate($block, $template, $defaultPagingLimit) {
+        // abort in case the template is invalid
+        if (!$template->blockExists($block)) {
+            return $defaultPagingLimit;
+        }
+
+        $placeholderList = $template->getPlaceholderList($block);
+        $placeholderListAsString = implode("\n", $placeholderList);
+        $match = null;
+
+        // abort in case the functional placeholder does not exist
+        if (
+            !preg_match(
+                '/DOWNLOADS_CONFIG_LIMIT_([0-9]+)/',
+                $placeholderListAsString,
+                $match
+            )
+        ) {
+            return $defaultPagingLimit;
+        }
+
+        // set custom identified paging limit
+        return $match[1];
+    }
 }

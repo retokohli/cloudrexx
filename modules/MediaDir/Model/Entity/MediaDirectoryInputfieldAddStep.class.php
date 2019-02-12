@@ -61,6 +61,8 @@ class MediaDirectoryInputfieldAddStep extends \Cx\Modules\MediaDir\Controller\Me
     {
         global $objDatabase, $objInit;
 
+        $langId = static::getOutputLocale()->getId();
+
         switch ($intView) {
             default:
             case 1:
@@ -70,7 +72,7 @@ class MediaDirectoryInputfieldAddStep extends \Cx\Modules\MediaDir\Controller\Me
                 } else {
                     $arrStepInfos = $objAddStep->getLastStepInformations();
 
-                    $strValue = empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID];
+                    $strValue = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
 
 
                     if($arrStepInfos['first'] == true) {

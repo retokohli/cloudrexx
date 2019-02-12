@@ -1685,6 +1685,7 @@ if ($test === NULL) {
         $flagEditTabActive = false;
         $parent_id = 0;
         $name = '';
+        $short = '';
         $desc = '';
         $active = true;
         $virtual = false;
@@ -1697,6 +1698,7 @@ if ($test === NULL) {
             if ($objCategory) {
                 $parent_id = $objCategory->parent_id();
                 $name = contrexx_raw2xhtml($objCategory->name());
+                $short = $objCategory->shortDescription();
                 $desc = $objCategory->description();
                 $active = $objCategory->active();
                 $virtual = $objCategory->virtual();
@@ -1732,6 +1734,7 @@ if ($test === NULL) {
                 ($virtual ? \Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_CATEGORY_ACTIVE_CHECKED' =>
                 ($active ? \Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_CATEGORY_SHORT_DESCRIPTION' => $short,
             'SHOP_CATEGORY_DESCRIPTION' => $desc,
             'SHOP_CATEGORY_EDIT_ACTIVE' => ($flagEditTabActive ? 'active' : ''),
             'SHOP_CATEGORY_EDIT_DISPLAY' => ($flagEditTabActive ? 'block' : 'none'),
@@ -1830,6 +1833,7 @@ if ($test === NULL) {
         $virtual = isset($_POST['virtual']);
         $parentid = intval($_POST['parent_id']);
         $picture = contrexx_input2raw($_POST['image_href']);
+        $short = contrexx_input2raw($_POST['short']);
         $long = contrexx_input2raw($_POST['desc']);
         $objCategory = null;
         if ($category_id > 0) {
@@ -1843,12 +1847,13 @@ if ($test === NULL) {
             // If the values are identical, leave the parent ID alone!
             if ($category_id != $parentid) $objCategory->parent_id($parentid);
             $objCategory->name($name);
+            $objCategory->shortDescription($short);
             $objCategory->description($long);
             $objCategory->active($active);
         } else {
             // Add new ShopCategory
             $objCategory = new ShopCategory(
-                $name, $long, $parentid, $active, 0);
+                $name, $short, $long, $parentid, $active, 0);
         }
         // Ignore the picture if it's the default image!
         // Storing it would be pointless, and we should
@@ -2020,8 +2025,6 @@ if ($test === NULL) {
             $deleted = true;
         }
         if ($deleted) {
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
             return \Message::ok($_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']);
         }
         return null;
@@ -3109,7 +3112,7 @@ if ($test === NULL) {
             $password = \User::make_password();
         }
         if ($password != '') {
-            $objCustomer->password($password);
+            $objCustomer->setPassword($password);
         }
         $objCustomer->setFrontendLanguage($lang_id);
         if (!$objCustomer->store()) {
@@ -3777,6 +3780,20 @@ if ($test === NULL) {
             ));
         }
         self::$objTemplate->parse('discountName');
+        self::$objTemplate->setCurrentBlock('discountType');
+        self::$objTemplate->setVariable(array(
+            'SHOP_DISCOUNT_GROUP_TYPE_OPTIONS' =>
+            \Html::getRadioGroup(
+                'discountGroupType',
+                array(
+                    $_ARRAYLANG['TXT_YES'],
+                    $_ARRAYLANG['TXT_NO']
+                ),
+                Discount::isDiscountCumulative($id)
+            )
+        ));
+        self::$objTemplate->touchBlock('discountType');
+        self::$objTemplate->parse('discountType');
         self::$objTemplate->setCurrentBlock('discountRate');
         if (isset($arrDiscountRates)) {
             $arrDiscountRates = array_reverse($arrDiscountRates, true);
@@ -3813,13 +3830,14 @@ if ($test === NULL) {
     {
         if (!isset($_POST['discountId'])) return true;
         $discountId = intval($_POST['discountId']);
+        $discountGroupType = contrexx_input2int($_POST['discountGroupType']);
         $discountGroupName = contrexx_input2raw($_POST['discountGroupName']);
         $discountGroupUnit = contrexx_input2raw($_POST['discountGroupUnit']);
         $arrDiscountCount = contrexx_input2int($_POST['discountCount']);
         $arrDiscountRate = contrexx_input2float($_POST['discountRate']);
         return Discount::storeDiscountCount(
-            $discountId, $discountGroupName, $discountGroupUnit,
-            $arrDiscountCount, $arrDiscountRate
+            $discountId, $discountGroupType, $discountGroupName,
+            $discountGroupUnit, $arrDiscountCount, $arrDiscountRate
         );
     }
 

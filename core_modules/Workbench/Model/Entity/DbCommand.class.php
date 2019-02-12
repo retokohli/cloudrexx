@@ -58,11 +58,13 @@ class DbCommand extends Command {
     update({component type} ({component name}))|
     cleanup|
     doctrine {doctrine syntax}
+    diff {table} {column}
 ]
 
 `update`    Updates the model of a component, a component type or all components (set component type and name to generate YAML files)
 `cleanup`   Removes cached files
-`doctrine`  Gives access to doctrine command line tools';
+`doctrine`  Gives access to doctrine command line tools
+`diff`      Shows the difference between doctrine\'s schema and the database for a specific column';
     
     /**
      * Command help text
@@ -122,7 +124,13 @@ class DbCommand extends Command {
                 if (!empty($componentType) && !empty($componentName)) {
                     $this->tryYamlGeneration($componentType, $componentName);
                 }
-                
+
+                // Clear and disable metadata cache
+                $em = $this->cx->getDb()->getEntityManager();
+                $config = $em->getConfiguration();
+                $config->getMetadataCacheImpl()->deleteAll();
+                $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
+
                 // doctrine orm:generate-entities --filter="{component filter}" entities
                 $doctrineArgs = array('', 'doctrine', 'orm:generate-entities');
                 if (!empty($componentFilter)) {
@@ -140,8 +148,8 @@ class DbCommand extends Command {
                 // if not: ask if moving should be forced (CAUTION!)
                 if (!$modelMovedCompletely) {
                     echo "\r\n".'Not all entity files could be moved to their correct location. This is probably because there\'s an existing file there. ';
-                    echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
-                    if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
+                    echo 'The files can be overwritten, but it is recommended, that you diff the changes manually. ';
+                    if ($this->interface->yesNo('Would you like to overwrite the files?')) {
                         $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
                     }
                 }
@@ -163,12 +171,12 @@ class DbCommand extends Command {
                 // if not: ask if moving should be forced (CAUTION!)
                 if (!$modelMovedCompletely) {
                     echo "\r\n".'Not all model files could be moved to their correct location. This is probably because there\'s an existing file there. ';
-                    echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
-                    if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
+                    echo 'The files can be overwritten, but it is recommended, that you diff the changes manually. ';
+                    if ($this->interface->yesNo('Would you like to overwrite the files?')) {
                         $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
                     }
                     if (!$modelMovedCompletely) {
-                        if ($this->interface->yesNo('There are remaining files in tmp/workbench. Should I remove them?')) {
+                        if ($this->interface->yesNo('There are remaining files in tmp/workbench. Should they be removed?')) {
                             $this->cleanup();
                         }
                     }
@@ -176,38 +184,76 @@ class DbCommand extends Command {
                     $this->cleanup();
                 }
                 
+                // doctrine orm:generate-proxies --filter="{component filter}" repositories
+                $doctrineArgs = array('', 'doctrine', 'orm:generate-proxies');
+                if (!empty($componentFilter)) {
+                    $doctrineArgs[] = $componentFilter;
+                }
+                if ($this->executeDoctrine($doctrineArgs) != 0) {
+                    return;
+                }
+                
                 // doctrine orm:schema-tool:create --dump-sql
                 // print queries and ask if those should be executed (CAUTION!)
                 $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->cx->getDb()->getEntityManager());
                 $metadatas = $this->cx->getDb()->getEntityManager()->getMetadataFactory()->getAllMetadata();
-                $queries = $schemaTool->getUpdateSchemaSql($metadatas);
-                foreach ($queries as $query) {
-                    echo $query . "\r\n";
-                }
-                echo 'The above queries were generated for updating the database. Should I execute them on the database? ';
-                if ($this->interface->yesNo('WARNING: Please check the SQL statements carefully and create a database backup before saying yes!')) {
-                    $connection = $this->cx->getDb()->getEntityManager()->getConnection();
-                    $i = 0;
+                $queries = $schemaTool->getUpdateSchemaSql($metadatas, true);
+                if (count($queries)) {
                     foreach ($queries as $query) {
-                        $query = trim($query);
-                        if (empty($query)) {
-                            continue;
-                        }
-                        $connection->executeQuery($query);
-                        $i++;
+                        echo $query . "\r\n";
                     }
-                    echo 'Wrote ' . $i . ' queries to DB'."\r\n";
+                    echo 'The above queries were generated for updating the database. Should these be executed on the database? ';
+                    if ($this->interface->yesNo('WARNING: Please check the SQL statements carefully and create a database backup before saying yes!')) {
+                        $connection = $this->cx->getDb()->getEntityManager()->getConnection();
+                        $i = 0;
+                        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
+                        foreach ($queries as $query) {
+                            $query = trim($query);
+                            if (empty($query)) {
+                                continue;
+                            }
+                            $connection->executeQuery($query);
+                            $i++;
+                        }
+                        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
+                        echo 'Wrote ' . $i . ' queries to DB'."\r\n";
+                    }
                 }
-                
+                // intentionally no break!
+                // break
+
+            case 'validate':
                 // doctrine orm:validate-schema
-                $this->validateSchema();
-                if ($this->validateSchema() != 0) {
-                    echo 'Your schema is not valid. Please correct this in before you proceed';
+                if ($this->validateSchema(isset($arguments[2]) && $arguments[2] == '-v') != 0) {
+                    echo 'Your schema is not valid. Please correct this before you proceed';
                     return;
                 }
                 break;
             case 'doctrine':
                 $this->executeDoctrine($arguments);
+                break;
+            case 'diff':
+                $table = $this->cx->getDb()->getDb()->getName() . '.' .  DBPREFIX . $arguments[2];
+                $column = $arguments[3];
+                $em = $this->cx->getDb()->getEntityManager();
+                $sm = $em->getConnection()->getSchemaManager();
+                $fromColumn = $this->getColumnFromSchema(
+                    $sm->createSchema(),
+                    $table,
+                    $column
+                );
+                $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
+                $metadatas = $em->getMetadataFactory()->getAllMetadata();
+                $toColumn = $this->getColumnFromSchema(
+                    $schemaTool->getSchemaFromMetadata($metadatas),
+                    $table,
+                    $column
+                );
+                if (trim($fromColumn) == 'NULL' || trim($toColumn) == 'NULL') {
+                    $this->interface->show('Column not found! (Specify table without DBPREFIX and fields as "foobar" instead of "fooBar" or "foo_bar")');
+                    break;
+                }
+                $this->interface->diff($fromColumn, $toColumn);
                 break;
             case 'help':
             default:
@@ -218,6 +264,27 @@ class DbCommand extends Command {
                 break;
         }
         echo "Done\r\n";
+    }
+
+    /**
+     * Returns the definition of a specific column from a schema
+     * @param \Doctrine\DBAL\Schema\Schema $schema Schema to read from
+     * @param string $table Name of the table to fetch (with prefixed database name and DBPREFIX)
+     * @param string $column Name of the column to fetch (lowercase without any chars like '_')
+     * @return string Doctrine column definition (array dump)
+     */
+    protected function getColumnFromSchema($schema, $table, $column) {
+        $tables = $schema->getTables();
+        if (!isset($tables[$table])) {
+            return 'NULL';
+        }
+        $columns = $tables[$table]->getColumns();
+        if (!isset($columns[$column])) {
+            return 'NULL';
+        }
+        ob_start();
+        var_dump($columns[$column]);
+        return ob_get_clean();
     }
     
     public function executeDoctrine(array $arguments) {
@@ -298,22 +365,23 @@ class DbCommand extends Command {
                 throw $e;
             }
             // if the moved file is an entity class
+            $contents = file_get_contents($destinationFile);
             if (strpos($destinationFile, '/Model/Entity/')) {
-                $contents = file_get_contents($destinationFile);
                 // and there is no extends statement yet
                 $regex = '/(class\s*(:?[a-zA-Z0-9_]*))\s*\{/m';
                 if (!preg_match($regex, $contents)) {
-                    return $retVal;
+                    continue;
                 }
                 // add extends statement for base entity
                 $contents = preg_replace($regex, '$1 extends \\Cx\\Model\\Base\\EntityBase {', $contents);
-                file_put_contents($destinationFile, $contents);
             }
+            $contents = str_replace('private', 'protected', $contents);
+            file_put_contents($destinationFile, $contents);
         }
         return $retVal;
     }
     
-    protected function validateSchema() {
+    protected function validateSchema($verbose = false) {
         $em = $this->cx->getDb()->getEntityManager();
 
         $validator = new \Doctrine\ORM\Tools\SchemaValidator($em);
@@ -333,6 +401,77 @@ class DbCommand extends Command {
             echo '[Mapping]  OK - The mapping files are correct.' . "\n";
         }
 
+        // Check if all needed methods are present
+        $fail = false;
+        $metaData = $em->getMetadataFactory()->getAllMetadata();
+        foreach ($metaData as $classMetaData) {
+            // foreach each field there needs to be a set and a get method
+            // foreach *:n relation there needs to be an add method on the * side
+            $className = $classMetaData->getName();
+            $reflectionClass = new \ReflectionClass($className);
+            $neededMethods = array();
+            foreach ($classMetaData->getFieldNames() as $columnName) {
+                $columnNameCC = \Doctrine\Common\Inflector\Inflector::classify(
+                    $columnName
+                ); 
+                $neededMethods[] = 'get' . $columnNameCC;
+                if (
+                    !$classMetaData->isIdentifier($columnName) ||
+                    !$classMetaData->isIdGeneratorIdentity()
+                ) {
+                    $neededMethods[] = 'set' . $columnNameCC;
+                }
+            }
+            foreach ($classMetaData->getAssociationMappings() as $associationMapping) {
+                $columnNameCC = \Doctrine\Common\Inflector\Inflector::classify(
+                    $associationMapping['fieldName']
+                ); 
+                switch ($associationMapping['type']) {
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_ONE:
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_ONE:
+                        // check set and get
+                        $neededMethods[] = 'get' . $columnNameCC;
+                        $neededMethods[] = 'set' . $columnNameCC;
+                        break;
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY:
+                    case \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY:
+                        // check set, get and add
+                        $columnNameCCSingle = \Doctrine\Common\Inflector\Inflector::singularize(
+                            $columnNameCC
+                        );
+                        $neededMethods[] = 'get' . $columnNameCC;
+                        if ($verbose) {
+                            if ($columnNameCCSingle != $columnNameCC && $reflectionClass->hasMethod('set' . $columnNameCC)) {
+                                $this->interface->show('[Mapping]  INFO - Unused method "' . $className . '->set' . $columnNameCC . '()".');
+                            }
+                            if ($reflectionClass->hasMethod('set' . $columnNameCCSingle)) {
+                                $this->interface->show('[Mapping]  INFO - Unused method "' . $className . '->set' . $columnNameCCSingle . '()".');
+                            }
+                            if ($reflectionClass->hasMethod('add' . $columnNameCC)) {
+                                $this->interface->show('[Mapping]  INFO - Unused method "' . $className . '->add' . $columnNameCC . '()".');
+                            }
+                        }
+                        $neededMethods[] = 'remove' . $columnNameCCSingle;
+                        $neededMethods[] = 'add' . $columnNameCCSingle;
+                        break;
+                    default:
+                        var_dump($associationMapping);die();
+                        break;
+                }
+            }
+            foreach ($neededMethods as $neededMethod) {
+                if (!$reflectionClass->hasMethod($neededMethod)) {
+                    $this->interface->show('[Mapping]  FAIL - The entity-method "' . $className . '->' . $neededMethod . '()" is missing.');
+                    $fail = true;
+                }
+            }
+        }
+        if (!$fail) {
+            $this->interface->show('[Mapping]  OK - All necessary methods are present.');
+        } else {
+            $exit += 4;
+        }
+
         if (!$validator->schemaInSyncWithMetadata()) {
             echo '[Database] FAIL - The database schema is not in sync with the current mapping file.' . "\n";
             $exit += 2;
@@ -343,7 +482,7 @@ class DbCommand extends Command {
     }
     
     protected function tryYamlGeneration($componentType, $componentName) {
-        $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($componentName, $componentType);
+        $component = new ReflectionComponent($componentName, $componentType);
         if (!$component->exists()) {
             return;
         }
@@ -374,6 +513,11 @@ class DbCommand extends Command {
             $mwbFile = $mwbFiles[$retVal - 1];
             $this->generateYamlFromMySqlWorkbenchFile($mwbFile);
             unset($mwbFiles[$retVal - 1]);
+            // Refresh metadata
+            $yamlDir = $this->cx->getClassLoader()->getFilePath($component->getDirectory(false).'/Model/Yaml');
+            if (file_exists($yamlDir)) {
+                $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
+            }
         }
     }
 
@@ -481,6 +625,7 @@ class DbCommand extends Command {
                     array('name' => $fileParts[2])
                 );
                 if (!$components[$fileParts[2]]) {
+                    $this->interface->show('Component "' . $fileParts[2] . '" not found! Did you name your tables correctly?');
                     $errorFiles[] = $fileName;
                     continue;
                 }
@@ -508,20 +653,17 @@ class DbCommand extends Command {
                 );
             }
 
-            if (!$isFileAlreadyExists || !$backupFile) {
-                goto moveFileToComponent;
+            if ($isFileAlreadyExists && $backupFile) {
+                $destDir = $tempWorkbenchPath . '/yamlBackup/' .
+                    $components[$fileParts[2]]->getName() . '/Model/Yaml';
+                if (!$this->backupYamlFile($filePath, $destDir, $fileName)) {
+                    $this->interface->show(
+                        'Unable to backup the YAML files.'
+                    );
+                    return;
+                }
             }
 
-            $destDir = $tempWorkbenchPath . '/yamlBackup/' .
-                $components[$fileParts[2]]->getName() . '/Model/Yaml';
-            if (!$this->backupYamlFile($filePath, $destDir, $fileName)) {
-                $this->interface->show(
-                    'Unable to backup the YAML files.'
-                );
-                return;
-            }
-
-            moveFileToComponent:
             try {
                 $objFile = new \Cx\Lib\FileSystem\File($ymlFilePath . '/' . $fileName);
                 $objFile->move($filePath . '/' . $fileName, true);

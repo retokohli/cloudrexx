@@ -95,7 +95,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereLevelId = null;
         }
 
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $whereActive = "AND (level.active='1') ";
         } else {
@@ -346,6 +346,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
 
                 foreach ($arrLevels as $key => $arrLevel) {
+                    $intBlockId = $arrExistingBlocks[$i];
+
                     if($this->arrSettings['settingsLevelOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
 
@@ -373,6 +375,25 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
                     } else {
                         $strLevelCmd = null;
+                    }
+
+                    // parse entries
+                    if (
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries') &&
+                        $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entry')
+                    ) {
+                        $objEntry = new MediaDirectoryEntry($this->moduleName);
+                        $objEntry->getEntries(null, $arrLevel['levelId'], $categoryId, null, false, null, true);
+                        if ($objEntry->countEntries()) {
+                            // set mediadirCategoriesLevels_row_N_entry tempalte block to be parsed
+                            $objEntry->setStrBlockName($this->moduleNameLC.'CategoriesLevels_row_'. $intBlockId . '_entry');
+
+                            // prarse related entries
+                            $objEntry->listEntries($objTpl, 5, 'category_level');
+                            $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        } else {
+                            $objTpl->hideBlock($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries');
+                        }
                     }
 
                     //parse variables
@@ -404,8 +425,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             );
                         }
                     }
-
-                    $intBlockId = $arrExistingBlocks[$i];
 
                     $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_'.$intBlockId);
                     $objTpl->clearVariables();
@@ -484,7 +503,10 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $spacer .= "&nbsp;";
                     }
 
-                    if(in_array($arrLevel['levelId'], $this->arrSelectedLevels)) {
+                    if (
+                        $this->arrSelectedLevels &&
+                        in_array($arrLevel['levelId'], $this->arrSelectedLevels)
+                    ) {
                         $this->strSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
                     } else {
                         $this->strNotSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
@@ -659,6 +681,28 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         $arrDescription = $arrData['levelDescription'];
         $arrMetaDesc = $arrData['levelMetaDesc'];
 
+        if (empty($arrName[0])) {
+            $arrName[0] = '[[' . $_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL'] . ']]';
+        }
+        if (
+            empty($arrDescription[0]) &&
+            isset($arrDescription[static::getOutputLocale()->getId()])
+        ) {
+            $arrDescription[0] = $arrDescription[static::getOutputLocale()->getId()];
+        }
+        if (empty($arrDescription[0])) {
+            $arrDescription[0] = '';
+        }
+        if (
+            empty($arrMetaDesc[0]) &&
+            isset($arrMetaDesc[static::getOutputLocale()->getId()])
+        ) {
+            $arrMetaDesc[0] = $arrMetaDesc[static::getOutputLocale()->getId()];
+        }
+        if (empty($arrMetaDesc[0])) {
+            $arrMetaDesc[0] = '';
+        }
+
         if(empty($intId)) {
             //insert new category
             $objInsertAttributes = $objDatabase->Execute("
@@ -678,10 +722,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $intId = $objDatabase->Insert_ID();
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
-
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
                     $metaDesc = $arrMetaDesc[$arrLang['id']];
@@ -737,10 +777,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
-
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
                     $metaDesc = $arrMetaDesc[$arrLang['id']];

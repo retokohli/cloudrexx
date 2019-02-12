@@ -64,6 +64,7 @@ class MediaDirectoryInputfieldProductAttributes extends \Cx\Modules\MediaDir\Con
         global $objDatabase, $objInit, $_ARRAYLANG;
 
         $intId = intval($arrInputfield['id']);
+        $langId = static::getOutputLocale()->getId();
 
         switch ($intView) {
             default:
@@ -90,11 +91,11 @@ class MediaDirectoryInputfieldProductAttributes extends \Cx\Modules\MediaDir\Con
                     $arrValue = null;
                 }
 
-                $strOptions = empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID];
+                $strOptions = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrOptions = explode(",", $strOptions);
 
                 if(!empty($arrInputfield['info'][0])){
-                    $strInfoValue = empty($arrInputfield['info'][FRONTEND_LANG_ID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][FRONTEND_LANG_ID].'"';
+                    $strInfoValue = empty($arrInputfield['info'][$langId]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$langId].'"';
                     $strInfoClass = 'mediadirInputfieldHint';
                 } else {
                     $strInfoValue = null;
@@ -139,7 +140,7 @@ class MediaDirectoryInputfieldProductAttributes extends \Cx\Modules\MediaDir\Con
                 break;
             case 2:
                 //search View
-                $strOptions = empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID];
+                $strOptions = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrOptions = explode(",", $strOptions);
 
                 $strValue = isset($_GET[$intId]) ? $_GET[$intId] : '';

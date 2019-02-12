@@ -288,6 +288,28 @@ class Node extends \Cx\Core\ContentManager\Model\Entity\Node implements \Doctrin
     /**
      * {@inheritDoc}
      */
+    public function addChild(\Cx\Core\ContentManager\Model\Entity\Node $children)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addChild', array($children));
+
+        return parent::addChild($children);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeChild(\Cx\Core\ContentManager\Model\Entity\Node $children)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeChild', array($children));
+
+        return parent::removeChild($children);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function addChildren(\Cx\Core\ContentManager\Model\Entity\Node $children)
     {
 
@@ -327,6 +349,17 @@ class Node extends \Cx\Core\ContentManager\Model\Entity\Node implements \Doctrin
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addPage', array($page));
 
         return parent::addPage($page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removePage(\Cx\Core\ContentManager\Model\Entity\Page $pages)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removePage', array($pages));
+
+        return parent::removePage($pages);
     }
 
     /**

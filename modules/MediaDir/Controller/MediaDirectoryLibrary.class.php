@@ -68,6 +68,24 @@ class MediaDirectoryLibrary
     public $pageContent;
 
     public $arrFrontendLanguages = array();
+
+    /**
+     * Two-dimensional array of activated frontend locales
+     *
+     * Contains array-data of the frontend locales that have
+     * been activated in the settings section.
+     *
+     * @var array
+     */
+    protected static $usedFrontendLocales = array();
+
+    /**
+     * List of the component's configuration
+     *
+     * @var array
+     */
+    protected static $settings = array();
+
     public $arrSettings = array();
     public $arrCommunityGroups = array();
 
@@ -107,6 +125,13 @@ class MediaDirectoryLibrary
     protected static $currentFetchedEntryDataObject = null;
 
     /**
+     * The locale in which the output shall be parsed for
+     *
+     * @var \Cx\Core\Locale\Model\Entity\Locale
+     */
+    protected static $outputLocale;
+
+    /**
      * Constructor
      */
     function __construct($tplPath, $name)
@@ -125,11 +150,13 @@ class MediaDirectoryLibrary
             'MODULE_NAME_LC' => $this->moduleNameLC,
             'CSRF' =>  'csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),
         ));
+
+        $this->getFrontendLanguages();
     }
 
     function checkDisplayduration()
     {
-        self::getSettings();
+        $this->getSettings();
 
         if($this->arrSettings['settingsEntryDisplaydurationNotification'] >= 1) {
 
@@ -180,7 +207,7 @@ class MediaDirectoryLibrary
             $accessId = 0; //used to remember which access id the user needs to have. this is passed to Permission::checkAccess() later.
 
             if(!$intUserIsAdmin) {
-                self::getSettings();
+                $this->getSettings();
 
                 switch($strAction) {
                     case 'add_entry':
@@ -209,7 +236,7 @@ class MediaDirectoryLibrary
                                     $objGroup->next();
                                 }
 
-                                self::getCommunityGroups();
+                                $this->getCommunityGroups();
                                 $strMaxEntries = 0;
                                 $bolFormAllowed = false;
 
@@ -367,7 +394,7 @@ class MediaDirectoryLibrary
         $arrLanguages = array();
         $arrActiveLangs = array();
 
-        self::getSettings();
+        $this->getSettings();
         $arrActiveLangs = explode(",",$this->arrSettings['settingsActiveLanguages']);
 
         foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
@@ -384,8 +411,8 @@ class MediaDirectoryLibrary
             }
         }
 
-        // return $arrLanguages;
         $this->arrFrontendLanguages = $arrLanguages;
+        static::$usedFrontendLocales = $arrLanguages;
     }
 
 
@@ -395,6 +422,7 @@ class MediaDirectoryLibrary
         global $objDatabase;
 
         $this->arrSettings = array();
+        static::$settings = array();
 
         $objSettings = $objDatabase->Execute("SELECT id,name,value FROM ".DBPREFIX."module_".$this->moduleNameLC."_settings ORDER BY name ASC");
         if ($objSettings === false) {
@@ -414,6 +442,8 @@ class MediaDirectoryLibrary
 
         $this->arrSettings['categorySelectorExpSearch'] = $this->getSelectorSearch($this->arrSettings['categorySelectorExpSearch']);
         $this->arrSettings['levelSelectorExpSearch'] = $this->getSelectorSearch($this->arrSettings['levelSelectorExpSearch']);
+
+        static::$settings = $this->arrSettings;
     }
 
 
@@ -579,10 +609,10 @@ class MediaDirectoryLibrary
 
     function getSelectorJavascript(){
         global $objInit;
-        $langId = FRONTEND_LANG_ID;
+        $langId = static::getOutputLocale()->getId();
 
         if($objInit->mode == 'frontend') {
-            self::getSettings();
+            $this->getSettings();
             if($this->arrSettings['settingsAddEntriesOnlyCommunity'] == 1) {
                 $objFWUser      = \FWUser::getFWUserObject();
                 $objUser         = $objFWUser->objUser;
@@ -602,7 +632,7 @@ class MediaDirectoryLibrary
                             $objGroup->next();
                         }
 
-                        self::getCommunityGroups();
+                        $this->getCommunityGroups();
                         $strMaxCategorySelect = 0;
                         $strMaxLevelSelect = 0;
 
@@ -641,7 +671,7 @@ class MediaDirectoryLibrary
         }
 
         //get languages
-        self::getFrontendLanguages();
+        $this->getFrontendLanguages();
         foreach ($this->arrFrontendLanguages as $intKey => $arrLang) {
             $arrActiveLang[$arrLang['id']] = $arrLang['id'];
         }
@@ -1399,10 +1429,20 @@ EOF;
             'list' => array(),
             'filter' => array(),
         );
+
+        // abort in case the template is invalid
+        if (!$template->blockExists($block)) {
+            return $config;
+        }
+
         $placeholderList = $template->getPlaceholderList($block);
         $placeholderListAsString = join("\n", $placeholderList);
-
-        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderListAsString, $match)) {
+        $match = null;
+        if (preg_match_all(
+                '/MEDIADIR_CONFIG_(FILTER|LIST)_' // $1
+                . '(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL|ASSOCIATED)' // $2
+                . '(?:_([0-9]+))?/', // $3
+                $placeholderListAsString, $match)) {
             foreach ($match[2] as $idx => $key) {
                 $configKey = strtolower($match[1][$idx]);
                 $option = strtolower($key);
@@ -1415,7 +1455,9 @@ EOF;
                     // then the option will be set to TRUE
                     $value = true;
                 }
-
+                // $configKey: "filter", or "list"
+                // $option: "latest", "limit", "offset", "form",
+                //      "category", "level", or "associated"
                 $config[$configKey][$option] = $value;
             }
         }
@@ -1449,7 +1491,176 @@ EOF;
      * Slugifies the given string
      * @param $string The string to slugify
      */
-    protected function slugify(&$string) {
+    protected function slugify(&$string, $key, $titleData = array()) {
+        if (empty($string) && isset($titleData[$key])) {
+            $string = $titleData[$key];
+        }
         $string = $this->cx->getComponent('Model')->slugify($string);
+    }
+
+    /**
+     * Get locale in which output shall be parsed for
+     *
+     * @return \Cx\Core\Locale\Model\Entity\Locale
+     */
+    public static function getOutputLocale() {
+        if (!static::$outputLocale) {
+            static::initOutputLocale();
+        }
+        return static::$outputLocale;
+    }
+
+    /**
+     * Determine the locale in which the output shall be parsed for.
+     *
+     * Backend:
+     *  1. Matching Locale of Backend language
+     *  2. Selected Frontend Locale (of menu / if used by MediaDir)
+     *  3. Default Frontend Locale (if used by MediaDir)
+     *  4. Any Frontend Locale used by MediaDir
+     *
+     * Any other mode:
+     *  Currently requested frontend Locale
+     *
+     * @return \Cx\Core\Locale\Model\Entity\Locale
+     */
+    protected static function initOutputLocale() {
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager();
+
+        static::$outputLocale = null;
+        $locale = null;
+        $cxMode = \Cx\Core\Core\Controller\Cx::instanciate()->getMode();
+
+        // If we are in backend
+        // do try to find a matching frontend locale
+        if ($cxMode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            try {
+                // get ISO-639-1 code of backend language
+                $backend = $em->find(
+                    'Cx\Core\Locale\Model\Entity\Backend',
+                    LANG_ID
+                );
+                $iso1Code = $backend->getIso1()->getId();
+
+                // find matching frontend locale based on ISO-639-1 code of backend
+                // language
+                $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+                $locale = $localeRepo->findOneByCode($iso1Code);
+            } catch (\Exception $e) {}
+        }
+
+        // If we are in frontend (or in any other mode than backend) or if
+        // there does not exist a matching locale for the current backend
+        // language, then load the currently set frontend locale
+        // (either from the request when in frontend mode or by the selected
+        // frontend locale in backend mode)
+        if (!$locale) {
+            // get currently selected frontend locale
+            $locale = $em->find(
+                'Cx\Core\Locale\Model\Entity\Locale',
+                FRONTEND_LANG_ID
+            );
+        }
+
+        // This should not happen as FRONTEND_LANG_ID should have been set
+        // based on an existing locale
+        if (!$locale) {
+            throw new \Exception('Unable to initialize frontend locale');
+        }
+
+        // If we are in backend, we will check if the locale is actually in
+        // use. In all other modes, we won't care about that as the
+        // responsible view methods will take care about that themself.
+        if ($cxMode != \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            static::$outputLocale = $locale;
+            return $locale;
+        }
+
+        // If the current locale is not used by MediaDir component,
+        // we will try to find the best match from the available locales.
+        if (
+            !static::$settings['settingsShowEntriesInAllLang'] &&
+            !isset(static::$usedFrontendLocales[$locale->getId()])
+        ) {
+            $locale = null;
+        }
+
+        // If we haven't found a matching locale yet,
+        // we will try to load the frontend's default locale that,
+        // if it is used by the MediaDir component.
+        if (
+            !$locale &&
+            isset(static::$usedFrontendLocales[\FWLanguage::getDefaultLangId()])
+        ) {
+            $locale = $em->find(
+                'Cx\Core\Locale\Model\Entity\Locale',
+                \FWLanguage::getDefaultLangId()
+            );
+        }
+
+        // If we still haven't found a matching locale,
+        // we will simply load the first locale that is used by the MediaDir
+        // component.
+        if (!$locale) {
+            reset(static::$usedFrontendLocales);
+            $locale = $em->find(
+                'Cx\Core\Locale\Model\Entity\Locale',
+                key(static::$usedFrontendLocales)
+            );
+        }
+
+        // Without any locale we have to abort execution
+        if (!$locale) {
+            throw new \Exception('Unable to initialize frontend locale');
+        }
+
+        static::$outputLocale = $locale;
+        return $locale;
+    }
+
+    /**
+     * Get the source locale of a target locale
+     *
+     * The source locale is the fallback locale of a locale (the target locale)
+     * or the system's default locale.
+     *
+     * @param   integer $localeId   The ID of the target locale
+     * @param   array   $usedFrontendLocales List of available locales.
+     *                                       One-dimensional array of locale
+     *                                       IDs.
+     * @return  integer The ID of the source locale
+     */
+    protected static function getSourceLocaleIdForTargetLocale($localeId, $usedFrontendLocales = array()) {
+        if (!$usedFrontendLocales) {
+            $usedFrontendLocales = array_keys(static::$usedFrontendLocales);
+        }
+
+        // fetch fallback locale of target locale
+        $sourceLocaleId = \FWLanguage::getFallbackLanguageIdById($localeId);
+
+        // fetch default locale in case no fallback locale is defined for the
+        // target locale
+        if (!$sourceLocaleId) {
+            $sourceLocaleId = \FWLanguage::getDefaultLangId();
+        }
+
+        // If the source locale is not used by the MediaDir component
+        // then we shall try the default locale (if not tried already)
+        if (
+            !in_array($sourceLocaleId, $usedFrontendLocales) &&
+            $sourceLocaleId != \FWLanguage::getDefaultLangId()
+        ) {
+            $sourceLocaleId = \FWLanguage::getDefaultLangId();
+        }
+
+        // Fallback to any existing locale used by the MediaDir component
+        if (!in_array($sourceLocaleId, $usedFrontendLocales)) {
+            reset($usedFrontendLocales);
+            $sourceLocaleId = current($usedFrontendLocales);
+        }
+
+        return $sourceLocaleId;
     }
 }

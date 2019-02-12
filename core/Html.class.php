@@ -31,6 +31,7 @@
  * Provides some commonly used HTML elements
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @deprecated  This class is deprecated in favor of using Sigma or \Cx\Core\Html\Model\Entity\...
  * @version     3.0.0
  * @package     cloudrexx
  * @subpackage  core
@@ -42,6 +43,7 @@
  * Provides some commonly used HTML elements
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @deprecated  This class is deprecated in favor of using Sigma or \Cx\Core\Html\Model\Entity\...
  * @version     3.0.0
  * @package     cloudrexx
  * @subpackage  core
@@ -2078,9 +2080,8 @@ cx.jQuery(document).ready(function($) {
 
         $key_off = $class_off = $key_on = $class_on = $key_nop =
         $class_nop = $title_off = $title_on = $title_nop = null;
-        list ($key_off, $class_off) = each($arrStatus);
-        list ($key_on, $class_on) = each($arrStatus);
-        list ($key_nop, $class_nop) = each($arrStatus);
+        list ($key_off, $key_on, $key_nop)       = array_keys($arrStatus);
+        list ($class_off, $class_on, $class_nop) = array_values($arrStatus);
         list ($title_off, $title_on, $title_nop) =
             (is_array($arrTitle) && count($arrTitle) == 3
               ? array_values($arrTitle) : array('', '', ''));
@@ -2449,7 +2450,8 @@ alert("change: ID mismatch: "+id);
     static function getRelativeUri()
     {
         // returns the relative uri from url request object
-        return (string) clone \Env::get('Resolver')->getUrl();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        return (string) clone $cx->getRequest()->getUrl();
     }
 
 

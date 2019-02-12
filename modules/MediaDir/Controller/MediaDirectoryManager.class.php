@@ -400,7 +400,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $intEntryDourationStart = 0;
         $strOnSubmit = '';
 
-        if(!empty($_GET['id'])) {
+        if(!empty($_GET['id']) || !empty($_POST['entryId'])) {
             \Permission::checkAccess(MediaDirectoryAccessIDs::ModifyEntry, 'static');
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
             $intEntryId = intval($_GET['id']);
@@ -422,6 +422,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $intCountForms = count($arrActiveForms);
 
+        $objEntry = null;
         if($intCountForms > 0) {
             if(intval($intEntryId) == 0 && (empty($_POST['selectedFormId']) && empty($_POST['formId'])) && $intCountForms > 1) {
                 $intFormId = null;
@@ -662,6 +663,26 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleNameLC.'FormList');
+
+                if ($objForms->arrForms[$intFormId]['use_associated_entries']) {
+                    \JS::activate('chosen-sortable');
+                    if (!$objEntry) {
+                        $objEntry = new MediaDirectoryEntry($this->moduleName);
+                    }
+                    $this->_objTpl->setVariable(array(
+                        'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES'],
+                        'TXT_' . $this->moduleLangVar . '_PLEASE_CHOOSE' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'],
+                        'TXT_' . $this->moduleLangVar . '_SELECT_NO_MATCH' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_SELECT_NO_MATCH'],
+                        'TXT_' . $this->moduleLangVar . '_ASSOCIATED_ENTRIES_INFO' =>
+                            $_ARRAYLANG['TXT_MEDIADIR_ASSOCIATED_ENTRIES_INFO'],
+                        $this->moduleLangVar . '_ASSOCIATED_ENTRIES_OPTIONS' =>
+                            $objEntry->getAssociatedEntriesOptions(
+                                $intFormId, $intEntryId),
+                    ));
+                }
             }
 
             //parse global variables
@@ -673,7 +694,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $this->moduleLangVar.'_JAVASCRIPT' =>  $this->getJavascript(),
                 $this->moduleLangVar.'_FORM_ONSUBMIT' =>  $strOnSubmit,
                 'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT' =>  $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'],
-                $this->moduleLangVar.'_DEFAULT_LANG_ID' =>  FRONTEND_LANG_ID,
+                $this->moduleLangVar.'_DEFAULT_LANG_ID' =>  static::getOutputLocale()->getId(),
                 'TXT_'.$this->moduleLangVar.'_SPEZ_FIELDS' => $_ARRAYLANG['TXT_MEDIADIR_SPEZ_FIELDS'],
                 'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION'],
                 'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_ALWAYS' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'],
@@ -817,7 +838,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_NEW_CATEGORY' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']." ---",
             'TXT_'.$this->moduleLangVar.'_VISIBLE_CATEGORY_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_CATEGORY_INFO'],
             $this->moduleLangVar.'_CATEGORIES_DROPDOWN_OPTIONS' => $catDropdown,
-            $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
+            $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID' => static::getOutputLocale()->getId(),
             'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
             'TXT_'.$this->moduleLangVar.'_CATEGORY_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORY_DETAILS'],
             $this->moduleLangVar.'_CATEGORY_IMAGE_BROWSE' => $this->getMediaBrowserButton(
@@ -1052,7 +1073,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
             'TXT_'.$this->moduleLangVar.'_NEW_LEVEL' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']." ---",
             'TXT_'.$this->moduleLangVar.'_VISIBLE_LEVEL_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_LEVEL_INFO'],
-            $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
+            $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID' => static::getOutputLocale()->getId(),
             'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
             'TXT_'.$this->moduleLangVar.'_LEVEL_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_LEVEL_DETAILS'],
             $this->moduleLangVar.'_LEVEL_IMAGE_BROWSE' => $this->getMediaBrowserButton(
@@ -1422,7 +1443,12 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                     $objExport = new MediaDirectoryExport($this->moduleName);
                     switch ($_POST['step']) {
                         case 'exportCSV':
-                            $strStatus = $objExport->exportCSV(intval($_POST['interfacesExportForm']), $_POST['interfacesExportSelectedCategories'], $_POST['interfacesExportSelectedLevels'], intval($_POST['interfacesExportMask']));
+                            $strStatus = $objExport->exportCSV(
+                                isset($_POST['interfacesExportForm']) ? contrexx_input2int($_POST['interfacesExportForm']) : 0,
+                                isset($_POST['interfacesExportSelectedCategories']) ? contrexx_input2int($_POST['interfacesExportSelectedCategories']) : array(),
+                                isset($_POST['interfacesExportSelectedLevels']) ? contrexx_input2int($_POST['interfacesExportSelectedLevels']) : array(),
+                                isset($_POST['interfacesExportMask']) ? contrexx_input2int($_POST['interfacesExportMask']) : 0
+                            );
                             break;
                     }
             }
