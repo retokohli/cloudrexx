@@ -21,27 +21,30 @@ cx.ready(function() {
                 if (opt.repeat) {
                     data += '&' + opt.updatedOrder;
                 }
-                jQuery.ajax({
-                    type: 'POST',
-                    data: data,
-                    url:  cadminPath + 'index.php&cmd=JsonData&object=' + opt.jsonObject + '&act=' + opt.jsonAct,
-                    beforeSend: function() {
-                        jQuery('body').addClass('loading');
-                        opt.that.sortable("disable");
-                        opt.uiItem.find('td:first-child').addClass('sorter-loading');
-                    },
-                    success: function(msg) {
-                        if (msg.data && msg.data.status === 'success') {
-                            recordCount = msg.data.recordCount;
+                cx.ajax(
+                    opt.jsonObject,
+                    opt.jsonAct,
+                    {
+                        type: 'POST',
+                        data: data,
+                        beforeSend: function() {
+                            jQuery('body').addClass('loading');
+                            opt.that.sortable("disable");
+                            opt.uiItem.find('td:first-child').addClass('sorter-loading');
+                        },
+                        success: function(msg) {
+                            if (msg.data && msg.data.status === 'success') {
+                                recordCount = msg.data.recordCount;
+                            }
+                        },
+                        complete: function() {
+                            sortable.updateOrder(opt, recordCount);
+                            opt.that.sortable("enable");
+                            jQuery('body').removeClass('loading');
+                            opt.uiItem.find('td:first-child').removeClass('sorter-loading');
                         }
-                    },
-                    complete: function() {
-                        sortable.updateOrder(opt, recordCount);
-                        opt.that.sortable("enable");
-                        jQuery('body').removeClass('loading');
-                        opt.uiItem.find('td:first-child').removeClass('sorter-loading');
                     }
-                });
+                );
             },
             //Check the same 'order' field value is repeated or not
             isOrderNoRepeat : function(options) {
