@@ -553,11 +553,19 @@ class FormGenerator {
                     $input->setAttributes($options['attributes']);
                 }
                 \DateTimeTools::addDatepickerJs();
-                \JS::registerCode('
-                        cx.jQuery(function() {
-                          cx.jQuery(".datepicker").datetimepicker();
-                        });
-                        ');
+                if ($type == 'date') {
+                    \JS::registerCode('
+                            cx.jQuery(function() {
+                              cx.jQuery(".datepicker").datepicker();
+                            });
+                            ');
+                } else {
+                    \JS::registerCode('
+                            cx.jQuery(function() {
+                              cx.jQuery(".datepicker").datetimepicker();
+                            });
+                            ');
+                }
                 return $input;
                 break;
             case 'multiselect':
