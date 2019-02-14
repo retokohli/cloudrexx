@@ -148,13 +148,6 @@ class BackendTable extends HTML_Table {
                     ) {
                         continue;
                     }
-
-                    if (isset($options['fields'][$header]['editable']) && $this->editable) {
-                        $data = $formGenerator->getDataElementWithoutType($header, $header .'-'. $rowname, 0, $data, $options, 0);
-
-                        $encode = false;
-                    }
-
                     if (!empty($sortField) && $header === $sortField) {
                         //Add the additional attribute class, to display the updated sort order after the row sorting
                         $this->updateColAttributes($col, array('class' => 'sortBy' . $sortField));
@@ -222,6 +215,20 @@ class BackendTable extends HTML_Table {
                             $options['fields'][$origHeader]
                         );
                     }
+
+                    if (isset($options['fields'][$origHeader]['editable']) && $this->editable) {
+                        $data = $formGenerator->getDataElementWithoutType(
+                            $origHeader,
+                            $origHeader .'-'. $rowname,
+                            0,
+                            $data,
+                            $options,
+                            0
+                        );
+
+                        $encode = false;
+                    }
+
                     /* We use json to do parse the field function. The 'else if' is for backwards compatibility so you can declare
                     * the function directly without using json. This is not recommended and not working over session */
                     if (
