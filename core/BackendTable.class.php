@@ -508,7 +508,11 @@ class BackendTable extends HTML_Table {
 
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
-        $editUrl = clone $baseUrl;
+        $editUrl = \Cx\Core\Html\Controller\ViewGenerator::getVgEditUrl(
+            $functions['vg_increment_number'],
+            $rowname,
+            clone $baseUrl
+        );
         $params = $editUrl->getParamArray();
         $editId = '';
         if (!empty($params['editid'])) {
@@ -543,7 +547,7 @@ class BackendTable extends HTML_Table {
 
         if(!$virtual){
             if (isset($functions['copy']) && $functions['copy']) {
-                $actionUrl = clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+                $actionUrl = clone $editUrl;
                 $actionUrl->setParam('copy', $editId);
                 //remove the parameter 'vg_increment_number' from actionUrl
                 //if the baseUrl contains the parameter 'vg_increment_number'
@@ -555,7 +559,6 @@ class BackendTable extends HTML_Table {
 
             }
             if (isset($functions['edit']) && $functions['edit']) {
-                $editUrl->setParam('editid', $editId);
                 //remove the parameter 'vg_increment_number' from editUrl
                 //if the baseUrl contains the parameter 'vg_increment_number'
                 if (isset($params['vg_increment_number'])) {
