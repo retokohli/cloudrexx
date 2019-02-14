@@ -514,6 +514,9 @@ class BackendTable extends HTML_Table {
             clone $baseUrl
         );
         $params = $editUrl->getParamArray();
+        if (isset($functions['sortBy']) && isset($functions['sortBy']['field'])) {
+            $editUrl->setParam($functions['sortBy']['field'] . 'Pos', null);
+        }
         $editId = '';
         if (!empty($params['editid'])) {
             $editId = $params['editid'] . ',';
