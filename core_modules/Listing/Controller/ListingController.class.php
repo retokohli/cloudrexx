@@ -310,6 +310,11 @@ class ListingController {
             if ($this->count) {
                 $data = $data->limit($this->count, $this->offset);
             }
+            // Add custom fields
+            foreach ($this->customFields as $customField) {
+                $data->addColumn($customField);
+            }
+
             $this->data = $data;
             return $data;
         }
@@ -382,8 +387,6 @@ class ListingController {
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
 
         // Add custom fields
-        // TODO: Extend code so it works in all cases and not only for
-        // Doctrine views
         foreach ($this->customFields as $customField) {
             $data->addColumn($customField);
         }
