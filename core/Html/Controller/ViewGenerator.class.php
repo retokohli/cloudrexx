@@ -361,6 +361,23 @@ class ViewGenerator {
         } else {
             $lcOptions['filterFields'] = array();
         }
+        // ensure edited ID is loaded even with paging limits
+        // todo: this only works for doctrine entities
+        if ($entityClass !== 'array' && $this->getEntryId()) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $metaData = $em->getClassMetadata($entityClass);
+            $primaryKeyNames = $metaData->getIdentifierFieldNames();
+            $lcOptions['filterFields'] = array_merge(
+                $lcOptions['filterFields'],
+                $primaryKeyNames
+            );
+            $entryIdValues = explode('/', $this->getEntryId());
+            $i = 0;
+            foreach ($primaryKeyNames as $primaryKeyName) {
+                $searchCriteria[$primaryKeyName] = $entryIdValues[$i];
+                $i++;
+            }
+        }
         $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $renderObject,
             $searchCriteria,
