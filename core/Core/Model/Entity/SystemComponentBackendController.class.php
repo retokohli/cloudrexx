@@ -345,7 +345,13 @@ class SystemComponentBackendController extends Controller {
         global $_ARRAYLANG;
 
         // last entry can be empty
-        $entityName = !empty(end($cmd)) ? end($cmd) : $cmd[count($cmd)-2];
+        $entityName = '';
+        if (!empty($cmd) && !empty($cmd[count($cmd) - 1])) {
+            $entityName = $cmd[count($cmd) - 1];
+        } else if (!empty($cmd)) {
+            $entityName = $cmd[0];
+        }
+
         // Parse entity view generation pages
         $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . $entityName;
         if (in_array($entityClassName, $this->getEntityClasses())) {
