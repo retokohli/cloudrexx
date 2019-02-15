@@ -141,7 +141,7 @@ class FormGenerator {
         );
         $hasTabs = false;
 
-        $tabs = isset($options['tabs']) ? $options['tabs'] : array();
+        $tabs = isset($options['tabs']) ? $options['tabs'] : array('overview' => array());
 
         if (!empty($tabs)) {
             $hasTabs = true;
