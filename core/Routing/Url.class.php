@@ -374,8 +374,18 @@ class Url {
             $params = explode('?', $this->path);
             $params = $params[1];
         }
-
         $path = implode('/', $path);
+
+        // cleanup possible duplicate '?'
+        if (strpos($path, '?') !== false) {
+            $pathParams = explode('?', $path, 2);
+            if (!empty($params)) {
+                $params .= '&';
+            }
+            $params .= $pathParams[1];
+            $path = $pathParams[0];
+        }
+
         $this->path = $path;
         $this->path .= !empty($params) ? '?'.$params : '';
         $this->suggest();
