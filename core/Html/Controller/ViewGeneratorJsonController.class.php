@@ -375,7 +375,10 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
             return false;
         }
         $getArgs = $arguments['get'];
-        $postArgs = $arguments['post'];
+        $postArgs = array();
+        if (isset($arguments['post'])) {
+            $postArgs = $arguments['post'];
+        }
 
         // begin workaround (see docblock)
         if (count($getArgs) == 3 && isset($getArgs['get']) && isset($getArgs['post'])) {
