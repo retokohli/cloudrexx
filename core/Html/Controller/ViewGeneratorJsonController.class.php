@@ -63,7 +63,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
             ),
             'updateOrder' => $this->getSystemComponentController()->getWhitelistPermission(
                 'updateOrder'
-            ), // new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
+            ),
             'updateStatus' => $this->getSystemComponentController()->getWhitelistPermission(
                 'updateStatus'
             ),
