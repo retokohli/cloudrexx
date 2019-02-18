@@ -479,6 +479,15 @@ class FormGenerator {
                             'cssName:'.$this->createCssClassNameFromEntity($associatedClass).';'.
                             'sessionKey:'.$this->entityClass
                         );
+                        $cx->getComponent('Html')->whitelistParamSet(
+                            'getViewOverJson',
+                            array(
+                                'entityClass' => $associatedClass,
+                                'mappedBy' => $assocMapping['mappedBy'],
+                                'sessionKey' => $this->entityClass
+                            ),
+                            array()
+                        );
                         if (!isset($_SESSION['vgOptions'])) {
                             $_SESSION['vgOptions'] = array();
                         }
