@@ -645,13 +645,14 @@ class ViewGenerator {
         //status in db
         $componentName = '';
         $entityName    = '';
-        if ((
-            !isset($status['jsonadapter']) ||
-            (isset($status['jsonadapter']) && (
-                empty($status['jsonadapter']['object']) ||
-                empty($status['jsonadapter']['act'])
-            ))
-        )) {
+        if (
+            !isset($status['jsonadapter']) || (
+                isset($status['jsonadapter']) && (
+                    empty($status['jsonadapter']['object']) ||
+                    empty($status['jsonadapter']['act'])
+                )
+            )
+        ) {
             $split          = explode('\\', $entityNameSpace);
             $componentName  = isset($split[2]) ? $split[2] : '';
             $entityName     = isset($split) ? end($split) : '';
