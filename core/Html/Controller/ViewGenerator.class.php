@@ -281,7 +281,7 @@ class ViewGenerator {
         }
 
         //initialize the row status functionality
-        $this->inizializeStatusOption($entityWithNS);
+        $this->initializeStatusOption($entityWithNS);
 
         //initialize the row sorting functionality
         $this->getSortingOption($entityWithNS);
@@ -623,7 +623,7 @@ class ViewGenerator {
      *
      * @param string $entityNameSpace entity namespace
      */
-    protected function inizializeStatusOption($entityNameSpace)
+    protected function initializeStatusOption($entityNameSpace)
     {
         global $_ARRAYLANG;
 
