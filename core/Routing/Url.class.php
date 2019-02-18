@@ -823,11 +823,7 @@ class Url {
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
         $getParams = '';
         if (count($parameters)) {
-            $paramArray = array();
-            foreach ($parameters as $key=>$value) {
-                $paramArray[] = $key . '=' . $value;
-            }
-            $getParams = '?' . implode('&', $paramArray);
+            $getParams = '?' . static::array2params($parameters);
         }
         $url = new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
         if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
