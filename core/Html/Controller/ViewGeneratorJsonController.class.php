@@ -56,23 +56,20 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      */
     public function getAccessableMethods()
     {
-        // at the moment we only allow backend users to edit ViewGenerator over json/ajax.
-        // As soon as we have permissions on entity level we can change this, so getViewOverJson can also be used from frontend
-        $objBackendGroups = \FWUser::getFWUserObject()->objGroup->getGroups(
-            array('is_active' => true, 'type' => 'backend'),
-            null,
-            array('group_id')
-        );
-        $backendGroups = array();
-        while (!$objBackendGroups->EOF) {
-            $backendGroups[] = $objBackendGroups->getId();
-            $objBackendGroups->next();
-        }
         return array(
-            'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, $backendGroups),
-            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
-            'updateStatus' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
-            'export' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get'), true),
+            'checkWhitelistPermission' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get', 'post'), true),
+            'getViewOverJson' => $this->getSystemComponentController()->getWhitelistPermission(
+                'getViewOverJson'
+            ),
+            'updateOrder' => $this->getSystemComponentController()->getWhitelistPermission(
+                'updateOrder'
+            ), // new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
+            'updateStatus' => $this->getSystemComponentController()->getWhitelistPermission(
+                'updateStatus'
+            ),
+            'export' => $this->getSystemComponentController()->getWhitelistPermission(
+                'export'
+            ),
         );
     }
 
@@ -445,5 +442,78 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
             $file
         );
         return str_replace($this->cx->getCodeBasePath(), '', $file);
+    }
+
+    /**
+     * Checks whether the supplied request info is allowed by the corresponding
+     * whitelist
+     *
+     * This method returns true if all post and get variables specified in a
+     * whitelist entry are set and have the same value as specified in the list.
+     * $arguments can either be
+     *      array(
+     *          'get' => <getArgs>
+     *          'post' => <postArgs>
+     *      )
+     * or
+     *      array(
+     *          'get' => array(
+     *              'get' => <getArgs>
+     *              'post' => <postArgs>
+     *          )
+     *      )
+     * This is because JsonAdapter method nesting currently leads to param
+     * nesting. <getArgs> needs to have index 0 set to the whitelist identifier.
+     * The second form is deprecated and should only be used in order to
+     * circumvent the problem described above.
+     * @param array $arguments Request info, see method description for more info
+     * @return boolean Returns true if request info is allowed by whitelist
+     */
+    public function checkWhitelistPermission($arguments) {
+        if (!isset($arguments['get']) || !isset($arguments['get'][0])) {
+            return false;
+        }
+        $getArgs = $arguments['get'];
+        $postArgs = array();
+        if (isset($arguments['post'])) {
+            $postArgs = $arguments['post'];
+        }
+
+        // begin workaround (see docblock)
+        if (count($getArgs) == 3 && isset($getArgs['get']) && isset($getArgs['post'])) {
+            $postArgs = $getArgs['post'];
+            $getArgs = $getArgs['get'];
+        }
+
+        // method is always set in the first form
+        $method = $arguments['get'][0];
+        // end workaround
+
+        // initialize session and check if any matching whitelists exist
+        $this->getComponent('Session')->getSession();
+        if (
+            !isset($_SESSION['vg']) ||
+            !isset($_SESSION['vg']['whitelist']) ||
+            !isset($_SESSION['vg']['whitelist'][$method])
+        ) {
+            return false;
+        }
+
+        // check matching whitelists
+        $permissionSets = $_SESSION['vg']['whitelist'][$method];
+        foreach ($permissionSets as $permissionSet) {
+            foreach ($permissionSet['get'] as $field=>$value) {
+                if (!isset($getArgs[$field]) || $getArgs[$field] != $value) {
+                    continue 2;
+                }
+            }
+            foreach ($permissionSet['post'] as $field=>$value) {
+                if (!isset($postArgs[$field]) || $postArgs[$field] != $value) {
+                    continue 2;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

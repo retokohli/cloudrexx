@@ -479,6 +479,15 @@ class FormGenerator {
                             'cssName:'.$this->createCssClassNameFromEntity($associatedClass).';'.
                             'sessionKey:'.$this->entityClass
                         );
+                        $cx->getComponent('Html')->whitelistParamSet(
+                            'getViewOverJson',
+                            array(
+                                'entityClass' => $associatedClass,
+                                'mappedBy' => $assocMapping['mappedBy'],
+                                'sessionKey' => $this->entityClass
+                            ),
+                            array()
+                        );
                         if (!isset($_SESSION['vgOptions'])) {
                             $_SESSION['vgOptions'] = array();
                         }
@@ -553,11 +562,19 @@ class FormGenerator {
                     $input->setAttributes($options['attributes']);
                 }
                 \DateTimeTools::addDatepickerJs();
-                \JS::registerCode('
-                        cx.jQuery(function() {
-                          cx.jQuery(".datepicker").datetimepicker();
-                        });
-                        ');
+                if ($type == 'date') {
+                    \JS::registerCode('
+                            cx.jQuery(function() {
+                              cx.jQuery(".datepicker").datepicker();
+                            });
+                            ');
+                } else {
+                    \JS::registerCode('
+                            cx.jQuery(function() {
+                              cx.jQuery(".datepicker").datetimepicker();
+                            });
+                            ');
+                }
                 return $input;
                 break;
             case 'multiselect':
