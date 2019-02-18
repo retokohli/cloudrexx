@@ -349,6 +349,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      * Checks whether the supplied request info is allowed by the corresponding
      * whitelist
      *
+     * This method returns true if all post and get variables specified in a
+     * whitelist entry are set and have the same value as specified in the list.
      * $arguments can either be
      *      array(
      *          'get' => <getArgs>
@@ -363,6 +365,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      *      )
      * This is because JsonAdapter method nesting currently leads to param
      * nesting. <getArgs> needs to have index 0 set to the whitelist identifier.
+     * The second form is deprecated and should only be used in order to
+     * circumvent the problem described above.
      * @param array $arguments Request info, see method description for more info
      * @return boolean Returns true if request info is allowed by whitelist
      */
@@ -372,11 +376,18 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         }
         $getArgs = $arguments['get'];
         $postArgs = $arguments['post'];
+
+        // begin workaround (see docblock)
         if (count($getArgs) == 3 && isset($getArgs['get']) && isset($getArgs['post'])) {
             $postArgs = $getArgs['post'];
             $getArgs = $getArgs['get'];
         }
+
+        // method is always set in the first form
         $method = $arguments['get'][0];
+        // end workaround
+
+        // initialize session and check if any matching whitelists exist
         $this->getComponent('Session')->getSession();
         if (
             !isset($_SESSION['vg']) ||
@@ -385,6 +396,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         ) {
             return false;
         }
+
+        // check matching whitelists
         $permissionSets = $_SESSION['vg']['whitelist'][$method];
         foreach ($permissionSets as $permissionSet) {
             foreach ($permissionSet['get'] as $field=>$value) {

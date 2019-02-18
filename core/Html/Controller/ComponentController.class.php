@@ -78,11 +78,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Adds a request param set to the whitelist
      *
+     * This manages entries in a whitelist in the session. It is used to
+     * temporarily grant a permission.
+     * Permission is granted until session destroy.
+     * @see getWhitelistPermission() for how to check if something is in whitelist
+     * @todo It might make sense to add a scope param and move this to a more
+     *          generic location.
      * @param string $method Identifier for the whitelist
      * @param array $getArguments Whitelisted GET arguments
      * @param array $postArguments Whitelisted POST arguments
      */
     public function whitelistParamSet($method, $getArguments, $postArguments = array()) {
+        // check whether this is already whitelisted
         if ($this->getController('ViewGeneratorJson')->checkWhitelistPermission(
             array(
                 'get' => array_merge(
@@ -94,6 +101,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         )) {
             return;
         }
+        // initialize session indexes
         if (!isset($_SESSION['vg'])) {
             $_SESSION['vg'] = array();
         }
@@ -103,6 +111,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!isset($_SESSION['vg']['whitelist'][$method])) {
             $_SESSION['vg']['whitelist'][$method] = array();
         }
+        // add entry to whitelist
         $_SESSION['vg']['whitelist'][$method][] = array(
             'get' => $getArguments,
             'post' => $postArguments,
@@ -112,7 +121,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Returns the permission object to check a whitelist
      *
-     * @see whitelistParamSet()
+     * @see whitelistParamSet() for how to add entries to the whitelist
+     * @see ViewGeneratorJsonController::checkWhitelistPermission() for
+     *          whitelist check.
      * @param string $method Identifier for the whitelist
      * @return \Cx\Core_Modules\Access\Model\Entity\Permission Permission object
      */
