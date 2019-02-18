@@ -260,9 +260,12 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
             $id
         );
         $content = $template->get();
-        $em = $cx->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $page = $pageRepo->find($params['get']['page']);
+        $page = null;
+        if (isset($params['get']['page'])) {
+            $em = $cx->getDb()->getEntityManager();
+            $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $page = $pageRepo->find($params['get']['page']);
+        }
         
         \Cx\Modules\Block\Controller\Block::setBlocks($content, $page);
         \LinkGenerator::parseTemplate($content);
