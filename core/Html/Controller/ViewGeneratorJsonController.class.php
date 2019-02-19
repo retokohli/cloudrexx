@@ -56,21 +56,17 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      */
     public function getAccessableMethods()
     {
-        // at the moment we only allow backend users to edit ViewGenerator over json/ajax.
-        // As soon as we have permissions on entity level we can change this, so getViewOverJson can also be used from frontend
-        $objBackendGroups = \FWUser::getFWUserObject()->objGroup->getGroups(
-            array('is_active' => true, 'type' => 'backend'),
-            null,
-            array('group_id')
-        );
-        $backendGroups = array();
-        while (!$objBackendGroups->EOF) {
-            $backendGroups[] = $objBackendGroups->getId();
-            $objBackendGroups->next();
-        }
         return array(
-            'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, $backendGroups),
-            'updateOrder' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true)
+            'checkWhitelistPermission' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get', 'post'), true),
+            'getViewOverJson' => $this->getSystemComponentController()->getWhitelistPermission(
+                'getViewOverJson'
+            ),
+            'updateOrder' => $this->getSystemComponentController()->getWhitelistPermission(
+                'updateOrder'
+            ),
+            'export' => $this->getSystemComponentController()->getWhitelistPermission(
+                'export'
+            ),
         );
     }
 
@@ -299,5 +295,126 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         } catch (\Exception $e) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
+    }
+
+    /**
+     * Exports Doctrine entities to a file
+     * @param array $params The following get params are allowed:
+     *      type    required    string  Doctrine entity name
+     *      search  optional    VGparam Filters
+     *      term    optional    VGparam Search term
+     * @todo This should trigger an async job
+     * @todo ViewGenerator config should be taken into account (exclude fields)
+     * @return array Generated file name
+     */
+    public function export($params) {
+        if (!isset($params['get']['type'])) {
+            throw new \Exception('No type supplied');
+        }
+        // need to security-check type as its used as part of the filename
+        if (!preg_match('/^[A-Za-z0-9_\\\\]+$/', $params['get']['type'])) {
+            throw new \Exception('Illegal type name');
+        }
+        // apply filters
+        $filter = array();
+        if (isset($params['get']['search'])) {
+            $filter = \Cx\Core\Html\Controller\ViewGenerator::getParam(0, $params['get']['search']);
+        }
+        $search = '';
+        if (isset($params['get']['term'])) {
+            $search = \Cx\Core\Html\Controller\ViewGenerator::getParam(0, $params['get']['term']);
+        }
+        $lc = new \Cx\Core_Modules\Listing\Controller\ListingController(
+            $params['get']['type'],
+            $filter,
+            $search,
+            array(
+                'searching' => true,
+                'filtering' => true,
+            )
+        );
+        $ds = $lc->getData();
+        $file = $this->getComponent('Core')->getPublicUserTempFolder();
+        $file .= end(explode('\\', $params['get']['type'])) . '_Export_';
+        $file .= date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE) . '_';
+        $file .= date(ASCMS_DATE_FORMAT_INTERNATIONAL_TIME) . '.csv';
+        $ds->exportToFile(
+            new \Cx\core_modules\Listing\Model\Entity\CsvInterface(),
+            $file
+        );
+        return str_replace($this->cx->getCodeBasePath(), '', $file);
+    }
+
+    /**
+     * Checks whether the supplied request info is allowed by the corresponding
+     * whitelist
+     *
+     * This method returns true if all post and get variables specified in a
+     * whitelist entry are set and have the same value as specified in the list.
+     * $arguments can either be
+     *      array(
+     *          'get' => <getArgs>
+     *          'post' => <postArgs>
+     *      )
+     * or
+     *      array(
+     *          'get' => array(
+     *              'get' => <getArgs>
+     *              'post' => <postArgs>
+     *          )
+     *      )
+     * This is because JsonAdapter method nesting currently leads to param
+     * nesting. <getArgs> needs to have index 0 set to the whitelist identifier.
+     * The second form is deprecated and should only be used in order to
+     * circumvent the problem described above.
+     * @param array $arguments Request info, see method description for more info
+     * @return boolean Returns true if request info is allowed by whitelist
+     */
+    public function checkWhitelistPermission($arguments) {
+        if (!isset($arguments['get']) || !isset($arguments['get'][0])) {
+            return false;
+        }
+        $getArgs = $arguments['get'];
+        $postArgs = array();
+        if (isset($arguments['post'])) {
+            $postArgs = $arguments['post'];
+        }
+
+        // begin workaround (see docblock)
+        if (count($getArgs) == 3 && isset($getArgs['get']) && isset($getArgs['post'])) {
+            $postArgs = $getArgs['post'];
+            $getArgs = $getArgs['get'];
+        }
+
+        // method is always set in the first form
+        $method = $arguments['get'][0];
+        // end workaround
+
+        // initialize session and check if any matching whitelists exist
+        $this->getComponent('Session')->getSession();
+        if (
+            !isset($_SESSION['vg']) ||
+            !isset($_SESSION['vg']['whitelist']) ||
+            !isset($_SESSION['vg']['whitelist'][$method])
+        ) {
+            return false;
+        }
+
+        // check matching whitelists
+        $permissionSets = $_SESSION['vg']['whitelist'][$method];
+        foreach ($permissionSets as $permissionSet) {
+            foreach ($permissionSet['get'] as $field=>$value) {
+                if (!isset($getArgs[$field]) || $getArgs[$field] != $value) {
+                    continue 2;
+                }
+            }
+            foreach ($permissionSet['post'] as $field=>$value) {
+                if (!isset($postArgs[$field]) || $postArgs[$field] != $value) {
+                    continue 2;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -216,7 +216,7 @@ cx.ready(function () {
 
                 $scope.updateSourceSearch = function () {
                     if (!$scope.searchSourceLoaded) {
-                        updateSource(true, false);
+                        $scope.updateSource(true, false);
                     }
                     $scope.searchSourceLoaded = true;
                 };
@@ -295,7 +295,7 @@ cx.ready(function () {
                     refreshBrowser();
                     if (objectSize(potentialValue) < 3) {
                         mediabrowserLoadingScreen.set(true);
-                        return mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, getPathAsString(), false).then(
+                        return mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString(), false).then(
                             function getFiles(data) {
                                 mediabrowserLoadingScreen.set(false);
                                 $scope.allFiles = addValueByPath($scope.allFiles, $scope.path, data);
@@ -439,7 +439,7 @@ cx.ready(function () {
                                     $scope.uploaderData.filesToUpload.push(files[file]);
                                 }
                             }
-                            $scope.uploader.settings.multipart_params.path = $scope.selectedSource.value + '/' + getPathAsString();
+                            $scope.uploader.settings.multipart_params.path = $scope.selectedSource.value + '/' + $scope.getPathAsString();
                             $scope.$digest();
                         },
                         UploadProgress: function () {
@@ -450,7 +450,7 @@ cx.ready(function () {
                             $scope.uploadPending = false;
                             $scope.showUploadedHint = true;
                             $scope.$digest();
-                            updateSource(false, false);
+                            $scope.updateSource(false, false);
                         },
                         Error: function (up, err) {
                             var mediaUploaderListCtrl = jQuery('.mediaUploaderListCtrl');
@@ -596,7 +596,7 @@ cx.ready(function () {
                                     var newName = jQuery('#mediabrowser-renamefile').find('.file-name input').val();
                                     if (newName === null) {
                                     } else {
-                                        var path = encodeURI(getPathAsString());
+                                        var path = encodeURI($scope.getPathAsString());
                                         if (path === '') {
                                             path = '/';
                                         }
@@ -618,7 +618,7 @@ cx.ready(function () {
                                                     message: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                                 });
                                             }
-                                            updateSource(false, false);
+                                            $scope.updateSource(false, false);
                                         }).error(function () {
                                             bootbox.alert({
                                                 className: "media-browser-modal-window",
@@ -657,7 +657,7 @@ cx.ready(function () {
                                 label: cx.variables.get('TXT_FILEBROWSER_FILE_REMOVE', 'mediabrowser'),
                                 className: "btn-danger",
                                 callback: function () {
-                                    var path = encodeURI(getPathAsString());
+                                    var path = encodeURI($scope.getPathAsString());
                                     if (path === '') {
                                         path = '/';
                                     }
@@ -672,7 +672,7 @@ cx.ready(function () {
                                             'X-Requested-With': 'XMLHttpRequest'
                                         }
                                     }).success(function () {
-                                        updateSource(false, false);
+                                        $scope.updateSource(false, false);
                                     }).error(function () {
                                         bootbox.alert({
                                             className: "media-browser-modal-window",
@@ -697,7 +697,7 @@ cx.ready(function () {
                 }
 
                 function createFolder() {
-                    var path = encodeURI(getPathAsString());
+                    var path = encodeURI($scope.getPathAsString());
                     if (path === '') {
                         path = '/';
                     }
@@ -714,7 +714,7 @@ cx.ready(function () {
                                         data: jQuery.param({dir: dirName}),
                                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                                     }).success(function () {
-                                        updateSource(false, false);
+                                        $scope.updateSource(false, false);
                                     }).error(function () {
                                         bootbox.alert({
                                             className: "media-browser-modal-window",

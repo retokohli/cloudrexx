@@ -72,6 +72,12 @@ class FormGenerator {
     protected $noView;
 
     /**
+     * @var \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of
+     * ViewGenerator
+     */
+    protected $viewGenerator;
+
+    /**
      * FormGenerator constructor.
      *
      * @param array $entity       entity to display
@@ -81,9 +87,10 @@ class FormGenerator {
      * @param array $options      options from ViewGenerator
      * @param int $entityId       id of a specific entity
      * @param $componentOptions   options of the component
+     * @param \Cx\Core\Html\Controller\ $viewGenerator instance of ViewGenerator
      * @param bool $noView        to set if a view should be created
      */
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $noView = false)
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions, $viewGenerator = null, $noView = false)
     {
         $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
@@ -92,6 +99,7 @@ class FormGenerator {
         $this->entity = $entity;
         $this->entityClass = $entityClass;
         $this->noView = $noView;
+        $this->viewGenerator = $viewGenerator;
 
         if ($this->noView) {
             return;
@@ -377,6 +385,17 @@ class FormGenerator {
      */
     public function getDataElement($name, $title, $type, $length, $value, &$options, $entityId) {
         global $_ARRAYLANG, $_CORELANG;
+
+        if (isset($options['valueCallback'])) {
+            $value = $this->viewGenerator->callValueCallback(
+                $options['valueCallback'],
+                $value,
+                $name,
+                array(),
+                $options
+            );
+        }
+
         if (isset($options['formfield'])) {
             $formFieldGenerator = $options['formfield'];
             $formField = '';
@@ -565,6 +584,15 @@ class FormGenerator {
                             'cssName:'.$this->createCssClassNameFromEntity($associatedClass).';'.
                             'sessionKey:'.$this->entityClass
                         );
+                        $cx->getComponent('Html')->whitelistParamSet(
+                            'getViewOverJson',
+                            array(
+                                'entityClass' => $associatedClass,
+                                'mappedBy' => $assocMapping['mappedBy'],
+                                'sessionKey' => $this->entityClass
+                            ),
+                            array()
+                        );
                         if (!isset($_SESSION['vgOptions'])) {
                             $_SESSION['vgOptions'] = array();
                         }
@@ -639,11 +667,19 @@ class FormGenerator {
                     $input->setAttributes($options['attributes']);
                 }
                 \DateTimeTools::addDatepickerJs();
-                \JS::registerCode('
-                        cx.jQuery(function() {
-                          cx.jQuery(".datepicker").datetimepicker();
-                        });
-                        ');
+                if ($type == 'date') {
+                    \JS::registerCode('
+                            cx.jQuery(function() {
+                              cx.jQuery(".datepicker").datepicker();
+                            });
+                            ');
+                } else {
+                    \JS::registerCode('
+                            cx.jQuery(function() {
+                              cx.jQuery(".datepicker").datetimepicker();
+                            });
+                            ');
+                }
                 return $input;
                 break;
             case 'multiselect':

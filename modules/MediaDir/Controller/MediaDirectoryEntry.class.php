@@ -764,6 +764,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                     foreach ($this->arrEntries as $key => $arrEntry) {
                         $strTitle = $arrEntry['entryFields'][0];
+                        $strTitle = $this->cx->getComponent('LanguageManager')
+                            ->replaceInternationalCharacters($strTitle);
                         $strAlphaIndex = strtoupper(substr($strTitle, 0, 1));
 
                         if(!in_array($strAlphaIndex, $arrAlphaIndexes)){
@@ -786,7 +788,18 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                         foreach ($arrAlphaIndexes as $key => $strIndex) {
                             if(array_key_exists($strIndex, $arrAlphaGroups)) {
-                                $strAlphaIndex = '<a href="#'.$strIndex.'">'.$strIndex.'</a>';
+                                switch ($strIndex) {
+                                    case '#':
+                                        $anchorId = '_';
+                                        break;
+                                    case '0-9':
+                                        $anchorId = '_09';
+                                        break;
+                                    default:
+                                        $anchorId = $strIndex;
+                                        break;
+                                }
+                                $strAlphaIndex = '<a href="#'.$anchorId.'">'.$strIndex.'</a>';
                             } else {
                                 $strAlphaIndex = ''.$strIndex.'';
                             }
@@ -799,12 +812,26 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         }
                     }
 
-
+                    // ensure alphabetical order of alpha-groups
+                    uksort($arrAlphaGroups, function($a, $b) use ($arrAlphaIndexes) {
+                        return array_search($a, $arrAlphaIndexes) > array_search($b, $arrAlphaIndexes);
+                    });
 
                     foreach ($arrAlphaGroups as $strAlphaIndex => $arrEntries) {
                         if ($objTpl->blockExists($this->moduleNameLC.'AlphabeticalTitle')) {
+                            switch ($strAlphaIndex) {
+                                case '#':
+                                    $anchorId = '_';
+                                    break;
+                                case '0-9':
+                                    $anchorId = '_09';
+                                    break;
+                                default:
+                                    $anchorId = $strAlphaIndex;
+                                    break;
+                            }
                             $objTpl->setVariable(array(
-                                $this->moduleLangVar.'_ALPHABETICAL_ANCHOR' => $strAlphaIndex,
+                                $this->moduleLangVar.'_ALPHABETICAL_ANCHOR' => $anchorId,
                                 'TXT_'.$this->moduleLangVar.'_ALPHABETICAL_TITLE' => $strAlphaIndex
                             ));
 
