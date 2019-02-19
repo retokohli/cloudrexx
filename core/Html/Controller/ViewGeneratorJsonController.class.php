@@ -64,6 +64,9 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
             'updateOrder' => $this->getSystemComponentController()->getWhitelistPermission(
                 'updateOrder'
             ),
+            'updateStatus' => $this->getSystemComponentController()->getWhitelistPermission(
+                'updateStatus'
+            ),
             'export' => $this->getSystemComponentController()->getWhitelistPermission(
                 'export'
             ),
@@ -196,7 +199,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
             throw new \Exception(
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_HTML_SORTING_ENTITY_NOT_FOUND_ERROR'],
+                    $_ARRAYLANG['TXT_CORE_HTML_ENTITY_NOT_FOUND_ERROR'],
                     $entityName,
                     $componentName
                 )
@@ -213,7 +216,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         ) {
             throw new \Exception(
                 sprintf(
-                    $_ARRAYLANG['TXT_CORE_HTML_SORTING_GETTER_SETTER_NOT_FOUND_ERROR'],
+                    $_ARRAYLANG['TXT_CORE_HTML_GETTER_SETTER_NOT_FOUND_ERROR'],
                     $entityName,
                     $sortField,
                     $primaryKeyName
@@ -295,6 +298,105 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         } catch (\Exception $e) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
+    }
+
+    /**
+     * Update the status of an entity attribute in DB
+     *
+     * @param array $params supplied arguments from JsonData-request
+     *
+     * @throws \Exception if vars are empty. They have to be defined.
+     * @throws \Exception if entity not found. Entity is needed to store status.
+     * @throws \Exception if setter for status not found
+     */
+    public function updateStatus($params)
+    {
+        global $_ARRAYLANG, $objInit;
+
+        //get the language interface text
+        $langData   = $objInit->getComponentSpecificLanguageData(
+            $this->getName(),
+            false
+        );
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+
+        $post = is_array($params['post']) ? $params['post'] : array();
+
+        if (
+            empty($post) ||
+            !isset($post['entityId']) ||
+            !isset($post['newStatus']) ||
+            !isset($post['statusField']) ||
+            !isset($post['component']) ||
+            !isset($post['entity'])
+        ) {
+            throw new \Exception(
+                $_ARRAYLANG['TXT_CORE_HTML_UPDATE_STATUS_ORDER_FAILED']
+            );
+        }
+
+        //Get all the 'POST' values
+        $componentName   = !empty($post['component'])
+            ? contrexx_input2raw($post['component'])
+            : '';
+        $entityName      = !empty($post['entity'])
+            ? contrexx_input2raw($post['entity'])
+            : '';
+        $entityId  = !empty($post['entityId'])
+            ? contrexx_input2int($post['entityId'])
+            : 0;
+        $newStatus  = !empty($post['newStatus'])
+            ? contrexx_input2int($post['newStatus'])
+            : 0;
+        $statusField = !empty($post['statusField'])
+            ? contrexx_input2raw($post['statusField'])
+            : '';
+
+        $em = $this->cx->getDb()->getEntityManager();
+        $componentRepo   = $em->getRepository(
+            'Cx\Core\Core\Model\Entity\SystemComponent'
+        );
+        $objComponent    = $componentRepo->findOneBy(
+            array('name' => $componentName)
+        );
+        $entityNameSpace = $objComponent->getNamespace() . '\\Model\\Entity\\'
+            . $entityName;
+
+        //check whether the entity namespace is a valid one or not
+        if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
+            throw new \Exception(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_HTML_ENTITY_NOT_FOUND_ERROR'],
+                    $entityName,
+                    $componentName
+                )
+            );
+        }
+        $entity = $em->getRepository($entityNameSpace)->find($entityId);
+        if (!$entity) {
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_STATUS_NO_ENTITY_FOUND_ERROR']);
+        }
+        $entityObject = $em->getClassMetadata($entityNameSpace);
+        $classMethods = get_class_methods($entityObject->newInstance());
+        //check whether the updating entity set/get method is a valid one or not
+
+        $setter = 'set'. \Doctrine\Common\Inflector\Inflector::classify(
+            $statusField
+        );
+        if (!in_array($setter, $classMethods)) {
+            throw new \Exception(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_HTML_GETTER_SETTER_NOT_FOUND_ERROR'],
+                    $entityName,
+                    $statusField
+                )
+            );
+        }
+
+        $entity->$setter($newStatus);
+        $em->persist($entity);
+        $em->flush();
+
     }
 
     /**

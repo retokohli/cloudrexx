@@ -145,6 +145,57 @@ cx.ready(function() {
     });
     cx.jQuery(".chzn").chosen();
 
+    var cadminPath = cx.variables.get('cadminPath', 'contrexx'),
+        status = {
+            ajaxCall : function(opt) {
+                cx.ajax(
+                    opt.jsonObject,
+                    opt.jsonAct,
+                    {
+                        type: 'POST',
+                        data: {
+                            'entityId': opt.entityId,
+                            'newStatus': opt.statusValue,
+                            'statusField': opt.statusField,
+                            'component': opt.component,
+                            'entity': opt.entity,
+                        },
+                        showMessage: true,
+                        beforeSend: function() {
+                            cx.jQuery(opt.that).addClass('loading');
+                        },
+                        success: function(json) {
+                            cx.jQuery(opt.that).toggleClass('active');
+                        },
+                        preError: function(xhr, status, error) {
+                            cx.tools.StatusMessage.showMessage(error);
+                            cx.jQuery(this).data('status-value', (cx.jQuery(this).hasClass('active') ? 0 : 1));
+                        },
+                        complete: function() {
+                            cx.jQuery(opt.that).removeClass('loading');
+                        }
+                    },
+                    cx.variables.get('frontendLocale', 'contrexx')
+                );
+            },
+        };
+    cx.jQuery('.vg-function-status').click(function () {
+        var table = cx.jQuery(this).closest('table.status');
+        cx.jQuery(this).data('status-value', (cx.jQuery(this).hasClass('active') ? 0 : 1));
+
+        var params = {
+            that: cx.jQuery(this),
+            entityId: cx.jQuery(this).data('entity-id'),
+            jsonObject: table.data('status-object'),
+            jsonAct: table.data('status-act'),
+            component: table.data('status-component'),
+            entity: table.data('status-entity'),
+            statusField: table.data('status-field'),
+            statusValue: cx.jQuery(this).data('status-value'),
+        };
+        status.ajaxCall(params);
+    });
+
     cx.jQuery(".vg-export").click(function(e) {
         e.preventDefault();
         var url = new URL(window.location);
