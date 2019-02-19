@@ -346,7 +346,7 @@ class Media extends MediaLibrary
         }
 
         // empty dir or php safe mode restriction
-        if ($i == 0 && !@opendir($this->rootPath)) {
+        if ($i == 0 && !@opendir($this->path)) {
             $tmpMessage = (!@opendir($this->path)) ? 'PHP Safe Mode Restriction or wrong path' : $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'];
 
             $this->_objTpl->setVariable(array(
