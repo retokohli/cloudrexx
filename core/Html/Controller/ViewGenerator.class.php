@@ -628,7 +628,7 @@ class ViewGenerator {
         global $_ARRAYLANG;
 
         //If the entity namespace is empty or an array then disable the status
-        if (empty($entityNameSpace) && $entityNameSpace === 'array') {
+        if (empty($entityNameSpace) || $entityNameSpace === 'array') {
             return;
         }
 
