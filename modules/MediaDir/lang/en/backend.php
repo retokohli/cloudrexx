@@ -147,6 +147,7 @@ $_ARRAYLANG['TXT_MEDIADIR_FIELD_SHOW_IN'] = "View in";
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES'] = "Entries which have been edited must be released again";
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_INFO'] = "If this option is deactivated, edited entries have to be confirmed be the relevant authorized person.<br /><br />Entries to be confirmed will be listed on the overview page.<br /><br />Entries edited in the Backend are automatically activated.";
 $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES'] = "Show subcategories";
+$_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES_INFO'] = "Activate this option to list this category's subcategories in widget [[MEDIADIR_NAVBAR]] if the URL-modificator <strong>cid</strong> is set to the ID of this category.";
 $_ARRAYLANG['TXT_MEDIADIR_RECIPIENTS'] = "Additional Recipients";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_TEXT'] = "Text Field";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_LABEL'] = "Text";
