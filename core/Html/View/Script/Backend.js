@@ -149,12 +149,11 @@ cx.ready(function() {
     } else {
         firstTab.style.display = 'block';
     }
-    inizializeTabClickEvent(0);
 
     cx.jQuery(".chzn").chosen();
 });
 
-function inizializeTabClickEvent(formId) {
+function initializeTabClickEvent(formId) {
     cx.jQuery('.tabmenu a').click(function () {
         var tabName = cx.jQuery(this).attr('id').split('_')[1];
         selectTab(tabName, true, formId);
@@ -492,7 +491,7 @@ cx.bind('Html:fixPostForm', function() {
         });
     });
 
-    inizializeTabClickEvent(formId);
+    initializeTabClickEvent(formId);
 
     var forms = document.getElementsByTagName('form');
     for(var i = 0; i < forms.length; i++) {
