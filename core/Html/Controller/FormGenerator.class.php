@@ -192,17 +192,19 @@ class FormGenerator {
         // move overview tab to first place
         $tabs = array('overview' => $tabs['overview']) + $tabs;
 
-        if (empty($tabs['overview']['header'])) {
-            $tabs['overview']['header'] = $_ARRAYLANG['TXT_CORE_OVERVIEW'];
-        }
-
         // foreach entity field
         foreach ($tabs as $tabName=>$tabData) {
 
             if ($hasTabs) {
+                if (isset($tabData['header'])) {
+                    $tabText = FormGenerator::getFormLabel($tabData, 'header');
+                } else if (isset($_ARRAYLANG[$tabName])) {
+                    $tabText = $_ARRAYLANG[$tabName];
+                }
+
                 $tabItem = new \Cx\Core\Html\Model\Entity\HtmlElement('li');
                 $tabLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
-                $tabHeader = new \Cx\Core\Html\Model\Entity\TextElement($tabData['header']);
+                $tabHeader = new \Cx\Core\Html\Model\Entity\TextElement($tabText);
 
                 $tabLink->setAttribute(
                     'id',
