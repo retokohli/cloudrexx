@@ -370,13 +370,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $strIndexHeaderTag = null;
                     }
 
-                    //get ids
-                    if(isset($_GET['cmd'])) {
-                        $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
-                    } else {
-                        $strLevelCmd = null;
-                    }
-
                     // parse entries
                     if (
                         $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries') &&
