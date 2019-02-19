@@ -512,7 +512,7 @@ cx.ready(function() {
     })();
 });
 
-cx.bind('Html:postFixForm', function() {
+cx.bind('Html:postFormFix', function() {
     var formId = 0;
     cx.jQuery.each(cx.ui.forms.get(), function(index, el) {
         formId = cx.jQuery(el).attr("id").split("-")[1];
