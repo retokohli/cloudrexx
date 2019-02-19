@@ -828,6 +828,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_META_DESCRIPTION' =>  $_CORELANG['TXT_META_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
             'TXT_'.$this->moduleLangVar.'_SHOW_SUBCATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES'],
+            'TXT_'.$this->moduleLangVar.'_SHOW_SUBCATEGORIES_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES_INFO'],
             'TXT_'.$this->moduleLangVar.'_SHOW_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_ENTRIES'],
             'TXT_'.$this->moduleLangVar.'_VISIBLE' =>  $_CORELANG['TXT_VISIBLE'],
             'TXT_'.$this->moduleLangVar.'_CATEGORY' =>  $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'],
