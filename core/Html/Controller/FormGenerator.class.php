@@ -192,6 +192,11 @@ class FormGenerator {
         // move overview tab to first place
         $tabs = array('overview' => $tabs['overview']) + $tabs;
 
+        // Set header for default
+        if (empty($tabs['overview']['header'])) {
+            $tabs['overview']['header'] = $_ARRAYLANG['TXT_CORE_OVERVIEW'];
+        }
+
         // foreach entity field
         foreach ($tabs as $tabName=>$tabData) {
 
