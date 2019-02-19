@@ -1049,7 +1049,8 @@ CREATE TABLE `contrexx_module_contact_form_data` (
   `lang` varchar(64) NOT NULL DEFAULT '',
   `browser` varchar(255) NOT NULL DEFAULT '',
   `ipaddress` varchar(15) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_form` (`id_form`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1059,7 +1060,8 @@ CREATE TABLE `contrexx_module_contact_form_field` (
   `is_required` set('0','1') NOT NULL DEFAULT '0',
   `check_type` int(3) NOT NULL DEFAULT '1',
   `order_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_form` (`id_form`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_form_field_lang` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

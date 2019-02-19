@@ -213,7 +213,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // find locales with found country code
         // This only returns locales with a country
-        $localeCodesByCountry = $localeData['Hashtables']['CodeByCountry'][$country];
+        if (!isset($localeData['Hashtables']['CodeByCountry'][$countryCode])) {
+            return 0;
+        }
+        $localeCodesByCountry = $localeData['Hashtables']['CodeByCountry'][$countryCode];
         if (!count($localeCodesByCountry)) {
             return 0;
         }

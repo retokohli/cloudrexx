@@ -361,6 +361,23 @@ class ViewGenerator {
         } else {
             $lcOptions['filterFields'] = array();
         }
+        // ensure edited ID is loaded even with paging limits
+        // todo: this only works for doctrine entities
+        if ($entityClass !== 'array' && $this->getEntryId()) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $metaData = $em->getClassMetadata($entityClass);
+            $primaryKeyNames = $metaData->getIdentifierFieldNames();
+            $lcOptions['filterFields'] = array_merge(
+                $lcOptions['filterFields'],
+                $primaryKeyNames
+            );
+            $entryIdValues = explode('/', $this->getEntryId());
+            $i = 0;
+            foreach ($primaryKeyNames as $primaryKeyName) {
+                $searchCriteria[$primaryKeyName] = $entryIdValues[$i];
+                $i++;
+            }
+        }
         $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $renderObject,
             $searchCriteria,
@@ -410,6 +427,7 @@ class ViewGenerator {
         } else if (is_callable($storecallback)) {
             $entityData[$name] = $storecallback($postedValue);
         }
+        return $entityData[$name];
     }
 
     /**
@@ -1209,10 +1227,10 @@ class ViewGenerator {
                     }
                 }
             } else {
-                //var_dump($entityId);
-                //var_dump($this->options['functions']['add']);
-                //var_dump($this->object->entryExists($entityId));
-                throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
+                // add view is deactivated and overview is to be shown
+                // In this case the only used return values are "renderObject"
+                // and "entityClassWithNS". The do not need to be altered,
+                // the default values are fine.
             }
 
             // Add custom fields
@@ -1225,7 +1243,6 @@ class ViewGenerator {
             $renderArray = $this->object->toArray();
             $entityClassWithNS = '';
             $title = $entityTitle;
-            $renderObject = null;
         }
 
         return array(
@@ -1836,6 +1853,7 @@ class ViewGenerator {
         if (!$url) {
             $url = static::getBaseUrl();
         }
+        $url->setParam('pos', null);
         static::appendVgParam(
             $url,
             $vgId,
