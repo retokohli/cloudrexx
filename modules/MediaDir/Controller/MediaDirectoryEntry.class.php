@@ -764,6 +764,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                     foreach ($this->arrEntries as $key => $arrEntry) {
                         $strTitle = $arrEntry['entryFields'][0];
+                        $strTitle = $this->cx->getComponent('LanguageManager')
+                            ->replaceInternationalCharacters($strTitle);
                         $strAlphaIndex = strtoupper(substr($strTitle, 0, 1));
 
                         if(!in_array($strAlphaIndex, $arrAlphaIndexes)){
