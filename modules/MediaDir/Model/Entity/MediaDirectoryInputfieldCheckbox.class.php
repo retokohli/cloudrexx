@@ -85,10 +85,10 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                     if(!empty($objInputfieldValue->fields['value'])) {
                         $arrValue = explode(",",$objInputfieldValue->fields['value']);
                     } else {
-                        $arrValue = null;
+                        $arrValue = array();
                     }
                 } else {
-                    $arrValue = null;
+                    $arrValue = array();
                 }
 
                 $strOptions = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];

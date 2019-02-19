@@ -152,7 +152,11 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         $this->intEntryId = intval($intEntryId);
-        $this->intLevelId = intval($intLevelId);
+        if ($this->arrSettings['settingsShowLevels']) {
+            $this->intLevelId = intval($intLevelId);
+        } else {
+            $this->intLevelId = 0;
+        }
         $this->intCatId = intval($intCatId);
         $this->bolLatest = intval($bolLatest);
         $this->bolUnconfirmed = intval($bolUnconfirmed);
@@ -1251,6 +1255,13 @@ JSCODE;
         // create url to the target page and add the entry's ID as argument
         $url = \Cx\Core\Routing\Url::fromPage($page);
         $url->setParam('eid', $arrEntry['entryId']);
+
+        if (!empty($this->intCatId)) {
+            $url->setParam('cid', $this->intCatId);
+        }
+        if (!empty($this->intLevelId)) {
+            $url->setParam('lid', $this->intLevelId);
+        }
 
         // set optional paging position
         if ($pagingPos) {
