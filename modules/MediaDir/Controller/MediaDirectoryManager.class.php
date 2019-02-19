@@ -369,7 +369,6 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
 
         //show categories
-        $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
         $objCategories->listCategories($this->_objTpl, 1, null);
 
         $this->_objTpl->setVariable(array(
