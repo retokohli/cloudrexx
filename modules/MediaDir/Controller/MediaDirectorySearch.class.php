@@ -152,6 +152,15 @@ EOF;
             } elseif ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
                 $objForms = new MediaDirectoryForm(null, $this->moduleName);
                 foreach ($objForms->arrForms as $id => $arrForm) {
+                    // note: in a previous version of Cloudrexx, there was no check
+                    // if the form was active or not. this caused unexpected
+                    // behavior
+                    if (
+                        !$this->arrSettings['legacyBehavior'] &&
+                        !$arrForm['formActive']
+                    ) {
+                        continue;
+                    }
                     if (!empty($arrForm['formCmd']) && ($arrForm['formCmd'] == $_GET['cmd'])) {
                         $formId = intval($id);
                         $formDefinition = $objForms->arrForms[$formId];
@@ -272,6 +281,15 @@ EOF;
         if (isset($_GET['cmd']) && $_GET['cmd'] != 'search') {
             $objForms = new MediaDirectoryForm(null, $this->moduleName);
             foreach ($objForms->arrForms as $intFormId => $arrForm) {
+                // note: in a previous version of Cloudrexx, there was no check
+                // if the form was active or not. this caused unexpected
+                // behavior
+                if (
+                    !$this->arrSettings['legacyBehavior'] &&
+                    !$arrForm['formActive']
+                ) {
+                    continue;
+                }
                 if (!empty($arrForm['formCmd']) && ($arrForm['formCmd'] == $_GET['cmd'])) {
                     $intCmdFormId = intval($intFormId);
                 }
