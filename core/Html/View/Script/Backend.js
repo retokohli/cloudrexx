@@ -497,7 +497,7 @@ cx.bind('Html:postFixForm', function() {
     initializeTabClickEvent(formId);
 
     var forms = document.getElementsByTagName('form');
-    for(var i = 0; i < forms.length; i++) {
+    for (var i = 0; i < forms.length; i++) {
         var firstTab = forms.item(i).getElementsByClassName('vg-tabs')[0];
         if (!firstTab) {
             continue;
