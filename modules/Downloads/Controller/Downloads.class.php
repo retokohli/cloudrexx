@@ -557,7 +557,7 @@ class Downloads extends DownloadsLibrary
      */
     public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName, $data)
     {
-        $objDownload = new Download(array());
+        $objDownload = new Download($objDownloads->getSettings());
 
         // parse name and description attributres
         $arrLanguageIds = array_keys(\FWLanguage::getLanguageArray());
