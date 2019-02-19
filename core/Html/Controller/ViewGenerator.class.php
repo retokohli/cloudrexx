@@ -1243,7 +1243,6 @@ class ViewGenerator {
             $renderArray = $this->object->toArray();
             $entityClassWithNS = '';
             $title = $entityTitle;
-            $renderObject = null;
         }
 
         return array(
