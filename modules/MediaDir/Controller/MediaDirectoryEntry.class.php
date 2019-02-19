@@ -152,7 +152,11 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         $this->intEntryId = intval($intEntryId);
-        $this->intLevelId = intval($intLevelId);
+        if ($this->arrSettings['settingsShowLevels']) {
+            $this->intLevelId = intval($intLevelId);
+        } else {
+            $this->intLevelId = 0;
+        }
         $this->intCatId = intval($intCatId);
         $this->bolLatest = intval($bolLatest);
         $this->bolUnconfirmed = intval($bolUnconfirmed);
