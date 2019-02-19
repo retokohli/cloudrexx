@@ -812,7 +812,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         }
                     }
 
-
+                    // ensure alphabetical order of alpha-groups
+                    uksort($arrAlphaGroups, function($a, $b) use ($arrAlphaIndexes) {
+                        return array_search($a, $arrAlphaIndexes) > array_search($b, $arrAlphaIndexes);
+                    });
 
                     foreach ($arrAlphaGroups as $strAlphaIndex => $arrEntries) {
                         if ($objTpl->blockExists($this->moduleNameLC.'AlphabeticalTitle')) {
