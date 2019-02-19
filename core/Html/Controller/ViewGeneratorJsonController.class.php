@@ -314,7 +314,10 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         global $_ARRAYLANG, $objInit;
 
         //get the language interface text
-        $langData   = $objInit->loadLanguageData($this->getName());
+        $langData   = $objInit->getComponentSpecificLanguageData(
+            $this->getName(),
+            false
+        );
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
 
         $post = is_array($params['post']) ? $params['post'] : array();
