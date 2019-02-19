@@ -339,6 +339,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $formId = null;
                 $formData = $objMediaDirectoryEntry->getFormData();
                 foreach ($formData as $arrForm) {
+                    if (empty($arrForm['formCmd'])) {
+                        continue;
+                    }
                     if ($arrForm['formCmd'] == $cmd) {
                         $formId = $arrForm['formId'];
                         break;
