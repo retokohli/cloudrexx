@@ -73,7 +73,7 @@ class MediaDirectorySearch extends MediaDirectoryLibrary
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         if (isset($_GET['term'])) {
-            $strSearchFormTerm = $_GET['term'];
+            $strSearchFormTerm = contrexx_input2xhtml($_GET['term']);
         } else {
             $strSearchFormTerm = '';
         }
@@ -321,7 +321,7 @@ EOF;
         $arrSelect[]    = 'entry.id AS `entry_id`';
 
         if (!empty($arrData['term'])) {
-            $strTerm        = contrexx_addslashes(trim($arrData['term']));
+            $strTerm        = contrexx_raw2db(trim($arrData['term']));
             $arrSelect[]    = 'MATCH (rel_inputfield.`value`) AGAINST ("%'.$strTerm.'%")  AS score';
             $arrJoins[]     = 'INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield ON rel_inputfield.`field_id` = inputfield.`id`';
             $strReplace     = '%" AND rel_inputfield.`value` LIKE "%';
