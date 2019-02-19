@@ -1252,6 +1252,13 @@ JSCODE;
         $url = \Cx\Core\Routing\Url::fromPage($page);
         $url->setParam('eid', $arrEntry['entryId']);
 
+        if (!empty($this->intCatId)) {
+            $url->setParam('cid', $this->intCatId);
+        }
+        if (!empty($this->intLevelId)) {
+            $url->setParam('lid', $this->intLevelId);
+        }
+
         // set optional paging position
         if ($pagingPos) {
             $url->setParam('pos', $pagingPos);
