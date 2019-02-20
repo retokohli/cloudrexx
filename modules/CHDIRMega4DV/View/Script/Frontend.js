@@ -2,18 +2,19 @@
 /**
  * Note: This Javascript appears to be dysfunct in the original version already.
  * For that reason, it is disabled here FTTB.
+ * As the function is nevertheless called, it must be present.
  */
-//if (!evaluateURLAndOpenKlappi) {
+if (!evaluateURLAndOpenKlappi) {
 //  /**
 //   * Toggle the "Klappi" element matching the URL "open" parameter value
 //   */
-//  function evaluateURLAndOpenKlappi() {
+  function evaluateURLAndOpenKlappi() {
 //    var klappiId = getParam('open');
 //    if (klappiId) {
 //      document.location = '#Link' + klappiId;
 //      cx.jQuery('#klappi' + klappiId).slideToggle('fast');
 //    }
-//  }
+  }
 //  /**
 //   * Return the URL parameter value for the given name
 //   *
@@ -35,4 +36,4 @@
 //  cx.jQuery(function() {
 //    evaluateURLAndOpenKlappi();
 //  });
-//}
+}

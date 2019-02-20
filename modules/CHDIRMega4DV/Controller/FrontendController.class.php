@@ -40,8 +40,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
         $template->setTemplate($this->getContent());
-// Enable along with using cx.jQuery in rewriteScripts() (or remove)
-//        \JS::activate('cx');
+        \JS::activate('cx');
     }
 
     /**
@@ -50,15 +49,23 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function getContent(): string
     {
+        global $_ARRAYLANG;
         $this->sendDownload();
         $folder = $this->getCurrentFilePath();
-        $path = $this->getBasePath() . $folder;
-        if (!file_exists($path)) {
-            return 'Sorry, could not find the file ' . $folder;
+        $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile(
+            $this->getBasePath() . $folder
+        );
+        $path = $fileSystemFile->getAbsoluteFilePath();
+        if (!($path && \Cx\Lib\FileSystem\FileSystem::exists($path))) {
+            return sprintf(
+                $_ARRAYLANG['TXT_MODULE_CHDIRMEGA4DV_ERROR_FILE_MISSING_FORMAT'],
+                $folder
+            );
         }
         // Suppress warnings (you may disable this for testing)
         libxml_use_internal_errors(true);
-        $content = file_get_contents($path);
+        $file = new \Cx\Lib\FileSystem\File($path);
+        $content = $file->getData();
         $dom = new \DOMDocument();
         $dom->loadHTML($content);
         $this->checkForRedirect($dom);
@@ -81,7 +88,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * Redirects to the first URL found in any meta tag of the form:
      *  <meta HTTP-EQUIV="REFRESH" content="0; url=pages/763F79EE5304A269.htm">
-     * Mind that the "REFRESH" value is matched case sensitive.
+     * Mind that the "REFRESH" value is matched case sensitively.
      * Internal URLs are rewritten to match an existing path.
      * The target URL includes the module base URL, plus the "dv" parameter
      * with its value set to the target page path.
@@ -91,25 +98,23 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function checkForRedirect(\DOMDocument $dom)
     {
         $metas = $dom->getElementsByTagName('meta');
-        if ($metas) {
-            foreach ($metas as $meta) {
-                $http_equiv = $meta->getAttribute('http-equiv');
-                $content = $meta->getAttribute('content');
-                if ($http_equiv !== 'REFRESH' || !$content) {
-                    continue;
-                }
-                $parts = explode('=', $content);
-                $urlContent = array_pop($parts);
-                if (strpos($urlContent, 'http') !== 0) {
-                    $urlContent = $this->getBaseFolder() . $urlContent;
-                    $urlContent = $this->matchPath($urlContent);
-                }
-                $url = $this->getBaseUrl();
-                $url->setParam('dv', $urlContent);
-                \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    $url->toString(true, false)
-                );
+        foreach ($metas as $meta) {
+            $http_equiv = $meta->getAttribute('http-equiv');
+            $content = $meta->getAttribute('content');
+            if ($http_equiv !== 'REFRESH' || !$content) {
+                continue;
             }
+            $parts = explode('=', $content);
+            $urlContent = array_pop($parts);
+            if (strpos($urlContent, 'http') !== 0) {
+                $urlContent = $this->getBaseFolder() . $urlContent;
+                $urlContent = $this->matchPath($urlContent);
+            }
+            $url = $this->getBaseUrl();
+            $url->setParam('dv', $urlContent);
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
+                $url->toString(true, false)
+            );
         }
     }
 
@@ -142,9 +147,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ) {
                 continue;
             }
-            // Mind that the file must exist for realpath() to work.
-            $path = realpath($basePath . $this->getBaseFolder() . $href);
-            if (!$path) {
+            $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile(
+                $basePath . $this->getBaseFolder() . $href
+            );
+            $path = $fileSystemFile->getAbsoluteFilePath();
+            if (!($path && \Cx\Lib\FileSystem\FileSystem::exists($path))) {
                 continue;
             }
             $path = substr($path, $basePathLength);
@@ -177,13 +184,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if ($check !== $md5) {
             return;
         }
-        $filePath = $this->getBasePath() . $url;
-        $fileName = basename($url);
-        $mediaType = \Mime::getMimeTypeForExtension($fileName);
-        header('Content-Disposition: attachment; filename="' . $fileName . '"');
-        header('Content-type: ' . $mediaType);
-        readfile($filePath);
-        exit();
+        $fileSystemFile =
+            new \Cx\Lib\FileSystem\FileSystemFile($this->getBasePath() . $url);
+        $filePath = $fileSystemFile->getAbsoluteFilePath();
+        $download = new \HTTP_Download();
+        $download->setFile($filePath);
+        $download->send();
+        throw new \Cx\Core\Core\Controller\InstanceException();
     }
 
     /**
@@ -242,14 +249,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         foreach ($scripts as $script) {
             if ($script->nodeValue) {
                 $script->nodeValue =
-                    '$J(function($J){'
-                    . strtr($script->nodeValue, ['$(' => '$J('])
+                    'cx.jQuery(function() {'
+                    . strtr($script->nodeValue, ['$(' => 'cx.jQuery('])
                     . '});';
-// Should/could cx.jQuery() be used instead?
-//                $script->nodeValue =
-//                    'cx.jQuery(function(){'
-//                    . strtr($script->nodeValue, ['$(' => 'cx.jQuery('])
-//                    . '});';
             }
         }
     }
@@ -274,7 +276,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 } else {
                     $img->setAttribute(
                         'src',
-                        'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs='
+                        $this->cx->getWebsiteOffsetPath()
+                        . $this->cx->getModuleFolderName()
+                        . '/' . $this->getName() . '/'
+                        . 'View/Media/pixel.gif'
                     );
                 }
             }
@@ -295,7 +300,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         foreach ($body as $element) {
             $content .= $this->domInnerHtml($element);
         }
-        return $content . '<div style="clear:both;"></div>';
+        $dataElement = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $dataElement->setAttribute('style', 'clear: both;');
+        return $content . $dataElement;
     }
 
     /**
@@ -329,7 +336,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function guessStartPage(): string
     {
         $basePath = $this->getBasePath();
-        $dirs = glob($basePath . '*', GLOB_ONLYDIR);
+        $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile($basePath);
+        $dirs = glob(
+            $fileSystemFile->getAbsoluteFilePath() . '*', GLOB_ONLYDIR
+        );
         $max = 0;
         foreach ($dirs as $dir) {
             $key = preg_replace('/[^0-9]/', '', $dir);
@@ -362,13 +372,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $fullPath = $basePath . $path;
         $folderPath = dirname($fullPath);
         $fileName = basename($path);
+        $fileSystem = new \Cx\Lib\FileSystem\FileSystem();
         switch (true) {
-            case file_exists($folderPath . '/' . $fileName):
+            case $fileSystem->exists($folderPath . '/' . $fileName):
                 break;
-            case file_exists($folderPath . '/' . strtolower($fileName)):
+            case $fileSystem->exists($folderPath . '/' . strtolower($fileName)):
                 $path = strtr($path, [$fileName => strtolower($fileName)]);
                 break;
-            case file_exists($folderPath . '/' . strtoupper($fileName)):
+            case $fileSystem->exists($folderPath . '/' . strtoupper($fileName)):
                 // Note that this case does probably never match
                 $path = strtr($path, [$fileName => strtoupper($fileName)]);
                 break;
@@ -454,8 +465,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
         $baseurl = clone \Env::get('Resolver')->getUrl();
         $baseurl->removeAllParams();
-// TODO: Is this a proper fix?  I don't want the (default) port to appear:
-        $baseurl->setPort(null);
+        $baseurl->setPort(null); // Suppress the default port
         return $baseurl;
     }
 
