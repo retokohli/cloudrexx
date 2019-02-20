@@ -1,4 +1,7 @@
-docker-compose.yml
-tmp/*
-_meta
-cx.bat
+/_meta/
+/customizing/
+/images/
+/nbproject/
+/tmp/
+/cx
+/docker-compose.yml
