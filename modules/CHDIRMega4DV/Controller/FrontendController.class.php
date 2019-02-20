@@ -17,7 +17,7 @@
  * can only be allowed by a separate contract
  */
 
-namespace Cx\Modules\CHDIRTravelLog\Controller;
+namespace Cx\Modules\CHDIRMega4DV\Controller;
 
 /**
  * FrontendController
