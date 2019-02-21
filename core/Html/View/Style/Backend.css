@@ -204,6 +204,10 @@ table.sortable .sorter-loading {
     display:none;
 }
 
+#form-0-overview {
+    display: block;
+}
+
 table.adminlist .vg-function-status {
     background-image: url(/core/Html/View/Media/StatusInactive.gif);
     width: 10px;

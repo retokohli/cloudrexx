@@ -154,8 +154,6 @@ cx.ready(function() {
             firstTab.style.display = 'block';
         }
         initializeTabClickEvent(0);
-    } else {
-        document.getElementById('form-0-overview').style.display = 'block';
     }
 
     cx.jQuery(".chzn").chosen();
