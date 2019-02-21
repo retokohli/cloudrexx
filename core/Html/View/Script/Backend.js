@@ -146,7 +146,7 @@ cx.ready(function() {
 
     // Get first element from tabmenu and select tab
     var firstTab = document.getElementsByClassName('vg-tabs')[0];
-    if (typeof document.getElementById('form-0-tab-legend') !== 'undefined') {
+    if (document.getElementById('form-0-tab-legend') && typeof document.getElementById('form-0-tab-legend') !== 'undefined') {
         document.getElementById('form-0-tab-legend').style.display = 'block';
         if (document.getElementById('form-0-tabmenu') != null) {
             selectTab(firstTab.id, true);
@@ -154,6 +154,8 @@ cx.ready(function() {
             firstTab.style.display = 'block';
         }
         initializeTabClickEvent(0);
+    } else {
+        document.getElementById('form-0-overview').style.display = 'block';
     }
 
     cx.jQuery(".chzn").chosen();
