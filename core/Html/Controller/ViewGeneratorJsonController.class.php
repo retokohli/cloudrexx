@@ -286,11 +286,13 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
                     } else if ($i == count($entities)) {
                         $firstResult->$orderFieldSetMethodName($currentOrder);
                         $entity->$orderFieldSetMethodName($sortOrder);
+                        $em->persist($entity);
                         continue;
                     }
                     $entity->$orderFieldSetMethodName($sortOrder);
                     $sortOrder = $currentOrder;
                 }
+                $em->persist($entity);
                 $i++;
             }
             $em->flush();
