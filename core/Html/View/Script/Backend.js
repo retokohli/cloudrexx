@@ -146,8 +146,8 @@ cx.ready(function() {
 
     // Get first element from tabmenu and select tab
     var firstTab = document.getElementsByClassName('vg-tabs')[0];
-    if (typeof document.getElementsByTagName('legend')[0] != 'undefined') {
-        document.getElementsByTagName('legend')[0].style.display = 'block';
+    if (typeof document.getElementById('form-0-tab-legend') !== 'undefined') {
+        document.getElementById('form-0-tab-legend').style.display = 'block';
         if (document.getElementById('form-0-tabmenu') != null) {
             selectTab(firstTab.id, true);
         } else {
@@ -581,7 +581,7 @@ cx.bind('Html:postFormFix', function() {
         if (!firstTab) {
             continue;
         }
-        document.getElementsByTagName('legend')[0].style.display = 'block';
+        document.getElementById('form-'+formId+'-tab-legend').style.display = 'block';
         if (document.getElementById('form-'+formId+'-tabmenu') != null) {
             selectTab(firstTab.id, true, formId);
         } else {

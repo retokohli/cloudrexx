@@ -151,17 +151,23 @@ class FormGenerator {
 
         $tabs = isset($options['tabs']) ? $options['tabs'] : array('overview' => array());
 
+        $this->form->setAttribute('id', 'form-' . $this->formId);
+        $this->form->setAttribute('class', 'cx-ui');
+        $titleElement = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
+        $titleElement->addChild(new \Cx\Core\Html\Model\Entity\TextElement($title));
+
         if (!empty($tabs)) {
             $hasTabs = true;
             $tabMenu = new \Cx\Core\Html\Model\Entity\HtmlElement('ul');
             $tabMenu->setAttribute('id', 'form-'.$this->formId.'-tabmenu');
             $tabMenu->addClass('tabmenu');
             $this->form->addChild($tabMenu);
+            $titleElement->setAttribute(
+                'id',
+                'form-' . $this->formId . '-tab-legend'
+            );
         }
-        $this->form->setAttribute('id', 'form-' . $this->formId);
-        $this->form->setAttribute('class', 'cx-ui');
-        $titleElement = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
-        $titleElement->addChild(new \Cx\Core\Html\Model\Entity\TextElement($title));
+
         $this->form->addChild($titleElement);
         // @todo replace this by auto-find editid
         if (isset($_REQUEST['editid'])) {
