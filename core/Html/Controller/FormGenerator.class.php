@@ -136,6 +136,12 @@ class FormGenerator {
         if (empty($title)) {
             $title = $entityClass;
         }
+        \JS::registerJS('core/Html/View/Script/Backend.js');
+        \ContrexxJavascript::getInstance()->setVariable(
+            'Form/Error',
+            $_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'],
+            'core/Html/lang'
+        );
         \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
         $this->form = new \Cx\Core\Html\Model\Entity\FormElement(
             $actionUrl,
@@ -506,12 +512,6 @@ class FormGenerator {
                 break;
             case 'Cx\Model\Base\EntityBase':
                 $associatedClass = get_class($value);
-                \JS::registerJS('core/Html/View/Script/Backend.js');
-                \ContrexxJavascript::getInstance()->setVariable(
-                    'Form/Error',
-                    $_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'],
-                    'core/Html/lang'
-                );
                 $cx = \Cx\Core\Core\Controller\Cx::Instanciate();
                 $em = $cx->getDb()->getEntityManager();
                 $localMetaData = $em->getClassMetadata($this->entityClass);
