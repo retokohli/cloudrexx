@@ -149,7 +149,7 @@ class FormGenerator {
         );
         $hasTabs = false;
 
-        $tabs = isset($options['tabs']) ? $options['tabs'] : array('overview' => array());
+        $tabs = isset($options['tabs']) ? $options['tabs'] : array();
 
         $this->form->setAttribute('id', 'form-' . $this->formId);
         $this->form->setAttribute('class', 'cx-ui');
@@ -194,6 +194,9 @@ class FormGenerator {
         }
 
         // add list with all unsigned fields to overview tab
+        if (!isset($tabs['overview'])) {
+            $tabs['overview'] = array();
+        }
         $tabs['overview']['fields'] = $overviewFields;
         // move overview tab to first place
         $tabs = array('overview' => $tabs['overview']) + $tabs;
