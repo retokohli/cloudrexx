@@ -143,6 +143,19 @@ cx.ready(function() {
             sortable.ajaxCall(params);
         }
     });
+
+    // Get first element from tabmenu and select tab
+    var firstTab = document.getElementsByClassName('vg-tabs')[0];
+    if (typeof document.getElementById('form-0-tab-legend') !== 'undefined') {
+        document.getElementById('form-0-tab-legend').style.display = 'block';
+        if (document.getElementById('form-0-tabmenu') != null) {
+            selectTab(firstTab.id, true);
+        } else {
+            firstTab.style.display = 'block';
+        }
+        initializeTabClickEvent(0);
+    }
+
     cx.jQuery(".chzn").chosen();
 
     var cadminPath = cx.variables.get('cadminPath', 'contrexx'),
@@ -221,6 +234,13 @@ cx.ready(function() {
         );
     });
 });
+
+function initializeTabClickEvent(formId) {
+    cx.jQuery('.tabmenu a').click(function () {
+        var tabName = cx.jQuery(this).attr('id').split('_')[1];
+        selectTab(tabName, true, formId);
+    });
+}
 
 jQuery(document).ready(function(){
     jQuery('.mappedAssocciationButton, .edit').click(function() {
@@ -543,3 +563,30 @@ cx.ready(function() {
     })();
 });
 
+cx.bind('Html:postFormFix', function() {
+    var formId = 0;
+    cx.jQuery.each(cx.ui.forms.get(), function(index, el) {
+        formId = cx.jQuery(el).attr("id").split("-")[1];
+        cx.jQuery('#form-' + formId).find('*[id*="form-0-"]').each(function () {
+            var id = cx.jQuery(this).attr('id');
+            cx.jQuery(this).attr('id', id.replace('-0-', '-' + formId + '-'));
+        });
+    });
+
+    initializeTabClickEvent(formId);
+
+    var forms = document.getElementsByTagName('form');
+    for (var i = 0; i < forms.length; i++) {
+        var firstTab = forms.item(i).getElementsByClassName('vg-tabs')[0];
+        if (!firstTab) {
+            continue;
+        }
+        document.getElementById('form-'+formId+'-tab-legend').style.display = 'block';
+        if (document.getElementById('form-'+formId+'-tabmenu') != null) {
+            selectTab(firstTab.id, true, formId);
+        } else {
+            firstTab.style.display = 'block';
+        }
+    }
+
+}, 'ViewGenerator');

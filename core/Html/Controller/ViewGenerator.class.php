@@ -761,9 +761,6 @@ class ViewGenerator {
         $this->options['functions']['sortBy']['entity']     = $entityName;
         $this->options['functions']['sortBy']['sortOrder']  = $sortOrder;
         $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
-
-        //Register the script Backend.js and activate the jqueryui and cx for the row sorting
-        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
@@ -842,6 +839,8 @@ class ViewGenerator {
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
 
+        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
+
         // this case is used to generate the add entry form, where we can create an new entry
         if (!empty($_GET['add'])
             && !empty($this->options['functions']['add'])) {
@@ -916,9 +915,6 @@ class ViewGenerator {
                 isset($this->options['functions']['filtering']) &&
                 $this->options['functions']['filtering']
             );
-            if ($searching || $filtering) {
-                \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
-            }
             if ($searching) {
                 // If filter is used for extended search,
                 // hide filter and add a toggle link
