@@ -114,7 +114,7 @@ class MediaBrowser extends EntityBase
         // sets js variable for current component
         \ContrexxJavascript::getInstance()->setVariable(
             'component',
-            $this->systemComponentController->getSystemComponent()->getName(),
+            $this->callingSystemComponentController->getSystemComponent()->getName(),
             'mediabrowser'
         );
 
