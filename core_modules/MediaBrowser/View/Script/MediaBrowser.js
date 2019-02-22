@@ -183,9 +183,10 @@ cx.ready(function () {
                     // Mind that get() returns a Promise
                     return mediabrowserFiles.get('getSources').then(
                         function (data) {
-                            if (mediabrowserConfig.get('startMedia')) {
+                        var startMediaConfig = mediabrowserConfig.get('startMedia');
+                        if (startMediaConfig.length) {
                                 data.forEach(function (source) {
-                                    if (source.value === mediabrowserConfig.get('startMedia')) {
+                                    if (source.value === startMediaConfig) {
                                         $scope.selectedSource = source;
                                         return false;
                                     }
@@ -231,6 +232,7 @@ cx.ready(function () {
                         path: '',
                         standard: true
                     }];
+                    mediabrowserConfig.set('startMedia', $scope.selectedSource.value);
                     mediabrowserLoadingScreen.set(true);
                     mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '', recursive).then(
                         function getFiles(data) {
@@ -932,6 +934,26 @@ cx.ready(function () {
         })
         .factory('mediabrowserConfig', function () {
             var config = {};
+            var component = cx.variables.get('component', 'mediabrowser');
+
+            var cookieConfig = Cookies.get('mediabrowser_config');
+            if (!cookieConfig) {
+                cookieConfig = {};
+                setCookie(null, cookieConfig);
+            }
+            var newCookieConfig = angular.fromJson(cookieConfig);
+            if (newCookieConfig && newCookieConfig[component]) {
+                config['lastPath'] = newCookieConfig[component]['lastPath'];
+                config['startMedia'] = newCookieConfig[component]['startMedia'];
+            } else {
+                config['lastPath'] = [];
+                config['startMedia'] = [];
+                newCookieConfig[component] = {
+                    lastPath: config['lastPath'],
+                    startMedia: config['startMedia']
+                };
+                setCookie(null, newCookieConfig);
+            }
             return {
                 set: set,
                 get: get,
@@ -939,6 +961,9 @@ cx.ready(function () {
             };
             function set(key, value) {
                 config[key] = value;
+                if (key == 'lastPath' || key == 'startMedia') {
+                    setCookie(key, value);
+                }
             }
 
             function get(key) {
@@ -947,6 +972,24 @@ cx.ready(function () {
 
             function isset(key) {
                 return key in config;
+            }
+
+            function setCookie(attribute, data) {
+                if (!data) {
+                    return;
+                }
+                if (attribute) {
+                    newCookieConfig[component][attribute] = data;
+                } else {
+                    newCookieConfig = data;
+                }
+                Cookies.set(
+                    'mediabrowser_config',
+                    angular.toJson(newCookieConfig),
+                    {
+                        path: '/cadmin'
+                    }
+                );
             }
         })
         .factory('mediabrowserLoadingScreen', ['$rootScope', function ($rootScope) {
@@ -1097,9 +1140,11 @@ cx.ready(function () {
             if (attrs.cxMbViews) {
                 mediabrowserConfig.set('views', attrs.cxMbViews.trim().split(","));
             }
-            mediabrowserConfig.set('startMedia', 'files');
-            if (attrs.cxMbStartmediatype) {
-                mediabrowserConfig.set('startMedia', attrs.cxMbStartmediatype);
+            if (!mediabrowserConfig.get('startMedia').length) {
+                mediabrowserConfig.set('startMedia', 'files');
+                if (attrs.cxMbStartmediatype) {
+                    mediabrowserConfig.set('startMedia', attrs.cxMbStartmediatype);
+                }
             }
             mediabrowserConfig.set('mediatypes', 'all');
             if (attrs.cxMbMediatypes) {
