@@ -123,6 +123,17 @@ class BackendTable extends HTML_Table {
             $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
                           ? $sortBy['pagingPosition']
                           : '';
+            $status     = (isset($options['functions']['status']) &&
+                           is_array($options['functions']['status'])
+                          ) ? $options['functions']['status']
+                          : array();
+            $statusComponent = !empty($status) && isset($status['component'])
+                ? $status['component']
+                : '';
+            $statusEntity = !empty($status) && isset($status['entity'])
+                ? $status['entity']
+                : '';
+
             $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, $this->viewGenerator, true);
 
             foreach ($attrs as $rowname=>$rows) {
@@ -149,8 +160,18 @@ class BackendTable extends HTML_Table {
                         continue;
                     }
 
-                    if (isset($options['fields'][$header]['editable']) && $this->editable) {
-                        $data = $formGenerator->getDataElementWithoutType($header, $header .'-'. $rowname, 0, $data, $options, 0);
+                    if (
+                        isset($options['fields'][$header]['editable']) &&
+                        $this->editable && !in_array($header, $status)
+                    ) {
+                        $data = $formGenerator->getDataElementWithoutType(
+                            $header,
+                            $header .'-'. $rowname,
+                            0,
+                            $data,
+                            $options,
+                            0
+                        );
 
                         $encode = false;
                     }
@@ -266,6 +287,21 @@ class BackendTable extends HTML_Table {
                             );
                         }
                         $encode = false; // todo: this should be set by callback
+                    } else if (in_array($origHeader, $status)) {
+                        $statusField = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                        $class = '';
+                        if ((boolean)$data) {
+                            $class = 'active';
+                        }
+                        $statusField->setAttributes(
+                            array(
+                                'class' => 'vg-function-status ' . $class,
+                                'data-status-value' => $data,
+                                'data-entity-id' => $rowname
+                            )
+                        );
+                        $data = $statusField;
+                        $encode = false;
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
                     } else if (isset($options['fields'][$origHeader]) && isset($options['fields'][$origHeader]['type']) && $options['fields'][$origHeader]['type'] == '\Country') {
@@ -283,13 +319,15 @@ class BackendTable extends HTML_Table {
                         $data = '<i>(empty)</i>';
                         $encode = false;
                     }
+                    $cellAttrs = array();
                     if (
                         isset($options['fields']) &&
                         isset($options['fields'][$origHeader]['table']) &&
                         isset($options['fields'][$origHeader]['table']['attributes'])
                     ) {
-                        $this->setCellAttributes($row, $col, $options['fields'][$origHeader]['table']['attributes']);
+                        $cellAttrs = $options['fields'][$origHeader]['table']['attributes'];
                     }
+                    $this->setCellAttributes($row, $col, $cellAttrs);
                     $this->setCellContents($row, $col, $data, 'TD', 0, $encode);
                     $col++;
                 }
@@ -416,7 +454,7 @@ class BackendTable extends HTML_Table {
         //if the row sorting functionality is enabled
         $className = 'adminlist';
         if (!empty($sortField)) {
-            $className = 'adminlist sortable';
+            $className .= ' sortable';
             if (!empty($component)) {
                 $attrs['data-component'] = $component;
             }
@@ -449,6 +487,34 @@ class BackendTable extends HTML_Table {
                     'component' => $component,
                     'entity' => $entity,
                     'sortField' => $sortField,
+                )
+            );
+        }
+
+        if (!empty($status)) {
+            $className .= ' status';
+            $attrs['data-status-component'] = $statusComponent;
+            $attrs['data-status-entity'] = $statusEntity;
+            $attrs['data-status-field'] = $status['field'];
+
+            $attrs['data-status-object'] = 'Html';
+            $attrs['data-status-act'] = 'updateStatus';
+            if (
+                isset($status['jsonadapter']) &&
+                !empty($status['jsonadapter']['object']) &&
+                !empty($status['jsonadapter']['act'])
+            ) {
+                $attrs['data-status-object'] = $status['jsonadapter']['object'];
+                $attrs['data-status-act']    = $status['jsonadapter']['act'];
+            }
+
+            $cx->getComponent('Html')->whitelistParamSet(
+                'updateStatus',
+                array(),
+                array(
+                    'component' => $statusComponent,
+                    'entity' => $statusEntity,
+                    'statusField' => $status['field'],
                 )
             );
         }

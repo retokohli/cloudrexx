@@ -280,6 +280,9 @@ class ViewGenerator {
             $this->options = $options[''];
         }
 
+        //initialize the row status functionality
+        $this->initializeStatusOption($entityWithNS);
+
         //initialize the row sorting functionality
         $this->getSortingOption($entityWithNS);
     }
@@ -616,6 +619,63 @@ class ViewGenerator {
     }
 
     /**
+     * Initialize the row status functionality
+     *
+     * @param string $entityNameSpace entity namespace
+     */
+    protected function initializeStatusOption($entityNameSpace)
+    {
+        global $_ARRAYLANG;
+
+        //If the entity namespace is empty or an array then disable the status
+        if (empty($entityNameSpace) || $entityNameSpace === 'array') {
+            return;
+        }
+
+        $status = array();
+        if (
+            isset($this->options['functions']['status']) &&
+            is_array($this->options['functions']['status'])
+        ) {
+            $status = $this->options['functions']['status'];
+        }
+
+        //If the 'status' option does not have 'jsonadapter',
+        //we need to get the component name and entity name for updating the
+        //status in db
+        $componentName = '';
+        $entityName    = '';
+        if (
+            !isset($status['jsonadapter']) || (
+                isset($status['jsonadapter']) && (
+                    empty($status['jsonadapter']['object']) ||
+                    empty($status['jsonadapter']['act'])
+                )
+            )
+        ) {
+            $split          = explode('\\', $entityNameSpace);
+            $componentName  = isset($split[2]) ? $split[2] : '';
+            $entityName     = isset($split) ? end($split) : '';
+        }
+
+        $this->options['functions']['status']['component']  = $componentName;
+        $this->options['functions']['status']['entity']     = $entityName;
+
+        \ContrexxJavascript::getInstance()->setVariable(
+            'TXT_CORE_HTML_CANT_UPDATE_STATUS',
+            $_ARRAYLANG['TXT_CORE_HTML_CANT_UPDATE_STATUS'],
+            'ViewGenerator'
+        );
+        //Register the script Backend.js
+        \JS::registerJS(
+            substr(
+                $this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js'
+                , 1
+            )
+        );
+    }
+
+    /**
      * Initialize the row sorting functionality
      *
      * @param string $entityNameSpace entity namespace
@@ -701,9 +761,6 @@ class ViewGenerator {
         $this->options['functions']['sortBy']['entity']     = $entityName;
         $this->options['functions']['sortBy']['sortOrder']  = $sortOrder;
         $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
-
-        //Register the script Backend.js and activate the jqueryui and cx for the row sorting
-        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
@@ -782,6 +839,8 @@ class ViewGenerator {
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
 
+        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
+
         // this case is used to generate the add entry form, where we can create an new entry
         if (!empty($_GET['add'])
             && !empty($this->options['functions']['add'])) {
@@ -856,9 +915,6 @@ class ViewGenerator {
                 isset($this->options['functions']['filtering']) &&
                 $this->options['functions']['filtering']
             );
-            if ($searching || $filtering) {
-                \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
-            }
             if ($searching) {
                 // If filter is used for extended search,
                 // hide filter and add a toggle link
