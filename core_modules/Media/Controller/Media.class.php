@@ -346,7 +346,7 @@ class Media extends MediaLibrary
         }
 
         // empty dir or php safe mode restriction
-        if ($i == 0 && !@opendir($this->rootPath)) {
+        if ($i == 0 && !@opendir($this->path)) {
             $tmpMessage = (!@opendir($this->path)) ? 'PHP Safe Mode Restriction or wrong path' : $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'];
 
             $this->_objTpl->setVariable(array(
@@ -425,7 +425,7 @@ class Media extends MediaLibrary
                 $uploader->setCallback('mediaCallbackJs');
                 $uploader->setFinishedCallback(array(
                     \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath().'/Media/Controller/MediaLibrary.class.php',
-                    '\Cx\Core_modules\Media\Controller\MediaLibrary',
+                    '\Cx\Core_Modules\Media\Controller\MediaLibrary',
                     'uploadFinished'
                 ));
 

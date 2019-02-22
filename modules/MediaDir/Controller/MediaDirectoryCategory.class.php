@@ -363,13 +363,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $strIndexHeaderTag = null;
                     }
 
-                    //get ids
-                    if(isset($_GET['cmd'])) {
-                        $strCategoryCmd = '&amp;cmd='.$_GET['cmd'];
-                    } else {
-                        $strCategoryCmd = null;
-                    }
-
                     // parse entries
                     if (
                         $objTpl->blockExists($this->moduleNameLC.'CategoriesLevels_row_' . $intBlockId . '_entries') &&
