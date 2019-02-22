@@ -1706,7 +1706,7 @@ CODE;
             $pageContent = contrexx_input2raw($_POST['content']);
             if ($pathInfo['extension'] === 'html') {
                 // Change the replacement variables from [[TITLE]] into {TITLE}
-                $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
+                $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' , $pageContent);
             }
 
             if ($isComponentFile && file_exists($filePath)) {
