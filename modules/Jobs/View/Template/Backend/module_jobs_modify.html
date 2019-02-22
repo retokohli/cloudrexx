@@ -264,6 +264,22 @@ function DeselectAllLocations(CONTROL)
         <input type="text" name="endDate" size="19" maxlength="19" value="{JOBS_ENDDATE}" enabled />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )</td>
     </tr>
+    <!-- BEGIN jobs_modify_show_hot_offer -->
+    <tr class="row2">
+        <td width="12%" height="26">{TXT_JOBS_MODIFY_HOT_OFFER_LABEL}</td>
+        <td height="26">
+            <input type="checkbox" id="hotOffer" name="hotOffer" {JOBS_MODIFY_HOT_OFFER} value="1" />
+            <label for="hotOffer">{TXT_JOBS_MODIFY_HOT_OFFER}</label>
+        </td>
+    </tr>
+    <!-- END jobs_modify_show_hot_offer -->
+    <tr class="row2">
+        <td width="12%" height="26">{TXT_JOBS_PAID}</td>
+        <td height="26">
+            <input type="checkbox" id="paid" name="paid" {JOBS_PAID} value="1" />
+            <label for="paid">{TXT_JOBS_PAID_LABEL}</label>
+        </td>
+    </tr>
   </table>
   <br />
   <input type="submit" name="Submit" value="{TXT_STORE}"/>

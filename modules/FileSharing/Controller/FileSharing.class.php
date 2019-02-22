@@ -87,7 +87,7 @@ class FileSharing extends FileSharingLib
      * @param string $pageContent page content from content manager
      */
     public function FileSharing($pageContent)
-    {
+    {   
         $this->__construct($pageContent);
     }
 
@@ -117,7 +117,7 @@ class FileSharing extends FileSharingLib
         $hash     = isset($this->uriParams["hash"])     ? contrexx_input2raw($this->uriParams["hash"])     : '';
         $check    = isset($this->uriParams["check"])    ? contrexx_input2raw($this->uriParams["check"])    : '';
         $uploadId = isset($this->uriParams["uploadId"]) ? contrexx_input2raw($this->uriParams["uploadId"]) : 0;
-
+        
         if (!empty($uploadId)) {
             $this->files = $this->getSharedFiles($uploadId);
         }
@@ -160,7 +160,7 @@ class FileSharing extends FileSharingLib
                 }
                 break;
         }
-
+        
         FileSharingLib::cleanUp();
 
         return $this->objTemplate->get();
@@ -515,12 +515,11 @@ class FileSharing extends FileSharingLib
             $fieldId = $objDatabase->Insert_ID();
             $files[] = array(
                 "name"     => $uploadedFileName,
-                "image"    => $imageUrl->toString(),
+                "image"    => $imageUrl ? $imageUrl->toString() : false,
                 "download" => parent::getDownloadLink($fieldId),
                 "delete"   => parent::getDeleteLink($fieldId),
             );
         }
-
         return $files;
     }
 }

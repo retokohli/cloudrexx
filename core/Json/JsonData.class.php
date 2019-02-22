@@ -202,11 +202,11 @@ class JsonData {
 
     /**
      * Parses a Response into JSON
-     * @param \Cx\Lib\Net\Model\Entity\Response $response Data to JSONify
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Data to JSONify
      * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
      * @return String JSON data to return to client
      */
-    public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
+    public function json(\Cx\Core\Routing\Model\Entity\Response $response, $setContentType = false) {
         $response->setParser($this->getParser());
         $parsedContent = $response->getParsedContent();
         if ($setContentType) {
@@ -223,8 +223,8 @@ class JsonData {
     /**
      * Returns the parser used to parse JSON
      * Parser is either a callback function which accepts an instance of
-     * \Cx\Lib\Net\Model\Entity\Response as first argument or an object with a
-     * parse(\Cx\Lib\Net\Model\Entity\Response $response) method.
+     * \Cx\Core\Routing\Model\Entity\Response as first argument or an object with a
+     * parse(\Cx\Core\Routing\Model\Entity\Response $response) method.
      * @return Object|callable Parser
      */
     public function getParser() {
@@ -240,9 +240,27 @@ class JsonData {
      * @return string JSON encoded data
      */
     public function parse(array $data) {
-        $response = new \Cx\Lib\Net\Model\Entity\Response($data);
+        $response = new \Cx\Core\Routing\Model\Entity\Response($data);
         $response->setParser($this->getParser());
         return $response->getParsedContent();
+    }
+
+    /**
+     * Checks whether an adapter or an adapter's method exists
+     *
+     * @param string $adapterName Adapter name to check for
+     * @param string $methodName (optional) Method name to check for
+     * @return boolean True if adapter or adapter's method exists, false otherwise
+     */
+    public function hasAdapterAndMethod($adapterName, $methodName = '') {
+        $adapterExists = isset(static::$adapters[$adapterName]);
+        if (empty($methodName) || !$adapterExists) {
+            return $adapterExists;
+        }
+        $adapter = static::$adapters[$adapterName];
+        $methods = $adapter->getAccessableMethods();
+        // $methods has two possible formats: value can be a permission
+        return isset($methods[$methodName]) || in_array($methodName, $methods);
     }
 
     /**

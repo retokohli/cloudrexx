@@ -211,6 +211,9 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
                 'TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'   => $_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'],
             ));
 
+            // this is a dirty hack, to force the CSS class 'rowWarn'
+            // on non-existent targets
+            $targetURL = '<none>';
             foreach ($arrAliases as $page) {
 
                 $sourceURL = $page->getSlug();
@@ -222,6 +225,7 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
                     ));
 
                     $target = "";
+                    $target_title = '';
                     if ($this->_isLocalAliasTarget($page)) {
                         // alias points to a local webpage
                         $targetPage = $this->_fetchTarget($page);

@@ -108,7 +108,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
              */
             $extension = 'Dir';
             if (!$file->isDir()) {
-                $extension = ucfirst(
+                $extension = strtolower(
                     pathinfo($file->getFilename(), PATHINFO_EXTENSION)
                 );
             }
@@ -227,7 +227,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
 
         foreach ($arrays as $array) {
             reset($base); //important
-            while (list($key, $value) = each($array)) {
+            foreach ($array as $key => $value) {
                 if (is_array($value) && isset($base[$key]) && is_array($base[$key])) {
                     $base[$key] = $this->array_merge_recursive($base[$key], $value);
                 } else {
@@ -247,7 +247,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
     public function isImage(
         $extension
     ) {
-        return preg_match("/(jpg|jpeg|gif|png)/i", ucfirst($extension));
+        return preg_match("/(jpg|jpeg|gif|png)/i", $extension);
     }
 
     /**
@@ -266,8 +266,8 @@ class LocalFileSystem extends EntityBase implements FileSystem
             $thumbnail
         ) {
             $thumbnails[$thumbnail['size']] = preg_replace(
-                '/\.' . lcfirst($extension) . '$/',
-                $thumbnail['value'] . '.' . lcfirst($extension),
+                '/\.' . $extension . '$/i',
+                $thumbnail['value'] . '.' . strtolower($extension),
                  str_replace(
                     $this->cx->getWebsitePath(), '',
                     $file->getRealPath()
@@ -485,11 +485,12 @@ class LocalFileSystem extends EntityBase implements FileSystem
         $iterator = new \RegexIterator(
             new \DirectoryIterator(
                 $this->getFullPath($file)
-            ), '/' . preg_quote($file->getName(), '/') . '.thumb_[a-z]+/'
+            ),
+            '/' . preg_quote($file->getName(), '/') . '.thumb_[a-z]+\.' . $file->getExtension() . '/'
         );
         foreach ($iterator as $thumbnail){
             \Cx\Lib\FileSystem\FileSystem::delete_file(
-                $thumbnail
+                $thumbnail->getPathName()
             );
         }
     }

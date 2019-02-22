@@ -82,27 +82,20 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $this->lastPreUpdateChangeset = $eventArgs->getEntityChangeSet();
     }
 
+    /**
+     * The page is updated by currently logged user
+     *
+     * @param \Doctrine\ORM\Event\PreUpdateEventArgs $eventArgs
+     *
+     * @return null
+     */
     protected function setUpdatedByCurrentlyLoggedInUser($eventArgs) {
         $entity = $eventArgs->getEntity();
-        $em     = $eventArgs->getEntityManager();
-        $uow    = $em->getUnitOfWork();
 
         if ($entity instanceof \Cx\Core\ContentManager\Model\Entity\Page) {
             $entity->setUpdatedBy(
                 \FWUser::getFWUserObject()->objUser->getUsername()
             );
-
-            if (\Env::get('em')->contains($entity)) {
-                $uow->recomputeSingleEntityChangeSet(
-                    $em->getClassMetadata('Cx\Core\ContentManager\Model\Entity\Page'),
-                    $entity
-                );
-            } else {
-                $uow->computeChangeSet(
-                    $em->getClassMetadata('Cx\Core\ContentManager\Model\Entity\Page'),
-                    $entity
-                );
-            }
         }
     }
 

@@ -1242,8 +1242,6 @@ if (!$limit) {
             return false;
         }
         $lang_id = $objOrder->lang_id();
-        if (!intval($lang_id))
-            $lang_id = \FWLanguage::getLangIdByIso639_1($lang_id);
         $status = $objOrder->status();
         $customer_id = $objOrder->customer_id();
         $customer = Customer::getById($customer_id);

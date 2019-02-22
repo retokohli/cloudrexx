@@ -29,6 +29,7 @@
 namespace Cx\Core\Core\Controller;
 
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+    const CLI_SCRIPT_NAME = './cx ';
 
     /**
      * {@inheritdoc}
@@ -71,7 +72,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function getCommandsForCommandMode() {
-        return array('help', 'status', 'diff', 'version', 'info', 'install', 'uninstall');
+        $cliOnlyPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            array(),
+            array('cli'),
+            false
+        );
+        return array(
+            'help' => new \Cx\Core_Modules\Access\Model\Entity\Permission(
+                array(),
+                array('get', 'post', 'cli', 'head'),
+                false
+            ),
+            'status' => $cliOnlyPermission,
+            'diff' => $cliOnlyPermission,
+            'version',
+            'install' => $cliOnlyPermission,
+            'activate' => $cliOnlyPermission,
+            'deactivate' => $cliOnlyPermission,
+            'cleanTempFiles' => $cliOnlyPermission,
+        );
     }
 
     public function getCommandDescription($command, $short = false) {
@@ -94,7 +113,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 return '(todo)';
                 break;
-                break;
             case 'version':
                 if ($short) {
                     return 'Displays info about the version of Cloudrexx';
@@ -107,15 +125,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 return 'Installs a component from a zip file. Usage:
 
-cx(.bat) install {path to zip package}';
+./cx install <path_to_zip_package>';
                 break;
-            case 'uninstall':
+            case 'activate':
                 if ($short) {
-                    return 'Uninstalls a component';
+                    return 'Activates a component';
                 }
-                return 'Uninstalls the specified component. Usage:
+                return 'Activates a component which is present in file system. Usage:
 
-cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
+./cx activate <component_type> <component_name>';
+                break;
+            case 'deactivate':
+                if ($short) {
+                    return 'Deactivates a component';
+                }
+                return 'Deactivates a component. Usage:
+
+./cx deactivate <component_type> <component_name>';
+                break;
+            case 'cleanTempFiles':
+                if ($short) {
+                    return 'Cleans up no longer used publicly accesible temp files';
+                }
+                return 'Cleans up no longer used publicly accesible temp files. Usage:
+
+./cx cleanTempFiles';
                 break;
         }
         return '';
@@ -220,14 +254,51 @@ Available commands:
             case 'install':
                 echo "BETA!!\r\n";
                 try {
-                    $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1]);
+                    $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[0]);
                     $component->install();
                 } catch (\BadMethodCallException $e) {
                     echo 'Error: ' . $e->getMessage();
                 }
                 break;
-            case 'uninstall':
-                echo "TODO!!\r\n";
+            case 'activate':
+                $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1], $arguments[0]);
+                $component->activate();
+                echo 'Done';
+                break;
+            case 'deactivate':
+                $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[1], $arguments[0]);
+                $component->deactivate();
+                echo 'Done';
+                break;
+            case 'cleanTempFiles':
+                $basePath = $this->cx->getWebsitePublicTempPath();
+
+                // step 1: delete all files older than XY
+                $di = new \RecursiveDirectoryIterator($basePath, \RecursiveDirectoryIterator::SKIP_DOTS);
+                $fi = new \RecursiveCallbackFilterIterator($di, function($file, $key, $iterator) {
+                    if ($iterator->hasChildren()) {
+                        return true;
+                    }
+                    return new \DateTime('@' . $file->getMTime()) < new \DateTime('1 hours ago');
+                });
+
+                foreach (new \RecursiveIteratorIterator($fi) as $file) {
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($file->getRealPath());
+                }
+
+                // step 2: delete all empty directories
+                $fi = new \RecursiveCallbackFilterIterator($di, function($file, $key, $iterator) {
+                    if ($iterator->hasChildren()) {
+                        return true;
+                    }
+                    return false;
+                });
+                foreach (new \RecursiveIteratorIterator($fi, \RecursiveIteratorIterator::SELF_FIRST) as $file) {
+                    $file = new \SplFileObject($file->getRealPath());
+                    if (!$file->hasChildren()) {
+                        \Cx\Lib\FileSystem\FileSystem::delete_folder($file->getRealPath());
+                    }
+                }
                 break;
         }
         echo '
@@ -246,5 +317,58 @@ Available commands:
                 // return 'unused';
             // else return 'customized';
         return 'normal';
+    }
+    
+    /**
+     * Executes a command (in CLI command mode) asynchronously
+     * @param string $command Command mode command name to execute
+     * @param array $arguments List of strings as arguments for the command
+     * @throws \Exception If an argument or the command name contains any other characters than a-z, A-Z and 0-9
+     * @throws \Exception If we're running on windows
+     * @todo: Add support for Windows environment (http://stackoverflow.com/questions/26876728/execute-php-script-from-php-page-asynchronously-in-windows-system)
+     */
+    public function execAsync($command, $arguments) {
+        array_unshift($arguments, $command);
+        foreach ($arguments as $argument) {
+            if (!preg_match('/^[a-z0-9]+$/i', $argument)) {
+                throw new \Exception('Invalid argument');
+            }
+        }
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            throw new \Exception('This function does not yet work on windows systems!');
+        }
+        // todo: ' &' should not be here and instead be a flag for cx (./cx -async <params>)
+        // todo: we should allow overriding the call using event system (for cloud)
+        $command = static::CLI_SCRIPT_NAME . implode(' ', $arguments) . ' > /dev/null 2>&1 &';
+        exec($command);
+    }
+
+    /**
+     * Returns a publicly readable folder name with a unique random name
+     *
+     * Its intended use is for asynchronously generated files that need to be
+     * readable by a user.
+     * @todo: This should be part of a component "Temp" of type "core_module"
+     *          which registers a MediaSource and returns a folder object. This
+     *          includes the CLI command to clean up no longer needed folders.
+     * @return string Unique absolute publicly readable folder path
+     */
+    public function getPublicUserTempFolder() {
+        $basePath = $this->cx->getWebsitePublicTempPath();
+        $folderName = '';
+        do {
+            $folderName = substr(
+                str_replace(
+                    ['+', '/', '='],
+                    '',
+                    base64_encode(random_bytes(32))
+                ),
+                0,
+                32
+            );
+            $path = $basePath . '/' . $folderName . '/';
+        } while (file_exists($path));
+        \Cx\Lib\FileSystem\FileSystem::make_folder($path);
+        return $path;
     }
 }
