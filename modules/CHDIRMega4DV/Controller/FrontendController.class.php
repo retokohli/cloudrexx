@@ -52,9 +52,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         global $_ARRAYLANG;
         $this->sendDownload();
         $folder = $this->getCurrentFilePath();
-        $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile(
-            $this->getBasePath() . $folder
-        );
+        $path = $this->getBasePath() . static::cleanPath($folder);
+        $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile($path);
         $path = $fileSystemFile->getAbsoluteFilePath();
         if (!($path && \Cx\Lib\FileSystem\FileSystem::exists($path))) {
             return sprintf(
@@ -127,6 +126,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function rewriteDocumentsProxy(\DOMDocument $dom)
     {
+        $baseFolder = $this->getBaseFolder();
         $basePath = $this->getBasePath();
         $basePathLength = strlen($basePath);
         $url = $this->getBaseUrl();
@@ -147,9 +147,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ) {
                 continue;
             }
-            $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile(
-                $basePath . $this->getBaseFolder() . $href
-            );
+            $path = $basePath . static::cleanPath($baseFolder . $href);
+            $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile($path);
             $path = $fileSystemFile->getAbsoluteFilePath();
             if (!($path && \Cx\Lib\FileSystem\FileSystem::exists($path))) {
                 continue;
@@ -184,8 +183,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if ($check !== $md5) {
             return;
         }
-        $fileSystemFile =
-            new \Cx\Lib\FileSystem\FileSystemFile($this->getBasePath() . $url);
+        $path = $this->getBasePath() . static::cleanPath($url);
+        $fileSystemFile = new \Cx\Lib\FileSystem\FileSystemFile($path);
         $filePath = $fileSystemFile->getAbsoluteFilePath();
         $download = new \HTTP_Download();
         $download->setFile($filePath);
@@ -217,7 +216,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ) {
                 $param = explode('#', $href);
                 $url = $this->getBaseUrl();
-                $url->setParam('dv', $baseFolder . $param[0]);
+                $url->setParam(
+                    'dv', static::cleanPath($baseFolder . $param[0])
+                );
                 $urlString = $url->toString(false)
                     . (isset($param[1]) ? '#' . $param[1] : '');
                 $link->setAttribute('href', $urlString);
@@ -265,12 +266,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $baseFolder = $this->getBaseFolder();
         $basePath = $this->getBasePath();
         $images = $dom->getElementsByTagName('img');
+        $fileSystem = new \Cx\Lib\FileSystem\FileSystem();
         foreach ($images as $img) {
-            if (strpos($img->getAttribute('src'), 'http') !== 0) {
-                $path = $basePath . $baseFolder . $img->getAttribute('src');
-                if (file_exists($path)) {
+            $src = $img->getAttribute('src');
+            if (strpos($src, 'http') !== 0) {
+                $path = $basePath . static::cleanPath($baseFolder . $src);
+                if ($fileSystem->exists($path)) {
                     $mime = \Mime::getMimeTypeForExtension($path);
-                    $data = base64_encode(file_get_contents($path));
+                    $file = new \Cx\Lib\FileSystem\File($path);
+                    $data = base64_encode($file->getData());
                     $img->setAttribute(
                         'src', 'data:' . $mime . ';base64,' . $data);
                 } else {
@@ -369,7 +373,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function matchPath($path): string
     {
         $basePath = $this->getBasePath();
-        $fullPath = $basePath . $path;
+        $fullPath = $basePath . static::cleanPath($path);
         $folderPath = dirname($fullPath);
         $fileName = basename($path);
         $fileSystem = new \Cx\Lib\FileSystem\FileSystem();
@@ -401,21 +405,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function getCurrentFilePath(): string
     {
         static $currentFilePath = null;
-        if (!$currentFilePath) {
-            $get = $this->cx->getRequest()->getParams();
-            if (empty($get['dv'])) {
-                $currentFilePath = $this->guessStartPage();
-            } else {
-                $lang = $this->cx->getRequest()->getUrl()->getLangDir();
-                $currentFilePath = urldecode($get['dv']);
-                $currentFilePath = strtr($currentFilePath,
-                    [
-                        '/de/' => '/' . $lang . '/',
-                        '/fr/' => '/' . $lang . '/'
-                    ]
-                );
-                $currentFilePath = $this->matchPath($currentFilePath);
-            }
+        if ($currentFilePath) {
+            return $currentFilePath;
+        }
+        $get = $this->cx->getRequest()->getParams();
+        if (empty($get['dv'])) {
+            $currentFilePath = $this->guessStartPage();
+        } else {
+            $lang = $this->cx->getRequest()->getUrl()->getLangDir();
+            $currentFilePath = urldecode($get['dv']);
+            $currentFilePath = strtr($currentFilePath,
+                [
+                    '/de/' => '/' . $lang . '/',
+                    '/fr/' => '/' . $lang . '/'
+                ]
+            );
+            $currentFilePath = $this->matchPath($currentFilePath);
         }
         return $currentFilePath;
     }
@@ -451,7 +456,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected function getBasePath(): string
     {
         $basePath = $this->cx->getWebsiteDocumentRootPath()
-            . '/media/' . $this->getName() . '/';
+            . \Cx\Core\Core\Controller\Cx::FOLDER_NAME_MEDIA
+            . '/' . $this->getName() . '/';
         return $basePath;
     }
 
@@ -463,10 +469,30 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function getBaseUrl(): \Cx\Core\Routing\Url
     {
-        $baseurl = clone \Env::get('Resolver')->getUrl();
+        $baseurl = clone $this->cx->getRequest()->getUrl();
         $baseurl->removeAllParams();
-        $baseurl->setPort(null); // Suppress the default port
         return $baseurl;
+    }
+
+    /**
+     * Return the given path stripped from all parent folders
+     *
+     * Replaces any '/<folder>/../' with '/', then strips all remaining '../'.
+     * @staticvar   string $reCurrent       Regex matching '/<folder>/../'
+     * @staticvar   string $reParent        Regex matching '../'
+     * @param       string $path
+     * @return      string
+     */
+    protected static function cleanPath(string $path): string
+    {
+        static $reCurrent = '/\\/[^\\/.][^\\/]+\\/\\.\\.\\//';
+        static $reParent = '/\\.\\.\\//';
+        // This regex does not work globally
+        while (preg_match($reCurrent, $path)) {
+            $path = preg_replace($reCurrent, '/', $path);
+        }
+        $path = preg_replace($reParent, '', $path);
+        return $path;
     }
 
 }
