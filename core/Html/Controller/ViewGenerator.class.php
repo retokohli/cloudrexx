@@ -777,12 +777,18 @@ class ViewGenerator {
         if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
             return 0;
         }
+        $editId = 0;
         if (isset($_GET['editid'])) {
-            return $this->getVgParam($_GET['editid']);
+            $editId = $this->getVgParam($_GET['editid']);
         }
         if (isset($_POST['editid'])) {
-            return $this->getVgParam($_POST['editid']);
+            $editId = $this->getVgParam($_POST['editid']);
         }
+        // Self-heal if the same param is specified multiple times:
+        if (is_array($editId)) {
+            return end($editId);
+        }
+        return $editId;
     }
 
     /**
