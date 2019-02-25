@@ -837,7 +837,7 @@ class ViewGenerator {
      * @return string rendered view
      */
     public function render(&$isSingle = false) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
 
@@ -914,6 +914,10 @@ class ViewGenerator {
             $filtering = (
                 isset($this->options['functions']['filtering']) &&
                 $this->options['functions']['filtering']
+            );
+            $alphabetical = (
+                isset($this->options['functions']['alphabetical']) &&
+                $this->options['functions']['alphabetical']
             );
             if ($searching) {
                 // If filter is used for extended search,
@@ -1020,6 +1024,70 @@ class ViewGenerator {
                 }
                 $template->touchBlock('filter');
                 $template->parse('filter');
+            }
+            if ($alphabetical) {
+                // #, A-Z, ''
+                $arrLetters = array_merge(array(48), range(65, 90), array(''));
+
+                foreach ($arrLetters as $letter) {
+                    switch ($letter) {
+                        case 48:
+                            $parsedLetter = '#';
+                            $displayLetter = $parsedLetter;
+                            break;
+                        case '':
+                            $parsedLetter = $letter;
+                            $displayLetter = $_CORELANG['TXT_ACCESS_ALL'];
+                            break;
+                        default:
+                            $parsedLetter = chr($letter);
+                            $displayLetter = $parsedLetter;
+                            break;
+                    }
+
+                    $selectedLetter = '';
+                    $url = static::getBaseUrl();
+                    // TODO: Should keep params of other VG instances
+                    $oldSearch = '';
+                    if (isset($url->getParamArray()['search'])) {
+                        $oldSearch = $this->getVgParam(
+                            $url->getParamArray()['search']
+                        );
+                        if (
+                            isset(
+                                $oldSearch[
+                                    $this->options['functions']['alphabetical']
+                                ]
+                            )
+                        ) {
+                            $selectedLetter = substr(
+                                $oldSearch[
+                                    $this->options['functions']['alphabetical']
+                                ],
+                                0,
+                                1
+                            );
+                        }
+                    }
+
+                    if ($parsedLetter == $selectedLetter) {
+                        $template->touchBlock('selected');
+                    }
+
+                    $url->setParam('search', null);
+                    if (!empty($parsedLetter)) {
+                        $url = $this->getExtendedSearchUrl(array(
+                            $this->options['functions']['alphabetical'] =>
+                                $parsedLetter . '%',
+                        ));
+                    }
+
+                    $template->setVariable(array(
+                        'LETTER' => $displayLetter,
+                        'ALPHABETICAL_URL' => (string) $url,
+                    ));
+                    $template->parse('letter');
+                }
             }
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
