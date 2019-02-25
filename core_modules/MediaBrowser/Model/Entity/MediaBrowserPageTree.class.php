@@ -57,11 +57,26 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
     protected function renderElement(
         $title, $level, $hasChilds, $lang, $path, $current, $page
     ) {
-        $url = (string)\Cx\Core\Routing\NodePlaceholder::fromNode($page->getNode(), null, array());
+        $url = (string)\Cx\Core\Routing\NodePlaceholder::fromNode(
+            $page->getNode(),
+            null,
+            array()
+        );
         $pages = $page->getNode()->getPages();
         $titles = array();
         foreach ($pages as $page) {
-            $titles[\FWLanguage::getLanguageCodeById($page->getLang())] = $page->getTitle();
+            $locale = \FWLanguage::getLanguageCodeById($page->getLang());
+            $titles[$locale] = $page->getTitle();
+            $nodePlaceholder = (string)\Cx\Core\Routing\NodePlaceholder::fromNode(
+                $page->getNode(),
+                $page->getLang(),
+                array()
+            );
+            $locals[$locale] = array(
+                'url'   => $page->getPath(),
+                'node'  => $nodePlaceholder,
+                'name'  => $page->getTitle(),
+            );
         }
         $this->return[] = array(
             'click' =>
@@ -74,7 +89,8 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
             'extension' => 'Html',
             'level' => $level - 1,
             'url' => $path,
-            'node' => $url
+            'node' => $url,
+            'localization' => $locals,
         );
     }
 
