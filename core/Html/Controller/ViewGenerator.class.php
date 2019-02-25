@@ -941,9 +941,22 @@ class ViewGenerator {
             }
             if ($filtering) {
                 // find all filter-able fields
-                if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                if (
+                    $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet &&
+                    (
+                        $renderObject->size() ||
+                        $renderObject->getDataType() == 'array'
+                    )
+                ) {
                     $filterableFields = array_keys($renderObject->rewind());
                 } else {
+                    $filterFieldObject = $renderObject;
+                    if (
+                        $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
+                    ) {
+                        $entityClass = $renderObject->getDataType();
+                        $filterFieldObject = new $entityClass();
+                    }
                     $filterableFields = array_map(
                         function($element) {
                             // some php versions prepent \NUL*\NUL to protected
@@ -952,7 +965,7 @@ class ViewGenerator {
                             // are forbidden by guidelines.
                             return preg_replace('/^\x0\*\x0/', '', $element);
                         },
-                        array_keys((array) $renderObject)
+                        array_keys((array) $filterFieldObject)
                     );
                 }
                 foreach ($filterableFields as $field) {
