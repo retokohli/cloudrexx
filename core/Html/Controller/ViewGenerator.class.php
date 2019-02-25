@@ -774,8 +774,11 @@ class ViewGenerator {
      * @return int 0 if no entry was found
      */
     protected function getEntryId() {
-        if (!isset($_GET['editid']) && !isset($_POST['editid'])
-            && !isset($_GET['showid']) && !isset($_POST['showid'])
+        if (
+            !isset($_GET['editid']) &&
+            !isset($_POST['editid']) &&
+            !isset($_GET['showid']) &&
+            !isset($_POST['showid'])
         ) {
             return 0;
         }
