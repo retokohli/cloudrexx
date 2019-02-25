@@ -652,7 +652,9 @@ class BackendTable extends HTML_Table {
                 $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\Csrf::code();
                 $onclick ='if (confirm(\''.$_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))'.
                     'window.location.replace(\''.$deleteUrl.'\');';
-                if (!empty($functions['onclick']['delete'])) {
+                if (!empty($functions['onclick']) &&
+                    !empty($functions['onclick']['delete'])
+                ) {
                     $onclick = $functions['onclick']['delete'].'(\''. $deleteUrl .'\')';
                 }
                 $_uri = 'javascript:void(0);';
