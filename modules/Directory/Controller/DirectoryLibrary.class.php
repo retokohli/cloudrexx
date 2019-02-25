@@ -2106,7 +2106,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 INNER JOIN `'.DBPREFIX.'module_directory_rel_dir_level` AS rel_level USING (`dir_id`)
             WHERE
                 (rel_cat.`cat_id`='.implode(' OR rel_cat.`cat_id`=', $array).')
-                AND rel_level.`level_id`='.$level.'
+                AND rel_level.`level_id`='.intval($level).'
                 AND `status` !=0';
         } else {
             $query = '

@@ -1429,6 +1429,12 @@ EOF;
             'list' => array(),
             'filter' => array(),
         );
+
+        // abort in case the template is invalid
+        if (!$template->blockExists($block)) {
+            return $config;
+        }
+
         $placeholderList = $template->getPlaceholderList($block);
         $placeholderListAsString = join("\n", $placeholderList);
         $match = null;

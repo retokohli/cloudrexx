@@ -287,6 +287,15 @@ class MediaDirectory extends MediaDirectoryLibrary
 
             $objForms = new MediaDirectoryForm(null, $this->moduleName);
             foreach ($objForms->arrForms as $intFormId => $arrForm) {
+                // note: in a previous version of Cloudrexx, there was no check
+                // if the form was active or not. this caused unexpected
+                // behavior
+                if (
+                    !$this->arrSettings['legacyBehavior'] &&
+                    !$arrForm['formActive']
+                ) {
+                    continue;
+                }
                 if(!empty($arrForm['formCmd'])) {
                     $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
                 }
@@ -567,10 +576,12 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
+        $formId = 0;
+        $categoryId = 0;
+        $levelId = 0;
+
         //get navtree
-        $intCategoryId = 0;
-        $intLevelId = 0;
-        $this->getNavtree($intCategoryId, $intLevelId);
+        $this->getNavtree($categoryId, $levelId);
 
         //get searchform
         $searchTerm = null;
@@ -580,9 +591,23 @@ class MediaDirectory extends MediaDirectoryLibrary
             $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
 
-        $objEntries = new MediaDirectoryEntry($this->moduleName);
-        $objEntries->getEntries(null,null,null,$searchTerm,false,null,true);
-        $objEntries->listEntries($this->_objTpl,3);
+        // fetch special config from application template
+        $config = static::fetchMediaDirListConfigFromTemplate($this->moduleNameLC . 'EntryList', $this->_objTpl);
+
+        if (isset($config['filter']['form'])) {
+            $formId = $config['filter']['form'];
+        }
+        if (isset($config['filter']['category'])) {
+            $categoryId = $config['filter']['category'];
+        }
+        if (isset($config['filter']['level'])) {
+            $levelId = $config['filter']['level'];
+        }
+
+        // fetch & list entries
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        $objEntry->getEntries(null, $levelId, $categoryId, $searchTerm, false, null, true, null, 'n', null, null, $formId);
+        $objEntry->listEntries($this->_objTpl, 3);
     }
 
     function showSearch()

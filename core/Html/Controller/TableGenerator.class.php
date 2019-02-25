@@ -73,6 +73,8 @@ class TableGenerator extends \BackendTable
         $options['functions']['edit'] = false;
         $options['functions']['delete'] = false;
         $options['functions']['show'] = false;
+        unset($options['multiActions']);
+        unset($options['tabs']);
 
         $data = $data->flip();
 
