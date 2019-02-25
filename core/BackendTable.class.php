@@ -80,7 +80,7 @@ class BackendTable extends HTML_Table {
      * @param \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of ViewGenerator
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewGenerator = null, $detail = false) {
+    public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewGenerator = null) {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
