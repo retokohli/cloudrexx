@@ -208,6 +208,33 @@ table.sortable .sorter-loading {
     display: block;
 }
 
+ul.vg-alphabeticalSearch {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    padding: 0;
+}
+
+ul.vg-alphabeticalSearch li a:before {
+    content: "[";
+    font-weight: normal;
+    padding-right: 0.3em;
+}
+
+ul.vg-alphabeticalSearch li {
+    padding-left: 5px;
+}
+
+ul.vg-alphabeticalSearch li.selected {
+    font-weight: bold;
+}
+
+ul.vg-alphabeticalSearch li a:after {
+    content: "]";
+    font-weight: normal;
+    padding-left: 0.3em;
+}
+
 table.adminlist .vg-function-status {
     background-image: url(/core/Html/View/Media/StatusInactive.gif);
     width: 10px;
