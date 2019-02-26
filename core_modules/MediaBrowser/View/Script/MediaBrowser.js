@@ -38,21 +38,24 @@ cx.ready(function () {
             icon: 'icon-upload',
             controller: 'UploaderCtrl',
             name: 'uploader',
-            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Uploader.html'
+            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Uploader.html',
+            always: false
         })
         .add({
             label: cx.variables.get('TXT_FILEBROWSER_FILEBROWSER', 'mediabrowser'),
             icon: 'icon-folder',
             controller: 'FilebrowserCtrl',
             name: 'filebrowser',
-            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/FileBrowser.html'
+            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/FileBrowser.html',
+            always: false
         })
         .add({
             label: cx.variables.get('TXT_FILEBROWSER_SITESTRUCTURE', 'mediabrowser'),
             icon: 'icon-sitestructure',
             controller: 'SitestructureCtrl',
             name: 'sitestructure',
-            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Sitestructure.html'
+            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Sitestructure.html',
+            always: false
         });
     }])
     .controller('MainCtrl', [
@@ -96,35 +99,45 @@ cx.ready(function () {
                 mediabrowserConfig.get('views') !== 'all'
             ) {
                 var isStartviewInViews = false;
-                var newTabNames = mediabrowserConfig.get('views');
+                var selectedTabNames = mediabrowserConfig.get('views');
 
                 // TODO: Flush historic names
                 // tab MediaBrowserList is legacy naming. Use filebrowser instead
-                if (newTabNames.indexOf("MediaBrowserList") !== -1) {
-                    newTabNames[newTabNames.indexOf("MediaBrowserList")] = "filebrowser";
+                if (selectedTabNames.indexOf("MediaBrowserList") !== -1) {
+                    selectedTabNames[selectedTabNames.indexOf("MediaBrowserList")] = "filebrowser";
                 }
 
                 if (
-                    newTabNames.indexOf("filebrowser") !== -1 &&
-                    newTabNames.indexOf("uploader") === -1
+                    selectedTabNames.indexOf("filebrowser") !== -1 &&
+                    selectedTabNames.indexOf("uploader") === -1
                 ) {
-                    newTabNames.push("uploader");
+                    selectedTabNames.push("uploader");
                 }
                 if (
-                    newTabNames.indexOf("filebrowser") === -1 &&
-                    newTabNames.indexOf("uploader") !== -1
+                    selectedTabNames.indexOf("filebrowser") === -1 &&
+                    selectedTabNames.indexOf("uploader") !== -1
                 ) {
-                    newTabNames.push("filebrowser");
+                    selectedTabNames.push("filebrowser");
                 }
 
-                var newTabs = [];
                 // load only selected tabs
+                var selectedTabs = [];
+                var forcedTabs = [];
                 $scope.dataTabs.forEach(function (tab) {
                     // skip non-selected tabs
-                    if (selectedTabNames.indexOf(tab.name) === -1) {
+                    if (
+                        selectedTabNames.indexOf(tab.name) === -1 &&
+                        !tab.always
+                    ) {
                         return false;
                     }
-                    newTabs.push(tab);
+
+                    // load tab
+                    if (selectedTabNames.indexOf(tab.name) !== -1) {
+                        selectedTabs.push(tab);
+                    } else {
+                        forcedTabs.push(tab);
+                    }
 
                     // verify that selected start tab is part of the selected
                     // tabs
@@ -139,7 +152,7 @@ cx.ready(function () {
                     }
                 });
 
-                $scope.tabs = selectedTabs;
+                $scope.tabs = selectedTabs.concat(forcedTabs);
 
                 // set default start tab
                 if (!isStartviewInViews) {
