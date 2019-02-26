@@ -343,7 +343,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
 
-        if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
+        // hide teaser container if the use of teasers has been deactivated
+        if (
+            $this->arrSettings['news_use_teaser_text'] != '1' &&
+            $this->_objTpl->blockExists('news_use_teaser_text')
+        ) {
             $this->_objTpl->hideBlock('news_use_teaser_text');
         }
 
