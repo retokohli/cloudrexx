@@ -412,8 +412,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
 
-        self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'image_thumbnail');
-        self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'image_detail');
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, '', 'image_thumbnail');
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, '', 'image_detail');
         //previous next newslink
         if (    !empty($this->arrSettings['use_previous_next_news_link']) 
             &&  $this->_objTpl->blockExists('news_details_previous_next_links')
