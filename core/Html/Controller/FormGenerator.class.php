@@ -853,7 +853,7 @@ class FormGenerator {
                     array(
                         'data-cx-mb-views' => 'filebrowser,uploader',
                         'id' => 'page_target_browse',
-                        'cxMbStartview' => 'MediaBrowserList'
+                        'cxMbStartview' => 'filebrowser'
                     )
                 );
 
@@ -899,7 +899,7 @@ class FormGenerator {
                 $defaultOptions = array(
                     'data-cx-mb-views' => 'filebrowser,uploader',
                     'id' => 'page_target_browse',
-                    'cxMbStartview' => 'MediaBrowserList'
+                    'cxMbStartview' => 'filebrowser'
                 );
 
                 $mediaBrowser->setOptions(
