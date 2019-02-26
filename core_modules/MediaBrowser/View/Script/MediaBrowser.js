@@ -98,6 +98,13 @@ cx.ready(function () {
             ) {
                 var isStartviewInViews = false;
                 var newTabNames = mediabrowserConfig.get('views');
+
+                // TODO: Flush historic names
+                // tab MediaBrowserList is legacy naming. Use filebrowser instead
+                if (newTabNames.indexOf("MediaBrowserList") !== -1) {
+                    newTabNames[newTabNames.indexOf("MediaBrowserList")] = "filebrowser";
+                }
+
                 if (
                     newTabNames.indexOf("filebrowser") !== -1 &&
                     newTabNames.indexOf("uploader") === -1
@@ -114,13 +121,10 @@ cx.ready(function () {
                 var tabStartViewName;
                 var tabName;
                 newTabNames.forEach(function (newTabName) {
-                    // TODO: Flush historic names
-                    tabName = (newTabName === 'MediaBrowserList')
-                        ? 'filebrowser' : newTabName;
-                    tabStartViewName =
-                        tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Ctrl';
                     $scope.dataTabs.forEach(function (tab) {
                         if (tab.name === newTabName) {
+                            var tabStartViewName =
+                                tab.name.charAt(0).toUpperCase() + tab.name.slice(1) + 'Ctrl';
                             if (tabStartViewName === mediabrowserConfig.get('startView')) {
                                 isStartviewInViews = true;
                             }
@@ -144,12 +148,15 @@ cx.ready(function () {
                 });
 
                 $scope.tabs = newTabs;
-                if (isStartviewInViews) {
-                    $scope.go(mediabrowserConfig.get('startView'));
-                } else {
-                    $scope.go($scope.tabs[0].name);
+                // set default start tab
+                if (!isStartviewInViews) {
+                    mediabrowserConfig.set('startView', 'FilebrowserCtrl');
                 }
             }
+
+            // show start tab
+            $scope.go(mediabrowserConfig.get('startView'));
+
             loadSources();
 
             function go(controllerName) {
