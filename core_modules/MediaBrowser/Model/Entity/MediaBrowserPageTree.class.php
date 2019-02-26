@@ -64,6 +64,7 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
         );
         $pages = $page->getNode()->getPages();
         $titles = array();
+        $locales = array();
         foreach ($pages as $page) {
             $locale = \FWLanguage::getLanguageCodeById($page->getLang());
             $titles[$locale] = $page->getTitle();
@@ -72,7 +73,7 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
                 $page->getLang(),
                 array()
             );
-            $locals[$locale] = array(
+            $locales[$locale] = array(
                 'url'   => $page->getPath(),
                 'node'  => $nodePlaceholder,
                 'name'  => $page->getTitle(),
@@ -90,7 +91,7 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
             'level' => $level - 1,
             'url' => $path,
             'node' => $url,
-            'localization' => $locals,
+            'localization' => $locales,
         );
     }
 
