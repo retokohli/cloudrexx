@@ -181,14 +181,6 @@ class ContentManager extends \Module
             'CORE_CM_METAIMAGE_BUTTON' => static::showMediaBrowserButton('Metaimage')
         ));
 
-        $mediaBrowser = new MediaBrowser();
-        $mediaBrowser->setCallback('target_page_callback');
-        $mediaBrowser->setOptions(array(
-            'type' => 'button',
-            'data-cx-mb-views' => 'sitestructure',
-            'id' => 'page_target_browse'
-        ));
-
         $mediaBrowserCkeditor = new MediaBrowser();
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
         $mediaBrowserCkeditor->setOptions(array(
@@ -198,7 +190,6 @@ class ContentManager extends \Module
         ));
 
         $this->template->setVariable(array(
-            'MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']),
             'MEDIABROWSER_BUTTON_CKEDITOR' => $mediaBrowserCkeditor->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
         ));
 
