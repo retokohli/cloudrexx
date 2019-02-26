@@ -528,7 +528,7 @@ cx.ready(function () {
 
             $scope.sourcesLoaded.promise.then(function () {
                 if (!$scope.files) {
-                    $scope.updateSource();
+                    $scope.updateSource(false, false);
                 }
             });
 
