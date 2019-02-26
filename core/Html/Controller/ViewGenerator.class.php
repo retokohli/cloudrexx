@@ -867,7 +867,7 @@ class ViewGenerator {
         }
 
         $entityId = $this->getEntryId();
-	    if(!empty($_GET['showid'])) {
+	    if (!empty($_GET['showid'])) {
 	        return $this->renderFormForEntry($entityId, true);
 	    }
 
