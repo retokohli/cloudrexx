@@ -3081,7 +3081,6 @@ EOF;
            $templateVariablePrefix . 'NEWS_TEASER'         => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
            $templateVariablePrefix . 'NEWS_TEASER_TEXT'    => $newsTeaser,
            $templateVariablePrefix . 'NEWS_LASTUPDATE'     => $newsLastUpdate,
-           $templateVariablePrefix . 'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            $templateVariablePrefix . 'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
            $templateVariablePrefix . 'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT, $objResult->fields['newsdate']),
            $templateVariablePrefix . 'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
@@ -3157,6 +3156,19 @@ EOF;
                 $objTpl->hideBlock($templateBlockPrefix . 'news_link1_source');
             } else {
                 $objTpl->touchBlock($templateBlockPrefix . 'news_link1_source');
+            }
+        }
+
+        // parse external link 2
+        $objTpl->setVariable(
+            $templateVariablePrefix . 'NEWS_LINK2_SRC',
+            contrexx_raw2encodedUrl($url2)
+        );
+        if ($objTpl->blockExists($templateBlockPrefix . 'news_link2_source')) {
+            if (empty($url2)) {
+                $objTpl->hideBlock($templateBlockPrefix . 'news_link2_source');
+            } else {
+                $objTpl->touchBlock($templateBlockPrefix . 'news_link2_source');
             }
         }
 
