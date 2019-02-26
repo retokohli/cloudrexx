@@ -93,6 +93,7 @@ cx.ready(function () {
             // TODO: Find a better way of controlling the view than "cxMbViews".
             $scope.dataTabs = dataTabs.get();
             $scope.tabs = $scope.dataTabs;
+
             // cx-mb-views
             if (
                 mediabrowserConfig.get('views') &&
@@ -107,12 +108,17 @@ cx.ready(function () {
                     selectedTabNames[selectedTabNames.indexOf("MediaBrowserList")] = "filebrowser";
                 }
 
+                // ensure uploader tab is available in case filebrowser
+                // tab is loaded
                 if (
                     selectedTabNames.indexOf("filebrowser") !== -1 &&
                     selectedTabNames.indexOf("uploader") === -1
                 ) {
                     selectedTabNames.push("uploader");
                 }
+
+                // ensure filebrowser tab is available in case uploader
+                // tab is loaded
                 if (
                     selectedTabNames.indexOf("filebrowser") === -1 &&
                     selectedTabNames.indexOf("uploader") !== -1
@@ -163,6 +169,7 @@ cx.ready(function () {
             // show start tab
             $scope.go(mediabrowserConfig.get('startView'));
 
+            // load MediaSources of filebrowser tab
             loadSources();
 
             function go(controllerName) {
@@ -242,6 +249,7 @@ cx.ready(function () {
                 }
                 $scope.searchSourceLoaded = true;
             };
+
             // Triggered by both main and FileBrowser
             // -> Move to a Service or FileBrowser?
             function updateSource(recursive, sourceChanged) {
