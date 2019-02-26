@@ -365,11 +365,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_LINK1_SRC',
             contrexx_raw2encodedUrl($url1)
         );
-        if ($objTpl->blockExists('news_link1_source')) {
+        if ($objTpl->blockExists('news_link1')) {
             if (empty($url1)) {
-                $objTpl->hideBlock('news_link1_source');
+                $objTpl->hideBlock('news_link1');
             } else {
-                $objTpl->touchBlock('news_link1_source');
+                $objTpl->touchBlock('news_link1');
             }
         }
 
@@ -378,11 +378,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_LINK2_SRC',
             contrexx_raw2encodedUrl($url2)
         );
-        if ($objTpl->blockExists('news_link2_source')) {
+        if ($objTpl->blockExists('news_link2')) {
             if (empty($url2)) {
-                $objTpl->hideBlock('news_link2_source');
+                $objTpl->hideBlock('news_link2');
             } else {
-                $objTpl->touchBlock('news_link2_source');
+                $objTpl->touchBlock('news_link2');
             }
         }
 

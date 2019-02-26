@@ -3151,11 +3151,11 @@ EOF;
             $templateVariablePrefix . 'NEWS_LINK1_SRC',
             contrexx_raw2encodedUrl($url1)
         );
-        if ($objTpl->blockExists($templateBlockPrefix . 'news_link1_source')) {
+        if ($objTpl->blockExists($templateBlockPrefix . 'news_link1')) {
             if (empty($url1)) {
-                $objTpl->hideBlock($templateBlockPrefix . 'news_link1_source');
+                $objTpl->hideBlock($templateBlockPrefix . 'news_link1');
             } else {
-                $objTpl->touchBlock($templateBlockPrefix . 'news_link1_source');
+                $objTpl->touchBlock($templateBlockPrefix . 'news_link1');
             }
         }
 
@@ -3164,11 +3164,11 @@ EOF;
             $templateVariablePrefix . 'NEWS_LINK2_SRC',
             contrexx_raw2encodedUrl($url2)
         );
-        if ($objTpl->blockExists($templateBlockPrefix . 'news_link2_source')) {
+        if ($objTpl->blockExists($templateBlockPrefix . 'news_link2')) {
             if (empty($url2)) {
-                $objTpl->hideBlock($templateBlockPrefix . 'news_link2_source');
+                $objTpl->hideBlock($templateBlockPrefix . 'news_link2');
             } else {
-                $objTpl->touchBlock($templateBlockPrefix . 'news_link2_source');
+                $objTpl->touchBlock($templateBlockPrefix . 'news_link2');
             }
         }
 
