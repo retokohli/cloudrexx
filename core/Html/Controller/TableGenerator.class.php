@@ -29,7 +29,7 @@
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core
+ * @subpackage  core_html
  */
 
 namespace Cx\Core\Html\Controller;
@@ -40,7 +40,7 @@ namespace Cx\Core\Html\Controller;
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core
+ * @subpackage  core_html
  */
 class TableGenerator extends \BackendTable
 {
