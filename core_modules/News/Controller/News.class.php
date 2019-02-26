@@ -322,7 +322,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_TITLE'          => $newstitle,
            'NEWS_TEASER_TEXT'    => $newsTeaser,
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
-           'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
            'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
            'NEWS_TYPE_ID'        => $objResult->fields['typeid'],
@@ -359,6 +358,19 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $objTpl->hideBlock('news_source');
             } else {
                 $objTpl->touchBlock('news_source');
+            }
+        }
+
+        // parse external link 1
+        $objTpl->setVariable(
+            'NEWS_LINK1_SRC',
+            contrexx_raw2encodedUrl($url1)
+        );
+        if ($objTpl->blockExists('news_link1_source')) {
+            if (empty($url1)) {
+                $objTpl->hideBlock('news_link1_source');
+            } else {
+                $objTpl->touchBlock('news_link1_source');
             }
         }
 

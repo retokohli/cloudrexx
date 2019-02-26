@@ -3081,7 +3081,6 @@ EOF;
            $templateVariablePrefix . 'NEWS_TEASER'         => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
            $templateVariablePrefix . 'NEWS_TEASER_TEXT'    => $newsTeaser,
            $templateVariablePrefix . 'NEWS_LASTUPDATE'     => $newsLastUpdate,
-           $templateVariablePrefix . 'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
            $templateVariablePrefix . 'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            $templateVariablePrefix . 'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
            $templateVariablePrefix . 'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT, $objResult->fields['newsdate']),
@@ -3145,6 +3144,19 @@ EOF;
                 $objTpl->hideBlock($templateBlockPrefix . 'news_source');
             } else {
                 $objTpl->touchBlock($templateBlockPrefix . 'news_source');
+            }
+        }
+
+        // parse external link 1
+        $objTpl->setVariable(
+            $templateVariablePrefix . 'NEWS_LINK1_SRC',
+            contrexx_raw2encodedUrl($url1)
+        );
+        if ($objTpl->blockExists($templateBlockPrefix . 'news_link1_source')) {
+            if (empty($url1)) {
+                $objTpl->hideBlock($templateBlockPrefix . 'news_link1_source');
+            } else {
+                $objTpl->touchBlock($templateBlockPrefix . 'news_link1_source');
             }
         }
 
