@@ -557,7 +557,7 @@ class Downloads extends DownloadsLibrary
      */
     public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName, $data)
     {
-        $objDownload = new Download($this->arrConfig);
+        $objDownload = new Download($objDownloads->getSettings());
 
         // parse name and description attributres
         $arrLanguageIds = array_keys(\FWLanguage::getLanguageArray());
@@ -706,7 +706,11 @@ class Downloads extends DownloadsLibrary
     {
         global $_CONFIG, $_ARRAYLANG;
 
-        if (!$this->objTemplate->blockExists('downloads_simple_file_upload') && !$this->objTemplate->blockExists('downloads_advanced_file_upload')) {
+        if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
+            $this->objTemplate->hideBlock('downloads_advanced_file_upload');
+        }
+
+        if (!$this->objTemplate->blockExists('downloads_simple_file_upload')) {
             return;
         }
 
@@ -717,9 +721,6 @@ class Downloads extends DownloadsLibrary
         ) {
             if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
                 $this->objTemplate->hideBlock('downloads_simple_file_upload');
-            }
-            if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
-                $this->objTemplate->hideBlock('downloads_advanced_file_upload');
             }
             return;
         }
@@ -755,10 +756,6 @@ class Downloads extends DownloadsLibrary
                 'DOWNLOADS_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
             ));
             $this->objTemplate->parse('downloads_simple_file_upload');
-
-            if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
-                $this->objTemplate->hideBlock('downloads_advanced_file_upload');
-            }
         }
     }
 

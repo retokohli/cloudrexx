@@ -280,6 +280,9 @@ class ViewGenerator {
             $this->options = $options[''];
         }
 
+        //initialize the row status functionality
+        $this->initializeStatusOption($entityWithNS);
+
         //initialize the row sorting functionality
         $this->getSortingOption($entityWithNS);
     }
@@ -360,6 +363,23 @@ class ViewGenerator {
             }
         } else {
             $lcOptions['filterFields'] = array();
+        }
+        // ensure edited ID is loaded even with paging limits
+        // todo: this only works for doctrine entities
+        if ($entityClass !== 'array' && $this->getEntryId()) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $metaData = $em->getClassMetadata($entityClass);
+            $primaryKeyNames = $metaData->getIdentifierFieldNames();
+            $lcOptions['filterFields'] = array_merge(
+                $lcOptions['filterFields'],
+                $primaryKeyNames
+            );
+            $entryIdValues = explode('/', $this->getEntryId());
+            $i = 0;
+            foreach ($primaryKeyNames as $primaryKeyName) {
+                $searchCriteria[$primaryKeyName] = $entryIdValues[$i];
+                $i++;
+            }
         }
         $this->listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
             $renderObject,
@@ -599,6 +619,63 @@ class ViewGenerator {
     }
 
     /**
+     * Initialize the row status functionality
+     *
+     * @param string $entityNameSpace entity namespace
+     */
+    protected function initializeStatusOption($entityNameSpace)
+    {
+        global $_ARRAYLANG;
+
+        //If the entity namespace is empty or an array then disable the status
+        if (empty($entityNameSpace) || $entityNameSpace === 'array') {
+            return;
+        }
+
+        $status = array();
+        if (
+            isset($this->options['functions']['status']) &&
+            is_array($this->options['functions']['status'])
+        ) {
+            $status = $this->options['functions']['status'];
+        }
+
+        //If the 'status' option does not have 'jsonadapter',
+        //we need to get the component name and entity name for updating the
+        //status in db
+        $componentName = '';
+        $entityName    = '';
+        if (
+            !isset($status['jsonadapter']) || (
+                isset($status['jsonadapter']) && (
+                    empty($status['jsonadapter']['object']) ||
+                    empty($status['jsonadapter']['act'])
+                )
+            )
+        ) {
+            $split          = explode('\\', $entityNameSpace);
+            $componentName  = isset($split[2]) ? $split[2] : '';
+            $entityName     = isset($split) ? end($split) : '';
+        }
+
+        $this->options['functions']['status']['component']  = $componentName;
+        $this->options['functions']['status']['entity']     = $entityName;
+
+        \ContrexxJavascript::getInstance()->setVariable(
+            'TXT_CORE_HTML_CANT_UPDATE_STATUS',
+            $_ARRAYLANG['TXT_CORE_HTML_CANT_UPDATE_STATUS'],
+            'ViewGenerator'
+        );
+        //Register the script Backend.js
+        \JS::registerJS(
+            substr(
+                $this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js'
+                , 1
+            )
+        );
+    }
+
+    /**
      * Initialize the row sorting functionality
      *
      * @param string $entityNameSpace entity namespace
@@ -684,9 +761,6 @@ class ViewGenerator {
         $this->options['functions']['sortBy']['entity']     = $entityName;
         $this->options['functions']['sortBy']['sortOrder']  = $sortOrder;
         $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
-
-        //Register the script Backend.js and activate the jqueryui and cx for the row sorting
-        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
@@ -703,12 +777,18 @@ class ViewGenerator {
         if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
             return 0;
         }
+        $editId = 0;
         if (isset($_GET['editid'])) {
-            return $this->getVgParam($_GET['editid']);
+            $editId = $this->getVgParam($_GET['editid']);
         }
         if (isset($_POST['editid'])) {
-            return $this->getVgParam($_POST['editid']);
+            $editId = $this->getVgParam($_POST['editid']);
         }
+        // Self-heal if the same param is specified multiple times:
+        if (is_array($editId)) {
+            return end($editId);
+        }
+        return $editId;
     }
 
     /**
@@ -763,7 +843,9 @@ class ViewGenerator {
      * @return string rendered view
      */
     public function render(&$isSingle = false) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
+
+        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
 
         // this case is used to generate the add entry form, where we can create an new entry
         if (!empty($_GET['add'])
@@ -839,9 +921,10 @@ class ViewGenerator {
                 isset($this->options['functions']['filtering']) &&
                 $this->options['functions']['filtering']
             );
-            if ($searching || $filtering) {
-                \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
-            }
+            $alphabetical = (
+                isset($this->options['functions']['alphabetical']) &&
+                $this->options['functions']['alphabetical']
+            );
             if ($searching) {
                 // If filter is used for extended search,
                 // hide filter and add a toggle link
@@ -868,9 +951,22 @@ class ViewGenerator {
             }
             if ($filtering) {
                 // find all filter-able fields
-                if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                if (
+                    $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet &&
+                    (
+                        $renderObject->size() ||
+                        $renderObject->getDataType() == 'array'
+                    )
+                ) {
                     $filterableFields = array_keys($renderObject->rewind());
                 } else {
+                    $filterFieldObject = $renderObject;
+                    if (
+                        $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
+                    ) {
+                        $entityClass = $renderObject->getDataType();
+                        $filterFieldObject = new $entityClass();
+                    }
                     $filterableFields = array_map(
                         function($element) {
                             // some php versions prepent \NUL*\NUL to protected
@@ -879,7 +975,7 @@ class ViewGenerator {
                             // are forbidden by guidelines.
                             return preg_replace('/^\x0\*\x0/', '', $element);
                         },
-                        array_keys((array) $renderObject)
+                        array_keys((array) $filterFieldObject)
                     );
                 }
                 foreach ($filterableFields as $field) {
@@ -934,6 +1030,70 @@ class ViewGenerator {
                 }
                 $template->touchBlock('filter');
                 $template->parse('filter');
+            }
+            if ($alphabetical) {
+                // #, A-Z, ''
+                $arrLetters = array_merge(array(48), range(65, 90), array(''));
+
+                foreach ($arrLetters as $letter) {
+                    switch ($letter) {
+                        case 48:
+                            $parsedLetter = '#';
+                            $displayLetter = $parsedLetter;
+                            break;
+                        case '':
+                            $parsedLetter = $letter;
+                            $displayLetter = $_CORELANG['TXT_ACCESS_ALL'];
+                            break;
+                        default:
+                            $parsedLetter = chr($letter);
+                            $displayLetter = $parsedLetter;
+                            break;
+                    }
+
+                    $selectedLetter = '';
+                    $url = static::getBaseUrl();
+                    // TODO: Should keep params of other VG instances
+                    $oldSearch = '';
+                    if (isset($url->getParamArray()['search'])) {
+                        $oldSearch = $this->getVgParam(
+                            $url->getParamArray()['search']
+                        );
+                        if (
+                            isset(
+                                $oldSearch[
+                                    $this->options['functions']['alphabetical']
+                                ]
+                            )
+                        ) {
+                            $selectedLetter = substr(
+                                $oldSearch[
+                                    $this->options['functions']['alphabetical']
+                                ],
+                                0,
+                                1
+                            );
+                        }
+                    }
+
+                    if ($parsedLetter == $selectedLetter) {
+                        $template->touchBlock('selected');
+                    }
+
+                    $url->setParam('search', null);
+                    if (!empty($parsedLetter)) {
+                        $url = $this->getExtendedSearchUrl(array(
+                            $this->options['functions']['alphabetical'] =>
+                                $parsedLetter . '%',
+                        ));
+                    }
+
+                    $template->setVariable(array(
+                        'LETTER' => $displayLetter,
+                        'ALPHABETICAL_URL' => (string) $url,
+                    ));
+                    $template->parse('letter');
+                }
             }
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
@@ -1226,7 +1386,6 @@ class ViewGenerator {
             $renderArray = $this->object->toArray();
             $entityClassWithNS = '';
             $title = $entityTitle;
-            $renderObject = null;
         }
 
         return array(
@@ -1837,6 +1996,7 @@ class ViewGenerator {
         if (!$url) {
             $url = static::getBaseUrl();
         }
+        $url->setParam('pos', null);
         static::appendVgParam(
             $url,
             $vgId,

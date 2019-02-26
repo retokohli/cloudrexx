@@ -123,6 +123,17 @@ class BackendTable extends HTML_Table {
             $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
                           ? $sortBy['pagingPosition']
                           : '';
+            $status     = (isset($options['functions']['status']) &&
+                           is_array($options['functions']['status'])
+                          ) ? $options['functions']['status']
+                          : array();
+            $statusComponent = !empty($status) && isset($status['component'])
+                ? $status['component']
+                : '';
+            $statusEntity = !empty($status) && isset($status['entity'])
+                ? $status['entity']
+                : '';
+
             $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, $this->viewGenerator, true);
 
             foreach ($attrs as $rowname=>$rows) {
@@ -148,6 +159,7 @@ class BackendTable extends HTML_Table {
                     ) {
                         continue;
                     }
+
                     if (!empty($sortField) && $header === $sortField) {
                         //Add the additional attribute class, to display the updated sort order after the row sorting
                         $this->updateColAttributes($col, array('class' => 'sortBy' . $sortField));
@@ -273,6 +285,21 @@ class BackendTable extends HTML_Table {
                             );
                         }
                         $encode = false; // todo: this should be set by callback
+                    } else if (in_array($origHeader, $status)) {
+                        $statusField = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                        $class = '';
+                        if ((boolean)$data) {
+                            $class = 'active';
+                        }
+                        $statusField->setAttributes(
+                            array(
+                                'class' => 'vg-function-status ' . $class,
+                                'data-status-value' => $data,
+                                'data-entity-id' => $rowname
+                            )
+                        );
+                        $data = $statusField;
+                        $encode = false;
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
                     } else if (isset($options['fields'][$origHeader]) && isset($options['fields'][$origHeader]['type']) && $options['fields'][$origHeader]['type'] == '\Country') {
@@ -290,13 +317,15 @@ class BackendTable extends HTML_Table {
                         $data = '<i>(empty)</i>';
                         $encode = false;
                     }
+                    $cellAttrs = array();
                     if (
                         isset($options['fields']) &&
                         isset($options['fields'][$origHeader]['table']) &&
                         isset($options['fields'][$origHeader]['table']['attributes'])
                     ) {
-                        $this->setCellAttributes($row, $col, $options['fields'][$origHeader]['table']['attributes']);
+                        $cellAttrs = $options['fields'][$origHeader]['table']['attributes'];
                     }
+                    $this->setCellAttributes($row, $col, $cellAttrs);
                     $this->setCellContents($row, $col, $data, 'TD', 0, $encode);
                     $col++;
                 }
@@ -423,7 +452,7 @@ class BackendTable extends HTML_Table {
         //if the row sorting functionality is enabled
         $className = 'adminlist';
         if (!empty($sortField)) {
-            $className = 'adminlist sortable';
+            $className .= ' sortable';
             if (!empty($component)) {
                 $attrs['data-component'] = $component;
             }
@@ -448,6 +477,44 @@ class BackendTable extends HTML_Table {
                 $attrs['data-object'] = $sortBy['jsonadapter']['object'];
                 $attrs['data-act']    = $sortBy['jsonadapter']['act'];
             }
+
+            $cx->getComponent('Html')->whitelistParamSet(
+                'updateOrder',
+                array(),
+                array(
+                    'component' => $component,
+                    'entity' => $entity,
+                    'sortField' => $sortField,
+                )
+            );
+        }
+
+        if (!empty($status)) {
+            $className .= ' status';
+            $attrs['data-status-component'] = $statusComponent;
+            $attrs['data-status-entity'] = $statusEntity;
+            $attrs['data-status-field'] = $status['field'];
+
+            $attrs['data-status-object'] = 'Html';
+            $attrs['data-status-act'] = 'updateStatus';
+            if (
+                isset($status['jsonadapter']) &&
+                !empty($status['jsonadapter']['object']) &&
+                !empty($status['jsonadapter']['act'])
+            ) {
+                $attrs['data-status-object'] = $status['jsonadapter']['object'];
+                $attrs['data-status-act']    = $status['jsonadapter']['act'];
+            }
+
+            $cx->getComponent('Html')->whitelistParamSet(
+                'updateStatus',
+                array(),
+                array(
+                    'component' => $statusComponent,
+                    'entity' => $statusEntity,
+                    'statusField' => $status['field'],
+                )
+            );
         }
         parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
     }
@@ -515,8 +582,15 @@ class BackendTable extends HTML_Table {
 
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
-        $editUrl = clone $baseUrl;
+        $editUrl = \Cx\Core\Html\Controller\ViewGenerator::getVgEditUrl(
+            $functions['vg_increment_number'],
+            $rowname,
+            clone $baseUrl
+        );
         $params = $editUrl->getParamArray();
+        if (isset($functions['sortBy']) && isset($functions['sortBy']['field'])) {
+            $editUrl->setParam($functions['sortBy']['field'] . 'Pos', null);
+        }
         $editId = '';
         if (!empty($params['editid'])) {
             $editId = $params['editid'] . ',';
@@ -550,7 +624,7 @@ class BackendTable extends HTML_Table {
 
         if(!$virtual){
             if (isset($functions['copy']) && $functions['copy']) {
-                $actionUrl = clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+                $actionUrl = clone $editUrl;
                 $actionUrl->setParam('copy', $editId);
                 //remove the parameter 'vg_increment_number' from actionUrl
                 //if the baseUrl contains the parameter 'vg_increment_number'
@@ -562,7 +636,6 @@ class BackendTable extends HTML_Table {
 
             }
             if (isset($functions['edit']) && $functions['edit']) {
-                $editUrl->setParam('editid', $editId);
                 //remove the parameter 'vg_increment_number' from editUrl
                 //if the baseUrl contains the parameter 'vg_increment_number'
                 if (isset($params['vg_increment_number'])) {
@@ -622,6 +695,12 @@ class BackendTable extends HTML_Table {
                 'title' => $_ARRAYLANG['TXT_CORE_HTML_EXPORT'],
             ));
             $exportFunc->addClass('vg-export');
+
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getComponent('Html')->whitelistParamSet(
+                'export',
+                array('type' => $renderObject->getDataType())
+            );
             return (string) $exportFunc;
         }
         return '';

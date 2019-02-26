@@ -338,6 +338,7 @@ class ListingController {
             $this->dataSize = count($entityRepository);
         } else {
             $qb = $em->createQueryBuilder();
+            $metaData = $em->getClassMetadata($this->entityClass);
             $qb->select('x')->from($this->entityClass, 'x');
             $i = 1;
             // filtering: advanced search
@@ -349,7 +350,11 @@ class ListingController {
                     ) {
                         continue;
                     }
-                    $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                    if (isset($metaData->associationMappings[$field])) {
+                        $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                    } else {
+                        $qb->andWhere($qb->expr()->like('x.' . $field, '?' . $i));
+                    }
                     $qb->setParameter($i, $crit);
                     $i++;
                 }
@@ -372,7 +377,7 @@ class ListingController {
             foreach ($this->order as $field=>&$order) {
                 $qb->orderBy('x.' . $field, $order);
             }
-            $qb->setFirstResult($offset);
+            $qb->setFirstResult($this->offset ? $this->offset : null);
             $qb->setMaxResults($this->count ? $this->count : null);
             $entities = $qb->getQuery()->getResult();
 
@@ -380,6 +385,8 @@ class ListingController {
             $qb->select(
                 'count(x.' . reset($metaData->getIdentifierFieldNames()) . ')'
             );
+            $qb->setFirstResult(null);
+            $qb->setMaxResults(null);
             $this->dataSize = $qb->getQuery()->getSingleScalarResult();
         }
 
