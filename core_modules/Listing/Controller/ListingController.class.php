@@ -333,6 +333,7 @@ class ListingController {
             $this->dataSize = count($entityRepository);
         } else {
             $qb = $em->createQueryBuilder();
+            $metaData = $em->getClassMetadata($this->entityClass);
             $qb->select('x')->from($this->entityClass, 'x');
             $i = 1;
             // filtering: advanced search
@@ -344,7 +345,11 @@ class ListingController {
                     ) {
                         continue;
                     }
-                    $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                    if (isset($metaData->associationMappings[$field])) {
+                        $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                    } else {
+                        $qb->andWhere($qb->expr()->like('x.' . $field, '?' . $i));
+                    }
                     $qb->setParameter($i, $crit);
                     $i++;
                 }

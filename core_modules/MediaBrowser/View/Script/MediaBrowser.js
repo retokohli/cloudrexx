@@ -38,21 +38,24 @@ cx.ready(function () {
             icon: 'icon-upload',
             controller: 'UploaderCtrl',
             name: 'uploader',
-            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Uploader.html'
+            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Uploader.html',
+            always: false
         })
         .add({
             label: cx.variables.get('TXT_FILEBROWSER_FILEBROWSER', 'mediabrowser'),
             icon: 'icon-folder',
-            controller: 'MediaBrowserListCtrl',
+            controller: 'FilebrowserCtrl',
             name: 'filebrowser',
-            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/FileBrowser.html'
+            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/FileBrowser.html',
+            always: false
         })
         .add({
             label: cx.variables.get('TXT_FILEBROWSER_SITESTRUCTURE', 'mediabrowser'),
             icon: 'icon-sitestructure',
             controller: 'SitestructureCtrl',
             name: 'sitestructure',
-            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Sitestructure.html'
+            templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Sitestructure.html',
+            always: false
         });
     }])
     .controller('MainCtrl', [
@@ -90,66 +93,83 @@ cx.ready(function () {
             // TODO: Find a better way of controlling the view than "cxMbViews".
             $scope.dataTabs = dataTabs.get();
             $scope.tabs = $scope.dataTabs;
+
             // cx-mb-views
-            // TODO: Clean this mess: Implement a single point of entry to add "tabs"
             if (
                 mediabrowserConfig.get('views') &&
                 mediabrowserConfig.get('views') !== 'all'
             ) {
                 var isStartviewInViews = false;
-                var newTabNames = mediabrowserConfig.get('views');
-                if (
-                    newTabNames.indexOf("filebrowser") !== -1 &&
-                    newTabNames.indexOf("uploader") === -1
-                ) {
-                    newTabNames.push("uploader");
-                }
-                if (
-                    newTabNames.indexOf("filebrowser") === -1 &&
-                    newTabNames.indexOf("uploader") !== -1
-                ) {
-                    newTabNames.push("filebrowser");
-                }
-                var newTabs = [];
-                var tabStartViewName;
-                var tabName;
-                newTabNames.forEach(function (newTabName) {
-                    // TODO: Flush historic names
-                    tabName = (newTabName === 'filebrowser')
-                        ? 'MediaBrowserList' : newTabName;
-                    tabStartViewName =
-                        tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Ctrl';
-                    $scope.dataTabs.forEach(function (tab) {
-                        if (tab.name === newTabName) {
-                            if (tabStartViewName === mediabrowserConfig.get('startView')) {
-                                isStartviewInViews = true;
-                            }
-                            newTabs.push(tab);
-                            return false;
-                        }
-                    });
-                });
+                var selectedTabNames = mediabrowserConfig.get('views');
 
-                // TODO: Obsolete and remove this: Allow tabs added by extensions to show up.
-                // If the mess above is cleaned up, and a single proper way for registering
-                // views is implemented, this should no longer be necessary:
+                // TODO: Flush historic names
+                // tab MediaBrowserList is legacy naming. Use filebrowser instead
+                if (selectedTabNames.indexOf("MediaBrowserList") !== -1) {
+                    selectedTabNames[selectedTabNames.indexOf("MediaBrowserList")] = "filebrowser";
+                }
+
+                // ensure uploader tab is available in case filebrowser
+                // tab is loaded
+                if (
+                    selectedTabNames.indexOf("filebrowser") !== -1 &&
+                    selectedTabNames.indexOf("uploader") === -1
+                ) {
+                    selectedTabNames.push("uploader");
+                }
+
+                // ensure filebrowser tab is available in case uploader
+                // tab is loaded
+                if (
+                    selectedTabNames.indexOf("filebrowser") === -1 &&
+                    selectedTabNames.indexOf("uploader") !== -1
+                ) {
+                    selectedTabNames.push("filebrowser");
+                }
+
+                // load only selected tabs
+                var selectedTabs = [];
+                var forcedTabs = [];
                 $scope.dataTabs.forEach(function (tab) {
+                    // skip non-selected tabs
                     if (
-                        tab.name !== "uploader" &&
-                        tab.name !== "filebrowser" &&
-                        tab.name !== "sitestructure"
+                        selectedTabNames.indexOf(tab.name) === -1 &&
+                        !tab.always
                     ) {
-                    newTabs.push(tab);
+                        return false;
+                    }
+
+                    // load tab
+                    if (selectedTabNames.indexOf(tab.name) !== -1) {
+                        selectedTabs.push(tab);
+                    } else {
+                        forcedTabs.push(tab);
+                    }
+
+                    // verify that selected start tab is part of the selected
+                    // tabs
+                    if (isStartviewInViews) {
+                        return false;
+                    }
+
+                    var tabStartViewName =
+                        tab.name.charAt(0).toUpperCase() + tab.name.slice(1) + 'Ctrl';
+                    if (tabStartViewName === mediabrowserConfig.get('startView')) {
+                        isStartviewInViews = true;
                     }
                 });
 
-                $scope.tabs = newTabs;
-                if (isStartviewInViews) {
-                    $scope.go(mediabrowserConfig.get('startView'));
-                } else {
-                    $scope.go($scope.tabs[0].name);
+                $scope.tabs = selectedTabs.concat(forcedTabs);
+
+                // set default start tab
+                if (!isStartviewInViews) {
+                    mediabrowserConfig.set('startView', 'FilebrowserCtrl');
                 }
             }
+
+            // show start tab
+            $scope.go(mediabrowserConfig.get('startView'));
+
+            // load MediaSources of filebrowser tab
             loadSources();
 
             function go(controllerName) {
@@ -229,6 +249,7 @@ cx.ready(function () {
                 }
                 $scope.searchSourceLoaded = true;
             };
+
             // Triggered by both main and FileBrowser
             // -> Move to a Service or FileBrowser?
             function updateSource(recursive, sourceChanged) {
@@ -504,7 +525,7 @@ cx.ready(function () {
             };
         }
     ])
-    .controller('MediaBrowserListCtrl', [
+    .controller('FilebrowserCtrl', [
         '$scope', '$http', 'mediabrowserConfig', 'mediabrowserLoadingScreen',
         function ($scope, $http, mediabrowserConfig, mediabrowserLoadingScreen) {
             $scope.lastActiveFile = {};
@@ -528,7 +549,7 @@ cx.ready(function () {
 
             $scope.sourcesLoaded.promise.then(function () {
                 if (!$scope.files) {
-                    $scope.updateSource();
+                    $scope.updateSource(false, false);
                 }
             });
 
@@ -819,7 +840,7 @@ cx.ready(function () {
             function clickPage(site) {
                 var fn = mediabrowserConfig.get('callbackWrapper');
                 if (typeof fn === 'function') {
-                    fn({type: 'page', data: [site]});
+                    fn({type: 'page', locale: $scope.activeLanguage, data: [site]});
                 }
                 $scope.closeModal();
             }
@@ -1143,7 +1164,7 @@ cx.ready(function () {
             /**
             * Set all options and default values
             */
-            mediabrowserConfig.set('startView', 'MediaBrowserListCtrl');
+            mediabrowserConfig.set('startView', 'FilebrowserCtrl');
             if (attrs.cxMbStartview) {
                 mediabrowserConfig.set('startView', attrs.cxMbStartview.charAt(0).toUpperCase() + attrs.cxMbStartview.slice(1) + "Ctrl");
             }
@@ -1166,8 +1187,8 @@ cx.ready(function () {
                 mediabrowserConfig.set('multipleSelect', attrs.cxMbMultipleselect);
             }
             mediabrowserConfig.set('modalOpened', false);
-            if (attrs.cxMbCbJsModalopened) {
-                mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
+            if (attrs.cxMbModalopened) {
+                mediabrowserConfig.set('modalOpened', attrs.cxMbModalopened);
             }
             if (attrs.startPath) {
                 mediabrowserConfig.set('lastPath', attrs.startPath);
@@ -1176,8 +1197,8 @@ cx.ready(function () {
                 mediabrowserConfig.set('modalClosed', config.callback);
             } else {
                 mediabrowserConfig.set('modalClosed', false);
-                if (attrs.cxMbCbJsModalclosed) {
-                    mediabrowserConfig.set('modalClosed', attrs.cxMbCbJsModalclosed);
+                if (attrs.cxMbModalclosed) {
+                    mediabrowserConfig.set('modalClosed', attrs.cxMbModalclosed);
                 }
             }
             mediabrowserConfig.set('isOpen', true);
