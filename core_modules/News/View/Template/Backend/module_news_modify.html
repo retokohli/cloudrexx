@@ -88,13 +88,13 @@
         var options = {};
         switch (sType) {
             case 'image':
-                options = {cxMbViews: 'filebrowser', cxMbStartview: 'MediaBrowserList'};
+                options = {cxMbViews: 'filebrowser', cxMbStartview: 'filebrowser'};
                 break;
             case 'mixed':
                 options = {cxMbViews: 'sitestructure,filebrowser', cxMbStartview: 'Sitestructure'};
                 break;
             case 'link':
-                options = {cxMbViews: 'filebrowser,sitestructure', cxMbStartview: 'MediaBrowserList'};
+                options = {cxMbViews: 'filebrowser,sitestructure', cxMbStartview: 'filebrowser'};
                 break;
         }
         cx.variables.get('jquery','mediabrowser')('#newsMediaBrowser').trigger('click', options);

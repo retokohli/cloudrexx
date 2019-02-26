@@ -43,7 +43,7 @@ cx.ready(function () {
         .add({
             label: cx.variables.get('TXT_FILEBROWSER_FILEBROWSER', 'mediabrowser'),
             icon: 'icon-folder',
-            controller: 'MediaBrowserListCtrl',
+            controller: 'FilebrowserCtrl',
             name: 'filebrowser',
             templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/FileBrowser.html'
         })
@@ -115,8 +115,8 @@ cx.ready(function () {
                 var tabName;
                 newTabNames.forEach(function (newTabName) {
                     // TODO: Flush historic names
-                    tabName = (newTabName === 'filebrowser')
-                        ? 'MediaBrowserList' : newTabName;
+                    tabName = (newTabName === 'MediaBrowserList')
+                        ? 'filebrowser' : newTabName;
                     tabStartViewName =
                         tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Ctrl';
                     $scope.dataTabs.forEach(function (tab) {
@@ -504,7 +504,7 @@ cx.ready(function () {
             };
         }
     ])
-    .controller('MediaBrowserListCtrl', [
+    .controller('FilebrowserCtrl', [
         '$scope', '$http', 'mediabrowserConfig', 'mediabrowserLoadingScreen',
         function ($scope, $http, mediabrowserConfig, mediabrowserLoadingScreen) {
             $scope.lastActiveFile = {};
@@ -1143,7 +1143,7 @@ cx.ready(function () {
             /**
             * Set all options and default values
             */
-            mediabrowserConfig.set('startView', 'MediaBrowserListCtrl');
+            mediabrowserConfig.set('startView', 'FilebrowserCtrl');
             if (attrs.cxMbStartview) {
                 mediabrowserConfig.set('startView', attrs.cxMbStartview.charAt(0).toUpperCase() + attrs.cxMbStartview.slice(1) + "Ctrl");
             }
