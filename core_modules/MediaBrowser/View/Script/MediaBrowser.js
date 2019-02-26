@@ -1166,8 +1166,8 @@ cx.ready(function () {
                 mediabrowserConfig.set('multipleSelect', attrs.cxMbMultipleselect);
             }
             mediabrowserConfig.set('modalOpened', false);
-            if (attrs.cxMbCbJsModalopened) {
-                mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
+            if (attrs.cxMbModalopened) {
+                mediabrowserConfig.set('modalOpened', attrs.cxMbModalopened);
             }
             if (attrs.startPath) {
                 mediabrowserConfig.set('lastPath', attrs.startPath);
@@ -1176,8 +1176,8 @@ cx.ready(function () {
                 mediabrowserConfig.set('modalClosed', config.callback);
             } else {
                 mediabrowserConfig.set('modalClosed', false);
-                if (attrs.cxMbCbJsModalclosed) {
-                    mediabrowserConfig.set('modalClosed', attrs.cxMbCbJsModalclosed);
+                if (attrs.cxMbModalclosed) {
+                    mediabrowserConfig.set('modalClosed', attrs.cxMbModalclosed);
                 }
             }
             mediabrowserConfig.set('isOpen', true);
