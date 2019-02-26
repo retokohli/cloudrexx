@@ -285,7 +285,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             if ($searchByZip) {
                 $strWhereTerm = "AND (rel_inputfield.`form_id` = entry.`form_id`) ";
                 $strWhereTerm .="AND (rel_inputfield.`field_id` = (".$this->getQueryToFindInputFieldIdByContextType('zip').")) ";
-                $strWhereTerm .="AND (rel_inputfield.`lang_id` = '".$langId."')";
+                $strWhereTerm .="AND (rel_inputfield.`lang_id` = '".$langId."') ";
                 $strWhereTerm .="AND (rel_inputfield.`value` REGEXP '(^|[^a-z0-9])".$this->strSearchTerm."([^a-z0-9]|$)')";
             } else {
                 $strWhereTerm = "AND ((rel_inputfield.`value` LIKE '%".$this->strSearchTerm."%') OR (entry.`id` = '".$this->strSearchTerm."')) ";
