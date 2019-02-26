@@ -255,16 +255,25 @@ class ContentManager extends \Module
             }
         }
 
-        // Mediabrowser
+        // MediaBrowser for redirect selection
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array('type' => 'button'));
         $mediaBrowser->setCallback('setWebPageUrlCallback');
         $mediaBrowser->setOptions(array(
             'startview' => 'sitestructure',
+            'views' => 'uploader,filebrowser,sitestructure',
             'id' => 'page_target_browse'
         ));
         $this->template->setVariable(array(
             'CM_MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+        ));
+
+        // MediaBrowser for symlink selection
+        $mediaBrowser->setOptions(array(
+            'views' => 'sitestructure',
+        ));
+        $this->template->setVariable(array(
+            'CM_MEDIABROWSER_BUTTON_SYMLINK' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
         ));
 
         $toggleTitles      = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
