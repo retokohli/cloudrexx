@@ -1822,7 +1822,7 @@ class DownloadsManager extends DownloadsLibrary
         $mediaBrowser->setCallback('mbCallback');
         $options = array(
             'type'             => 'button',
-            'data-cx-mb-views' => $type,
+            'views' => $type,
         );
 
         if (!empty($id)) {
