@@ -2077,11 +2077,11 @@ JSCODE;
     /**
      * Searches the content and returns an array that is built as needed by the search module.
      *
-     * @param string $searchTerm
+     * @param \Cx\Core_Modules\Search\Controller\Search $search
      *
      * @return array
      */
-    public function searchResultsForSearchModule($searchTerm)
+    public function searchResultsForSearchModule(\Cx\Core_Modules\Search\Controller\Search $search)
     {
         //get the config site values
         \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
