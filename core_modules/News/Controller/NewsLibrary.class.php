@@ -3134,6 +3134,8 @@ EOF;
             $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $newsSourceLink . '<br />';
         }
         $objTpl->setVariable(array(
+            'TXT_' . $templateVariablePrefix . 'NEWS_SOURCE' =>
+                $_ARRAYLANG['TXT_NEWS_SOURCE'],
             $templateVariablePrefix . 'NEWS_SOURCE'     => $newsSource,
             $templateVariablePrefix . 'NEWS_SOURCE_LINK'=> $newsSourceLink,
             $templateVariablePrefix . 'NEWS_SOURCE_SRC' => $source,
@@ -3147,10 +3149,12 @@ EOF;
         }
 
         // parse external link 1
-        $objTpl->setVariable(
-            $templateVariablePrefix . 'NEWS_LINK1_SRC',
-            contrexx_raw2encodedUrl($url1)
-        );
+        $objTpl->setVariable(array(
+            'TXT_' . $templateVariablePrefix . 'NEWS_LINK1' =>
+                $_ARRAYLANG['TXT_NEWS_LINK1'],
+            $templateVariablePrefix . 'NEWS_LINK1_SRC' =>
+                contrexx_raw2encodedUrl($url1),
+        ));
         if ($objTpl->blockExists($templateBlockPrefix . 'news_link1')) {
             if (empty($url1)) {
                 $objTpl->hideBlock($templateBlockPrefix . 'news_link1');
@@ -3160,10 +3164,12 @@ EOF;
         }
 
         // parse external link 2
-        $objTpl->setVariable(
-            $templateVariablePrefix . 'NEWS_LINK2_SRC',
-            contrexx_raw2encodedUrl($url2)
-        );
+        $objTpl->setVariable(array(
+            'TXT_' . $templateVariablePrefix . 'NEWS_LINK2' =>
+                $_ARRAYLANG['TXT_NEWS_LINK2'],
+            $templateVariablePrefix . 'NEWS_LINK2_SRC' =>
+                contrexx_raw2encodedUrl($url2)
+        ));
         if ($objTpl->blockExists($templateBlockPrefix . 'news_link2')) {
             if (empty($url2)) {
                 $objTpl->hideBlock($templateBlockPrefix . 'news_link2');

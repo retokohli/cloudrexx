@@ -348,6 +348,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $newsSourceLink . '<br />';
         }
         $objTpl->setVariable(array(
+            'TXT_NEWS_SOURCE' => $_ARRAYLANG['TXT_NEWS_SOURCE'],
             'NEWS_SOURCE'     => $newsSource,
             'NEWS_SOURCE_LINK'=> $newsSourceLink,
             'NEWS_SOURCE_SRC' => $source,
@@ -361,10 +362,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // parse external link 1
-        $objTpl->setVariable(
-            'NEWS_LINK1_SRC',
-            contrexx_raw2encodedUrl($url1)
-        );
+        $objTpl->setVariable(array(
+            'TXT_NEWS_LINK1' =>
+                $_ARRAYLANG['TXT_NEWS_LINK1'],
+            'NEWS_LINK1_SRC' =>
+                contrexx_raw2encodedUrl($url1),
+        ));
         if ($objTpl->blockExists('news_link1')) {
             if (empty($url1)) {
                 $objTpl->hideBlock('news_link1');
@@ -374,10 +377,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // parse external link 2
-        $objTpl->setVariable(
-            'NEWS_LINK2_SRC',
-            contrexx_raw2encodedUrl($url2)
-        );
+        $objTpl->setVariable(array(
+            'TXT_NEWS_LINK2' =>
+                $_ARRAYLANG['TXT_NEWS_LINK2'],
+            'NEWS_LINK2_SRC' =>
+                contrexx_raw2encodedUrl($url2)
+        ));
         if ($objTpl->blockExists('news_link2')) {
             if (empty($url2)) {
                 $objTpl->hideBlock('news_link2');
