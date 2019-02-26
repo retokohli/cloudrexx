@@ -792,6 +792,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $mediaBrowser->setOptions(array(
                     'type'             => 'button',
                     'views'            => 'sitestructure',
+                    'startview'        => 'sitestructure',
                     'id'               => 'media-browser-button',
                     'style'            => 'display: none;'
         ));
