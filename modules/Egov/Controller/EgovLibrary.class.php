@@ -1375,9 +1375,9 @@ FORMTEMPLATE;
         }
 
         $options = array(
-            'type'             => 'button',
-            'data-cx-mb-views' => $dataMbViews,
-            'id'               => $id,
+            'type'  => 'button',
+            'views' => $dataMbViews,
+            'id'    => $id,
         );
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions($options);
