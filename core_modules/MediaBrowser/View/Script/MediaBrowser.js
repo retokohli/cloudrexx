@@ -840,7 +840,7 @@ cx.ready(function () {
             function clickPage(site) {
                 var fn = mediabrowserConfig.get('callbackWrapper');
                 if (typeof fn === 'function') {
-                    fn({type: 'page', data: [site]});
+                    fn({type: 'page', locale: $scope.activeLanguage, data: [site]});
                 }
                 $scope.closeModal();
             }
