@@ -365,7 +365,7 @@
 }
 
 .uploader-modal .popover.right, .media-browser-modal-window .popover.right {
-    margin-left: 40px;
+    margin-left: -100px;
 }
 
 .uploader-modal .popover.right > .arrow, .media-browser-modal-window .popover.right > .arrow {
