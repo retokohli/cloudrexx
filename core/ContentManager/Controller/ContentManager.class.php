@@ -260,7 +260,7 @@ class ContentManager extends \Module
         $mediaBrowser->setOptions(array('type' => 'button'));
         $mediaBrowser->setCallback('setWebPageUrlCallback');
         $mediaBrowser->setOptions(array(
-            'data-cx-mb-startview' => 'sitestructure',
+            'startview' => 'sitestructure',
             'id' => 'page_target_browse'
         ));
         $this->template->setVariable(array(
@@ -597,7 +597,7 @@ class ContentManager extends \Module
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
             'type' => 'button',
-            'data-cx-mb-views' => $type
+            'views' => $type
         ));
         $mediaBrowser->setCallback('cx.cm.setSelected' . ucfirst($name));
 
