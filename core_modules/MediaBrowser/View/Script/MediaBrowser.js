@@ -91,7 +91,6 @@ cx.ready(function () {
             $scope.dataTabs = dataTabs.get();
             $scope.tabs = $scope.dataTabs;
             // cx-mb-views
-            // TODO: Clean this mess: Implement a single point of entry to add "tabs"
             if (
                 mediabrowserConfig.get('views') &&
                 mediabrowserConfig.get('views') !== 'all'
@@ -117,37 +116,31 @@ cx.ready(function () {
                 ) {
                     newTabNames.push("filebrowser");
                 }
-                var newTabs = [];
-                var tabStartViewName;
-                var tabName;
-                newTabNames.forEach(function (newTabName) {
-                    $scope.dataTabs.forEach(function (tab) {
-                        if (tab.name === newTabName) {
-                            var tabStartViewName =
-                                tab.name.charAt(0).toUpperCase() + tab.name.slice(1) + 'Ctrl';
-                            if (tabStartViewName === mediabrowserConfig.get('startView')) {
-                                isStartviewInViews = true;
-                            }
-                            newTabs.push(tab);
-                            return false;
-                        }
-                    });
-                });
 
-                // TODO: Obsolete and remove this: Allow tabs added by extensions to show up.
-                // If the mess above is cleaned up, and a single proper way for registering
-                // views is implemented, this should no longer be necessary:
+                var newTabs = [];
+                // load only selected tabs
                 $scope.dataTabs.forEach(function (tab) {
-                    if (
-                        tab.name !== "uploader" &&
-                        tab.name !== "filebrowser" &&
-                        tab.name !== "sitestructure"
-                    ) {
+                    // skip non-selected tabs
+                    if (selectedTabNames.indexOf(tab.name) === -1) {
+                        return false;
+                    }
                     newTabs.push(tab);
+
+                    // verify that selected start tab is part of the selected
+                    // tabs
+                    if (isStartviewInViews) {
+                        return false;
+                    }
+
+                    var tabStartViewName =
+                        tab.name.charAt(0).toUpperCase() + tab.name.slice(1) + 'Ctrl';
+                    if (tabStartViewName === mediabrowserConfig.get('startView')) {
+                        isStartviewInViews = true;
                     }
                 });
 
-                $scope.tabs = newTabs;
+                $scope.tabs = selectedTabs;
+
                 // set default start tab
                 if (!isStartviewInViews) {
                     mediabrowserConfig.set('startView', 'FilebrowserCtrl');
