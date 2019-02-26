@@ -377,10 +377,10 @@ class MemberDirLibrary
     protected function getMediaBrowserButton($id, $callback = '')
     {
         $options = array(
-            'type'             => 'button',
-            'data-cx-mb-views' => 'filebrowser',
-            'id'               => $id,
-            'style'            => 'display: none;',
+            'type'  => 'button',
+            'views' => 'filebrowser',
+            'id'    => $id,
+            'style' => 'display: none;',
         );
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions($options);
