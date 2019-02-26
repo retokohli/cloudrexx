@@ -3056,11 +3056,6 @@ EOF;
             \LinkGenerator::parseTemplate($newsTeaser);
         }
 
-        $newsSource           = '';
-        if (!empty($source)) {
-            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
-        }
-
         $redirectNewWindow = !empty($objResult->fields['redirect']) && !empty($objResult->fields['redirectNewWindow']);
         $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
         $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
@@ -3086,7 +3081,6 @@ EOF;
            $templateVariablePrefix . 'NEWS_TEASER'         => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
            $templateVariablePrefix . 'NEWS_TEASER_TEXT'    => $newsTeaser,
            $templateVariablePrefix . 'NEWS_LASTUPDATE'     => $newsLastUpdate,
-           $templateVariablePrefix . 'NEWS_SOURCE'         => $newsSource,
            $templateVariablePrefix . 'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
            $templateVariablePrefix . 'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            $templateVariablePrefix . 'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
@@ -3133,6 +3127,26 @@ EOF;
             $templateVariablePrefix . 'NEWS_URL',
             $newsUrlLink
         );
+
+        // parse external source
+        $newsSourceLink = '';
+        $newsSource = '';
+        if (!empty($source)) {
+            $newsSourceLink = $this->getNewsLink($source);
+            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $newsSourceLink . '<br />';
+        }
+        $objTpl->setVariable(array(
+            $templateVariablePrefix . 'NEWS_SOURCE'     => $newsSource,
+            $templateVariablePrefix . 'NEWS_SOURCE_LINK'=> $newsSourceLink,
+            $templateVariablePrefix . 'NEWS_SOURCE_SRC' => $source,
+        ));
+        if ($objTpl->blockExists($templateBlockPrefix . 'news_source')) {
+            if (empty($source)) {
+                $objTpl->hideBlock($templateBlockPrefix . 'news_source');
+            } else {
+                $objTpl->touchBlock($templateBlockPrefix . 'news_source');
+            }
+        }
 
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $objTpl->blockExists($templateBlockPrefix . 'news_use_teaser_text')) {
             $objTpl->hideBlock($templateBlockPrefix . 'news_use_teaser_text');

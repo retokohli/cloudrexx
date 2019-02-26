@@ -286,17 +286,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
         $url1               = $objResult->fields['url1'];
         $url2               = $objResult->fields['url2'];
-        $newsSource         = '';
         $newsLastUpdate     = !empty($lastUpdate)
                                ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT, $lastUpdate)
                                : '';
 
         if ($objResult->fields['enddate'] != '0000-00-00 00:00:00') {
             $expirationDate = new \DateTime($objResult->fields['enddate']);
-        }
-
-        if (!empty($source)) {
-            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
         }
 
         $this->newsTitle = $objResult->fields['title'];
@@ -327,7 +322,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_TITLE'          => $newstitle,
            'NEWS_TEASER_TEXT'    => $newsTeaser,
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
-           'NEWS_SOURCE'         => $newsSource,
            'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
            'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
@@ -347,6 +341,26 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_URL',
             $newsUrl
         );
+
+        // parse external source
+        $newsSourceLink = '';
+        $newsSource = '';
+        if (!empty($source)) {
+            $newsSourceLink = $this->getNewsLink($source);
+            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $newsSourceLink . '<br />';
+        }
+        $objTpl->setVariable(array(
+            'NEWS_SOURCE'     => $newsSource,
+            'NEWS_SOURCE_LINK'=> $newsSourceLink,
+            'NEWS_SOURCE_SRC' => $source,
+        ));
+        if ($objTpl->blockExists('news_source')) {
+            if (empty($source)) {
+                $objTpl->hideBlock('news_source');
+            } else {
+                $objTpl->touchBlock('news_source');
+            }
+        }
 
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
             $this->_objTpl->hideBlock('news_use_teaser_text');
