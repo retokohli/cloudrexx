@@ -286,7 +286,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
         $url1               = $objResult->fields['url1'];
         $url2               = $objResult->fields['url2'];
-        $newsUrl            = '';
         $newsSource         = '';
         $newsLastUpdate     = !empty($lastUpdate)
                                ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT, $lastUpdate)
@@ -296,12 +295,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $expirationDate = new \DateTime($objResult->fields['enddate']);
         }
 
-        if (!empty($url1)) {
-            $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
-        }
-        if (!empty($url2)) {
-            $newsUrl .= $this->getNewsLink($url2).'<br />';
-        }
         if (!empty($source)) {
             $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
         }
@@ -335,13 +328,25 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_TEASER_TEXT'    => $newsTeaser,
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
            'NEWS_SOURCE'         => $newsSource,
-           'NEWS_URL'            => $newsUrl,
            'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
            'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
            'NEWS_TYPE_ID'        => $objResult->fields['typeid'],
            'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
+
+        // parse 'combined' external link
+        $newsUrl = '';
+        if (!empty($url1)) {
+            $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
+        }
+        if (!empty($url2)) {
+            $newsUrl .= $this->getNewsLink($url2).'<br />';
+        }
+        $objTpl->setVariable(
+            'NEWS_URL',
+            $newsUrl
+        );
 
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
             $this->_objTpl->hideBlock('news_use_teaser_text');

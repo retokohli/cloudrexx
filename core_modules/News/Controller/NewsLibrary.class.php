@@ -3056,14 +3056,6 @@ EOF;
             \LinkGenerator::parseTemplate($newsTeaser);
         }
 
-        $newsUrlLink          = '';
-        if (!empty($url1)) {
-            $newsUrlLink = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
-        }
-        if (!empty($url2)) {
-            $newsUrlLink .= $this->getNewsLink($url2).'<br />';
-        }
-
         $newsSource           = '';
         if (!empty($source)) {
             $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
@@ -3095,7 +3087,6 @@ EOF;
            $templateVariablePrefix . 'NEWS_TEASER_TEXT'    => $newsTeaser,
            $templateVariablePrefix . 'NEWS_LASTUPDATE'     => $newsLastUpdate,
            $templateVariablePrefix . 'NEWS_SOURCE'         => $newsSource,
-           $templateVariablePrefix . 'NEWS_URL'            => $newsUrlLink,
            $templateVariablePrefix . 'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
            $templateVariablePrefix . 'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            $templateVariablePrefix . 'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
@@ -3129,6 +3120,19 @@ EOF;
                 $objTpl->touchBlock($templateBlockPrefix . 'news_url');
             }
         }
+
+        // parse 'combined' external link
+        $newsUrlLink = '';
+        if (!empty($url1)) {
+            $newsUrlLink = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
+        }
+        if (!empty($url2)) {
+            $newsUrlLink .= $this->getNewsLink($url2).'<br />';
+        }
+        $objTpl->setVariable(
+            $templateVariablePrefix . 'NEWS_URL',
+            $newsUrlLink
+        );
 
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $objTpl->blockExists($templateBlockPrefix . 'news_use_teaser_text')) {
             $objTpl->hideBlock($templateBlockPrefix . 'news_use_teaser_text');
