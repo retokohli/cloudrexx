@@ -578,12 +578,25 @@ class MediaDirectoryLibrary
 
     /**
      * Get SQL statement to fetch the ID of the primary field of a form.
-     * The SQL statement can be used as a sub-query in a query where contrexx_module_mediadir_entry
-     * is used and has been aliased as 'entry'
+     * The SQL statement can be used as a sub-query in a query where
+     * contrexx_module_mediadir_entry is used and has been aliased as 'entry'
      *
-     * @return string
+     * @return string   The SQL statement to be used as sub-query
      */
     public function getQueryToFindPrimaryInputFieldId() 
+    {
+        return $this->getQueryToFindInputFieldIdByContextType('title');
+    }
+
+    /**
+     * Get SQL statement to fetch the ID of the field of a form identified by
+     * its context.
+     * The SQL statement can be used as a sub-query in a query where
+     * contrexx_module_mediadir_entry is used and has been aliased as 'entry'
+     *
+     * @return string   The SQL statement to be used as sub-query
+     */
+    protected function getQueryToFindInputFieldIdByContextType($type)
     {
         $query = "SELECT
                         first_rel_inputfield.`field_id` AS `id`
@@ -600,7 +613,7 @@ class MediaDirectoryLibrary
                     AND
                         (first_rel_inputfield.`form_id` = entry.`form_id`)
                     ORDER BY
-                        FIELD(inputfield.context_type, 'title') DESC,
+                        FIELD(inputfield.context_type, '".$type."') DESC,
                         inputfield.`order` ASC
                     LIMIT 1";
         return $query;
