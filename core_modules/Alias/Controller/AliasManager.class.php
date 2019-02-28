@@ -341,11 +341,6 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
 
                     if ($newtype == 'local') {
                         $placeholder = \Cx\Core\Routing\NodePlaceholder::fromPlaceholder($newtarget);
-                        // when creating a new alias
-                        //if (($aliasId === 0) && !$placeholder->hasLang()) {
-                            // make sure language is specified in placeholder
-                            $placeholder->setLang(FRONTEND_LANG_ID);
-                        //}
                         // force usage of node ID
                         $newtarget = $placeholder->getPlaceholder(true);
                     }

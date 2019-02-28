@@ -651,7 +651,12 @@ class BackendTable extends HTML_Table {
                 $deleteUrl->setParam('vg_increment_number', $functions['vg_increment_number']);
                 $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\Csrf::code();
                 $onclick ='if (confirm(\''.$_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))'.
-                        'window.location.replace(\''.$deleteUrl.'\');';
+                    'window.location.replace(\''.$deleteUrl.'\');';
+                if (!empty($functions['onclick']) &&
+                    !empty($functions['onclick']['delete'])
+                ) {
+                    $onclick = $functions['onclick']['delete'].'(\''. $deleteUrl .'\')';
+                }
                 $_uri = 'javascript:void(0);';
                 $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete" title="'.$_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'].'"></a>';
             }

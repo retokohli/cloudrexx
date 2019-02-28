@@ -424,7 +424,7 @@ $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "URL zum vorangehenden Artikel
 $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "URL zum nächsten Artikel";
 $_ARRAYLANG['TXT_NEWS_USE_PREVIOUS_NEXT_LINK'] = "Vorangehenden & nächsten Artikel verwenden";
 
-$_ARRAYLANG['TXT_NEWS_SETTINGS_USE_RELATED_NEWS'] = 'Verwante Artikel verwenden';
+$_ARRAYLANG['TXT_NEWS_SETTINGS_USE_RELATED_NEWS'] = 'Verwandte Artikel verwenden';
 $_ARRAYLANG['TXT_NEWS_SETTINGS_USE_THUMBNAILS'] = 'Vorschaubilder anstelle der originalen Bilder anzeigen';
 $_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Verwandte Artikel";
 $_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Verknüpfte Artikel";
