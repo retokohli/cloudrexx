@@ -570,6 +570,9 @@ class BackendTable extends HTML_Table {
         if (!$virtual && isset($functions['edit']) && $functions['edit']) {
             return true;
         }
+        if (!$virtual && isset($functions['show']) && $functions['show']) {
+            return true;
+        }
         if (!$virtual && isset($functions['delete']) && $functions['delete']) {
             return true;
         }
@@ -589,6 +592,7 @@ class BackendTable extends HTML_Table {
             $rowname,
             clone $baseUrl
         );
+        $showUrl = clone $baseUrl;
         $params = $editUrl->getParamArray();
         if (isset($functions['sortBy']) && isset($functions['sortBy']['field'])) {
             $editUrl->setParam($functions['sortBy']['field'] . 'Pos', null);
@@ -596,6 +600,7 @@ class BackendTable extends HTML_Table {
         $editId = '';
         if (!empty($params['editid'])) {
             $editId = $params['editid'] . ',';
+            $showId = $params['editid'];
         }
         $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
 
@@ -625,6 +630,15 @@ class BackendTable extends HTML_Table {
         }
 
         if(!$virtual){
+            if (isset($functions['show']) && $functions['show']) {
+                $showUrl->setParam('showid', $showId);
+                //remove the parameter 'vg_increment_number' from editUrl
+                //if the baseUrl contains the parameter 'vg_increment_number
+                if (isset($params['vg_increment_number'])) {
+                    \Html::stripUriParam($showUrl, 'vg_increment_number');
+                }
+                $code .= '<a href="' . $showUrl . '" class="show" title="'.$_ARRAYLANG['TXT_CORE_RECORD_SHOW_TITLE'].'"></a>';
+            }
             if (isset($functions['copy']) && $functions['copy']) {
                 $actionUrl = clone $editUrl;
                 $actionUrl->setParam('copy', $editId);

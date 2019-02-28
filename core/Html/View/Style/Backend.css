@@ -39,6 +39,16 @@ a.copy {
     cursor: pointer;
 }
 
+a.show {
+    background-image: url(/core/Core/View/Media/icons/details.gif);
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    margin-top: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
 form.cx-ui {
     float: none;
     clear: both;

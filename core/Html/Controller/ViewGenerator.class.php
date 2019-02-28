@@ -774,7 +774,12 @@ class ViewGenerator {
      * @return int 0 if no entry was found
      */
     protected function getEntryId() {
-        if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
+        if (
+            !isset($_GET['editid']) &&
+            !isset($_POST['editid']) &&
+            !isset($_GET['showid']) &&
+            !isset($_POST['showid'])
+        ) {
             return 0;
         }
         $editId = 0;
@@ -784,6 +789,13 @@ class ViewGenerator {
         if (isset($_POST['editid'])) {
             $editId = $this->getVgParam($_POST['editid']);
         }
+        if (isset($_GET['showid'])) {
+            $editId = $this->getVgParam($_GET['showid']);
+        }
+        if (isset($_POST['showid'])) {
+            $editId = $this->getVgParam($_POST['showid']);
+        }
+
         // Self-heal if the same param is specified multiple times:
         if (is_array($editId)) {
             return end($editId);
@@ -853,6 +865,11 @@ class ViewGenerator {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
+
+        $entityId = $this->getEntryId();
+	    if (!empty($_GET['showid'])) {
+	        return $this->renderFormForEntry($entityId, true);
+	    }
 
         // this case is used to copy the entry
         if (
@@ -1153,10 +1170,11 @@ class ViewGenerator {
      * This function will render the form for a given entry by id. If id is null, an empty form will be loaded
      *
      * @access protected
-     * @param int $entityId id of the entity
+     * @param int  $entityId id of the entity
+     * @param bool $readOnly if entity is only readable
      * @return string rendered view
      */
-    protected function renderFormForEntry($entityId) {
+    protected function renderFormForEntry($entityId, $readOnly = false) {
         global $_CORELANG;
 
         if (!isset($this->options['fields'])) {
@@ -1208,7 +1226,12 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions, $this);
+        if ($readOnly) {
+            unset($renderArray['vg_increment_number']);
+            $this->formGenerator = new \Cx\Core\Html\Controller\TableGenerator($renderArray, $this->options);
+        } else {
+            $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions, $this);
+        }
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
@@ -1920,6 +1943,16 @@ class ViewGenerator {
     }
 
     /**
+     * Get the Url to show an entry of this VG instance
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with edit arguments
+     */
+    public function getShowUrl($entryOrId, $url = null) {
+        return static::getVgShowUrl($this->viewId, $entryOrId, $url);
+    }
+
+    /**
      * Get the Url to copy an entry in this VG instance
      * @param int|string|array|object $entryOrId Entity or entity key
      * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
@@ -2036,6 +2069,41 @@ class ViewGenerator {
             static::getId($entryOrId)
         );
         return $url;
+    }
+
+    /**
+     * Get the Url to show an entry of a VG instance
+     * @param int $vgId ViewGenerator id
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with edit arguments
+     */
+    public static function getVgShowUrl($vgId, $entryOrId, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        static::appendVgParam(
+            $url,
+            $vgId,
+            'showid',
+            static::getShowId($entryOrId)
+        );
+        return $url;
+    }
+
+    /**
+     * Parses the mixed type $entryOrId param for all the get...Url methods
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @return string Entity identifier
+     */
+    protected static function getShowId($entryOrId) {
+        if (is_array($entryOrId)) {
+            return implode('/', $entryOrId);
+        }
+        if (is_object($entryOrId)) {
+            // find id using doctrine or dataset
+        }
+        return $entryOrId;
     }
 
     /**
