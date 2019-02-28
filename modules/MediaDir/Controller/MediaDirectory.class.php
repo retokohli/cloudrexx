@@ -451,7 +451,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 && $bolFormUseLevel) {
                 $objLevels = new MediaDirectoryLevel(null, $intLevelId, 1, $this->moduleName);
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
-                $objLevels->listLevels($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
+                $objLevels->listLevels($this->_objTpl, 2, null, null, null, $arrExistingBlocks, null, $intCmdFormId);
                 $this->_objTpl->clearVariables();
                 $this->_objTpl->setVariable($this->moduleLangVar.'_CATEGORY_LEVEL_TYPE', 'level');
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
@@ -464,7 +464,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             // or selected form hat option 'Use categories' activ and option 'Use levels' inactive
             if((((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1) || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
-                $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
+                $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks, 1, $intCmdFormId);
                 $this->_objTpl->clearVariables();
                 $this->_objTpl->setVariable($this->moduleLangVar.'_CATEGORY_LEVEL_TYPE', 'category');
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
