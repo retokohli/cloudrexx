@@ -252,6 +252,10 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                     ),
                     $prefix . $field . '.'
                 );
+                // if a relation is empty, it's to be an empty object!
+                if (!count($data[$field])) {
+                    $data[$field] = new \stdClass();
+                }
             }
             if (
                 !isset($this->options['skipVirtual']) ||
