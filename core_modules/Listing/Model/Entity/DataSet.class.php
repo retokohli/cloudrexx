@@ -209,29 +209,30 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 }
                 $data[$field] = $object->$methodNameToFetchAssociation();
                 if (
-                    isset($this->options['recursiveParsing']) &&
-                    $this->options['recursiveParsing'] &&
-                    is_object($data[$field])
+                    !isset($this->options['recursiveParsing']) ||
+                    !$this->options['recursiveParsing'] ||
+                    !is_object($data[$field])
                 ) {
-                    if (
-                        in_array(
-                            get_class($data[$field]),
-                            $forbiddenClasses
-                        )
-                    ) {
-                        unset($data[$field]);
-                        continue;
-                    }
-                    $foo = '';
-                    $data[$field] = $this->convertObject(
-                        $data[$field],
-                        $foo,
-                        array_merge(
-                            $forbiddenClasses,
-                            array(get_class($data[$field]))
-                        )
-                    );
+                    continue;
                 }
+                if (
+                    in_array(
+                        get_class($data[$field]),
+                        $forbiddenClasses
+                    )
+                ) {
+                    unset($data[$field]);
+                    continue;
+                }
+                $foo = '';
+                $data[$field] = $this->convertObject(
+                    $data[$field],
+                    $foo,
+                    array_merge(
+                        $forbiddenClasses,
+                        array(get_class($data[$field]))
+                    )
+                );
             }
             if (
                 !isset($this->options['skipVirtual']) ||
