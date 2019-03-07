@@ -201,13 +201,16 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 $data[$field] = $value;
             }
             $associationMappings = $em->getClassMetadata(get_class($object))->getAssociationMappings();
+            // loop over all relations of this entity
             foreach ($associationMappings as $field => $associationMapping) {
                 $classMethods = get_class_methods($object);
                 $methodNameToFetchAssociation = 'get'.ucfirst($field);
+                // stop if getter does not exist
                 if (!in_array($methodNameToFetchAssociation, $classMethods)) {
                     continue;
                 }
                 $data[$field] = $object->$methodNameToFetchAssociation();
+                // stop if recursion is not configured or target is not an object
                 if (
                     !isset($this->options['recursiveParsing']) ||
                     !$this->options['recursiveParsing'] ||
@@ -215,6 +218,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 ) {
                     continue;
                 }
+                // stop if entity is already parsed
                 if (
                     in_array(
                         get_class($data[$field]),
