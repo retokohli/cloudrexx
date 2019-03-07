@@ -256,6 +256,11 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         }
         foreach ($object as $attribute => $property) {
             if (is_object($property)) {
+                // if $property is an array collection, $attribute will be numeric
+                if ($object instanceof \Doctrine\Common\Collections\Collection) {
+                    // index collection entries by their "identifying field"
+                    $attribute = $property->getKeyAsString();
+                }
                 $data[$attribute] = $this->convertObject(
                     $property,
                     $key,
