@@ -180,7 +180,8 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
     protected function convertObject(
         $object,
         &$key,
-        $forbiddenClasses = array('Doctrine\ORM\PersistentCollection')
+        $forbiddenClasses = array('Doctrine\ORM\PersistentCollection'),
+        $prefix = 'x.'
     ) {
         $forbiddenClasses = array_merge(
             $forbiddenClasses,
@@ -219,8 +220,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 $data[$field] = $object->$methodNameToFetchAssociation();
                 // stop if recursion is not configured or target is not an object
                 if (
-                    !isset($this->options['recursiveParsing']) ||
-                    !$this->options['recursiveParsing'] ||
+                    !isset($this->options['recursions'][$prefix.$field]) ||
                     !is_object($data[$field])
                 ) {
                     continue;
@@ -243,7 +243,8 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                     array_merge(
                         $forbiddenClasses,
                         array($className)
-                    )
+                    ),
+                    $prefix . $field . '.'
                 );
             }
             if (
@@ -260,6 +261,8 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 if ($object instanceof \Doctrine\Common\Collections\Collection) {
                     // index collection entries by their "identifying field"
                     $attribute = $property->getKeyAsString();
+                } else {
+                    $prefix .= $attribute . '.';
                 }
                 $data[$attribute] = $this->convertObject(
                     $property,
@@ -267,7 +270,8 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                     array_merge(
                         $forbiddenClasses,
                         array(get_class($property))
-                    )
+                    ),
+                    $prefix
                 );
             } else {
                 $data[$attribute] = $property;
