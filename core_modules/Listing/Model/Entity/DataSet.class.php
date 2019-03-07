@@ -221,10 +221,11 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 ) {
                     continue;
                 }
+                $className = $associationMapping['targetEntity'];
                 // stop if entity is already parsed
                 if (
                     in_array(
-                        get_class($data[$field]),
+                        $className,
                         $forbiddenClasses
                     )
                 ) {
@@ -237,7 +238,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                     $foo,
                     array_merge(
                         $forbiddenClasses,
-                        array(get_class($data[$field]))
+                        array($className)
                     )
                 );
             }
