@@ -70,14 +70,31 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey DataAccessApiKey entity
      */
-    protected function getTestDataAccessApiKey() {}
+    protected function getTestDataAccessApiKey()
+    {
+        $entity = new \Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey();
+        $apiKeyEntity = new \Cx\Core_Modules\DataAccess\Model\Entity\ApiKey();
+        $dataAccesEntity = $this->getTestDataAccess();
+
+        $apiKeyEntity->setApiKey('test');
+
+        $entity->setApiKey($apiKeyEntity);
+        $entity->setDataAccess($dataAccesEntity);
+        $entity->setReadOnly(true);
+
+        return $entity;
+    }
 
     /**
      * Store the given DataAccess entity in the database.
      *
      * @param $entity \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess DataAccess to save
      */
-    protected function saveDataAccess($entity) {}
+    protected function saveDataAccess($entity)
+    {
+        $this::$em->persist($entity);
+        $this::$em->flush();
+    }
 
     /**
      * Find the DataAccess entity by given ID.
@@ -85,7 +102,14 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      * @param $id int ID to identify entity
      * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess found entity
      */
-    protected function findDataAccess($id) {}
+    protected function findDataAccess($id)
+    {
+        $repo = $this::$em->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
+        );
+
+        return $repo->find($id);
+    }
 
     /**
      * Get DataAccess Json Controller.
@@ -160,20 +184,69 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @coversNothing
      */
-    public function testEditDataAccess() {}
+    public function testEditDataAccess()
+    {
+        $newName = 'testEdit';
+
+        $entity = $this->getTestDataAccess();
+        $this->saveDataAccess($entity);
+
+        $entity->setName($newName);
+        $this->saveDataAccess($entity);
+
+        $editedEntity = $this->findDataAccess($entity->getId());
+
+        $this->assertInstanceOf(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess',
+            $editedEntity
+        );
+    }
 
     /**
      * Test if an ApiKey can be added.
      *
      * @coversNothing
      */
-    public function testAddApiKey() {}
+    public function testAddApiKey()
+    {
+        $entity = $this->getTestDataAccess();
+
+        $dataAccessApiKey = $this->getTestDataAccessApiKey();
+        $entity->addDataAccessApiKey($dataAccessApiKey);
+        $this->saveDataAccess($entity);
+
+        $storedEntity = $this->findDataAccess($entity->getId());
+        $firstElement = $storedEntity->getDataAccessApiKeys()->current();
+
+        $this->assertInstanceOf(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey',
+            $firstElement
+        );
+    }
 
     /**
      * Test if an ApiKey can be removed.
      *
      * @coversNothing
      */
-    public function testRemoveApiKey() {}
+    public function testRemoveApiKey()
+    {
+        $entity = $this->getTestDataAccess();
+        $id = $entity->getId();
+
+        $dataAccessApiKey = $this->getTestDataAccessApiKey();
+        $entity->addDataAccessApiKey($dataAccessApiKey);
+        $this->saveDataAccess($entity);
+
+        $storedEntity = $this->findDataAccess($id);
+        $firstDataAccess = $storedEntity->getDataAccessApiKeys()->current();
+        $storedEntity->removeDataAccessApiKey($firstDataAccess);
+        $this->saveDataAccess($storedEntity);
+
+        $this->assertNull(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey',
+            $firstDataAccess
+        );
+    }
 
 }
