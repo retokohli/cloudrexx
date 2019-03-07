@@ -116,21 +116,43 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @return \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController
      */
-    protected function getJsonController() {}
+    protected function getJsonController()
+    {
+        $componentRepo = $this::$cx->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $componentContoller = $componentRepo->findOneBy(array('name' => 'DataAccess'));
+        if (!$componentContoller) {
+            return;
+        }
+        return $componentContoller->getController('JsonBlock');
+    }
 
     /**
      * Test if 'DataAccess' will be returned.
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getName
      */
-    public function testGetName() {}
+    public function testGetName()
+    {
+        $jsonDataAccess = $this->getJsonController();
+        $name = $jsonDataAccess->getName();
+
+        $this->assertEquals('DataAccess', $name);
+    }
 
     /**
-     * Test if an empty string will be returned.
+     * Test if a string will be returned.
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getMessageAsString
      */
-    public function testGetMessageAsString() {}
+    public function testGetMessageAsString()
+    {
+        $jsonDataAccess = $this->getJsonController();
+        $message = $jsonDataAccess->getMessageAsString();
+
+        $this->assertIsString('string', $message);
+    }
 
     /**
      * Test if the returned permission object matches the defined permission
@@ -138,14 +160,41 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getDefaultPermissions
      */
-    public function testGetDefaultPermissions() {}
+    public function testGetDefaultPermissions()
+    {
+        $default = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        $default->setValidAccessIds(113);
+
+        $jsonDataAccess = $this->getJsonController();
+        $permission = $jsonDataAccess->getDefaultPermissions();
+
+        $this->assertSame($default, $permission);
+    }
 
     /**
      * Test if all necessary method names are in the array.
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::accessableMethods
      */
-    public function testGetAccessableMethods() {}
+    public function testGetAccessableMethods()
+    {
+        $args = array(
+            'name' => 'test_element',
+            'value' => array(
+                'test1', 'test2', 'test3'
+            ),
+        );
+
+        $jsonDataAccess = $this->getJsonController();
+        $htmlElement = $jsonDataAccess->getAccessableMethods(
+            array('get' => $args)
+        );
+
+        $this->assertInstanceOf(
+            'Cx\Core\Html\Model\Entity\HtmlElement',
+            $htmlElement
+        );
+    }
 
     /**
      * Test if an HTML-Element is returned so that it can be displayed
@@ -153,7 +202,27 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getAccessConditions
      */
-    public function testGetAccessConditions() {}
+    public function testGetAccessConditions()
+    {
+        $args = array(
+            'name' => 'test_element',
+            'value' => array(
+                'test1' => array(
+                    'eq' => 0,
+                )
+            ),
+        );
+
+        $jsonDataAccess = $this->getJsonController();
+        $htmlElement = $jsonDataAccess->getAccessConditions(
+            array('get' => $args)
+        );
+
+        $this->assertInstanceOf(
+            'Cx\Core\Html\Model\Entity\HtmlElement',
+            $htmlElement
+        );
+    }
 
     /**
      * Test if an HTML-Element is returned so that it can be displayed
@@ -161,7 +230,23 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getTitleRow
      */
-    public function testGetTitleRow() {}
+    public function testGetTitleRow()
+    {
+        $args = array(
+            'name' => 'test_element',
+            'value' => 'Test',
+        );
+
+        $jsonDataAccess = $this->getJsonController();
+        $htmlElement = $jsonDataAccess->getTitleRow(
+            array('get' => $args)
+        );
+
+        $this->assertInstanceOf(
+            'Cx\Core\Html\Model\Entity\HtmlElement',
+            $htmlElement
+        );
+    }
 
     /**
      * Test if an HTML-Element is returned so that it can be displayed
@@ -169,7 +254,25 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getFieldListSearch
      */
-    public function testGetFieldListSearch() {}
+    public function testGetFieldListSearch()
+    {
+        $args = array(
+            'name' => 'test_element',
+            'value' => array(
+                'test1', 'test2', 'test3'
+            ),
+        );
+
+        $jsonDataAccess = $this->getJsonController();
+        $htmlElement = $jsonDataAccess->getFieldListSearch(
+            array('get' => $args)
+        );
+
+        $this->assertInstanceOf(
+            'Cx\Core\Html\Model\Entity\HtmlElement',
+            $htmlElement
+        );
+    }
 
     /**
      * Test if a permission object is returned so that it can be saved
@@ -177,7 +280,16 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getDataAccessPermission
      */
-    public function testGetDataAccessPermission() {}
+    public function testGetDataAccessPermission()
+    {
+        $jsonDataAccess = $this->getJsonController();
+        $htmlElement = $jsonDataAccess->getDataAccessPermission();
+
+        $this->assertInstanceOf(
+            'Cx\Core_Module\Access\Model\Entity\Permission',
+            $htmlElement
+        );
+    }
 
     /**
      * Test if an entity can be edited.
