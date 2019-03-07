@@ -204,7 +204,10 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
             // loop over all relations of this entity
             foreach ($associationMappings as $field => $associationMapping) {
                 $classMethods = get_class_methods($object);
-                $methodNameToFetchAssociation = 'get'.ucfirst($field);
+                $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                    $field
+                );
+                $methodNameToFetchAssociation = 'get' . $methodBaseName;
                 // stop if getter does not exist
                 if (!in_array($methodNameToFetchAssociation, $classMethods)) {
                     continue;
