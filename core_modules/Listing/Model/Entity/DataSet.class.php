@@ -204,32 +204,33 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
             foreach ($associationMappings as $field => $associationMapping) {
                 $classMethods = get_class_methods($object);
                 $methodNameToFetchAssociation = 'get'.ucfirst($field);
-                if (in_array($methodNameToFetchAssociation, $classMethods)) {
-                    $data[$field] = $object->$methodNameToFetchAssociation();
+                if (!in_array($methodNameToFetchAssociation, $classMethods)) {
+                    continue;
+                }
+                $data[$field] = $object->$methodNameToFetchAssociation();
+                if (
+                    isset($this->options['recursiveParsing']) &&
+                    $this->options['recursiveParsing'] &&
+                    is_object($data[$field])
+                ) {
                     if (
-                        isset($this->options['recursiveParsing']) &&
-                        $this->options['recursiveParsing'] &&
-                        is_object($data[$field])
+                        in_array(
+                            get_class($data[$field]),
+                            $forbiddenClasses
+                        )
                     ) {
-                        if (
-                            in_array(
-                                get_class($data[$field]),
-                                $forbiddenClasses
-                            )
-                        ) {
-                            unset($data[$field]);
-                            continue;
-                        }
-                        $foo = '';
-                        $data[$field] = $this->convertObject(
-                            $data[$field],
-                            $foo,
-                            array_merge(
-                                $forbiddenClasses,
-                                array(get_class($data[$field]))
-                            )
-                        );
+                        unset($data[$field]);
+                        continue;
                     }
+                    $foo = '';
+                    $data[$field] = $this->convertObject(
+                        $data[$field],
+                        $foo,
+                        array_merge(
+                            $forbiddenClasses,
+                            array(get_class($data[$field]))
+                        )
+                    );
                 }
             }
             if (
