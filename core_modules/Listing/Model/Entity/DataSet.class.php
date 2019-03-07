@@ -182,6 +182,10 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         &$key,
         $forbiddenClasses = array('Doctrine\ORM\PersistentCollection')
     ) {
+        $forbiddenClasses = array_merge(
+            $forbiddenClasses,
+            array(get_class($object))
+        );
         $data = array();
         if ($object instanceof \Cx\Model\Base\EntityBase) {
             $em = \Env::get('em');
@@ -252,7 +256,14 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         }
         foreach ($object as $attribute => $property) {
             if (is_object($property)) {
-                $data[$attribute] = $this->convertObject($property, $key);
+                $data[$attribute] = $this->convertObject(
+                    $property,
+                    $key,
+                    array_merge(
+                        $forbiddenClasses,
+                        array(get_class($property))
+                    )
+                );
             } else {
                 $data[$attribute] = $property;
             }
