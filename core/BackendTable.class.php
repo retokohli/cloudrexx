@@ -380,7 +380,7 @@ class BackendTable extends HTML_Table {
 
                 // prepare overall functions code
                 $overallFunctionsCode = $this->getOverallFunctionsCode($options['functions'], $attrs);
-                $this->setHeaderContents(0, $i, $overallFunctionsCode);
+                $this->setHeaderContents(0, $col, $overallFunctionsCode);
                 $this->updateCellAttributes(0, $col, array('style' => 'text-align:right;'));
                 $this->updateRowAttributes(1, array('class' => 'row3'), true);
             }
