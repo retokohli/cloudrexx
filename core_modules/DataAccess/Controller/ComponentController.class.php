@@ -72,6 +72,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners()
+    {
+        $apiListener = new \Cx\Core_Modules\DataAccess\Model\Event\ApiKeyEventListener(
+            $this->cx
+        );
+        $this->cx->getEvents()->addModelListener(
+            'postPersist',
+            $this->getNamespace() . '\Model\Entity\ApiKey',
+            $apiListener
+        );
+    }
+
+    /**
      * Returns a list of command mode commands provided by this component
      * @return array List of command names
      */

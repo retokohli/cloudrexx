@@ -295,5 +295,54 @@ class JsonDataAccessController
         return $select;
     }
 
-    public function storeSelectedDataAccess($args) {}
+
+    /**
+     * Adds the selected DataAccess entities and removes the old ones.
+     *
+     * @param $args array contains the ApiKey entity and the selected DataAccess
+     *                    entities, normal and read-only are separated.
+     * @throws \Doctrine\ORM\ORMException handle ORM exceptions
+     */
+    public function storeSelectedDataAccess($args)
+    {
+        // Check if params are valid.
+        if (
+            empty($args['postedValue']) ||
+            empty($args['postedValue']->getId())
+        ) {
+            return;
+        }
+        $id = $args['postedValue']->getId();
+
+        $allDataAccess = array();
+        if (!empty($args['entity']['dataAccessApiKeys'])) {
+            $allDataAccess = $args['entity']['dataAccessApiKeys'];
+        }
+
+        $allDataAccessReadOnly = array();
+        if (!empty($args['entity']['dataAccessReadOnly'])) {
+            $allDataAccessReadOnly = $args['entity']['dataAccessReadOnly'];
+        }
+
+
+        $em = $this->cx->getDb()->getEntityManager();
+        $repoApiKey = $em->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey'
+        );
+
+        foreach ($allDataAccess as $dataAccessId) {
+            $repoApiKey->addNewDataAccessApiKey($id, $dataAccessId);
+        }
+        foreach ($allDataAccessReadOnly as $dataAccessReadOnlyId) {
+            $repoApiKey->addNewDataAccessApiKey(
+                $id,
+                $dataAccessReadOnlyId,
+                true
+            );
+        }
+
+        $dataAccessIds = array_merge($allDataAccess, $allDataAccessReadOnly);
+
+        $repoApiKey->removeOldDataAccessApiKeys($id, $dataAccessIds);
+    }
 }
