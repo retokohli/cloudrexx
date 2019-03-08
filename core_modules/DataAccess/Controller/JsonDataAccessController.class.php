@@ -120,17 +120,180 @@ class JsonDataAccessController
 
     public function getFieldListSearch($args) {}
 
-    public function getDataAccessSearch($args) {}
+    /**
+     * Get search element to select DataAccess entities.
+     *
+     * @param $args
+     * @return \Cx\Core\Html\Model\Entity\DataElement
+     */
+    public function getDataAccessSearch($args)
+    {
+        $id = 0;
+        if (!empty($args['id'])) {
+            $id = (int)$args['id'];
+        }
 
-    public function getDataAccessReadOnlySearch($args) {}
+        $name = '';
+        if (!empty($args['name'])) {
+            $name = $args['name'];
+        }
 
-    protected function getDataAccessValues($apiKeyId) {}
+        $values = $this->getDataAccessValues($id);
+        $data = array(
+            'selected' => $values['selected']['normal'],
+            'all' => $values['all'],
+        );
 
-    protected function getSelectedDataAccessValues($apiKeyId) {}
+        return $this->getSearch($name, $data);
+    }
 
-    protected function getAllDataAccessValues() {}
+    /**
+     * Get search item to select DataAccess entities that have read-only
+     * permissions.
+     *
+     * @param $args
+     * @return \Cx\Core\Html\Model\Entity\DataElement
+     */
+    public function getDataAccessReadOnlySearch($args)
+    {
+        $id = 0;
+        if (!empty($args['id'])) {
+            $id = (int)$args['id'];
+        }
 
-    protected function getSearch($name, $data) {}
+        $name = '';
+        if (!empty($args['name'])) {
+            $name = $args['name'];
+        }
+
+        $values = $this->getDataAccessValues($id);
+        $data = array(
+            'selected' => $values['selected']['readOnly'],
+            'all' => $values['all'],
+        );
+
+        return $this->getSearch($name, $data);
+    }
+
+    /**
+     * Get an array with all DataAccess entities and the selected ones
+     * separately from each other.
+     *
+     * @param $apiKeyId int Id of edited API-Key
+     * @return array contains all DataAccess entities
+     */
+    protected function getDataAccessValues($apiKeyId)
+    {
+        $dataAccessValues = array('selected' => array(), 'all' => array());
+
+        $dataAccessValues['selected'] = $this->getSelectedDataAccessValues(
+            $apiKeyId
+        );
+
+        $dataAccessValues['all'] = $this->getAllDataAccessValues();
+
+        return $dataAccessValues;
+    }
+
+    /**
+     * Get all selected DataAccess entities and separates them from read-only
+     * and normal units.
+     *
+     * @param $apiKeyId int Id of edited API-Key
+     * @return array contains all selected DataAccess entities
+     */
+    protected function getSelectedDataAccessValues($apiKeyId)
+    {
+        $em = $this->cx->getDb()->getEntityManager();
+        $repoApiKey = $em->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey'
+        );
+        $apiKey = $repoApiKey->find($apiKeyId);
+
+        $dataAccessValuesSelected = array(
+            'readOnly' => array(),
+            'normal' => array()
+        );
+
+        $dataAccessApiKeys = array();
+        if (!empty($apiKey)) {
+            $dataAccessApiKeys = $apiKey->getDataAccessApiKeys();
+        }
+
+        foreach ($dataAccessApiKeys as $dataAccessApiKey) {
+            $id = $dataAccessApiKey->getDataAccess()->getId();
+            $name = $dataAccessApiKey->getDataAccess()->getName();
+
+            if ($dataAccessApiKey->getReadOnly()) {
+                $dataAccessValuesSelected['readOnly'][$id] = $name;
+            } else {
+                $dataAccessValuesSelected['normal'][$id] = $name;
+            }
+        }
+
+        return $dataAccessValuesSelected;
+    }
+
+    /**
+     * Get all available DataAccess entities.
+     *
+     * @return array contains all available DataAccess entities
+     */
+    protected function getAllDataAccessValues()
+    {
+        $em = $this->cx->getDb()->getEntityManager();
+
+        $repoDataAccess = $em->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
+        );
+
+        $allDataAccess = $repoDataAccess->findAll();
+        $allDataAccessValues = array();
+
+        foreach ($allDataAccess as $dataAccess) {
+            $id = $dataAccess->getId();
+            $name = $dataAccess->getName();
+
+            $allDataAccessValues[$id] = $name;
+        }
+
+        return $allDataAccessValues;
+    }
+
+    /**
+     * Get the DataElement to select the data entries.
+     *
+     * @param $name string name of the element
+     * @param $data array  data to select
+     * @return \Cx\Core\Html\Model\Entity\DataElement the search element
+     */
+    protected function getSearch($name, $data)
+    {
+        global $_ARRAYLANG;
+
+        $values = $data['all'];
+
+        $select = new \Cx\Core\Html\Model\Entity\DataElement(
+            $name . '[]',
+            '',
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            $values
+        );
+        foreach ($select->getChildren() as $option) {
+            if (isset($data['selected'][$option->getAttribute('value')])) {
+                $option->setAttribute('selected');
+            }
+        }
+        $select->addClass('chzn');
+        $select->setAttribute(
+            'data-placeholder',
+            $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE']
+        );
+        $select->setAttribute('multiple');
+
+        return $select;
+    }
 
     public function storeSelectedDataAccess($args) {}
 }
