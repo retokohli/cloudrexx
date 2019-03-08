@@ -52,8 +52,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Be sure to return all your controller classes if you add your own
      * @return array List of Controller class names (without namespace)
      */
-    public function getControllerClasses() {
-        return array('JsonOutput', 'CliOutput');
+    public function getControllerClasses()
+    {
+        return array('JsonOutput', 'CliOutput', 'Backend');
     }
     
     /**
