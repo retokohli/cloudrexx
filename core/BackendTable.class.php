@@ -360,6 +360,12 @@ class BackendTable extends HTML_Table {
             if ($this->hasMasterTableHeader) {
                 // now that the number of displayed columns is known:
                 $headerColspan = $col;
+                // we need to substract one if we have "overall functions"
+                $headerColspan -= (int) (
+                    isset($options['functions']) &&
+                    isset($options['functions']['export']) &&
+                    is_array($options['functions']['export'])
+                );
                 // we need to add one if there's an additional functions row
                 $headerColspan += (int) $this->hasRowFunctions(
                     $options['functions']
