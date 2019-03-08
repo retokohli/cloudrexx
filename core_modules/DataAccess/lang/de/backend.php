@@ -37,10 +37,11 @@
  */
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
 
-$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API Key';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE'] = 'Please choose';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API Schlüssel';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE'] = 'Bitte wählen';
+
 
 $_ARRAYLANG['id'] = 'ID';
-$_ARRAYLANG['apiKey'] = 'API Key';
-$_ARRAYLANG['dataAccessApiKeys'] = 'Endpoints';
-$_ARRAYLANG['dataAccessReadOnly'] = 'Endpoints with read-only permission only';
+$_ARRAYLANG['apiKey'] = 'API Schlüssel';
+$_ARRAYLANG['dataAccessApiKeys'] = 'Endpunkte';
+$_ARRAYLANG['dataAccessReadOnly'] = 'Endpunkte nur mit Leseberechtigung';
