@@ -1,0 +1,12 @@
+form.cx-ui > fieldset .group > label[for="form-0-dataAccessReadOnly"] ~ div.controls {
+    min-height: 45px;
+}
+
+.data-access-id {
+    width: 115px;
+}
+
+#form-0-dataAccessApiKeys,
+#form-0-dataAccessReadOnly {
+    visibility: hidden;
+}
