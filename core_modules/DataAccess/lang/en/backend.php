@@ -44,3 +44,6 @@ $_ARRAYLANG['id'] = 'ID';
 $_ARRAYLANG['apiKey'] = 'API Key';
 $_ARRAYLANG['dataAccessApiKeys'] = 'Endpoints';
 $_ARRAYLANG['dataAccessReadOnly'] = 'Endpoints with read-only permission only';
+
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'The selected endpoints must be verified with this API key when called.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'The API key has read-only access to the selected endpoints.';

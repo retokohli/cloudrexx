@@ -85,6 +85,9 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'storeSelectedDataAccess'
                         ),
+                        'tooltip' => $_ARRAYLANG[
+                            'TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'
+                        ]
                     ),
                     'dataAccessReadOnly' => array(
                         'custom' => true,
@@ -93,6 +96,9 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'getDataAccessReadOnlySearch'
                         ),
+                        'tooltip' => $_ARRAYLANG[
+                            'TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'
+                        ]
                     ),
                 );
                 break;
