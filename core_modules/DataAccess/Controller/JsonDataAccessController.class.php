@@ -54,13 +54,61 @@ class JsonDataAccessController
      */
     protected $messages = array();
 
-    public function getName() {}
+    /**
+     * Returns the internal name used as identifier for this adapter
+     * @return String Name of this adapter
+     */
+    public function getName()
+    {
+        return 'DataAccess';
+    }
 
-    public function getAccessableMethods() {}
+    /**
+     * Returns an array of method names accessable from a JSON request
+     *
+     * @return array List of method names
+     */
+    public function getAccessableMethods()
+    {
+        return array(
+            'storeSelectedDataAccess' => $this->getDefaultPermissions(),
+            'getDataAccessReadOnlySearch' => $this->getDefaultPermissions(),
+            'getDataAccessSearch' => $this->getDefaultPermissions(),
+            'getFieldListSearch' => $this->getDefaultPermissions(),
+            'getAccessCondition' => $this->getDefaultPermissions(),
+            'getAllowedOutputMethods' => $this->getDefaultPermissions(),
+            'getDataAccessPermission' => $this->getDefaultPermissions(),
+            'getDataAccessPermissionId' => $this->getDefaultPermissions(),
+        );
+    }
 
-    public function getMessagesAsString() {}
+    /**
+     * Returns all messages as string
+     *
+     * @return String HTML encoded error messages
+     */
+    public function getMessagesAsString()
+    {
+        return implode('<br />', $this->messages);
+    }
 
-    public function getDefaultPermissions() {}
+    /**
+     * Returns default permission as object
+     *
+     * @return \Cx\Core_Modules\Access\Model\Entity\Permission
+     */
+    public function getDefaultPermissions()
+    {
+        $permission = new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            array('http', 'https'),
+            array('get', 'post'),
+            true,
+            array(),
+            array(113)
+        );
+
+        return $permission;
+    }
 
     public function getAccessCondition() {}
 
