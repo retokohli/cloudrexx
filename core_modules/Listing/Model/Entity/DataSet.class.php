@@ -175,6 +175,8 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      * @param Object $object Object to convert
      * @param string $key (Reference) Object key, might get replaced by object's ID
      * @param array $forbiddenClasses (Optional) List of classes to skip recursion of
+     * @param string $prefix (Optional) Path to current object (see
+     *                          \Cx\Core\DataSource\Model\Entity\DoctrineRepository)
      * @return array Converted data
      */
     protected function convertObject(
@@ -267,7 +269,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         }
         foreach ($object as $attribute => $property) {
             if (is_object($property)) {
-                // if $property is an array collection, $attribute will be numeric
+                // if $object is an array collection, $attribute will be numeric
                 if ($object instanceof \Doctrine\Common\Collections\Collection) {
                     // index collection entries by their "identifying field"
                     $attribute = $property->getKeyAsString();
