@@ -65,6 +65,12 @@ class BackendController
             $dataSetIdentifier
         );
 
+        \ContrexxJavascript::getInstance()->setVariable(
+            'TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN',
+            $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'],
+            'DataAccess'
+        );
+
         switch ($entityClassName) {
             case 'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey':
                 $options['fields'] = array(

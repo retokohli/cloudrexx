@@ -48,3 +48,5 @@ $_ARRAYLANG['dataAccessReadOnly'] = 'Endpunkte nur mit Leseberechtigung';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'Die ausgewählten Endpunkte müssen beim Aufruf mit diesem API-Schlüssel verifziert werden.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'Der API-Schlüssel kann auf die ausgewählten Endpunkte nur lesend zugreifen.';
+
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'] = 'Generiere API-Schlüssel';
