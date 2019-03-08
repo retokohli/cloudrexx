@@ -359,11 +359,16 @@ class BackendTable extends HTML_Table {
             $this->altRowAttributes(1 + $this->hasMasterTableHeader, array('class' => 'row1'), array('class' => 'row2'), true);
             if ($this->hasMasterTableHeader) {
                 // now that the number of displayed columns is known:
+                $headerColspan = $col;
+                // we need to add one if there's an additional functions row
+                $headerColspan += (int) $this->hasRowFunctions(
+                    $options['functions']
+                );
                 $this->updateCellAttributes(
                     0, 
                     0, 
                     array(
-                        'colspan' => ($col + is_array($options['functions']))
+                        'colspan' => $headerColspan
                     )
                 );
 
