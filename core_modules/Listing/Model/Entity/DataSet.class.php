@@ -185,10 +185,6 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         $forbiddenClasses = array('Doctrine\ORM\PersistentCollection'),
         $prefix = 'x.'
     ) {
-        $forbiddenClasses = array_merge(
-            $forbiddenClasses,
-            array(get_class($object))
-        );
         $data = array();
         if ($object instanceof \Cx\Model\Base\EntityBase) {
             $em = \Env::get('em');
