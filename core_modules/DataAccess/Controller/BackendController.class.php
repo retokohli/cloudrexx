@@ -68,6 +68,13 @@ class BackendController
         switch ($entityClassName) {
             case 'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey':
                 $options['fields'] = array(
+                    'id' => array(
+                        'table' => array(
+                            'attributes' => array(
+                                'class' => 'data-access-id'
+                            )
+                        )
+                    ),
                     'dataAccessApiKeys' => array(
                         'showOverview' => false,
                         'formfield' => array(
