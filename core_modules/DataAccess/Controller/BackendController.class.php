@@ -65,6 +65,32 @@ class BackendController
             $dataSetIdentifier
         );
 
+        switch ($entityClassName) {
+            case 'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey':
+                $options['fields'] = array(
+                    'dataAccessApiKeys' => array(
+                        'showOverview' => false,
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getDataAccessSearch'
+                        ),
+                        'storecallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'storeSelectedDataAccess'
+                        ),
+                    ),
+                    'dataAccessReadOnly' => array(
+                        'custom' => true,
+                        'showOverview' => false,
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getDataAccessReadOnlySearch'
+                        ),
+                    ),
+                );
+                break;
+        }
+
         return $options;
     }
 
