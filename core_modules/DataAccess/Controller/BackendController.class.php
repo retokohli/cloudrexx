@@ -139,6 +139,10 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'getAllowedOutputMethods'
                         ),
+                        'storecallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'storeAllowedOutputMethods'
+                        ),
                     ),
                     'dataAccessApiKeys' => array(
                         'showOverview' => false,

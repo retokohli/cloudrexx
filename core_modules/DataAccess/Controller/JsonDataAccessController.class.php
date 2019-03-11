@@ -78,6 +78,7 @@ class JsonDataAccessController
             'getFieldListSearch' => $this->getDefaultPermissions(),
             'getAccessCondition' => $this->getDefaultPermissions(),
             'getAllowedOutputMethods' => $this->getDefaultPermissions(),
+            'storeAllowedOutputMethods' => $this->getDefaultPermissions(),
             'getDataAccessPermission' => $this->getDefaultPermissions(),
             'getDataAccessPermissionId' => $this->getDefaultPermissions(),
         );
@@ -111,9 +112,115 @@ class JsonDataAccessController
         return $permission;
     }
 
+    /**
+     * Get an array with all output methods.
+     *
+     * @return array contains names of output methods
+     */
+    protected function getOutputMethods()
+    {
+        $delimiter = 'Output';
+        $outputMethods = array();
+
+        $controllerClasses = $this->getSystemComponentController()
+            ->getControllerClasses();
+
+        foreach ($controllerClasses as $controller) {
+            if (preg_match('/\w+'. $delimiter .'[[:>:]]/', $controller)) {
+                $outputMethods[] = strtolower(explode($delimiter, $controller)[0]);
+            }
+        }
+
+        return $outputMethods;
+    }
+
     public function getAccessCondition() {}
 
-    public function getAllowedOutputMethods() {}
+    /**
+     * Get all output methods as checkboxes and select the allowed methods. If
+     * no method is defined as allowed, all methods are allowed.
+     *
+     * @param $args array arguments from formfield callback
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement wrapper with all
+     *                                                checkboxes
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException handle illegal inputs
+     */
+    public function getAllowedOutputMethods($args)
+    {
+        global $_ARRAYLANG;
+
+        $id = $args['id'];
+        if (empty($id)) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS']
+            );
+        }
+
+        $name = '';
+        if (!empty($args['name'])) {
+            $name = $args['name'];
+        }
+
+        $dataAccessRepo = $this->cx->getDb()->getEntityManager()->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
+        );
+
+        $dataAccess = $dataAccessRepo->find($id);
+        if (!empty($dataSource)) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS']
+            );
+        }
+
+        $outputMethods = $this->getOutputMethods();
+        $allowedOutputMethods = $dataAccess->getAllowedOutputMethods();
+        $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+        foreach ($outputMethods as $method) {
+            $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
+            $text = new \Cx\Core\Html\Model\Entity\TextElement(
+                ucfirst($method)
+            );
+            $checkbox = new \Cx\Core\Html\Model\Entity\DataElement(
+                $name . '[]',
+                $method
+            );
+            $checkbox->setAttribute('type', 'checkbox');
+
+            if (
+                empty($allowedOutputMethods) ||
+                in_array($method, $allowedOutputMethods)
+            ) {
+                $checkbox->setAttribute('checked', 'checked');
+            }
+
+            $label->addChild($checkbox);
+            $label->addChild($text);
+            $wrapper->addChild($label);
+        }
+
+        return $wrapper;
+    }
+
+    /**
+     * When all output methods are selected, serialize an empty array. When a
+     * new output method is added, the allowed data access automatically
+     * supports that output method.
+     *
+     * @param $value array include array to serialize
+     * @return string serialized array
+     */
+    public function storeAllowedOutputMethods($value)
+    {
+        $newValue = array();
+        $outputMethods = $this->getOutputMethods();
+
+        if (array_diff($outputMethods, $value['postedValue'])) {
+            $newValue['postedValue'] = $value['postedValue'];
+        }
+
+        return $this->serializeArray($newValue);
+    }
 
     public function getDataAccessPermission() {}
 

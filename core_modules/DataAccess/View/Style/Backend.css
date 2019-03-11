@@ -9,3 +9,7 @@ form.cx-ui > fieldset .group > label[for="form-0-dataAccessReadOnly"] ~ div.cont
 select.chzn {
     visibility: hidden;
 }
+
+#form-0-allowedOutputMethods label {
+    padding: 0 40px 0 0;
+}
