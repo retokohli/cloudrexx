@@ -90,7 +90,12 @@ Please type `help` to find available commands
         $componentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $commands = array();
         foreach ($componentRepo->findAll() as $component) {
-            foreach ($component->getCommandsForCommandMode() as $command) {
+            foreach ($component->getCommandsForCommandMode() as $command=>$permission) {
+                // permission is optional
+                if (is_string($permission)) {
+                    $command = $permission;
+                }
+                // avoid duplicates
                 if (isset($commands[$command])) {
                     throw new \Exception('Command \'' . $command . '\' is already in index');
                 }
