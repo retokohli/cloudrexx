@@ -36,6 +36,8 @@
  * @subpackage core_modules_dataaccess
  */
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'Der Enpdunkt konnte nicht gefunden werden.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_SOURCE'] = 'Die Daten-Ressource konnte nicht gefunden werden.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API Schlüssel';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE'] = 'Bitte wählen';
@@ -45,6 +47,11 @@ $_ARRAYLANG['id'] = 'ID';
 $_ARRAYLANG['apiKey'] = 'API Schlüssel';
 $_ARRAYLANG['dataAccessApiKeys'] = 'Endpunkte';
 $_ARRAYLANG['dataAccessReadOnly'] = 'Endpunkte nur mit Leseberechtigung';
+
+$_ARRAYLANG['name'] = 'Name';
+$_ARRAYLANG['fieldList'] = 'Erlaubte Attribute';
+$_ARRAYLANG['accessCondition'] = 'Bedingungen';
+$_ARRAYLANG['allowedOutputMethods'] = 'Erlaubte Ausgabemodule';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'Die ausgewählten Endpunkte müssen beim Aufruf mit diesem API-Schlüssel verifziert werden.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'Der API-Schlüssel kann auf die ausgewählten Endpunkte nur lesend zugreifen.';

@@ -36,14 +36,23 @@
  * @subpackage core_modules_dataaccess
  */
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The endpoint could not be found.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The data-ressource could not be found.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API Key';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_DATAACCESS'] = 'Endpoints';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE'] = 'Please choose';
 
 $_ARRAYLANG['id'] = 'ID';
 $_ARRAYLANG['apiKey'] = 'API Key';
 $_ARRAYLANG['dataAccessApiKeys'] = 'Endpoints';
 $_ARRAYLANG['dataAccessReadOnly'] = 'Endpoints with read-only permission only';
+
+$_ARRAYLANG['name'] = 'Name';
+$_ARRAYLANG['fieldList'] = 'Allowed attributes';
+$_ARRAYLANG['accessCondition'] = 'Conditions';
+$_ARRAYLANG['allowedOutputMethods'] = 'Allowed output methods';
+
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'The selected endpoints must be verified with this API key when called.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'The API key has read-only access to the selected endpoints.';
