@@ -95,6 +95,10 @@ Please type `help` to find available commands
                 if (is_string($permission)) {
                     $command = $permission;
                 }
+                // check permission
+                if (!$component->hasAccessToExecuteCommand($command, array())) {
+                    continue;
+                }
                 // avoid duplicates
                 if (isset($commands[$command])) {
                     throw new \Exception('Command \'' . $command . '\' is already in index');
@@ -119,6 +123,9 @@ Please type `help` to find available commands
                 echo 'Unknown command \'' . $command . '\'
 ';
                 continue;
+            }
+            if (!$commands[$command]->hasAccessToExecuteCommand($command, $params)) {
+                echo 'Permission denied!' . PHP_EOL;
             }
             try {
                 $commands[$command]->executeCommand($command, $params);
