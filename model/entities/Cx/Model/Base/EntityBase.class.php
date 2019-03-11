@@ -200,6 +200,6 @@ class EntityBase {
      * @return string Identifying value for this entity
      */
     public function __toString() {
-        $this->getKeyAsString();
+        return $this->getKeyAsString();
     }
 }
