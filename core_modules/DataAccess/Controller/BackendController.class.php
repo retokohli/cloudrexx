@@ -121,6 +121,10 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'getFieldListSearch'
                         ),
+                        'storecallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'serializeArray'
+                        ),
                     ),
                     'accessCondition' => array(
                         'showOverview' => false,

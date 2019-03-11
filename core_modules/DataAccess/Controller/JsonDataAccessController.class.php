@@ -71,6 +71,7 @@ class JsonDataAccessController
     public function getAccessableMethods()
     {
         return array(
+            'serializeArray' => $this->getDefaultPermissions(),
             'storeSelectedDataAccess' => $this->getDefaultPermissions(),
             'getDataAccessReadOnlySearch' => $this->getDefaultPermissions(),
             'getDataAccessSearch' => $this->getDefaultPermissions(),
@@ -118,7 +119,80 @@ class JsonDataAccessController
 
     public function getDataAccessPermissionId() {}
 
-    public function getFieldListSearch($args) {}
+    /**
+     * The ViewGenerator expects a string for the doctrine type array.
+     * Therefore, the obtained array must be converted before it can be saved.
+     * At a later time, the ViewGenerator will be modified.
+     *
+     * @param $value array to serialize
+     * @return string serialized array
+     */
+    public function serializeArray($value)
+    {
+        return serialize($value['postedValue']);
+    }
+
+    /**
+     * Get search element to select allowed fields.
+     *
+     * @param $args array arguments from formfield callback
+     * @return \Cx\Core\Html\Model\Entity\DataElement search element
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException handle
+     */
+    public function getFieldListSearch($args)
+    {
+        global $_ARRAYLANG;
+
+        $id = $args['id'];
+        if (empty($id)) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS']
+            );
+        }
+
+        $name = '';
+        if (!empty($args['name'])) {
+            $name = $args['name'];
+        }
+
+        $dataAccessRepo = $this->cx->getDb()->getEntityManager()->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
+        );
+
+        $dataAccess = $dataAccessRepo->find($id);
+        if (!empty($dataSource)) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS']
+            );
+        }
+
+        $dataSource = $dataAccess->getDataSource();
+
+        if (empty($dataSource)) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_SOURCE']
+            );
+        }
+
+        // Sets field names as array keys for easy storage later on.
+        $selectedFields = array_combine(
+            $dataAccess->getFieldList(),
+            $dataAccess->getFieldList()
+        );
+
+        // Sets field names as array keys for easy storage later on.
+        $allFields = array_combine(
+            $dataSource->listFields(),
+            $dataSource->listFields()
+        );
+
+        $data = array(
+            'selected' => $selectedFields,
+            'all' => $allFields
+        );
+
+        return $this->getSearch($name, $data);
+    }
 
     /**
      * Get search element to select DataAccess entities.
