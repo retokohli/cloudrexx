@@ -108,6 +108,74 @@ class BackendController
                     ),
                 );
                 break;
+            case 'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess':
+                $options['functions']['add'] = false;
+                $options['functions']['delete'] = false;
+
+                $options['fields'] = array(
+                    'id' => array(),
+                    'name' => array(),
+                    'fieldList' => array(
+                        'showOverview' => false,
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getFieldListSearch'
+                        ),
+                    ),
+                    'accessCondition' => array(
+                        'showOverview' => false,
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getAccessCondition'
+                        ),
+                    ),
+                    'allowedOutputMethods' => array(
+                        'showOverview' => false,
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getAllowedOutputMethods'
+                        ),
+                    ),
+                    'dataAccessApiKeys' => array(
+                        'showOverview' => false,
+                        'showDetail' => false,
+                    ),
+                    'syncs' => array(
+                        'showOverview' => false,
+                        'showDetail' => false,
+                    ),
+                    'relations' => array(
+                        'showOverview' => false,
+                        'showDetail' => false,
+                    ),
+                    'readPermission' => array(
+                        'showOverview' => false,
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getDataAccessPermission'
+                        ),
+                        'storecallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getDataAccessPermissionId'
+                        ),
+                    ),
+                    'writePermission' => array(
+                        'showOverview' => false,
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getDataAccessPermission'
+                        ),
+                        'storecallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getDataAccessPermissionId'
+                        ),
+                    ),
+                    'dataSource' => array(
+                        'showOverview' => false,
+                        'showDetail' => false,
+                    ),
+                );
+                break;
         }
 
         return $options;
