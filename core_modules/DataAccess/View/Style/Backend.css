@@ -6,7 +6,6 @@ form.cx-ui > fieldset .group > label[for="form-0-dataAccessReadOnly"] ~ div.cont
     width: 115px;
 }
 
-#form-0-dataAccessApiKeys,
-#form-0-dataAccessReadOnly {
+select.chzn {
     visibility: hidden;
 }
