@@ -231,7 +231,7 @@ class JsonDataAccessController
      * Therefore, the obtained array must be converted before it can be saved.
      * At a later time, the ViewGenerator will be modified.
      *
-     * @param $value array to serialize
+     * @param $value array include array to serialize
      * @return string serialized array
      */
     public function serializeArray($value)
@@ -244,7 +244,7 @@ class JsonDataAccessController
      *
      * @param $args array arguments from formfield callback
      * @return \Cx\Core\Html\Model\Entity\DataElement search element
-     * @throws \Cx\Core\Error\Model\Entity\ShinyException handle
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException handle illegal inputs
      */
     public function getFieldListSearch($args)
     {
@@ -304,8 +304,8 @@ class JsonDataAccessController
     /**
      * Get search element to select DataAccess entities.
      *
-     * @param $args
-     * @return \Cx\Core\Html\Model\Entity\DataElement
+     * @param $args array arguments from formfield callback
+     * @return \Cx\Core\Html\Model\Entity\DataElement search element
      */
     public function getDataAccessSearch($args)
     {
@@ -332,8 +332,8 @@ class JsonDataAccessController
      * Get search item to select DataAccess entities that have read-only
      * permissions.
      *
-     * @param $args
-     * @return \Cx\Core\Html\Model\Entity\DataElement
+     * @param $args array arguments from formfield callback
+     * @return \Cx\Core\Html\Model\Entity\DataElement search element
      */
     public function getDataAccessReadOnlySearch($args)
     {
