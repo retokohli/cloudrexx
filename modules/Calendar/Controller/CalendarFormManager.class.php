@@ -711,13 +711,13 @@ class CalendarFormManager extends CalendarLibrary
                     'TXT_'.$this->moduleLangVar.'_FIELD_NAME' => $label,
                     $this->moduleLangVar.'_FIELD_CLASS'       => $affiliationClass,
                 ));
-                
+
                 if ($parseRow) {
                     $objFieldTemplate->touchBlock('row');
                 } else {
                     $objFieldTemplate->hideBlock('row');
                 }
-                
+
                 $field = $objFieldTemplate->get();
                 $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $field);
 
