@@ -633,8 +633,10 @@ class CalendarFormManager extends CalendarLibrary
                 if (isset($arrInputfield['fieldname'])) {
                     $fieldname = $arrInputfield['fieldname'];
                 }
+                $fieldId = 'registrationField_' . $arrInputfield['id'];
                 $objFieldTemplate->setVariable(array(
                     'CALENDAR_FIELD_NAME' => $fieldname,
+                    'CALENDAR_FIELD_ID'   => $fieldId,
                 ));
                 // hide all other fieldtypes than the current
                 foreach ($parseTypes as $ptype) {
