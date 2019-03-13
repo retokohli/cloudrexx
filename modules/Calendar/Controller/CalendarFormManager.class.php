@@ -437,6 +437,7 @@ class CalendarFormManager extends CalendarLibrary
                 $cx->getCodeBaseModulePath() . '/Calendar/View/Template/Frontend/'
             );
             foreach ($objForm->inputfields as $key => $arrInputfield) {
+                $parseRow = true;
                 $blockName = 'registration_field_' . $arrInputfield['id'];
                 $blockSuffix = '';
                 if ($objTpl->blockExists($blockName)) {
@@ -634,7 +635,7 @@ class CalendarFormManager extends CalendarLibrary
                         ));
                         break;
                     case 'fieldset':
-                        $objFieldTemplate->hideBlock('label');
+                        $parseRow = false;
                         break;
                 }
                 if (isset($arrInputfield['fieldname'])) {
@@ -710,6 +711,13 @@ class CalendarFormManager extends CalendarLibrary
                     'TXT_'.$this->moduleLangVar.'_FIELD_NAME' => $label,
                     $this->moduleLangVar.'_FIELD_CLASS'       => $affiliationClass,
                 ));
+                
+                if ($parseRow) {
+                    $objFieldTemplate->touchBlock('row');
+                } else {
+                    $objFieldTemplate->hideBlock('row');
+                }
+                
                 $field = $objFieldTemplate->get();
                 $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $field);
 
