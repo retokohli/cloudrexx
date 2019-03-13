@@ -652,9 +652,15 @@ class CalendarFormManager extends CalendarLibrary
                     $objFieldTemplate->hideBlock($ptype);
                 }
 
-                if ($arrInputfield['required'] == 1) {
-                    $objFieldTemplate->touchBlock('required');
+                if ($objFieldTemplate->blockExists('required')) {
+                    if ($arrInputfield['required'] == 1) {
+                        $objFieldTemplate->touchBlock('required');
+                        $objFieldTemplate->setVariable('CALENDAR_FIELD_REQUIRED', 'required="required"');
+                    } else {
+                        $objFieldTemplate->hideBlock('required');
+                    }
                 }
+
                 $label = $arrInputfield['name'][$_LANGID];
 
                 $objFieldTemplate->setVariable(array(
