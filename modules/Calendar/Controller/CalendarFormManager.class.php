@@ -571,8 +571,8 @@ class CalendarFormManager extends CalendarLibrary
                                 $objTextField = new \Cx\Core\Html\Sigma('.');
                                 $objTextField->setTemplate($objFieldTemplate->getUnparsedBlock('radio embedded' . $blockSuffix));
                                 $objTextField->setVariable(array(
-                                    'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
-                                    'CALENDAR_FIELD_OPTION_VALUE' => contrexx_input2xhtml($textValue),
+                                    'CALENDAR_FIELD_EMBEDDED_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
+                                    'CALENDAR_FIELD_EMBEDDED_VALUE' => contrexx_input2xhtml($textValue),
                                 ));
                                 $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
                             }
@@ -583,6 +583,7 @@ class CalendarFormManager extends CalendarLibrary
                                 $objFieldTemplate->hideBlock('radio_option_selected' . $blockSuffix);
                             }
                             $objFieldTemplate->setVariable(array(
+                                'CALENDAR_FIELD_OPTION_NAME' => 'registrationField[' . $arrInputfield['id'] . '][]',
                                 'CALENDAR_FIELD_OPTION_KEY' => intval($key + 1),
                                 'CALENDAR_FIELD_OPTION_VALUE' => $name,
                             ));
@@ -597,8 +598,8 @@ class CalendarFormManager extends CalendarLibrary
                                 $objTextField = new \Cx\Core\Html\Sigma('.');
                                 $objTextField->setTemplate($objFieldTemplate->getUnparsedBlock('checkbox embedded' . $blockSuffix));
                                 $objTextField->setVariable(array(
-                                    'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
-                                    'CALENDAR_FIELD_OPTION_VALUE' => contrexx_input2xhtml($textValue),
+                                    'CALENDAR_FIELD_EMBEDDED_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
+                                    'CALENDAR_FIELD_EMBEDDED_VALUE' => contrexx_input2xhtml($textValue),
                                 ));
                                 $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
                             }
@@ -612,7 +613,7 @@ class CalendarFormManager extends CalendarLibrary
                                 $objFieldTemplate->hideBlock('checkbox_option_selected' . $blockSuffix);
                             }
                             $objFieldTemplate->setVariable(array(
-                                'CALENDAR_FIELD_NAME' => 'registrationField[' . $arrInputfield['id'] . '][]',
+                                'CALENDAR_FIELD_OPTION_NAME' => 'registrationField[' . $arrInputfield['id'] . '][]',
                                 'CALENDAR_FIELD_OPTION_KEY' => intval($key + 1),
                                 'CALENDAR_FIELD_OPTION_VALUE' => $name,
                             ));
