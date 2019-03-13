@@ -575,6 +575,7 @@ class CalendarFormManager extends CalendarLibrary
                                     'CALENDAR_FIELD_EMBEDDED_VALUE' => contrexx_input2xhtml($textValue),
                                 ));
                                 $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
+                                $objFieldTemplate->hideBlock('radio_embedded' . $blockSuffix);
                             }
 
                             if ($key + 1 == $value) {
@@ -602,6 +603,7 @@ class CalendarFormManager extends CalendarLibrary
                                     'CALENDAR_FIELD_EMBEDDED_VALUE' => contrexx_input2xhtml($textValue),
                                 ));
                                 $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
+                                $objFieldTemplate->hideBlock('checkbox_embedded' . $blockSuffix);
                             }
 
                             if (
