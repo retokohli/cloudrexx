@@ -629,6 +629,11 @@ class CalendarFormManager extends CalendarLibrary
                         }
                         break;
                     case 'agb':
+                        if (!empty($_POST['registrationField'][$arrInputfield['id']])) {
+                            $objFieldTemplate->touchBlock('agb_option_selected' . $blockSuffix);
+                        } else {
+                            $objFieldTemplate->hideBlock('agb_option_selected' . $blockSuffix);
+                        }
                         $fieldname = 'registrationField[' . $arrInputfield['id'] . '][]';
                         $objFieldTemplate->setVariable(array(
                             'CALENDAR_FIELD_VALUE' => $_ARRAYLANG['TXT_CALENDAR_AGB'],
