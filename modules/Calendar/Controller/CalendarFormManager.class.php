@@ -603,7 +603,10 @@ class CalendarFormManager extends CalendarLibrary
                                 $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
                             }
 
-                            if (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']])) {
+                            if (
+                                is_array($_POST['registrationField'][$arrInputfield['id']]) &&
+                                in_array($key+1, $_POST['registrationField'][$arrInputfield['id']])
+                            ) {
                                 $objFieldTemplate->touchBlock('checkbox_option_selected' . $blockSuffix);
                             } else {
                                 $objFieldTemplate->hideBlock('checkbox_option_selected' . $blockSuffix);
