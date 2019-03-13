@@ -441,7 +441,7 @@ class CalendarFormManager extends CalendarLibrary
                 $blockSuffix = '';
                 if ($objTpl->blockExists($blockName)) {
                     $objFieldTemplate->setTemplate($objTpl->getUnparsedBlock($blockName));
-                    $blockSuffix = 'field_' . $arrInputfield['id'];
+                    $blockSuffix = '_field_' . $arrInputfield['id'];
                 } else {
                     $objFieldTemplate->loadTemplateFile('FormInputField.html', true, true);
                 }
