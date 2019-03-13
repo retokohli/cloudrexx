@@ -458,6 +458,7 @@ class CalendarFormManager extends CalendarLibrary
                 $hide = false;
                 $availableSeat = 0;
                 $checkSeating  = false;
+                $value = '';
 
                 if (isset($_POST['registrationField'][$arrInputfield['id']])) {
                     $value = $_POST['registrationField'][$arrInputfield['id']];
@@ -491,7 +492,7 @@ class CalendarFormManager extends CalendarLibrary
                             $value = $arrInputfield['default_value'][$_LANGID];
                             break;
                     }
-                } else {
+                } elseif (!in_array($arrInputfield['type'], array('seating', 'select', 'checkbox', 'radio', 'agb'))) {
                     $value = $arrInputfield['default_value'][$_LANGID];
                 }
                 $fieldname = 'registrationField[' . $arrInputfield['id'] . ']';
@@ -554,7 +555,10 @@ class CalendarFormManager extends CalendarLibrary
                             ) {
                                 continue;
                             }
-                            if ($key + $selectOptionOffset == $value) {
+                            if (
+                                !empty($value) &&
+                                $key + $selectOptionOffset == $value
+                            ) {
                                 $objFieldTemplate->touchBlock('select_option_selected' . $blockSuffix);
                             } else {
                                 $objFieldTemplate->hideBlock('select_option_selected' . $blockSuffix);
