@@ -571,7 +571,7 @@ class CalendarFormManager extends CalendarLibrary
                                 $objTextField = new \Cx\Core\Html\Sigma('.');
                                 $objTextField->setTemplate($objFieldTemplate->getUnparsedBlock('radio_embedded' . $blockSuffix));
                                 $objTextField->setVariable(array(
-                                    'CALENDAR_FIELD_EMBEDDED_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
+                                    'CALENDAR_FIELD_EMBEDDED_NAME' => 'registrationFieldAdditional[' . $arrInputfield['id'] . '][' . $key . ']',
                                     'CALENDAR_FIELD_EMBEDDED_VALUE' => contrexx_input2xhtml($textValue),
                                 ));
                                 $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
@@ -598,7 +598,7 @@ class CalendarFormManager extends CalendarLibrary
                                 $objTextField = new \Cx\Core\Html\Sigma('.');
                                 $objTextField->setTemplate($objFieldTemplate->getUnparsedBlock('checkbox_embedded' . $blockSuffix));
                                 $objTextField->setVariable(array(
-                                    'CALENDAR_FIELD_EMBEDDED_NAME' => 'registrationField[' . $arrInputfield['id'] . '][' . $key . ']',
+                                    'CALENDAR_FIELD_EMBEDDED_NAME' => 'registrationFieldAdditional[' . $arrInputfield['id'] . '][' . $key . ']',
                                     'CALENDAR_FIELD_EMBEDDED_VALUE' => contrexx_input2xhtml($textValue),
                                 ));
                                 $name = str_replace('[[INPUT]]', $objTextField->get(), $name);
