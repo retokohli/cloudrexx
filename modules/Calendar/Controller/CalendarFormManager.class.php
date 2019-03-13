@@ -640,8 +640,9 @@ class CalendarFormManager extends CalendarLibrary
                 foreach ($parseTypes as $ptype) {
                     if ($ptype == $parseType) {
                         if ($objFieldTemplate->blockExists($ptype)) {
+                            // do only touch (not parse) the block to make the
+                            // variables available in the whole template
                             $objFieldTemplate->touchBlock($ptype);
-                            $objFieldTemplate->parse($ptype);
                         }
                         continue;
                     }
