@@ -456,7 +456,6 @@ class CalendarFormManager extends CalendarLibrary
                 }
                 $inputfield = null;
                 $hide = false;
-                $optionSelect = true;
                 $availableSeat = 0;
                 $checkSeating  = false;
 
@@ -500,6 +499,7 @@ class CalendarFormManager extends CalendarLibrary
                 $affiliation = isset($arrInputfield['affiliation']) ? $arrInputfield['affiliation'] : '';
                 $affiliationClass = 'affiliation'.ucfirst($affiliation);
 
+                $selectOptionOffset = 0;
                 $parseType = $arrInputfield['type'];
                 switch($arrInputfield['type']) {
                     case 'mail':
@@ -517,7 +517,8 @@ class CalendarFormManager extends CalendarLibrary
                         if (!$ticketSales) {
                             $hide = true;
                         }
-                        $optionSelect = false;
+                        $arrInputfield['showChoose'] = false;
+                        $selectOptionOffset++;
 
                         if ($this->event) {
                             $checkSeating  = $this->event->registration && $this->event->numSubscriber;
@@ -528,7 +529,6 @@ class CalendarFormManager extends CalendarLibrary
                         $parseType = 'select';
                         // intentionally no break
                     case 'select':
-                        $i = 0;
                         if (
                             !isset($arrInputfield['showChoose']) ||
                             $arrInputfield['showChoose']
@@ -538,7 +538,7 @@ class CalendarFormManager extends CalendarLibrary
                                 'CALENDAR_FIELD_OPTION_VALUE' => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'],
                             ));
                             $objFieldTemplate->parse('select_option' . $blockSuffix);
-                            $i++;
+                            $selectOptionOffset++;
                         }
 
                         foreach ($options as $key => $name) {
@@ -546,7 +546,7 @@ class CalendarFormManager extends CalendarLibrary
                             // an overbooking
                             if (
                                 // skip filtering selected option of loaded registration
-                                $key + $i != $value &&
+                                $key + $selectOptionOffset != $value &&
                                 // only filter in case the event has set an invitee limit
                                 $checkSeating &&
                                 // skip if option would cause an overbooking of the event
@@ -554,13 +554,13 @@ class CalendarFormManager extends CalendarLibrary
                             ) {
                                 continue;
                             }
-                            if ($key + $i == $value) {
+                            if ($key + $selectOptionOffset == $value) {
                                 $objFieldTemplate->touchBlock('select_option_selected' . $blockSuffix);
                             } else {
                                 $objFieldTemplate->hideBlock('select_option_selected' . $blockSuffix);
                             }
                             $objFieldTemplate->setVariable(array(
-                                'CALENDAR_FIELD_OPTION_KEY' => intval($key + $i),
+                                'CALENDAR_FIELD_OPTION_KEY' => intval($key + $selectOptionOffset),
                                 'CALENDAR_FIELD_OPTION_VALUE' => $name,
                             ));
                             $objFieldTemplate->parse('select_option' . $blockSuffix);
