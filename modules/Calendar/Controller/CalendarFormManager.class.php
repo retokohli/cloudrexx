@@ -496,7 +496,8 @@ class CalendarFormManager extends CalendarLibrary
                 }
                 $fieldname = 'registrationField[' . $arrInputfield['id'] . ']';
 
-                $affiliationClass = 'affiliation'.ucfirst($arrInputfield['affiliation']);
+                $affiliation = isset($arrInputfield['affiliation']) ? $arrInputfield['affiliation'] : '';
+                $affiliationClass = 'affiliation'.ucfirst($affiliation);
 
                 $parseType = $arrInputfield['type'];
                 switch($arrInputfield['type']) {
