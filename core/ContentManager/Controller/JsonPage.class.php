@@ -166,7 +166,11 @@ class JsonPage implements JsonAdapter {
                 $this->logRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
 
                 $availableRevisions = $this->logRepo->getLogEntries($page, true, 2);
-                $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
+                $key = 0;
+                if (count($availableRevisions) > 1) {
+                    $key = 1;
+                }
+                $this->logRepo->revert($page, $availableRevisions[$key]->getVersion());
             }
 
             $pageArray = $this->getPageArray($page);
