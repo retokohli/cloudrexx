@@ -578,7 +578,11 @@ class CalendarFormManager extends CalendarLibrary
                                 $objFieldTemplate->hideBlock('radio_embedded' . $blockSuffix);
                             }
 
-                            if ($key + 1 == $value) {
+                            if (
+                                isset($_POST['registrationField'][$arrInputfield['id']]) &&
+                                is_array($_POST['registrationField'][$arrInputfield['id']]) &&
+                                in_array($key+1, $_POST['registrationField'][$arrInputfield['id']])
+                            ) {
                                 $objFieldTemplate->touchBlock('radio_option_selected' . $blockSuffix);
                             } else {
                                 $objFieldTemplate->hideBlock('radio_option_selected' . $blockSuffix);
@@ -607,6 +611,7 @@ class CalendarFormManager extends CalendarLibrary
                             }
 
                             if (
+                                isset($_POST['registrationField'][$arrInputfield['id']]) &&
                                 is_array($_POST['registrationField'][$arrInputfield['id']]) &&
                                 in_array($key+1, $_POST['registrationField'][$arrInputfield['id']])
                             ) {
