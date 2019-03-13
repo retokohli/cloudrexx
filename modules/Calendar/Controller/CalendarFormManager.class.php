@@ -663,6 +663,40 @@ class CalendarFormManager extends CalendarLibrary
                     }
                 }
 
+                // Parse form field html5 type 
+                $html5Type = '';
+                switch ($arrInputfield['type']) {
+                    case 'inputtext':
+                    case 'firstname':
+                    case 'lastname':
+                        $html5Type = 'text';
+                        break;
+
+                    case 'mail':
+                        $html5Type = 'email';
+                        break;
+
+                    case 'select':
+                    case 'textarea':
+                    case 'seating':
+                    case 'agb':
+                    case 'salutation':
+                    case 'selectBillingAddress':
+                    case 'fieldset':
+                        $html5Type = '';
+                        break;
+
+                    case 'radio':
+                    case 'checkbox':
+                    default:
+                        $html5Type = $arrInputfield['type'];
+                        break;
+                }
+                $objFieldTemplate->setVariable(
+                    'CALENDAR_FIELD_TYPE',
+                    $html5Type 
+                );
+
                 $label = $arrInputfield['name'][$_LANGID];
 
                 $objFieldTemplate->setVariable(array(
