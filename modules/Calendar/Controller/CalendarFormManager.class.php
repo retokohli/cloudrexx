@@ -597,7 +597,6 @@ class CalendarFormManager extends CalendarLibrary
                         break;
                      case 'checkbox':
                         foreach($options as $key => $name)  {
-                            $name = str_replace('[[INPUT]]', $textfield, $name);
                             if ($objFieldTemplate->blockExists('checkbox_embedded' . $blockSuffix)) {
                                 $textValue = (isset($_POST["registrationFieldAdditional"][$arrInputfield['id']][$key]) ? $_POST["registrationFieldAdditional"][$arrInputfield['id']][$key] : '');
                                 $objTextField = new \Cx\Core\Html\Sigma('.');
