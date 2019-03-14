@@ -370,7 +370,267 @@ class JsonDataAccessController
         return $this->serializeArray($newValue);
     }
 
-    public function getDataAccessPermission() {}
+    public function getDataAccessPermission($args)
+    {
+        global $_ARRAYLANG;
+
+        $name = '';
+        if (!empty($args['name'])) {
+            $name = $args['name'];
+        }
+        $permission = $args['value'];
+
+        $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $content = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $content->addClass('permission-content');
+
+        $title = $this->getTitleRow($_ARRAYLANG[$name]);
+        $requiresLogin = $this->getPermissionRequiresLogin(
+            $name . '[requires-login]', $permission->getRequiresLogin()
+        );
+        $protocol = $this->getPermissionProtocols(
+            $name . '[protocol]', $permission->getAllowedProtocols()
+        );
+        $method = $this->getPermissionMethods(
+            $name . '[method]', $permission->getAllowedMethods()
+        );
+        $userGroup = $this->getPermissionUserGroups(
+            $name . '[user-group]', $permission->getValidUserGroups()
+        );
+        $accessId = $this->getPermissionAccessIds(
+            $name . '[access-id]', $permission->getvalidAccessIds()
+        );
+        $callback = $this->getPermissionCallbacks(
+            $name . '[callback]', $permission->getCallback()
+        );
+
+        $content->addChildren(
+            array(
+                $requiresLogin, $protocol, $method, $userGroup, $accessId,
+                $callback
+            )
+        );
+        $wrapper->addChildren(
+            array($title, $content)
+        );
+
+        return $wrapper;
+    }
+
+    /**
+     * Get two checkboxes to select yes or no if a login required.
+     *
+     * @param $name          string name of html element.
+     * @param $requiresLogin string if login is required.
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with checkboxes.
+     */
+    protected function getPermissionRequiresLogin($name, $requiresLogin)
+    {
+        global $_ARRAYLANG;
+
+        $no = $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_NO'];
+        $yes = $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_YES'];
+
+        // Set keys for possible values to set order.
+        $checkboxes = $this->getRadioButtons(
+            $name,
+            array(1 => $yes, 0 => $no),
+            $requiresLogin
+        );
+
+        return $this->getGroupWrapper($name, $checkboxes, 'requiresLogin');
+    }
+
+    /**
+     * Return a simple legend with the given title
+     *
+     * @param $title string title to display
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement legend element
+     */
+    protected function getTitleRow($title)
+    {
+        $legend = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
+        $text = new \Cx\Core\Html\Model\Entity\TextElement($title);
+        $title = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
+
+        $title->addClass('permission-title');
+        $title->addChild($text);
+        $legend->addClass('permission-legend');
+        $legend->addChild($title);
+        return $legend;
+    }
+
+    /**
+     * Get checkboxes to select protocols for permissions
+     *
+     * @param $name            string name of html element
+     * @param $selectedProtcols array  contains selected protocols
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with checkboxes
+     */
+    protected function getPermissionProtocols($name, $selectedProtcols)
+    {
+        $allowedProtocols = current(
+            $this->getSystemComponentController()->getCommandsForCommandMode()
+        )->getAllowedProtocols();
+
+        $checkboxes =  $this->getCheckboxes(
+            $name, $allowedProtocols, $selectedProtcols
+        );
+
+        return $this->getGroupWrapper($name, $checkboxes, 'protocols');
+    }
+
+    /**
+     * Get checkboxes to select methods for permissions
+     *
+     * @param $name            string name of html element
+     * @param $selectedMethods array  contains selected methods
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with checkboxes
+     */
+    protected function getPermissionMethods($name, $selectedMethods)
+    {
+        $allowedMethods = current(
+            $this->getSystemComponentController()->getCommandsForCommandMode()
+        )->getAllowedMethods();
+
+        $checkboxes = $this->getCheckboxes(
+            $name, $allowedMethods, $selectedMethods
+        );
+
+        return $this->getGroupWrapper($name, $checkboxes, 'methods');
+    }
+
+    /**
+     * Get a search menu to select user groups for permissions
+     *
+     * @param $name         string name of html element
+     * @param $selectGroups array  contains selected user groups
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with search
+     */
+    protected function getPermissionUserGroups($name, $selectGroups)
+    {
+        $objFWUser = \FWUser::getFWUserObject();
+        $groups = $objFWUser->objGroup->getGroups();
+        $allGroups = array();
+
+        while (!$groups->EOF) {
+            $allGroups[$groups->getId()] = $groups->getName();
+            $groups->next();
+        }
+
+        $selectGroups = array_combine($selectGroups, $selectGroups);
+
+        $groups = array(
+            'selected' => $selectGroups,
+            'all' => $allGroups
+        );
+        $content = $this->getSearch($name, $groups);
+
+        return $this->getGroupWrapper($name, $content, 'userGroups');
+    }
+
+    /**
+     * Get a search menu to select access IDs for permissions
+     *
+     * @param $name              string name of html element
+     * @param $selectedAccessIds array  contains selected access IDs
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with search
+     * @todo get all access IDs
+     */
+    protected function getPermissionAccessIds($name, $selectedAccessIds)
+    {
+        global $objDatabase, $objInit;
+
+        $allAccessIds = array();
+        $query = 'SELECT `ba`.`access_id`, `ba`.`area_name`, `m`.`name` 
+                    FROM `contrexx_backend_areas` AS `ba`
+	                INNER JOIN `contrexx_modules` as `m` 
+	                  ON `m`.`id` = `ba`.`module_id`';
+
+        $result = $objDatabase->Execute($query);
+
+        if ($result) {
+            while (!$result->EOF) {
+                $nameKey = $result->fields['area_name'];
+                $moduleName = $result->fields['name'];
+                $accessId = $result->fields['access_id'];
+
+                $langData   = $objInit->getComponentSpecificLanguageData(
+                    ucfirst($moduleName),
+                    false
+                );
+
+                $allAccessIds[$accessId] = $langData[$nameKey];
+
+                $result->MoveNext();
+            }
+        }
+
+        $selectedAccessIds = array_combine($selectedAccessIds, $selectedAccessIds);
+
+        $accessIds = array(
+            'selected' => $selectedAccessIds,
+            'all' => $allAccessIds
+        );
+        $content = $this->getSearch($name, $accessIds);
+
+        return $this->getGroupWrapper($name, $content, 'accessIds');
+    }
+
+    protected function getPermissionCallbacks($name, $selectedCallback)
+    {
+        $default = array('' => '-');
+        $selectedAdapter = empty(false) ? '' : // $selectedCallback->getCallbackInfo()['adapter']
+            $selectedCallback['adapter'];
+        $adapters = $default;
+
+        $selectedMethod = empty(false) ? '' : //$selectedCallback->getCallbackInfo()['method']
+            $selectedCallback['method'];
+        $methods = $default;
+
+        $jsonControllers = $this->getAllJsonControllers();
+        $methodsByJsonController = array();
+        foreach ($jsonControllers as $jsonController) {
+            $adapters[] = $jsonController->getName();
+            if ($selectedAdapter == $jsonController->getName()) {
+                $methodsByJsonController = $this->getMethodsByJsonController(
+                    $jsonController->getName()
+                );
+            }
+        }
+
+        // Merge default value and received methods.
+        $methods = array_merge($methods, $methodsByJsonController);
+
+        // To save it with the ViewGenerator automatically.
+        $adapters = array_combine($adapters, $adapters);
+        $methods = array_combine($methods, $methods);
+
+        $selectAdpater = new \Cx\Core\Html\Model\Entity\DataElement(
+            $name . '[adapter]',
+            $selectedAdapter,
+            'select',
+            null,
+            $adapters
+        );
+
+        $selectAdpater->addClass('json-adapter');
+
+        $selectMethod = new \Cx\Core\Html\Model\Entity\DataElement(
+            $name . '[method]',
+            $selectedMethod,
+            'select',
+            null,
+            $methods
+        );
+
+        $selectMethod->addClass('json-method');
+
+        $content = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $content->addChildren(array($selectAdpater, $selectMethod));
+
+        return $this->getGroupWrapper($name, $content, 'callbacks');
+    }
 
     /**
      * Saves the read access permission and adds the relation. This is solved
