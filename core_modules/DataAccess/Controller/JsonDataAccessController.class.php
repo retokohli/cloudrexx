@@ -154,7 +154,7 @@ class JsonDataAccessController
 
     /**
      * Get all output methods as checkboxes and select the allowed methods. If
-     * no method is defined as allowed, all methods are allowed.
+     * no method is defined as allowed, all methods are allowed
      *
      * @param $args array arguments from formfield callback
      * @return \Cx\Core\Html\Model\Entity\HtmlElement wrapper with all
@@ -192,28 +192,11 @@ class JsonDataAccessController
         $allowedOutputMethods = $dataAccess->getAllowedOutputMethods();
         $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
 
-        foreach ($outputMethods as $method) {
-            $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
-            $text = new \Cx\Core\Html\Model\Entity\TextElement(
-                ucfirst($method)
-            );
-            $checkbox = new \Cx\Core\Html\Model\Entity\DataElement(
-                $name . '[]',
-                $method
-            );
-            $checkbox->setAttribute('type', 'checkbox');
-
-            if (
-                empty($allowedOutputMethods) ||
-                in_array($method, $allowedOutputMethods)
-            ) {
-                $checkbox->setAttribute('checked', 'checked');
-            }
-
-            $label->addChild($checkbox);
-            $label->addChild($text);
-            $wrapper->addChild($label);
-        }
+        $wrapper->addChild(
+            $this->getCheckboxes(
+                $name, $outputMethods, $allowedOutputMethods
+            )
+        );
 
         return $wrapper;
     }
