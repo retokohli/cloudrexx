@@ -152,6 +152,9 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'serializeArray'
                         ),
+                        'tooltip' => $_ARRAYLANG[
+                            'TXT_CORE_MODULE_DATA_ACCESS_INFO_ALLOWED_FIELDS'
+                        ],
                     ),
                     'accessCondition' => array(
                         'showOverview' => false,
@@ -174,6 +177,9 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'storeAllowedOutputMethods'
                         ),
+                        'tooltip' => $_ARRAYLANG[
+                            'TXT_CORE_MODULE_DATA_ACCESS_INFO_OUTPUT_METHODS'
+                        ],
                     ),
                     'dataAccessApiKeys' => array(
                         'showOverview' => false,
