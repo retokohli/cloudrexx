@@ -48,6 +48,18 @@ class BackendController
     extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
 {
     /**
+     * Returns a list of available commands (?act=XY)
+     * @return array List of acts
+     */
+    public function getCommands()
+    {
+        return array(
+            'ApiKey',
+            'DataAccess'
+        );
+    }
+
+    /**
      * This function returns the ViewGeneration options for a given entityClass
      *
      * @access protected
