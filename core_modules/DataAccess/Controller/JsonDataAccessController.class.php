@@ -458,42 +458,6 @@ class JsonDataAccessController
     }
 
     /**
-     * Get the DataElement to select the data entries.
-     *
-     * @param $name string name of the element
-     * @param $data array  data to select
-     * @return \Cx\Core\Html\Model\Entity\DataElement the search element
-     */
-    protected function getSearch($name, $data)
-    {
-        global $_ARRAYLANG;
-
-        $values = $data['all'];
-
-        $select = new \Cx\Core\Html\Model\Entity\DataElement(
-            $name . '[]',
-            '',
-            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
-            null,
-            $values
-        );
-        foreach ($select->getChildren() as $option) {
-            if (isset($data['selected'][$option->getAttribute('value')])) {
-                $option->setAttribute('selected');
-            }
-        }
-        $select->addClass('chzn');
-        $select->setAttribute(
-            'data-placeholder',
-            $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE']
-        );
-        $select->setAttribute('multiple');
-
-        return $select;
-    }
-
-
-    /**
      * Adds the selected DataAccess entities and removes the old ones.
      *
      * @param $args array contains the ApiKey entity and the selected DataAccess
@@ -542,4 +506,126 @@ class JsonDataAccessController
 
         $repoApiKey->removeOldDataAccessApiKeys($id, $dataAccessIds);
     }
+
+    /**
+     * The ViewGenerator expects a string for the doctrine type array.
+     * Therefore, the obtained array must be converted before it can be saved.
+     * At a later time, the ViewGenerator will be modified.
+     *
+     * @param $value array include array to serialize
+     * @return string serialized array
+     */
+    public function serializeArray($value)
+    {
+        return serialize($value['postedValue']);
+    }
+
+    /**
+     * Get checkboxes with all possible values and check the selected values
+     *
+     * @param $name           string name of the checkboxes
+     * @param $values         array  contains all possible values
+     * @param $selectedValues array  contains all selected values
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with checkboxes
+     */
+    protected function getCheckboxes($name, $values, $selectedValues)
+    {
+        $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+        foreach ($values as $value) {
+            $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
+            $text = new \Cx\Core\Html\Model\Entity\TextElement(
+                ucfirst($value)
+            );
+            $checkbox = new \Cx\Core\Html\Model\Entity\DataElement(
+                $name . '[]',
+                $value
+            );
+            $checkbox->setAttribute('type', 'checkbox');
+
+            if (
+                empty($selectedValues) ||
+                in_array($value, $selectedValues)
+            ) {
+                $checkbox->setAttribute('checked', 'checked');
+            }
+
+            $label->addChild($checkbox);
+            $label->addChild($text);
+            $wrapper->addChild($label);
+        }
+
+        return $wrapper;
+    }
+
+    /**
+     * Get radio buttons with all possible values and check the selected value
+     *
+     * @param $name          string name of the checkboxes
+     * @param $values        array  contains all possible values
+     * @param $selectedValue string contains the selected value
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with checkboxes
+     */
+    protected function getRadioButtons($name, $values, $selectedValue)
+    {
+        $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+        foreach ($values as $key=>$value) {
+            $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
+            $text = new \Cx\Core\Html\Model\Entity\TextElement(
+                ucfirst($value)
+            );
+            $checkbox = new \Cx\Core\Html\Model\Entity\DataElement(
+                $name,
+                $key
+            );
+            $checkbox->setAttribute('type', 'radio');
+
+            if ($key == $selectedValue) {
+                $checkbox->setAttribute('checked', 'checked');
+            }
+
+            $label->addChild($checkbox);
+            $label->addChild($text);
+            $wrapper->addChild($label);
+        }
+
+        return $wrapper;
+    }
+
+    /**
+     * Get the DataElement to select the data entries
+     *
+     * @param $name string name of the element
+     * @param $data array  data to select
+     * @return \Cx\Core\Html\Model\Entity\DataElement the search element
+     */
+    protected function getSearch($name, $data)
+    {
+        global $_ARRAYLANG;
+
+        $values = $data['all'];
+
+        $select = new \Cx\Core\Html\Model\Entity\DataElement(
+            $name . '[]',
+            '',
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            $values
+        );
+        foreach ($select->getChildren() as $option) {
+            if (isset($data['selected'][$option->getAttribute('value')])) {
+                $option->setAttribute('selected');
+            }
+        }
+        $select->addClass('chzn');
+        $select->setAttribute(
+            'data-placeholder',
+            $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE']
+        );
+        $select->setAttribute('multiple');
+
+        return $select;
+    }
+
 }
