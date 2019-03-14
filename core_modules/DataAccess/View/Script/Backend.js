@@ -1,6 +1,7 @@
 cx.jQuery(document).ready(function() {
     addGenerateButton();
     initializeConditions();
+    addEventListenerForConditions();
     loadJsonMethods();
 });
 
@@ -34,6 +35,42 @@ function initializeConditions() {
     }
 
     addEventListenerForConditions(conditionWrapper);
+}
+
+function addEventListenerForConditions(conditionWrapper) {
+    cx.jQuery(conditionWrapper).find('.condition-fields').change(function() {
+        changeConditionInputName(this, true);
+    });
+
+    cx.jQuery(conditionWrapper).find('.condition-operations').change(function() {
+        changeConditionInputName(this, false);
+    });
+
+    cx.jQuery(conditionWrapper).find('.delete').click(function () {
+        cx.jQuery(this).closest('.condition-row').remove();
+    });
+}
+
+function changeConditionInputName(el, fieldChanged) {
+    const newValue = cx.jQuery(el).find(":selected").text();
+    const input = cx.jQuery(el).parent().find('.condition-input');
+    const oldName = input.attr('name');
+    const oldNameParts = oldName.split('[');
+    const oldNameField = oldNameParts[1].split(']')[0];
+    const oldNameOp = oldNameParts[2].split(']')[0];
+
+    let replace = '[' + oldNameField + '][' + newValue + ']';
+
+    if (fieldChanged) {
+        replace = '[' + newValue + '][' + oldNameOp + ']';
+    }
+
+    const newName = oldName.replace(
+        '[' + oldNameField + '][' + oldNameOp + ']',
+        replace
+    );
+
+    cx.jQuery(el).parent().find('.condition-input').attr('name', newName);
 }
 
 function loadJsonMethods() {
