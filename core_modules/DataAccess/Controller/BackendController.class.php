@@ -114,7 +114,12 @@ class BackendController
 
                 $options['fields'] = array(
                     'id' => array(),
-                    'name' => array(),
+                    'name' => array(
+                        'formfield' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getReadonlyField'
+                        ),
+                    ),
                     'fieldList' => array(
                         'showOverview' => false,
                         'formfield' => array(

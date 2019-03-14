@@ -72,6 +72,7 @@ class JsonDataAccessController
     {
         return array(
             'serializeArray' => $this->getDefaultPermissions(),
+            'getReadonlyField' => $this->getDefaultPermissions(),
             'storeSelectedDataAccess' => $this->getDefaultPermissions(),
             'getDataAccessReadOnlySearch' => $this->getDefaultPermissions(),
             'getDataAccessSearch' => $this->getDefaultPermissions(),
@@ -110,6 +111,21 @@ class JsonDataAccessController
         );
 
         return $permission;
+    }
+
+    /**
+     * Get a simple div to display the value that cannot be edited.
+     *
+     * @param $args array arguments from formfield callback
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement div element
+     */
+    public function getReadonlyField($args)
+    {
+        $text = new \Cx\Core\Html\Model\Entity\TextElement($args['value']);
+        $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $wrapper->addChild($text);
+
+        return $wrapper;
     }
 
     /**
