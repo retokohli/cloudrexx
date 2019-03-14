@@ -21,6 +21,10 @@ select.chzn {
     margin: 2px 0;
 }
 
+#form-0-accessCondition input {
+    width: 28%;
+}
+
 #form-0-accessCondition .delete-wrapper {
     position: relative;
 }
