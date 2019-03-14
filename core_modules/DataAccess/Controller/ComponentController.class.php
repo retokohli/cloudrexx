@@ -87,7 +87,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $this->cx
         );
         $this->cx->getEvents()->addModelListener(
-            'postPersist',
+            \Doctrine\ORM\Events::postPersist,
             $this->getNamespace() . '\Model\Entity\ApiKey',
             $apiListener
         );
