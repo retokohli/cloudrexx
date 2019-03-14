@@ -137,6 +137,10 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'getAccessCondition'
                         ),
+                        'storecallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'storeAccessCondition'
+                        ),
                     ),
                     'allowedOutputMethods' => array(
                         'showOverview' => false,

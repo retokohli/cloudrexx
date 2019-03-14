@@ -78,6 +78,7 @@ class JsonDataAccessController
             'getDataAccessSearch' => $this->getDefaultPermissions(),
             'getFieldListSearch' => $this->getDefaultPermissions(),
             'getAccessCondition' => $this->getDefaultPermissions(),
+            'storeAccessCondition' => $this->getDefaultPermissions(),
             'getAllowedOutputMethods' => $this->getDefaultPermissions(),
             'storeAllowedOutputMethods' => $this->getDefaultPermissions(),
             'getDataAccessPermission' => $this->getDefaultPermissions(),
@@ -150,7 +151,153 @@ class JsonDataAccessController
         return $outputMethods;
     }
 
-    public function getAccessCondition() {}
+    /**
+     * Delete elements with the key 0 from the array.
+     *
+     * @param $value array include array to serialize
+     * @return string serialized array
+     */
+    public function storeAccessCondition($value)
+    {
+        // Unset all empty conditions
+        unset($value['postedValue'][0]);
+
+        return $this->serializeArray($value);
+    }
+
+    /**
+     * Get all conditions and an extra row to add a new condition
+     *
+     * @param $args array arguments from formfield callback
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement element with conditions
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException handle if dataSource
+     *                                                   or dataAccess not exist
+     */
+    public function getAccessCondition($args)
+    {
+        global $_ARRAYLANG;
+
+        $id = $args['id'];
+
+        $name = '';
+        if (!empty($args['name'])) {
+            $name = $args['name'];
+        }
+
+        $dataAccessRepo = $this->cx->getDb()->getEntityManager()->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
+        );
+
+        $dataAccess = $dataAccessRepo->find($id);
+        if (!empty($dataSource)) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS']
+            );
+        }
+
+        $dataSource = $dataAccess->getDataSource();
+
+        if (empty($dataSource)) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_SOURCE']
+            );
+        }
+        $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+        $fields = array('' => '-');
+        $fields = array_merge(
+            $fields,
+            $dataSource->listFields()
+        );
+        $fields = array_combine($fields, $fields);
+        $operations = array('' => '-');
+        $operations = array_merge(
+            $operations,
+            $dataSource->getSupportedOperations()
+        );
+        $operations = array_combine($operations, $operations);
+
+        foreach ($dataAccess->getAccessCondition() as $field=>$condition) {
+            $selectedOperation = key($condition);
+            $value = $condition[$selectedOperation];
+            $row = $this->getConditionRow(
+                $name, $value, $field, $fields, $selectedOperation, $operations,
+                true
+            );
+            $wrapper->addChild($row);
+        }
+
+        $row = $this->getConditionRow(
+            $name, '', '', $fields, '', $operations
+        );
+        $wrapper->addChild($row);
+
+        return $wrapper;
+
+    }
+
+    /**
+     * Get a row to show a certain condition. It includes a select to choose
+     * the field, a select to choose the operations and an input field to
+     * define the value
+     *
+     * @param $name              string name of condition row
+     * @param $value             string existing value for condition
+     * @param $selectedField     string field that is selected
+     * @param $fields            array  all available fields
+     * @param $selectedOperation string options that is selected
+     * @param $operations        array  all available options
+     * @param $addDelete         bool   if an delete icon should be added
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement generate condition row
+     */
+    protected function getConditionRow(
+        $name, $value, $selectedField, $fields, $selectedOperation, $operations,
+        $addDelete = false
+    ) {
+        $row = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $row->addClass('condition-row');
+
+        $selectFields = new \Cx\Core\Html\Model\Entity\DataElement(
+            'condition-fields',
+            $selectedField,
+            'select',
+            null,
+            $fields
+        );
+        $selectFields->addClass('condition-fields');
+
+        $selectOperations = new \Cx\Core\Html\Model\Entity\DataElement(
+            'conditions-operations',
+            $selectedOperation,
+            'select',
+            null,
+            $operations
+        );
+        $selectOperations->addClass('condition-operations');
+
+        $input = new \Cx\Core\Html\Model\Entity\DataElement(
+            $name . '['.$selectedField.']['.$selectedOperation.']',
+            $value
+        );
+        $input->addClass('condition-input');
+
+        $row->addChild($selectFields);
+        $row->addChild($selectOperations);
+        $row->addChild($input);
+
+        // Add element to delete a row
+        if ($addDelete) {
+            $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
+            $delete = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+            $wrapper->addClass('delete-wrapper');
+            $delete->addClass('delete');
+            $delete->allowDirectClose(null);
+            $wrapper->addChild($delete);
+            $row->addChild($wrapper);
+        }
+
+        return $row;
+    }
 
     /**
      * Get all output methods as checkboxes and select the allowed methods. If

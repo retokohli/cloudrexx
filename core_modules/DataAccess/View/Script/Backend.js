@@ -12,9 +12,12 @@ cx.jQuery(document).ready(function() {
         cx.jQuery('#generate-api-key').click(function (event) {
             event.preventDefault();
 
-            let apiKey = Math.random().toString(36).substring(7);
-            inputField.val(apiKey);
-            cx.jQuery('#generate-api-key').hide();
-        });
+function initializeConditions() {
+    let conditionWrapper = cx.jQuery('#form-0-accessCondition');
+
+    if (undefined === conditionWrapper || !conditionWrapper.length) {
+        return;
     }
-});
+
+    addEventListenerForConditions(conditionWrapper);
+}
