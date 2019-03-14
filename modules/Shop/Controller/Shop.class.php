@@ -148,6 +148,23 @@ class Shop extends ShopLibrary
      * @var array List of field names
      */
     protected static $errorFields = array();
+    
+    /**
+     * List of mandatory fields of account page
+     *
+     * "email" and "password" are not in list in order to allow the user to
+     * order without registration.
+     * @var array List of field names
+     */
+    protected static $mandatoryAccountFields = array(
+        'gender',
+        'lastname',
+        'firstname',
+        'address',
+        'zip',
+        'city',
+        'phone',
+    );
 
     /**
      * Initialize
@@ -4769,20 +4786,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Note that the Country IDs are either set already, or chosen in a
         // dropdown menu, so if everything else is set, so are they.
         // They may thus be disabled entirely without affecting this.
-        $mandatoryFields = array(
-            'gender',
-            'lastname',
-            'firstname',
-            'address',
-            'zip',
-            'city',
-            'phone',
-// Must not check this here, would collide with Customers not willing
-// to register!
-//            || (empty($_SESSION['shop']['email']) && !self::$objCustomer)
-//            || (empty($_SESSION['shop']['password']) && !self::$objCustomer)
-        );
-        foreach ($mandatoryFields as $field) {
+        foreach (static::$mandatoryAccountFields as $field) {
             if (empty($_SESSION['shop'][$field])) {
                 static::$errorFields[] = $field;
             }
