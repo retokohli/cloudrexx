@@ -143,6 +143,13 @@ class Shop extends ShopLibrary
     protected static $hasSession = false;
 
     /**
+     * List of field names with failed validation
+     *
+     * @var array List of field names
+     */
+    protected static $errorFields = array();
+
+    /**
      * Initialize
      * @access public
      */
@@ -4758,6 +4765,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      */
     static function verifySessionAddress()
     {
+        static::$errorFields = array();
         // Note that the Country IDs are either set already, or chosen in a
         // dropdown menu, so if everything else is set, so are they.
         // They may thus be disabled entirely without affecting this.
@@ -4776,18 +4784,18 @@ die("Shop::processRedirect(): This method is obsolete!");
         );
         foreach ($mandatoryFields as $field) {
             if (empty($_SESSION['shop'][$field])) {
-                return false;
+                static::$errorFields[] = $field;
             }
             if (
                 Cart::needs_shipment() &&
                 empty($_SESSION['shop'][$field . '2'])
             ) {
-                return false;
+                static::$errorFields[] = $field . '2';
             }
         }
 // TODO: I don't see why this would be done here:
 //        $_SESSION['shop']['equal_address'] = false;
-        return true;
+        return !count(static::$errorFields);
     }
 
 
