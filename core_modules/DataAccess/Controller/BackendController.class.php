@@ -87,6 +87,7 @@ class BackendController
 
         switch ($entityClassName) {
             case 'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey':
+                $options['functions']['sorting'] = false;
                 $options['fields'] = array(
                     'id' => array(
                         'table' => array(
@@ -125,6 +126,7 @@ class BackendController
             case 'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess':
                 $options['functions']['add'] = false;
                 $options['functions']['delete'] = false;
+                $options['functions']['sorting'] = false;
 
                 $options['fields'] = array(
                     'id' => array(),
