@@ -82,7 +82,9 @@ class JsonDataAccessController
             'getAllowedOutputMethods' => $this->getDefaultPermissions(),
             'storeAllowedOutputMethods' => $this->getDefaultPermissions(),
             'getDataAccessPermission' => $this->getDefaultPermissions(),
-            'getDataAccessPermissionId' => $this->getDefaultPermissions(),
+            'getDataAccessReadPermissionId' => $this->getDefaultPermissions(),
+            'getDataAccessWritePermissionId' => $this->getDefaultPermissions(),
+            'getJsonControllerMethods' => $this->getDefaultPermissions(),
         );
     }
 
@@ -370,19 +372,113 @@ class JsonDataAccessController
 
     public function getDataAccessPermission() {}
 
-    public function getDataAccessPermissionId() {}
+    /**
+     * Saves the read access permission and adds the relation. This is solved
+     * this way because the ViewGenerator cannot automatically save this
+     * relation. We also need to separate read and write permissions since we
+     * don't know which attribute calls the callback
+     *
+     * @param $args array arguments from storecallback
+     * @throws \Doctrine\ORM\OptimisticLockException handle doctrine events
+     * @throws \Cx\Core_Modules\Access\Model\Entity\CallbackException
+     * @throws \Cx\Core_Modules\Access\Model\Entity\PermissionException
+     */
+    public function getDataAccessReadPermissionId($args)
+    {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entity = $args['postedValue'];
+        $permission = $this->storePermission($args, 'readPermission');
+        $entity->setReadPermission($permission);
+
+        $em->persist($entity);
+        $em->flush();
+    }
 
     /**
-     * The ViewGenerator expects a string for the doctrine type array.
-     * Therefore, the obtained array must be converted before it can be saved.
-     * At a later time, the ViewGenerator will be modified.
+     * Saves the write access permission and adds the relation. This is solved
+     * this way because the ViewGenerator cannot automatically save this
+     * relation. We also need to separate read and write permissions since we
+     * don't know which attribute calls the callback
      *
-     * @param $value array include array to serialize
-     * @return string serialized array
+     * @param $args array arguments from storecallback
+     * @throws \Doctrine\ORM\OptimisticLockException handle doctrine events
+     * @throws \Cx\Core_Modules\Access\Model\Entity\CallbackException
+     * @throws \Cx\Core_Modules\Access\Model\Entity\PermissionException
      */
-    public function serializeArray($value)
+    public function getDataAccessWritePermissionId($args)
     {
-        return serialize($value['postedValue']);
+        $em = $this->cx->getDb()->getEntityManager();
+        $entity = $args['postedValue'];
+        $permission = $this->storePermission(
+            $args,
+            'writePermission'
+        );
+
+        $entity->setWritePermission($permission);
+        $em->persist($entity);
+        $em->flush();
+    }
+
+    /**
+     * Store a permission by the given arguments
+     *
+     * @param $args array arguments from storecallback
+     * @param $name string name of permission 'readPermission' or
+     *                     'writePermission'
+     * @return \Cx\Core_Modules\Access\Model\Entity\Permission stored permission
+     * @throws \Cx\Core_Modules\Access\Model\Entity\CallbackException
+     * @throws \Cx\Core_Modules\Access\Model\Entity\PermissionException
+     * @throws \Doctrine\ORM\OptimisticLockException handle doctrine event
+     */
+    protected function storePermission($args, $name)
+    {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entity = $args['entity'];
+        $getter = 'get'. ucfirst($name);
+        $permission = $args['postedValue']->$getter();
+
+        $protocols = !empty($entity[$name]['protocol']) ?
+            $entity[$name]['protocol'] : array();
+        $methods = !empty($entity[$name]['method']) ?
+            $entity[$name]['method'] : array();
+        $groups = !empty($entity[$name]['user-group']) ?
+            $entity[$name]['user-group'] : array();
+        $accessIds = !empty($entity[$name]['access-id']) ?
+            $entity[$name]['access-id'] : array();
+        $callback = !empty($entity[$name]['callback']) ?
+            $entity[$name]['callback'] : array();
+        $requireLogin = ($entity[$name]['requires-login']) == 0 ?
+            $entity[$name]['requires-login'] : true;
+
+        if (!$permission) {
+            $permission = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        }
+
+        $permission->setVirtual(false);
+        $permission->setAllowedProtocols($protocols);
+        $permission->setAllowedMethods($methods);
+        $permission->setValidUserGroups($groups);
+        $permission->setValidAccessIds($accessIds);
+        $permission->setRequiresLogin((boolean)$requireLogin);
+        $json = new \Cx\Core\Json\JsonData();
+
+        if (
+            $json->hasAdapterAndMethod(
+                $callback['adapter'], $callback['method']
+            )
+        ) {
+            $callbackPermission =
+                \Cx\Core_Modules\Access\Model\Entity\Callback::fromJsonAdapter(
+                    $callback['adapter'],
+                    $callback['method']
+                );
+            $permission->setCallback($callbackPermission);
+        }
+
+        $em->persist($permission);
+        $em->flush();
+
+        return $permission;
     }
 
     /**
