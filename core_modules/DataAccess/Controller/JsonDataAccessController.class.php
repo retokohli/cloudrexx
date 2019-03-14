@@ -638,6 +638,74 @@ class JsonDataAccessController
     }
 
     /**
+     * Get a label element with a title, similar
+     * to the generated attributes from the ViewGenerator
+     *
+     * @param $key string used to identify the lang placeholder
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement label element
+     */
+    protected function getLabelWrapper($key)
+    {
+        global $_ARRAYLANG;
+
+        $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
+        $text = new \Cx\Core\Html\Model\Entity\TextElement(
+            $_ARRAYLANG[$key]
+        );
+        $label->addChild($text);
+
+        return $label;
+    }
+
+    /**
+     * Wrap a div around the content and add the controls class, similar
+     * to the generated attributes from the ViewGenerator.
+     *
+     * @param $name  string                                 to identify element
+     * @param $child \Cx\Core\Html\Model\Entity\HtmlElement element to add as
+     *                                                      child
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement
+     */
+    protected function getContentWrapper($name, $child)
+    {
+        $controls = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $controls->addClass('controls');
+        // Replace "[" and "]" to get a valid html id.
+        $id = str_replace(
+            ']', '', str_replace(
+                '[', '-', $name
+            )
+        );
+        $controls->setAttribute('id', $id);
+        $controls->addChild($child);
+
+        return $controls;
+    }
+
+    /**
+     * Combine label and content to get a div with the class 'group', similar
+     * to the generated attributes from the ViewGenerator
+     *
+     * @param $name    string name of html element
+     * @param $content \Cx\Core\Html\Model\Entity\HtmlElement content to add
+     * @param $key     string to identify lang placeholder
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement group element
+     */
+    protected function getGroupWrapper($name, $content, $key)
+    {
+        $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+        $group->addClass('group');
+        $group->addChildren(
+            array(
+                $this->getLabelWrapper($key),
+                $this->getContentWrapper($name, $content)
+            )
+        );
+
+        return $group;
+    }
+
+    /**
      * The ViewGenerator expects a string for the doctrine type array.
      * Therefore, the obtained array must be converted before it can be saved.
      * At a later time, the ViewGenerator will be modified.
