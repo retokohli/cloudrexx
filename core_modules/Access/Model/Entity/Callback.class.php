@@ -151,6 +151,16 @@ class Callback extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Returns the information about a callback
+     * 
+     * See class and constructor DocBlock for more info
+     * @return array Callback info
+     */
+    public function getCallbackInfo() {
+        return $this->callbackInfo;
+    }
+
+    /**
      * Returns the type detected by analyzing $callbackInfo
      * @return int Type (see constants)
      */
