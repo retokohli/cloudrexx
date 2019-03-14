@@ -129,7 +129,13 @@ class BackendController
                 $options['functions']['sorting'] = false;
 
                 $options['fields'] = array(
-                    'id' => array(),
+                    'id' => array(
+                        'table' => array(
+                            'attributes' => array(
+                                'class' => 'data-access-id'
+                            )
+                        )
+                    ),
                     'name' => array(
                         'formfield' => array(
                             'adapter' => 'DataAccess',
