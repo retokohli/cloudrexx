@@ -53,8 +53,16 @@ $_ARRAYLANG['fieldList'] = 'Allowed attributes';
 $_ARRAYLANG['accessCondition'] = 'Conditions';
 $_ARRAYLANG['allowedOutputMethods'] = 'Allowed output methods';
 
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_REQUIRES_LOGIN'] = 'If a user is logged in in the admin area or in a protected web page area, this condition is fulfilled.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ACCESS_IDS'] = 'If no Access IDs are selected, all are allowed.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_OUTPUT_METHODS'] = 'How the data should be output, Cli offers a tabular output. ';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ALLOWED_FIELDS'] = 'If no attributes are selected, all are allowed. ';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_USER_GROUPS'] = 'If no user groups are selected, all are allowed.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'The selected endpoints must be verified with this API key when called.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'The API key has read-only access to the selected endpoints.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'] = 'Generate API-Key';
+
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_YES'] = 'Yes';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_NO'] = 'No';

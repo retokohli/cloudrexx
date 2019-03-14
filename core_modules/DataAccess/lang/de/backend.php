@@ -54,7 +54,25 @@ $_ARRAYLANG['fieldList'] = 'Erlaubte Attribute';
 $_ARRAYLANG['accessCondition'] = 'Bedingungen';
 $_ARRAYLANG['allowedOutputMethods'] = 'Erlaubte Ausgabemodule';
 
+$_ARRAYLANG['protocols'] = 'Erlaubte Protokolle';
+$_ARRAYLANG['methods'] = 'Erlaubte Methoden';
+$_ARRAYLANG['userGroups'] = 'Benutzergruppen';
+$_ARRAYLANG['accessIds'] = 'Access IDs';
+$_ARRAYLANG['callbacks'] = 'Callback Methoden';
+$_ARRAYLANG['readPermission'] = 'Leseberechtigung';
+$_ARRAYLANG['writePermission'] = 'Schreibberechtigung';
+$_ARRAYLANG['requiresLogin'] = 'Benötigt Login';
+
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_REQUIRES_LOGIN'] = 'Ist ein Benutzer im Adminbereich oder in einem geschützen Webseitenbereich eingeloggt, ist diese Bedingung erfüllt.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ACCESS_IDS'] = 'Sind keine Access IDs ausgewählt, sind alle zugelassen.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_OUTPUT_METHODS'] = 'Wie die Daten ausgegeben werden sollen, Cli bietet eine tabellarische Ausgabe.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ALLOWED_FIELDS'] = 'Sind keine Attribute ausgewählt, sind alle zugelassen.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_USER_GROUPS'] = 'Sind keine Benutzergruppen ausgewählt, sind alle zugelassen.';
+
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'Die ausgewählten Endpunkte müssen beim Aufruf mit diesem API-Schlüssel verifziert werden.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'Der API-Schlüssel kann auf die ausgewählten Endpunkte nur lesend zugreifen.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'] = 'Generiere API-Schlüssel';
+
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_YES'] = 'Ja';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_NO'] = 'Nein';
