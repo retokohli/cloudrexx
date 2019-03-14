@@ -189,7 +189,7 @@ class BackendController
                         ),
                         'storecallback' => array(
                             'adapter' => 'DataAccess',
-                            'method' => 'getDataAccessPermissionId'
+                            'method' => 'getDataAccessReadPermissionId'
                         ),
                     ),
                     'writePermission' => array(
@@ -200,7 +200,7 @@ class BackendController
                         ),
                         'storecallback' => array(
                             'adapter' => 'DataAccess',
-                            'method' => 'getDataAccessPermissionId'
+                            'method' => 'getDataAccessWritePermissionId'
                         ),
                     ),
                     'dataSource' => array(
