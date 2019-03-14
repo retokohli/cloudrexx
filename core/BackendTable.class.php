@@ -358,12 +358,29 @@ class BackendTable extends HTML_Table {
             // adjust colspan of master-table-header-row
             $this->altRowAttributes(1 + $this->hasMasterTableHeader, array('class' => 'row1'), array('class' => 'row2'), true);
             if ($this->hasMasterTableHeader) {
-                for ($i = 1; $i < $col; $i++) {
-                    $this->setHeaderContents(0, $i, '');
-                }
+                // now that the number of displayed columns is known:
+                $headerColspan = $col;
+                // we need to substract one if we have "overall functions"
+                $headerColspan -= (int) (
+                    isset($options['functions']) &&
+                    isset($options['functions']['export']) &&
+                    is_array($options['functions']['export'])
+                );
+                // we need to add one if there's an additional functions row
+                $headerColspan += (int) $this->hasRowFunctions(
+                    $options['functions']
+                );
+                $this->updateCellAttributes(
+                    0, 
+                    0, 
+                    array(
+                        'colspan' => $headerColspan
+                    )
+                );
+
                 // prepare overall functions code
                 $overallFunctionsCode = $this->getOverallFunctionsCode($options['functions'], $attrs);
-                $this->setHeaderContents(0, $i, $overallFunctionsCode);
+                $this->setHeaderContents(0, $col, $overallFunctionsCode);
                 $this->updateCellAttributes(0, $col, array('style' => 'text-align:right;'));
                 $this->updateRowAttributes(1, array('class' => 'row3'), true);
             }
