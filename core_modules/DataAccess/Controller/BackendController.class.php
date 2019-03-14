@@ -72,6 +72,8 @@ class BackendController
     protected function getViewGeneratorOptions(
         $entityClassName, $dataSetIdentifier = ''
     ) {
+        global $_ARRAYLANG;
+
         $options = parent::getViewGeneratorOptions(
             $entityClassName,
             $dataSetIdentifier
