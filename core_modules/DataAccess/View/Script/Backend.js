@@ -2,6 +2,7 @@ cx.jQuery(document).ready(function() {
     addGenerateButton();
     initializeConditions();
     addEventListenerForConditions();
+    togglePermission();
     loadJsonMethods();
 });
 
@@ -71,6 +72,19 @@ function changeConditionInputName(el, fieldChanged) {
     );
 
     cx.jQuery(el).parent().find('.condition-input').attr('name', newName);
+}
+
+function togglePermission() {
+    let permissionWrapper = cx.jQuery('.permission-legend').parent();
+
+    if (undefined === permissionWrapper || !permissionWrapper.length) {
+        return;
+    }
+
+    cx.jQuery(permissionWrapper).find('.permission-legend').click(function()
+    {
+        cx.jQuery(this).parent().find('.permission-content').slideToggle();
+    });
 }
 
 function loadJsonMethods() {
