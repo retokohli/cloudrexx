@@ -638,6 +638,89 @@ class JsonDataAccessController
     }
 
     /**
+     * Get an array with all accessible methods names from an specific json
+     * controller via JavaScript ajax function
+     *
+     * @param $args  array request arguments
+     * @return array accessible methods
+     */
+    public function getJsonControllerMethods($args)
+    {
+        if (empty($args['post']['controller'])) {
+            return array();
+        }
+
+        return $this->getMethodsByJsonController($args['post']['controller']);
+    }
+
+    /**
+     * Get an array with all accessible methods names from an specific json
+     * controller
+     *
+     * @param $selectedControllerName string json controller name to get
+     * @return array accessible methods
+     */
+    protected function getMethodsByJsonController($selectedControllerName)
+    {
+        $selectedController = null;
+        $jsonControllers = $this->getAllJsonControllers();
+
+        foreach ($jsonControllers as $jsonController) {
+            if ($selectedControllerName == $jsonController->getName()) {
+                $selectedController = $jsonController;
+            }
+        }
+
+        if (!$selectedController) {
+            return array();
+        }
+
+        $methodsFromJson = $selectedController->getAccessableMethods();
+        $methods = array();
+
+        foreach ($methodsFromJson as $key=>$method) {
+            // method name could be defined as key or as value.
+            if (!is_string($method)) {
+                $methods[] = $key;
+            } else {
+                $methods[] = $method;
+            }
+        }
+
+        return $methods;
+    }
+
+    /**
+     * Get an array with all json controllers
+     *
+     * @return array contains all json controllers
+     */
+    protected function getAllJsonControllers()
+    {
+        $jsonControllers = array();
+        $componentRepo = $this->cx->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $componentContollers = $componentRepo->findAll();
+
+        foreach ($componentContollers as $componentCtrl) {
+            foreach (
+                $componentCtrl->getControllersAccessableByJson() as $jsonCtrl
+            ) {
+                $controllerName = explode('Controller', $jsonCtrl)[0];
+                $controller = $componentCtrl->getController(
+                    $controllerName
+                );
+                if ($controller instanceof \Cx\Core\Core\Model\Entity\Controller) {
+                    $jsonControllers[] = $controller;
+                }
+            }
+        }
+
+        return $jsonControllers;
+    }
+
+    /**
      * Get a label element with a title, similar
      * to the generated attributes from the ViewGenerator
      *

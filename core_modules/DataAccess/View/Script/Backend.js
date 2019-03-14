@@ -1,6 +1,7 @@
 cx.jQuery(document).ready(function() {
     addGenerateButton();
     initializeConditions();
+    loadJsonMethods();
 });
 
 function addGenerateButton() {
@@ -33,4 +34,40 @@ function initializeConditions() {
     }
 
     addEventListenerForConditions(conditionWrapper);
+}
+
+function loadJsonMethods() {
+    cx.jQuery('.json-adapter').change(function () {
+        var el = cx.jQuery(this);
+        cx.ajax(
+            'DataAccess',
+            'getJsonControllerMethods',
+            {
+                type: 'POST',
+                data: {
+                    controller: cx.jQuery(el).find('option:selected').text()
+                },
+                success: function(response) {
+                    if (response.status == 'success') {
+                        replaceSelectOptions(el, response.data);
+                    }
+                },
+            }
+        );
+    });
+}
+
+function replaceSelectOptions(select, newOptions) {
+    const methodsSelect = cx.jQuery(select).siblings();
+
+    // Clear select from options.
+    cx.jQuery(methodsSelect).empty();
+
+    // Add new option for each element in newOptions
+    cx.jQuery.each(newOptions, function(key, value) {
+        cx.jQuery(methodsSelect).append('<option>'+value+'</option>').attr('value', value);
+    });
+
+    // Select first option
+    cx.jQuery(methodsSelect).find('option:first').attr('selected', true);
 }
