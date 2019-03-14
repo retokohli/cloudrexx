@@ -580,13 +580,25 @@ class JsonDataAccessController
     protected function getPermissionCallbacks($name, $selectedCallback)
     {
         $default = array('' => '-');
-        $selectedAdapter = empty(false) ? '' : // $selectedCallback->getCallbackInfo()['adapter']
-            $selectedCallback['adapter'];
         $adapters = $default;
+        $selectedAdapter = '';
+        if (
+            !empty($selectedCallback) &&
+            !empty($selectedCallback->getCallbackInfo()[0])
+        ) {
+            // get adapter name
+            $selectedAdapter = $selectedCallback->getCallbackInfo()[0];
+        }
 
-        $selectedMethod = empty(false) ? '' : //$selectedCallback->getCallbackInfo()['method']
-            $selectedCallback['method'];
+        $selectedMethod = '';
         $methods = $default;
+        if (
+            !empty($selectedCallback) &&
+            !empty($selectedCallback->getCallbackInfo()[1])
+        ) {
+            // get method name
+            $selectedMethod = $selectedCallback->getCallbackInfo()[1];
+        }
 
         $jsonControllers = $this->getAllJsonControllers();
         $methodsByJsonController = array();
