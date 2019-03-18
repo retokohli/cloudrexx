@@ -851,6 +851,14 @@ class DBG
             }
         }
 
+        // fetch parsed response code
+        if ($cx->getResponse()) {
+            $httpResponseCode = $cx->getResponse()->getCode();
+        } else {
+            // as fallback fetch response code from set headers
+            $httpResponseCode = http_response_code();
+        }
+
         register_shutdown_function(
             function() use (
                 $cx,
@@ -860,10 +868,11 @@ class DBG
                 $requestUserAgent,
                 $cachedStr,
                 $userHash,
-                $outputModule
+                $outputModule,
+                $httpResponseCode
             ) {
                 $parsingTime = $cx->stopTimer();
-                $format = '(Cx: %1$s) Request parsing completed after %2$s "%3$s" "%4$s" "%5$s" "%6$s" "%7$s" "%8$s" "%9$s" "%10$s"';
+                $format = '(Cx: %1$s) Request parsing completed after %2$s "%3$s" "%4$s" "%5$s" "%6$s" "%7$s" "%8$s" "%9$s" "%10$s" "%11$s"';
                 $log = sprintf(
                     $format,
                     $cx->getId(),
@@ -875,7 +884,8 @@ class DBG
                     $requestUserAgent,
                     memory_get_peak_usage(true),
                     $userHash,
-                    $outputModule
+                    $outputModule,
+                    $httpResponseCode
                 );
                 \DBG::log($log);
             }
