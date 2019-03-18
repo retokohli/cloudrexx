@@ -850,7 +850,6 @@ class DBG
                 $userHash = $counter->getUniqueUserId();
             }
         }
-        $outputModuleStr = empty($outputModule) ? '' : ' "' . $outputModule . '"';
 
         register_shutdown_function(
             function() use (
@@ -861,10 +860,10 @@ class DBG
                 $requestUserAgent,
                 $cachedStr,
                 $userHash,
-                $outputModuleStr
+                $outputModule
             ) {
                 $parsingTime = $cx->stopTimer();
-                $format = '(Cx: %1$s) Request parsing completed after %2$s "%3$s" "%4$s" "%5$s" "%6$s" "%7$s" "%8$s" "%9$s"%10$s';
+                $format = '(Cx: %1$s) Request parsing completed after %2$s "%3$s" "%4$s" "%5$s" "%6$s" "%7$s" "%8$s" "%9$s" "%10$s"';
                 $log = sprintf(
                     $format,
                     $cx->getId(),
@@ -876,7 +875,7 @@ class DBG
                     $requestUserAgent,
                     memory_get_peak_usage(true),
                     $userHash,
-                    $outputModuleStr
+                    $outputModule
                 );
                 \DBG::log($log);
             }
