@@ -3690,7 +3690,7 @@ if ($test === NULL) {
     static function sendProcessedMail($order_id)
     {
         $arrSubstitution =
-              Orders::getSubstitutionArray($order_id)
+              Orders::getSubstitutionArray($order_id, true, false)
             + self::getSubstitutionArray();
         $lang_id = $arrSubstitution['LANG_ID'];
         // Select template for: "Your order has been processed"
