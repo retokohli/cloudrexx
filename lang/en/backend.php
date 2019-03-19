@@ -1107,6 +1107,7 @@ $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_SUBJECT_ID'] = "";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_TO_ID'] = "";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TO'] = "Recipient email address (to:)";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TO_TEST'] = "Please provide your email address in order to send a test-email after saving:";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE'] = "Placeholders will not be substituted in the the test-email. The fields &quot;cc&quot; and &quot;bcc&quot; will not be set. The field &quot;from&quot; will only be set if it contains no placeholder.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_WARNING_NONE'] = "There are no email template present";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_SECTION_OR_GROUP'] = "No value has been assigned to this language placeholder.";
 $_ARRAYLANG['TXT_CORE_MONTH_ABBREV3_ARRAY'] = "M_0,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
