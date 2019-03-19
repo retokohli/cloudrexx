@@ -1528,7 +1528,6 @@ die("MailTemplate::init(): Empty section!");
         }
         $to_test = contrexx_input2raw($_POST['to_test']);
         $objTemplate->setVariable('CORE_MAILTEMPLATE_TO_TEST', $to_test);
-        self::sendTestMail($section, $key, $to_test);
         return $objTemplate;
     }
 
