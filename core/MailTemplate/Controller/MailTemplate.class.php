@@ -1536,11 +1536,22 @@ die("MailTemplate::init(): Empty section!");
 
         if (empty($email)) return;
 
+        // try to load "from" and use it if it contains no placeholder
+        $from = '';
+        $template = static::get($section, $key);
+        if (
+            $template &&
+            isset($template['from']) &&
+            !preg_match('/\[.*\]/', $template['from'])
+        ) {
+            $from = $template['from'];
+        }
+
         $sent = self::send(array(
             'section' => $section,
             'key' => $key,
             'to' => $email,
-            'from' => '',
+            'from' => $from,
             'cc' => '',
             'bcc' => '',
             'do_not_strip_empty_placeholders' => true, ));
