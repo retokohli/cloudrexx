@@ -1527,7 +1527,12 @@ die("MailTemplate::init(): Empty section!");
             return $objTemplate;
         }
         $to_test = contrexx_input2raw($_POST['to_test']);
-        $objTemplate->setVariable('CORE_MAILTEMPLATE_TO_TEST', $to_test);
+        $objTemplate->setVariable(array(
+            'CORE_MAILTEMPLATE_TO_TEST' => $to_test,
+            'TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE' => $_CORELANG[
+                'TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE'
+            ],
+        ));
         return $objTemplate;
     }
 
