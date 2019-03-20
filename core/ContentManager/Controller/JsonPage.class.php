@@ -164,13 +164,8 @@ class JsonPage implements JsonAdapter {
             // load the draft revision if one is available and we're not loading historic data:
             else if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
                 $this->logRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
-
                 $availableRevisions = $this->logRepo->getLogEntries($page, true, 2);
-                $key = 0;
-                if (count($availableRevisions) > 1) {
-                    $key = 1;
-                }
-                $this->logRepo->revert($page, $availableRevisions[$key]->getVersion());
+                $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
             }
 
             $pageArray = $this->getPageArray($page);

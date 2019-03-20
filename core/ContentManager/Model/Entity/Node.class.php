@@ -438,8 +438,10 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function copy($recursive = false, Node $newParent = null, $persist = true) {
         $em = \Env::get('cx')->getDb()->getEntityManager();
 
+        $isChildPage = true;
         if (!$newParent) {
-            $newParent = $this->getParent();
+            $isChildPage = false;
+            $newParent   = $this->getParent();
         }
         $copy = new self();
         $copy->setParent($newParent);
@@ -451,6 +453,27 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             $pageCopy = $page->copyToNode($copy);
             if ($persist) {
                 $em->persist($pageCopy);
+                // If the $page is a draft page then we need to update the draft content in $pageCopy
+                if (
+                    !in_array(
+                        $page->getEditingStatus(),
+                        array('hasDraft', 'hasDraftWaiting')
+                    )
+                ) {
+                    continue;
+                }
+
+                $em->flush($pageCopy);
+                $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
+                $availableRevisions = $logRepo->getLogEntries($page, true, 2);
+                $pageCopy->updateFromArray($availableRevisions[1]->getData());
+
+                if (!$isChildPage) {
+                    continue;
+                }
+
+                $em->flush($pageCopy);
+                $pageCopy->updateFromArray($availableRevisions[0]->getData());
             }
         }
 
