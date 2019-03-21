@@ -345,16 +345,26 @@ class ViewGenerator {
                     $lcOptions['searchFields'][] = $field;
                 }
             }
-            $lcOptions['searchCallback'] = $this->options['functions'][
+            if (isset($this->options['functions']['searchCallback'])) {
+                $lcOptions['searchCallback'] = $this->options['functions'][
                 'searchCallback'
-            ];
-            $lcOptions['filterCallback'] = $this->options['functions'][
-                'filterCallback'
-            ];
+                ];
+            } else {
+                $lcOptions['searchCallback'] = '';
+            }
         } else {
             $lcOptions['searchFields'] = array();
             $lcOptions['searchCallback'] = '';
             $lcOptions['filterCallback'] = '';
+        }
+        if (isset($lcOptions['filtering'])) {
+            if (isset($this->options['functions']['filterCallback'])) {
+                $lcOptions['filterCallback'] = $this->options['functions'][
+                'filterCallback'
+                ];
+            } else {
+                $lcOptions['filterCallback'] = '';
+            }
         }
         if (!isset($lcOptions['filterFields'])) {
             $lcOptions['filterFields'] = false;
