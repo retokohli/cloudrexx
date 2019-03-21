@@ -1026,11 +1026,11 @@ JS_CODE;
     }
 
 
-    private function parseRelatedCategories($objDownload)
+    private function parseRelatedCategories($objDownload, $variablePrefix = '')
     {
         global $_ARRAYLANG;
 
-        if (!$this->objTemplate->blockExists('downloads_file_category_list')) {
+        if (!$this->objTemplate->blockExists('downloads_' . strtolower($variablePrefix) . 'file_category_list')) {
             return;
         }
 
@@ -1042,17 +1042,17 @@ JS_CODE;
 
                 if (!$objCategory->EOF) {
                     // set category attributes
-                    $this->parseCategoryAttributes($objCategory, $row++, 'FILE_');
+                    $this->parseCategoryAttributes($objCategory, $row++, $variablePrefix . 'FILE_');
 
                     // parse category
-                    $this->objTemplate->parse('downloads_file_category');
+                    $this->objTemplate->parse('downloads_' . strtolower($variablePrefix) . 'file_category');
                 }
             }
 
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_RELATED_CATEGORIES', $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES']);
-            $this->objTemplate->parse('downloads_file_category_list');
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_' . $variablePrefix . 'RELATED_CATEGORIES', $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES']);
+            $this->objTemplate->parse('downloads_' . strtolower($variablePrefix) . 'file_category_list');
         } else {
-            $this->objTemplate->hideBlock('downloads_file_category_list');
+            $this->objTemplate->hideBlock('downloads_' . strtolower($variablePrefix) . 'file_category_list');
         }
     }
 
@@ -1209,6 +1209,12 @@ JS_CODE;
 
                 // parse download info
                 $this->parseDownloadAttributes($objDownload, $categoryId, $allowdDeleteFiles, $variablePrefix);
+
+                // parse associated categories (but only for search mode)
+                if (!empty($this->searchKeyword)) {
+                    $this->parseRelatedCategories($objDownload, $variablePrefix . 'SEARCH_');
+                }
+
                 $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_ROW_CLASS', 'row'.($row++ % 2 + 1));
                 $this->objTemplate->parse('downloads_' . strtolower($variablePrefix) . 'file');
 
