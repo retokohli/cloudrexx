@@ -1140,6 +1140,7 @@ $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_NAME'] = "Es ist kein Name für die 
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY_SENT_SUCCESSFULLY_TO'] = "Die E-Mail Vorlage \"%1\$s\" wurde erfolgreich an %2\$s gesendet";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_SENDING_KEY_TO'] = "Die E-Mail Vorlage \"%1\$s\" konnte nicht an %2\$s gesendet werden";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TO_TEST'] = "Geben Sie hier Ihre E-Mail Adresse an, um nach dem Speichern einen Testversand auszulösen:";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE'] = "Im Testversand werden keine Platzhalter ersetzt. Ausserdem werden die Felder &quot;cc&quot; und &quot;bcc&quot; nicht gesetzt. Das Feld &quot;from&quot; wird nur gesetzt, wenn es keine Platzhalter enthält.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_FROM'] = "Nur eine E-Mail Adresse.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_REPLY'] = "Nur eine E-Mail Adresse.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_TO'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
