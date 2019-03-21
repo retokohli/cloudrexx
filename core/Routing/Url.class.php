@@ -374,8 +374,18 @@ class Url {
             $params = explode('?', $this->path);
             $params = $params[1];
         }
-
         $path = implode('/', $path);
+
+        // cleanup possible duplicate '?'
+        if (strpos($path, '?') !== false) {
+            $pathParams = explode('?', $path, 2);
+            if (!empty($params)) {
+                $params .= '&';
+            }
+            $params .= $pathParams[1];
+            $path = $pathParams[0];
+        }
+
         $this->path = $path;
         $this->path .= !empty($params) ? '?'.$params : '';
         $this->suggest();
@@ -813,11 +823,7 @@ class Url {
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
         $getParams = '';
         if (count($parameters)) {
-            $paramArray = array();
-            foreach ($parameters as $key=>$value) {
-                $paramArray[] = $key . '=' . $value;
-            }
-            $getParams = '?' . implode('&', $paramArray);
+            $getParams = '?' . static::array2params($parameters);
         }
         $url = new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
         if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
@@ -837,9 +843,47 @@ class Url {
     public static function fromApi($command, $arguments, $parameters = array()) {
         $url = \Cx\Core\Routing\Url::fromDocumentRoot();
         $url->setMode('backend');
-        $url->setPath('api/' . $command . '/' . implode('/', $arguments));
+        $url->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::FOLDER_NAME_COMMAND_MODE,
+                1
+            ) . '/' . $command . '/' . implode('/', $arguments)
+        );
         $url->removeAllParams();
         $url->setParams($parameters);
+        return $url;
+    }
+
+    /**
+     * Returns an Url object for a backend section
+     * @param string $componentName Component name
+     * @param string $act (optional) The component's action, default is empty string
+     * @param int $lang (optional) Language to use, default is BACKEND_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\Url Url object for the supplied info
+     */
+    public static function fromBackend($componentName, $cmd = '', $lang = 0, $parameters = array(), $protocol = '') {
+        $langForced = true;
+        if ($lang == 0) {
+            $langForced = false;
+            $lang = BACKEND_LANG_ID;
+        }
+        $url = static::fromDocumentRoot($parameters, '', $protocol);
+        $url->setMode('backend');
+        $cmdPath = '';
+        if (!empty($cmd)) {
+            $cmdPath = '/' . $cmd;
+        }
+        $url->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::FOLDER_NAME_BACKEND,
+                1
+            ) . '/' . $componentName . $cmdPath
+        );
+        if ($langForced) {
+            $url->setParam('setLang', $lang);
+        }
         return $url;
     }
 

@@ -27,3 +27,7 @@ Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate:
       nullable: false
       options:
         default: true
+    order:
+      type: integer
+      length: 11
+      column: `order`

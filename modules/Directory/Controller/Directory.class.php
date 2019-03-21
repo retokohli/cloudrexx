@@ -568,6 +568,7 @@ $this->arrRows[2] = '';
 
         if (isset($lid)) {
             $levelLink = "&lid=".$lid;
+            $lid = intval($lid);
         }
 
         if ($this->settings['sortOrder']['value'] == 1) {

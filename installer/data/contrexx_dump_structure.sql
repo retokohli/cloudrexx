@@ -273,7 +273,7 @@ CREATE TABLE `contrexx_core_mail_template` (
 CREATE TABLE `contrexx_core_data_source` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `identifier` varchar(255) NOT NULL,
-  `options` longtext NOT NULL,
+  `options` longtext NOT NULL COMMENT '(DC2Type:array)',
   `type` varchar(50) NOT NULL,
   PRIMARY KEY(`id`),
   UNIQUE KEY `identifier` (`identifier`)
@@ -526,6 +526,7 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `imagePath` varchar(255) NOT NULL,
   `htmlContent` text,
   `active` tinyint(4) NOT NULL DEFAULT '1',
+  `order` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
@@ -1048,7 +1049,8 @@ CREATE TABLE `contrexx_module_contact_form_data` (
   `lang` varchar(64) NOT NULL DEFAULT '',
   `browser` varchar(255) NOT NULL DEFAULT '',
   `ipaddress` varchar(15) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_form` (`id_form`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1058,7 +1060,8 @@ CREATE TABLE `contrexx_module_contact_form_field` (
   `is_required` set('0','1') NOT NULL DEFAULT '0',
   `check_type` int(3) NOT NULL DEFAULT '1',
   `order_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `id_form` (`id_form`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_contact_form_field_lang` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
