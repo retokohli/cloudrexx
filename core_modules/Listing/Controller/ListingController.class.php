@@ -161,7 +161,12 @@ class ListingController {
     /**
      * List with callbacks for search
      */
-    protected $searchCallback = array();
+    protected $searchCallback = '';
+
+    /**
+     * List with callbacks for expanded search
+     */
+    protected $filterCallback = '';
 
     /**
      * Number of entries without filtering or paging
@@ -208,8 +213,10 @@ class ListingController {
             $this->searchFields = $options['searchFields'];
         }
         if (isset($options['searchCallback'])) {
-            $this->searchCallback['search'] = $options['searchCallback'];
-            $this->searchCallback['filter'] = $options['filterCallback'];
+            $this->searchCallback = $options['searchCallback'];
+        }
+        if (isset($options['filterCallback'])) {
+            $this->filterCallback = $options['filterCallback'];
         }
 	if (isset($options['customFields'])) {
             $this->customFields = $options['customFields'];
@@ -359,8 +366,9 @@ class ListingController {
                     ) {
                         continue;
                     }
-                    if (is_callable($this->searchCallback['filter'])) {
-                        $qb = $this->searchCallback['filter'](
+                    if (is_callable($this->filterCallback)) {
+                        $filterCallback = $this->filterCallback;
+                        $qb = $filterCallback(
                             $qb,
                             $field,
                             $crit,
@@ -380,8 +388,9 @@ class ListingController {
             // filtering: simple search by term
             if ($this->searching) {
                 if (!empty($this->filter) && count($this->searchFields)) {
-                    if (is_callable($this->searchCallback['search'])) {
-                        $qb = $this->searchCallback['search'](
+                    if (is_callable($this->searchCallback)) {
+                        $searchCallback = $this->searchCallback;
+                        $qb = $searchCallback(
                             $qb,
                             $this->searchFields,
                             $this->filter,
