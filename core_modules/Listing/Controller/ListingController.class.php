@@ -359,8 +359,8 @@ class ListingController {
                     ) {
                         continue;
                     }
-                    if (is_callable($this->searchCallback['search'])) {
-                        $qb = $this->searchCallback['search'](
+                    if (is_callable($this->searchCallback['filter'])) {
+                        $qb = $this->searchCallback['filter'](
                             $qb,
                             $field,
                             $crit,
@@ -380,8 +380,8 @@ class ListingController {
             // filtering: simple search by term
             if ($this->searching) {
                 if (!empty($this->filter) && count($this->searchFields)) {
-                    if (is_callable($this->searchCallback['filter'])) {
-                        $qb = $this->searchCallback['filter'](
+                    if (is_callable($this->searchCallback['search'])) {
+                        $qb = $this->searchCallback['search'](
                             $qb,
                             $this->searchFields,
                             $this->filter,
@@ -409,8 +409,10 @@ class ListingController {
             $entities = $qb->getQuery()->getResult();
 
             $metaData = $em->getClassMetaData($this->entityClass);
+            $identifierFieldNames = $metaData->getIdentifierFieldNames();
+            $identifierFieldNames = reset($identifierFieldNames);
             $qb->select(
-                'count(x.' . reset($metaData->getIdentifierFieldNames()) . ')'
+                'count(x.' . $identifierFieldNames . ')'
             );
             $qb->setFirstResult(null);
             $qb->setMaxResults(null);
