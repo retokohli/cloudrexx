@@ -355,12 +355,11 @@ class ViewGenerator {
         } else {
             $lcOptions['searchFields'] = array();
             $lcOptions['searchCallback'] = '';
-            $lcOptions['filterCallback'] = '';
         }
         if (isset($lcOptions['filtering'])) {
             if (isset($this->options['functions']['filterCallback'])) {
                 $lcOptions['filterCallback'] = $this->options['functions'][
-                'filterCallback'
+                    'filterCallback'
                 ];
             } else {
                 $lcOptions['filterCallback'] = '';
