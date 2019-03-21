@@ -366,7 +366,24 @@ class ListingController {
                     ) {
                         continue;
                     }
-                    if (is_callable($this->filterCallback)) {
+                    if (is_array($this->filterCallback) && isset($this->filterCallback['adapter']) &&
+                        isset($this->filterCallback['method'])
+                    ) {
+                        $json = new \Cx\Core\Json\JsonData();
+                        $jsonResult = $json->data(
+                            $this->filterCallback['adapter'],
+                            $this->filterCallback['method'],
+                            array(
+                                'qb' => $qb,
+                                'field' => $field,
+                                'crit' => $crit,
+                                'identifier' => $i
+                            )
+                        );
+                        if ($jsonResult['status'] == 'success') {
+                            $qb = $jsonResult["data"];
+                        }
+                    } else if (is_callable($this->filterCallback)) {
                         $filterCallback = $this->filterCallback;
                         $qb = $filterCallback(
                             $qb,
@@ -388,7 +405,24 @@ class ListingController {
             // filtering: simple search by term
             if ($this->searching) {
                 if (!empty($this->filter) && count($this->searchFields)) {
-                    if (is_callable($this->searchCallback)) {
+                    if (is_array($this->searchCallback) && isset($this->searchCallback['adapter']) &&
+                        isset($this->searchCallback['method'])
+                    ) {
+                        $json = new \Cx\Core\Json\JsonData();
+                        $jsonResult = $json->data(
+                            $this->searchCallback['adapter'],
+                            $this->searchCallback['method'],
+                            array(
+                                'qb' => $qb,
+                                'field' => $this->searchFields,
+                                'crit' => $this->filter,
+                                'identifier' => $i
+                            )
+                        );
+                        if ($jsonResult['status'] == 'success') {
+                            $qb = $jsonResult["data"];
+                        }
+                    } else if (is_callable($this->searchCallback)) {
                         $searchCallback = $this->searchCallback;
                         $qb = $searchCallback(
                             $qb,
