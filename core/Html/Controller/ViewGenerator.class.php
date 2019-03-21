@@ -347,7 +347,7 @@ class ViewGenerator {
             }
             if (isset($this->options['functions']['searchCallback'])) {
                 $lcOptions['searchCallback'] = $this->options['functions'][
-                'searchCallback'
+                    'searchCallback'
                 ];
             } else {
                 $lcOptions['searchCallback'] = '';
