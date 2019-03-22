@@ -319,12 +319,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $classNameParts = explode('\\', $entityClassName);
         $classIdentifier = end($classNameParts);
 
-        $sortBy = array();
-        $order  = array('title' => SORT_ASC);
+        $sortBy = array('field' => ['order' => SORT_ASC]);
+        $order  = array();
         \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
-        if (\Cx\Core\Setting\Controller\Setting::getValue('sortBehaviour') === 'custom') {
-            $sortBy = array('field' => ['order' => SORT_ASC]);
-            $order  = array();
+        if (\Cx\Core\Setting\Controller\Setting::getValue('sortBehaviour') === 'alphabetical') {
+            $sortBy = array();
+            $order  = array('title' => SORT_ASC);
         }
 
         return array(
