@@ -35,6 +35,7 @@
  */
 
 namespace Cx\Core_Modules\Listing\Controller;
+use function GuzzleHttp\Psr7\_caseless_remove;
 
 /**
  * Listing exception
@@ -160,13 +161,15 @@ class ListingController {
 
     /**
      * List with callbacks for search
+     * @var array
      */
-    protected $searchCallback = '';
+    protected $searchCallback = array();
 
     /**
      * List with callbacks for expanded search
+     * @var array
      */
-    protected $filterCallback = '';
+    protected $filterCallback = array();
 
     /**
      * Number of entries without filtering or paging
@@ -356,57 +359,62 @@ class ListingController {
             $qb = $em->createQueryBuilder();
             $metaData = $em->getClassMetadata($this->entityClass);
             $qb->select('x')->from($this->entityClass, 'x');
-            $i = 1;
             // filtering: advanced search
             if ($this->filtering) {
-                foreach ($this->criteria as $field=>$crit) {
-                    if (
-                        !empty($this->filterFields) &&
-                        !in_array($field, $this->filterFields)
-                    ) {
-                        continue;
+                if (
+                    is_array($this->filterCallback)
+                    && isset($this->filterCallback['adapter'])
+                    && isset($this->filterCallback['method'])
+                ) {
+                    $json = new \Cx\Core\Json\JsonData();
+                    $jsonResult = $json->data(
+                        $this->filterCallback['adapter'],
+                        $this->filterCallback['method'],
+                        array(
+                            'qb' => $qb,
+                            'crit' => $this->criteria,
+                        )
+                    );
+                    if ($jsonResult['status'] == 'success') {
+                        $qb = $jsonResult["data"];
                     }
-                    if (is_array($this->filterCallback) && isset($this->filterCallback['adapter']) &&
-                        isset($this->filterCallback['method'])
-                    ) {
-                        $json = new \Cx\Core\Json\JsonData();
-                        $jsonResult = $json->data(
-                            $this->filterCallback['adapter'],
-                            $this->filterCallback['method'],
-                            array(
-                                'qb' => $qb,
-                                'field' => $field,
-                                'crit' => $crit,
-                                'identifier' => $i
-                            )
-                        );
-                        if ($jsonResult['status'] == 'success') {
-                            $qb = $jsonResult["data"];
+                } else if (is_callable($this->filterCallback)) {
+                    $filterCallback = $this->filterCallback;
+                    $qb = $filterCallback(
+                        $qb,
+                        $this->criteria
+                    );
+                } else {
+                    $i = 1;
+                    foreach ($this->criteria as $field=>$crit) {
+                        if (
+                            !empty($this->filterFields) &&
+                            !in_array($field, $this->filterFields)
+                        ) {
+                            continue;
                         }
-                    } else if (is_callable($this->filterCallback)) {
-                        $filterCallback = $this->filterCallback;
-                        $qb = $filterCallback(
-                            $qb,
-                            $field,
-                            $crit,
-                            $i
-                        );
-                    } else {
+
                         if (isset($metaData->associationMappings[$field])) {
-                            $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
-                    	} else {
-                            $qb->andWhere($qb->expr()->like('x.' . $field, '?' . $i));
-                    	}
-			$qb->setParameter($i, $crit);
+                            $qb->andWhere(
+                                $qb->expr()->eq('x.' . $field, '?' . $i)
+                            );
+                        } else {
+                            $qb->andWhere(
+                                $qb->expr()->like('x.' . $field, '?' . $i)
+                            );
+                        }
+                        $qb->setParameter($i, $crit);
+                        $i++;
                     }
-                    $i++;
                 }
             }
             // filtering: simple search by term
             if ($this->searching) {
                 if (!empty($this->filter) && count($this->searchFields)) {
-                    if (is_array($this->searchCallback) && isset($this->searchCallback['adapter']) &&
-                        isset($this->searchCallback['method'])
+                    if (
+                        is_array($this->searchCallback)
+                        && isset($this->searchCallback['adapter'])
+                        && isset($this->searchCallback['method'])
                     ) {
                         $json = new \Cx\Core\Json\JsonData();
                         $jsonResult = $json->data(
