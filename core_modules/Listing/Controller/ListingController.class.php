@@ -35,7 +35,6 @@
  */
 
 namespace Cx\Core_Modules\Listing\Controller;
-use function GuzzleHttp\Psr7\_caseless_remove;
 
 /**
  * Listing exception
