@@ -374,7 +374,6 @@ class Resolver {
         $page_template  = $themesPages['content'];
 
         // Authentification for protected pages
-        // This is only done for regular page requests
         $this->checkPageFrontendProtection($page, $history);
 
         //TODO: history
