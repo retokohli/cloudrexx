@@ -349,20 +349,15 @@ class ViewGenerator {
                 $lcOptions['searchCallback'] = $this->options['functions'][
                     'searchCallback'
                 ];
-            } else {
-                $lcOptions['searchCallback'] = '';
             }
         } else {
             $lcOptions['searchFields'] = array();
-            $lcOptions['searchCallback'] = '';
         }
         if (isset($lcOptions['filtering'])) {
             if (isset($this->options['functions']['filterCallback'])) {
                 $lcOptions['filterCallback'] = $this->options['functions'][
                     'filterCallback'
                 ];
-            } else {
-                $lcOptions['filterCallback'] = '';
             }
         }
         if (!isset($lcOptions['filterFields'])) {
