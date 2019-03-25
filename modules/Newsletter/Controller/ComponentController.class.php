@@ -109,8 +109,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                     case 'View':
                         Newsletter::displayInBrowser();
-                        //execution should never reach this point, but let's be safe and call exit anyway
-                        exit;
+                        // execution is never reached, as Newsletter::displayInBrowser
+                        // does generate its own response
                         break;
                 }
                 break;
