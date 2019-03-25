@@ -361,9 +361,9 @@ class ListingController {
             // filtering: advanced search
             if ($this->filtering) {
                 if (
-                    is_array($this->filterCallback)
-                    && isset($this->filterCallback['adapter'])
-                    && isset($this->filterCallback['method'])
+                    is_array($this->filterCallback) &&
+                    isset($this->filterCallback['adapter']) &&
+                    isset($this->filterCallback['method'])
                 ) {
                     $json = new \Cx\Core\Json\JsonData();
                     $jsonResult = $json->data(
@@ -411,9 +411,9 @@ class ListingController {
             if ($this->searching) {
                 if (!empty($this->filter) && count($this->searchFields)) {
                     if (
-                        is_array($this->searchCallback)
-                        && isset($this->searchCallback['adapter'])
-                        && isset($this->searchCallback['method'])
+                        is_array($this->searchCallback) &&
+                        isset($this->searchCallback['adapter']) &&
+                        isset($this->searchCallback['method'])
                     ) {
                         $json = new \Cx\Core\Json\JsonData();
                         $jsonResult = $json->data(
