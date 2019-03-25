@@ -456,7 +456,6 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (17,3,'navigation','backend','TXT_SYSTEM_SETTINGS',1,'index.php?cmd=Config','_self',80,1,17);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (18,3,'navigation','backend','TXT_USER_ADMINISTRATION',1,'index.php?cmd=Access','_self',23,3,18);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (166,28,'navigation','backend','TXT_CORE_VISITOR_DETAILS',1,'index.php?cmd=Stats&stat=visitors','_self',1,1,166);
-INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (20,3,'navigation','backend','TXT_DATABASE_MANAGER',1,'index.php?cmd=DatabaseManager','_self',73,8,20);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (21,3,'navigation','backend','TXT_DESIGN_MANAGEMENT',1,'index.php?cmd=ViewManager','_self',75,4,21);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (22,3,'navigation','backend','TXT_CORE_LOCALE',1,'index.php?cmd=Locale','_self',121,5,22);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (23,3,'navigation','backend','TXT_MODULE_MANAGER',1,'index.php?cmd=ComponentManager','_self',76,6,23);
@@ -566,7 +565,6 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (175,29,'navigation','backend','TXT_CORE_NEWS',1,'index.php?cmd=Newsletter&act=news','_self',4,5,175);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (176,29,'navigation','backend','TXT_NEWSLETTER_SETTINGS',1,'index.php?cmd=Newsletter&act=Settings','_self',4,6,176);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (177,0,'function','global','Json Adapter',1,'index.php?cmd=JsonData','_self',63,0,0);
-INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (178,0,'function','global','File Browser',1,'index.php?cmd=FileBrowser','_self',26,0,0);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (189,0,'group','backend','TXT_CRM_MODULE_DESCRIPTION',1,'','_self',0,6,194);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (180,0,'function','global','TXT_SEARCH',1,'index.php?cmd=Search','_self',5,0,0);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (182,3,'navigation','backend','TXT_LICENSE',1,'index.php?cmd=License','_self',97,2,177);
@@ -636,7 +634,6 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (22,'Feed','modul
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (23,'Access','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (24,'Media2','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (25,'Media3','core_module');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (26,'FileBrowser','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (27,'Recommend','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (30,'Livecam','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (31,'MemberDir','module');
@@ -666,7 +663,6 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (69,'Crm','module
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (70,'Workbench','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (71,'FrontendEditing','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (72,'ContentManager','core');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (73,'DatabaseManager','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (74,'SystemInfo','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (75,'ViewManager','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (76,'ComponentManager','core');
@@ -711,6 +707,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (119,'Country','c
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (120,'View','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (121,'Locale','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (122, 'Widget','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (123, 'Legacy','core_module');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES(1, NULL, 1, 56, 0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES(2, 1, 2, 3, 1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES(3, 1, 4, 17, 1);
@@ -1480,16 +1477,16 @@ INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, 
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('notify_subscription_list_same','Newsletter',28,0,1);
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('consent_confirmation_email','Newsletter',30,1,1);
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('new_asset_notification','Downloads',30,0,0);
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (1, 'Cx\\Modules\\Calendar\\Model\\Entity\\Event', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (2, 'Cx\\Modules\\Calendar\\Model\\Entity\\Category', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (3, 'Cx\\Modules\\Calendar\\Model\\Entity\\CategoryName', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (4, 'Cx\\Modules\\Calendar\\Model\\Entity\\EventField', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (5, 'Cx\\Modules\\Calendar\\Model\\Entity\\Mail', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (6, 'Cx\\Modules\\Calendar\\Model\\Entity\\Registration', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (7, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationForm', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (8, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormField', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (9, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormName', '', 'doctrineRepository');
-INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (10, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormValue', '', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (1, 'Cx\\Modules\\Calendar\\Model\\Entity\\Event', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (2, 'Cx\\Modules\\Calendar\\Model\\Entity\\Category', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (3, 'Cx\\Modules\\Calendar\\Model\\Entity\\CategoryName', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (4, 'Cx\\Modules\\Calendar\\Model\\Entity\\EventField', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (5, 'Cx\\Modules\\Calendar\\Model\\Entity\\Mail', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (6, 'Cx\\Modules\\Calendar\\Model\\Entity\\Registration', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (7, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationForm', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (8, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormField', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (9, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormName', 'a:0:{}', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (10, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormValue', 'a:0:{}', 'doctrineRepository');
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (11, 'Cx\\Modules\\Calendar\\Model\\Entity\\Invite', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (1, NULL, NULL, 1, 'calendar-event', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (2, NULL, NULL, 2, 'calendar-category', 'a:0:{}', 'a:0:{}', 'a:0:{}');
@@ -2212,9 +2209,9 @@ INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUE
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 4, 'print');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 5, 'pdf');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (2, 6, 'app');
-INSERT INTO `contrexx_core_wysiwyg_template` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `active`) VALUES (1,'Bild und Titel','Bild mit einem Titel und Text, der das Bild umfliesst.','/images/Wysiwyg/template1.gif','<h3><img src=\" \" alt=\"\" style=\"margin-right: 10px\" height=\"100\" width=\"100\" align=\"left\" />Hier den Titel einfügen</h3><p>Hier den Text einfügen</p>',1);
-INSERT INTO `contrexx_core_wysiwyg_template` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `active`) VALUES (2,'Zwei Spalten mit Titel','Zwei Spalten, die beide einen Titel und Text beinhalten.','/images/Wysiwyg/template2.gif','<div class=\"row\"><div class=\"col-md-6\"><h2>Hier den Titel einfügen</h2>Hier den Text einfügen <br/> </div><div class=\"col-md-6\"><h2 >Title</h2>Hier den Text einfügen <br/></div></div>Text goes here',1);
-INSERT INTO `contrexx_core_wysiwyg_template` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `active`) VALUES (3,'Text und Tabelle','Ein Titel mit Text und einer Tabelle.','/images/Wysiwyg/template3.gif','<div style=\"width: 80%\"><h3>Hier den Titel einfügen</h3><table style=\"width:150px;float: right\" cellspacing=\"0\" cellpadding=\"0\" border=\"1\"><caption style=\"border:solid 1px black\"><strong> Hier den Tabellentitel einfügen</strong></caption><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><p>Type the text here</p></div>',1);
+INSERT INTO `contrexx_core_wysiwyg_template` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `active`, `order`) VALUES (1,'Bild und Titel','Bild mit einem Titel und Text, der das Bild umfliesst.','/images/Wysiwyg/template1.gif','<h3><img src=\" \" alt=\"\" style=\"margin-right: 10px\" height=\"100\" width=\"100\" align=\"left\" />Hier den Titel einfügen</h3><p>Hier den Text einfügen</p>',1,1);
+INSERT INTO `contrexx_core_wysiwyg_template` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `active`, `order`) VALUES (2,'Zwei Spalten mit Titel','Zwei Spalten, die beide einen Titel und Text beinhalten.','/images/Wysiwyg/template2.gif','<div class=\"row\"><div class=\"col-md-6\"><h2>Hier den Titel einfügen</h2>Hier den Text einfügen <br/> </div><div class=\"col-md-6\"><h2 >Title</h2>Hier den Text einfügen <br/></div></div>Text goes here',1,2);
+INSERT INTO `contrexx_core_wysiwyg_template` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `active`, `order`) VALUES (3,'Text und Tabelle','Ein Titel mit Text und einer Tabelle.','/images/Wysiwyg/template3.gif','<div style=\"width: 80%\"><h3>Hier den Titel einfügen</h3><table style=\"width:150px;float: right\" cellspacing=\"0\" cellpadding=\"0\" border=\"1\"><caption style=\"border:solid 1px black\"><strong> Hier den Tabellentitel einfügen</strong></caption><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><p>Type the text here</p></div>',1,3);
 INSERT INTO `contrexx_core_wysiwyg_toolbar` (`id`, `available_functions`, `removed_buttons`, `is_default`) VALUES (1,'[[\"Source\",\"-\",\"NewPage\",\"Templates\"],[\"Cut\",\"Copy\",\"Paste\",\"PasteText\",\"PasteFromWord\",\"-\",\"Scayt\"],[\"Undo\",\"Redo\",\"-\",\"CopyFormatting\",\"-\",\"Find\",\"Replace\",\"-\",\"SelectAll\",\"RemoveFormat\"],[\"Bold\",\"Italic\",\"Underline\",\"Strike\",\"-\",\"Subscript\",\"Superscript\"],[\"NumberedList\",\"BulletedList\",\"-\",\"Outdent\",\"Indent\",\"Blockquote\"],[\"JustifyLeft\",\"JustifyCenter\",\"JustifyRight\",\"JustifyBlock\"],[],[\"Link\",\"Unlink\",\"Anchor\"],[\"Image\",\"Flash\",\"Table\",\"HorizontalRule\",\"SpecialChar\"],[\"Format\"],[\"TextColor\",\"BGColor\"],[\"ShowBlocks\"],[\"Div\",\"CreateDiv\"],[\"Maximize\"]]','autoFormat,CommentSelectedRange,UncommentSelectedRange,AutoComplete,searchCode,Styles,Font,FontSize,BidiLtr,BidiRtl',1);
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (1,'Afghanistan','AF','AFG');
 INSERT INTO `contrexx_lib_country` (`id`, `name`, `iso_code_2`, `iso_code_3`) VALUES (2,'Albania','AL','ALB');
@@ -3189,6 +3186,8 @@ INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (19,'list_downloads_current_lang','0');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (20,'integrate_into_search_component','1');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (21,'global_search_linking','detail');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (22,'auto_file_naming','off');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (23,'pretty_regex_pattern','');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('emailText','[[ECARD_SENDER_NAME]] hat Ihnen eine E-Card geschickt.<br />\r\nSie können diese während den nächsten [[ECARD_VALID_DAYS]] Tagen unter [[ECARD_URL]] abrufen.');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxCharacters','100');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxHeight','300');
@@ -4577,7 +4576,6 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (23,'Access','Cloudrexx AG','TXT_COMMUNITY_MODULE_DESCRIPTION','y',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (24,'Media2','Cloudrexx AG','TXT_MEDIA_MODULE_DESCRIPTION','y',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (25,'Media3','Cloudrexx AG','TXT_MEDIA_MODULE_DESCRIPTION','y',0,1,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (26,'FileBrowser','Cloudrexx AG','TXT_FILEBROWSER_DESCRIPTION','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (27,'Recommend','Cloudrexx AG','TXT_RECOMMEND_MODULE_DESCRIPTION','y',0,0,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (30,'Livecam','Cloudrexx AG','TXT_LIVECAM_MODULE_DESCRIPTION','y',0,0,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (31,'MemberDir','Cloudrexx AG','TXT_MEMBERDIR_MODULE_DESCRIPTION','y',0,0,1,1,NULL);
@@ -4611,7 +4609,6 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (69,'Crm','Cloudrexx AG','TXT_CRM_MODULE_DESCRIPTION','n',1,0,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (70,'Workbench','Cloudrexx AG','TXT_MODULE_WORKBENCH','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (71,'FrontendEditing','Cloudrexx AG','TXT_MODULE_FRONTEND_EDITING','n',1,1,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (73,'DatabaseManager','Cloudrexx AG','TXT_DATABASEMANAGER_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (74,'SystemInfo','Cloudrexx AG','TXT_SYSTEMINFO_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (77,'LanguageManager','Cloudrexx AG','TXT_LANGUAGEMANAGER_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (75,'ViewManager','Cloudrexx AG','TXT_VIEWMANAGER_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
@@ -4659,6 +4656,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (120,'View','Cloudrexx AG','TXT_CORE_VIEW_DESCRIPTION','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (121,'Locale','Cloudrexx AG','TXT_CORE_LOCALE_DESCRIPTION','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (122,'Widget','Cloudrexx AG','TXT_CORE_MODULES_WIDGET_DESCRIPTION','n',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (123,'Legacy','Cloudrexx AG','TXT_CORE_MODULES_LEGACY_DESCRIPTION','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (1,'image_cut_width','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (2,'image_cut_height','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (3,'image_scale_width','800');
@@ -4731,4 +4729,6 @@ INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status
 INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status`, `submit_check`, `votes`, `additional_nickname`, `additional_forename`, `additional_surname`, `additional_phone`, `additional_street`, `additional_zip`, `additional_email`, `additional_city`, `additional_comment`) VALUES (12,'2010-12-13 06:44:45','Wie gefällt Ihnen das neue Layout?','Wie gefällt Ihnen das neue Layout?',1,'cookie',2,0,0,0,0,0,0,0,0,0);
 INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (1,1,'@hourly','Newsletter autoclean','2018-06-11 09:00:00');
 INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (2,1,'@monthly','Access removeUselessProfileImages','2018-06-11 09:00:00');
+INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (3,1,'@weekly','Model optimize','2018-06-11 09:00:00');
+INSERT INTO `contrexx_core_module_cron_job` (`id`, `active`, `expression`, `command`, `last_ran`) VALUES (4,1,'@hourly','cleanTempFiles','2018-06-11 09:00:00');
 SET FOREIGN_KEY_CHECKS = 1;

@@ -170,6 +170,12 @@ class ListingController {
     protected $data = null;
 
     /**
+     * List all custom field names that are not as a field in the db
+     * @var array
+     */
+    protected $customFields;
+
+    /**
      * Handles a list
      * @param mixed $entities Entity class name as string or callback function
      * @param array $crit (optional) Doctrine style criteria array to use
@@ -195,6 +201,9 @@ class ListingController {
         $this->searching = isset($options['searching']) && $options['searching'];
         if (isset($options['searchFields'])) {
             $this->searchFields = $options['searchFields'];
+        }
+        if (isset($options['customFields'])) {
+            $this->customFields = $options['customFields'];
         }
         // init handlers (filtering, paging and sorting)
         $this->handlers[] = new FilteringController();
@@ -301,6 +310,11 @@ class ListingController {
             if ($this->count) {
                 $data = $data->limit($this->count, $this->offset);
             }
+            // Add custom fields
+            foreach ($this->customFields as $customField) {
+                $data->addColumn($customField);
+            }
+
             $this->data = $data;
             return $data;
         }
@@ -324,6 +338,7 @@ class ListingController {
             $this->dataSize = count($entityRepository);
         } else {
             $qb = $em->createQueryBuilder();
+            $metaData = $em->getClassMetadata($this->entityClass);
             $qb->select('x')->from($this->entityClass, 'x');
             $i = 1;
             // filtering: advanced search
@@ -335,7 +350,11 @@ class ListingController {
                     ) {
                         continue;
                     }
-                    $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                    if (isset($metaData->associationMappings[$field])) {
+                        $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                    } else {
+                        $qb->andWhere($qb->expr()->like('x.' . $field, '?' . $i));
+                    }
                     $qb->setParameter($i, $crit);
                     $i++;
                 }
@@ -358,7 +377,7 @@ class ListingController {
             foreach ($this->order as $field=>&$order) {
                 $qb->orderBy('x.' . $field, $order);
             }
-            $qb->setFirstResult($offset);
+            $qb->setFirstResult($this->offset ? $this->offset : null);
             $qb->setMaxResults($this->count ? $this->count : null);
             $entities = $qb->getQuery()->getResult();
 
@@ -366,11 +385,19 @@ class ListingController {
             $qb->select(
                 'count(x.' . reset($metaData->getIdentifierFieldNames()) . ')'
             );
+            $qb->setFirstResult(null);
+            $qb->setMaxResults(null);
             $this->dataSize = $qb->getQuery()->getSingleScalarResult();
         }
 
         // return calculated data
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
+
+        // Add custom fields
+        foreach ($this->customFields as $customField) {
+            $data->addColumn($customField);
+        }
+
         $data->setDataType($this->entityClass);
         $this->data = $data;
         return $data;
