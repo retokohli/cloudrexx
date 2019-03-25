@@ -943,7 +943,7 @@ die("MailTemplate::init(): Empty section!");
              WHERE `key`='".addslashes($key)."'")) {
             return \Message::error($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETING_FAILED']);
         }
-        $objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."core_mail_template`");
+
         return \Message::ok($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETED_SUCCESSFULLY']);
     }
 
@@ -1527,8 +1527,12 @@ die("MailTemplate::init(): Empty section!");
             return $objTemplate;
         }
         $to_test = contrexx_input2raw($_POST['to_test']);
-        $objTemplate->setVariable('CORE_MAILTEMPLATE_TO_TEST', $to_test);
-        self::sendTestMail($section, $key, $to_test);
+        $objTemplate->setVariable(array(
+            'CORE_MAILTEMPLATE_TO_TEST' => $to_test,
+            'TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE' => $_CORELANG[
+                'TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE'
+            ],
+        ));
         return $objTemplate;
     }
 
@@ -1537,11 +1541,22 @@ die("MailTemplate::init(): Empty section!");
 
         if (empty($email)) return;
 
+        // try to load "from" and use it if it contains no placeholder
+        $from = '';
+        $template = static::get($section, $key);
+        if (
+            $template &&
+            isset($template['from']) &&
+            !preg_match('/\[.*\]/', $template['from'])
+        ) {
+            $from = $template['from'];
+        }
+
         $sent = self::send(array(
             'section' => $section,
             'key' => $key,
             'to' => $email,
-            'from' => '',
+            'from' => $from,
             'cc' => '',
             'bcc' => '',
             'do_not_strip_empty_placeholders' => true, ));

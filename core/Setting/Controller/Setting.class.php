@@ -767,7 +767,7 @@ class Setting{
                     $element .= \Html::getHidden($name, $arrSetting['value'], $name);
                     $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
                     $mediaBrowser->setCallback($name.'Callback');
-                    $mediaBrowser->setOptions(array('type' => 'button','data-cx-mb-views' => 'filebrowser'));
+                    $mediaBrowser->setOptions(array('type' => 'button','views' => 'filebrowser'));
                     $element .= $mediaBrowser->getXHtml($_ARRAYLANG['TXT_BROWSE']);
                     \JS::registerCode('
                         function ' . $name . 'Callback(data) {
@@ -968,7 +968,9 @@ class Setting{
                             }
                         } else {
                             // No file uploaded.  Skip.
-                            if (empty($_FILES[$name]['name'])) continue;
+                            if (empty($_FILES[$name]['name'])) {
+                                continue 2;
+                            }
                             // $value is the target folder path
                             $target_path = $value . '/' . $_FILES[$name]['name'];
                             // TODO: Test if this works in all browsers:

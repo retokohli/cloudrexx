@@ -736,8 +736,8 @@ class Resolver {
                     }
                 }
 
-                //check whether we have a page now.
-                if (!$targetPage) {
+                //check whether we have an active page now
+                if (!$targetPage || !$targetPage->isActive()) {
                     $this->page = null;
                     return;
                 }
@@ -757,6 +757,11 @@ class Resolver {
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
                 $this->resolvePage(true);
+
+                if (empty($this->page)) {
+                    \DBG::msg(__METHOD__ . ': target page of internal redirection not found/published');
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+                }
             } else { //external target - redirect via HTTP redirect
                 if (\FWValidator::isUri($target)) {
                     $this->headers['Location'] = $target;
