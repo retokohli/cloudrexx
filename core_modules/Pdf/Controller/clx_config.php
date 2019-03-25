@@ -2,7 +2,9 @@
 
 /**
  * If multiple PDFs are generated in the same request, define getCustomFonts()
- * only once
+ * only once.
+ *
+ * Only works if the else statement is defined, do not delete this.
  */
 if (function_exists('getCustomFonts')) {
     getCustomFonts($this);
