@@ -160,15 +160,15 @@ class ListingController {
 
     /**
      * List with callbacks for search
-     * @var array
+     * @var array|callable
      */
-    protected $searchCallback = array();
+    protected $searchCallback;
 
     /**
      * List with callbacks for expanded search
-     * @var array
+     * @var array|callable
      */
-    protected $filterCallback = array();
+    protected $filterCallback;
 
     /**
      * Number of entries without filtering or paging
@@ -375,7 +375,7 @@ class ListingController {
                         )
                     );
                     if ($jsonResult['status'] == 'success') {
-                        $qb = $jsonResult["data"];
+                        $qb = $jsonResult['data'];
                     }
                 } else if (is_callable($this->filterCallback)) {
                     $filterCallback = $this->filterCallback;
@@ -422,12 +422,11 @@ class ListingController {
                             array(
                                 'qb' => $qb,
                                 'field' => $this->searchFields,
-                                'crit' => $this->filter,
-                                'identifier' => $i
+                                'crit' => $this->filter
                             )
                         );
                         if ($jsonResult['status'] == 'success') {
-                            $qb = $jsonResult["data"];
+                            $qb = $jsonResult['data'];
                         }
                     } else if (is_callable($this->searchCallback)) {
                         $searchCallback = $this->searchCallback;
@@ -444,10 +443,10 @@ class ListingController {
                         );
                         // TODO: If $this->searchFields is empty allow all
                         foreach ($this->searchFields as $field) {
-                            $orX->add($qb->expr()->like('x.' . $field, '?' . $i));
+                            $orX->add($qb->expr()->like('x.' . $field, ':term'));
                         }
                         $qb->andWhere($orX);
-                        $qb->setParameter($i, '%' . $this->filter . '%');
+                        $qb->setParameter('term', '%' . $this->filter . '%');
                     }
                 }
             }
