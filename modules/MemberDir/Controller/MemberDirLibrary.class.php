@@ -248,9 +248,10 @@ class MemberDirLibrary
         if ($objResult) {
             while (!$objResult->EOF) {
                 $index = $objResult->fields['field'];
-                $fieldnames[$index]['name'] = $objResult->fields['name'];
-                $fieldnames[$index]['active'] = $objResult->fields['active'];
-
+                $fieldnames[$index] = array(
+                    'name'   => $objResult->fields['name'],
+                    'active' => $objResult->fields['active'],
+                );
                 $objResult->MoveNext();
             }
         }
@@ -366,5 +367,27 @@ class MemberDirLibrary
         }
     }
 
+    /**
+     * Get media browser button
+     *
+     * @param string $id       Id of the button
+     * @param string $callback Name of the callback function
+     * @return string HTML element of browse button
+     */
+    protected function getMediaBrowserButton($id, $callback = '')
+    {
+        $options = array(
+            'type'  => 'button',
+            'views' => 'filebrowser',
+            'id'    => $id,
+            'style' => 'display: none;',
+        );
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions($options);
+        if ($callback) {
+            $mediaBrowser->setCallback($callback);
+        }
+
+        return $mediaBrowser->getXHtml();
+    }
 }
-?>

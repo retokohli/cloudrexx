@@ -110,8 +110,14 @@ class FWUser extends User_Setting
     {
         global $_CORELANG;
 
-        $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
-        $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
+        $username = null;
+        if (isset($_POST['USERNAME']) && $_POST['USERNAME'] != '') {
+            $username = contrexx_input2raw($_POST['USERNAME']);
+        }
+        $password = null;
+        if (isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '') {
+            $password = contrexx_input2raw($_POST['PASSWORD']);
+        }
         $authToken = !empty($_GET['auth-token']) ? contrexx_input2raw($_GET['auth-token']) : null;
         $userId = !empty($_GET['user-id']) ? contrexx_input2raw($_GET['user-id']) : null;
 
@@ -122,7 +128,7 @@ class FWUser extends User_Setting
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $sessionObj = $cx->getComponent('Session')->getSession();
+        $session = $cx->getComponent('Session')->getSession();
 
         if (!isset($_SESSION['auth'])) {
             $_SESSION['auth'] = array();
@@ -151,8 +157,8 @@ class FWUser extends User_Setting
         }
 
         $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-        $_SESSION->cmsSessionUserUpdate();
-        $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
+        $session->cmsSessionUserUpdate();
+        $session->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         return false;
     }
 
@@ -163,8 +169,14 @@ class FWUser extends User_Setting
      */
     public function checkLogin()
     {
-        $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
-        $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
+        $username = null;
+        if (isset($_POST['USERNAME']) && $_POST['USERNAME'] != '') {
+            $username = contrexx_input2raw($_POST['USERNAME']);
+        }
+        $password = null;
+        if (isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '') {
+            $password = contrexx_input2raw($_POST['PASSWORD']);
+        }
 
         if (isset($username) && isset($password)) {
             return $this->objUser->checkLoginData($username, $password, \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check());
@@ -180,7 +192,9 @@ class FWUser extends User_Setting
     function loginUser($objUser) {
         global $objInit;
 
-        $_SESSION->cmsSessionUserUpdate($objUser->getId());
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $session = $cx->getComponent('Session')->getSession();
+        $session->cmsSessionUserUpdate($objUser->getId());
         $objUser->registerSuccessfulLogin();
         unset($_SESSION['auth']['loginLastAuthFailed']);
         // Store frontend lang_id in cookie
@@ -213,10 +227,7 @@ class FWUser extends User_Setting
             'clearEsiCache',
             array(
                 'Widget',
-                array(
-                    'access_currently_online_member_list',
-                    'access_last_active_member_list'
-                )
+                $cx->getComponent('Access')->getSessionBasedWidgetNames(),
             )
         );
 
@@ -343,7 +354,8 @@ class FWUser extends User_Setting
         global $objDatabase;
 
         if (!isset($_SESSION['auth']['log'])) {
-            $remote_host = @gethostbyaddr($_SERVER['REMOTE_ADDR']);
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
+            $remoteHost = $net->getHostByAddr($_SERVER['REMOTE_ADDR']);
             $referer = isset($_SERVER['HTTP_REFERER']) ? contrexx_strip_tags(strtolower($_SERVER['HTTP_REFERER'])) : '';
             $httpUserAgent = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_USER_AGENT']) : addslashes(strip_tags($_SERVER['HTTP_USER_AGENT']));
             $httpAcceptLanguage = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']) : addslashes(strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']));
@@ -355,7 +367,7 @@ class FWUser extends User_Setting
                                             useragent = '".substr($httpUserAgent, 0, 250)."',
                                             userlanguage = '".substr($httpAcceptLanguage, 0, 250)."',
                                             remote_addr = '".substr(strip_tags($_SERVER['REMOTE_ADDR']), 0, 250)."',
-                                            remote_host = '".substr($remote_host, 0, 250)."',
+                                            remote_host = '" . substr($remoteHost, 0, 250) . "',
                                             http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? substr(strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']), 0, 250) : '')."',
                                             http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
                                             http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
@@ -425,7 +437,7 @@ class FWUser extends User_Setting
     }
 
 
-    private function setLoggedInInfos($objTemplate, $blockName = '')
+    public function setLoggedInInfos($objTemplate, $blockName = '')
     {
         global $_CORELANG;
 
@@ -565,12 +577,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     $objUser->getUsername(),
                     $restoreLink,
-                    $objUserMail->getSenderName()
+                    $objUserMail->getSenderName(),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyText()
             );
@@ -581,12 +595,14 @@ class FWUser extends User_Setting
                 array(
                     '[[USERNAME]]',
                     '[[URL]]',
-                    '[[SENDER]]'
+                    '[[SENDER]]',
+                    '[[YEAR]]',
                 ),
                 array(
                     htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
                     $restoreLink,
-                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                    date('Y'),
                 ),
                 $objUserMail->getBodyHtml()
             );
@@ -861,6 +877,17 @@ class FWUser extends User_Setting
         return $arrSettings['block_birthday_users']['status'];
     }
 
+    /**
+     * Returns status of next birthday users from user setting
+     *
+     * @return  bool    returns true if function is active
+     */
+    public static function showNextBirthdayUsers()
+    {
+        $arrSettings = User_Setting::getSettings();
+        return (bool) $arrSettings['block_next_birthday_users']['status'];
+    }
+
 
     /**
      * Returns the static FWUser object
@@ -984,7 +1011,11 @@ class FWUser extends User_Setting
         // Options for the dialog
         $arrOptions['minLength'] = empty($arrOptions['minLength']) ? 3 : intval($arrOptions['minLength']);
         $arrOptions['canCancel'] = empty($arrOptions['canCancel']) ? 0 : 1;
-        $arrOptions['canClear']  = empty($arrOptions['canClear'])  ? 0 : 1;
+        $arrOptions['canClear'] = empty($arrOptions['canClear'])  ? 0 : 1;
+        $arrOptions['limit'] = !empty($arrOptions['limit']) ? $arrOptions['limit'] : 0;
+        $arrOptions['resultFormat'] = !empty($arrOptions['resultFormat']) ? $arrOptions['resultFormat'] : '';
+        $arrOptions['searchFields'] = !empty($arrOptions['searchFields']) ? $arrOptions['searchFields'] : '';
+        $arrOptions['searchAnd'] = !empty($arrOptions['searchAnd']) && $arrOptions['searchAnd'] == 'true' ? 'true' : '';
 
         $txtUserSearchInfo = sprintf($_CORELANG['TXT_CORE_SEARCH_USER_INFO'], $arrOptions['minLength']);
 
@@ -994,6 +1025,10 @@ class FWUser extends User_Setting
         $objCx->setVariable('userMinLength',     $arrOptions['minLength'],           $scope);
         $objCx->setVariable('userCanCancel',     $arrOptions['canCancel'],           $scope);
         $objCx->setVariable('userCanClear',      $arrOptions['canClear'],            $scope);
+        $objCx->setVariable('limit',             $arrOptions['limit'],               $scope);
+        $objCx->setVariable('resultFormat',      $arrOptions['resultFormat'],        $scope);
+        $objCx->setVariable('searchFields',      $arrOptions['searchFields'],        $scope);
+        $objCx->setVariable('searchAnd',         $arrOptions['searchAnd'],           $scope);
         $objCx->setVariable('txtUserSearch',     $_CORELANG['TXT_CORE_SEARCH_USER'], $scope);
         $objCx->setVariable('txtUserCancel',     $_CORELANG['TXT_CANCEL'],           $scope);
         $objCx->setVariable('txtUserSearchInfo', $txtUserSearchInfo,                 $scope);

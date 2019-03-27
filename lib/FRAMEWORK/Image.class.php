@@ -194,7 +194,7 @@ class ImageManager
         if (!(strlen($thumb_name) > 0)) {
             $thumb_name = self::getThumbnailFilename($file);
         }
-        if (!$_objImage->saveNewImage($strPath.$thumb_name)) return false;
+        if (!$_objImage->saveNewImage($strPath.$thumb_name, false, false)) return false;
         if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($strPath.$thumb_name)) return false;
         return true;
     }
@@ -256,7 +256,7 @@ class ImageManager
         if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
             if (!\Cx\Lib\FileSystem\FileSystem::delete_file($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         }
-        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) return false;
+        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix, false, false)) return false;
         if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         return true;
     }
@@ -277,7 +277,7 @@ class ImageManager
         if (!$this->imageCheck) return false;
 
         //Create a new image for given size
-    $this->createNewImageForResize($width, $height, $quality);
+        $this->createNewImageForResize($width, $height, $quality);
         if (function_exists('imagecopyresampled')) { //resampled is gd2 only
             imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
         } else {
@@ -355,7 +355,7 @@ class ImageManager
             imagecopyresized($this->newImage, $this->orgImage, $dstX, $dstY, 0, 0, $newWidth, $newHeight, $this->orgImageWidth, $this->orgImageHeight);
         }
 
-    if ($this->newImage) {
+        if ($this->newImage) {
             return true;
         }
         return false;
@@ -473,15 +473,20 @@ class ImageManager
 
     /**
      * Saves the new image wherever you want
+     *
      * @todo    In case the PHP script has no write access to the location set by $this->newImageFile,
      *          the image shall be sent to the output buffer and then be put into the new file
      *          location using the FileSystemFile object.
+     * @todo    Check for all usages of this method if argument
+     *          $injectTransparency must be set to FALSE.
      * @access  public
      * @param   string    $file             The path for the image file to be written.
      * @param   booelan   $forceOverwrite   Force overwriting existing files if true.
+     * @param   booelan   $injectTransparency Whether or not to set transparency
+     *                                      info on new image.
      * @return  boolean                     True on success, false otherwise.
      */
-    public function saveNewImage($file, $forceOverwrite=false)
+    public function saveNewImage($file, $forceOverwrite=false, $injectTransparency = true)
     {
 // TODO: Add some sort of diagnostics (Message) here and elsewhere in this class
         if (!$this->imageCheck) return false;
@@ -513,7 +518,10 @@ class ImageManager
 
         $this->newImageFile = $file;
 
-        if ($this->newImageType == self::IMG_TYPE_PNG) {
+        if (
+            $injectTransparency &&
+            $this->newImageType == self::IMG_TYPE_PNG
+        ) {
             $this->setTransparency();
         }
 

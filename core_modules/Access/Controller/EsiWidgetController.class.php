@@ -47,15 +47,38 @@ namespace Cx\Core_Modules\Access\Controller;
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
     /**
      * Parses a widget
-     * @param string $name Widget name
-     * @param \Cx\Core\Html\Sigma Widget template
-     * @param string $locale RFC 3066 locale identifier
+     *
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma                    $template WidgetTemplate
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
+     * @param array                                  $params   Get parameters
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
+        global $_CORELANG;
+
+        if ($name == 'ACCESS_USER_COUNT') {
+            $template->setVariable($name, \FWUser::getUserCount());
+            return;
+        }
+
+        $template->setVariable(
+            \Env::get('init')->getComponentSpecificLanguageData(
+                'Access',
+                true,
+                $params['locale']->getId()
+            )
+        );
+        $_CORELANG = \Env::get('init')->getComponentSpecificLanguageData(
+            'Core',
+            true,
+            $params['locale']->getId()
+        );
+        $template->setVariable($_CORELANG);
+
         if (preg_match('/^access_logged_(in|out)\d{0,2}/', $name)) {
-            $this->getComponent('Session')->getSession();
             \FWUser::parseLoggedInOutBlocks($template);
+            return;
         }
 
         $objAccessBlocks = new AccessBlocks($template);
@@ -83,6 +106,32 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             } else {
                 $template->hideBlock($name);
             }
+
+            // of the users who's last activity was within 3600s
+            // take the one with the lowest last_activity
+            $objFWUser = \FWUser::getFWUserObject();
+            $filter = array(
+                'active'    => true,
+                'last_activity' => array(
+                    '>' => (time()-3600)
+                )
+            );
+            $objUser = $objFWUser->objUser->getUsers(
+                $filter,
+                null,
+                array('last_activity' => 'asc'),
+                null,
+                1
+            );
+            if (!$objUser) {
+                return;
+            }
+
+            // and user_from_above.last_activity + 3600s = cache timeout
+            $cacheTimeout = $objUser->getLastActivityTime() + 3600;
+            $dateTime     = new \DateTime('@' . $cacheTimeout);
+            $response->setExpirationDate($dateTime);
+            return;
         }
 
         //Parse the last active users
@@ -109,6 +158,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             } else {
                 $template->hideBlock($name);
             }
+            return;
         }
 
         //Parse the latest registered users
@@ -135,10 +185,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             } else {
                 $template->hideBlock($name);
             }
+            return;
         }
 
         //Parse the birthday users
-        if ($name == 'access_birthday_member_list') {
+        if ($name === 'access_birthday_member_list') {
             if (
                 \FWUser::showBirthdayUsers() &&
                 $objAccessBlocks->isSomeonesBirthdayToday() &&
@@ -162,58 +213,37 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             } else {
                 $template->hideBlock($name);
             }
-        }
-    }
-
-    /**
-     * Returns the content of a widget
-     *
-     * @param array $params JsonAdapter parameters
-     *
-     * @return array Content in an associative array
-     */
-    public function getWidget($params)
-    {
-        if (!isset($params['get']['name'])) {
-            return parent::getWidget($params);
+            $dateTime = new \DateTime('tomorrow');
+            $response->setExpirationDate($dateTime);
         }
 
-        switch ($params['get']['name']) {
-            case 'access_birthday_member_list':
-                $dateTime = new \DateTime();
-                $dateTime->setTime(23, 59, 59);
-                $params['response']->setExpirationDate($dateTime);
-                break;
-            case 'access_currently_online_member_list':
-                // of the users who's last activity was within 3600s
-                // take the one with the lowest last_activity
-                $objFWUser = \FWUser::getFWUserObject();
-                $filter = array(
-                    'active'    => true,
-                    'last_activity' => array(
-                        '>' => (time()-3600)
-                    )
-                );
-                $objUser = $objFWUser->objUser->getUsers(
-                    $filter,
-                    null,
-                    array(
-                        'last_activity'    => 'asc',
-                    ),
-                    null,
-                    1
-                );
-                if (!$objUser) {
-                    break;
+        //Parse the next birthday users
+        if ($name == 'access_next_birthday_member_list') {
+            if (
+                \FWUser::showNextBirthdayUsers() &&
+                (
+                    $template->blockExists('access_next_birthday_female_members') ||
+                    $template->blockExists('access_next_birthday_male_members') ||
+                    $template->blockExists('access_next_birthday_members')
+                )
+            ) {
+                if ($template->blockExists('access_next_birthday_female_members')) {
+                    $objAccessBlocks->setNextBirthdayUsers('female');
                 }
 
-                // and user_from_above.last_activity + 3600s = cache timeout
-                $cacheTimeout = $objUser->getLastActivityTime() + 3600;
-                $dateTime = new \DateTime('@' . $cacheTimeout);
-                $params['response']->setExpirationDate($dateTime);
-                break; 
-        }
+                if ($template->blockExists('access_next_birthday_male_members')) {
+                    $objAccessBlocks->setNextBirthdayUsers('male');
+                }
 
-        return parent::getWidget($params);
+                if ($template->blockExists('access_next_birthday_members')) {
+                    $objAccessBlocks->setNextBirthdayUsers();
+                }
+
+                $dateTime = new \DateTime('tomorrow');
+                $response->setExpirationDate($dateTime);
+            } else {
+                $template->hideBlock($name);
+            }
+        }
     }
 }

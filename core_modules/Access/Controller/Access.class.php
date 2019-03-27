@@ -84,6 +84,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->user($metaPageTitle, $pageTitle);
                 break;
 
+            case 'export':
+                $this->export();
+                break;
+
             default:
                 $this->dashboard();
                 break;
@@ -100,7 +104,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     private function user(&$metaPageTitle, &$pageTitle)
     {
         global $_CONFIG;
-
         $objFWUser = \FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser->getUser(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         if ($objUser) {
@@ -126,6 +129,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'ACCESS_USER_ID'            => $objUser->getId(),
                 'ACCESS_USER_USERNAME'      => contrexx_raw2xhtml($objUser->getUsername()),
                 'ACCESS_USER_PRIMARY_GROUP' => contrexx_raw2xhtml($objUser->getPrimaryGroupName()),
+                'ACCESS_USER_REGDATE'       => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
             ));
 
             if ($objUser->getEmailAccess() == 'everyone' ||
@@ -140,13 +144,16 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $nr = 0;
+            $objUser->objAttribute->first();
             while (!$objUser->objAttribute->EOF) {
                 $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
+                if ($objAttribute->checkReadPermission()) {
+                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
+                }
                 $objUser->objAttribute->next();
             }
 
-            $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
+            $this->_objTpl->setVariable("ACCESS_REFERER", '$(HTTP_REFERER)');
         } else {
             // or would it be better to redirect to the home page?
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Access&cmd=members');
@@ -154,33 +161,245 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
     }
 
+    /**
+     * Export user section
+     *
+     * This section lists the existing active frontend user groups.
+     * Additionally is provides the ability to export the members of the
+     * active frontend groups as CSV file.
+     */
+    protected function export() {
+        global $_CORELANG;
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $requestParams = $cx->getRequest()->getUrl()->getParamArray();
+
+        // check if CSV export has been requested
+        if ($cx->getRequest()->hasParam('export')) {
+            // filter export by group
+            $groupId = 0;
+            if ($cx->getRequest()->hasParam('groupId')) {
+                $groupId = intval($cx->getRequest()->getParam('groupId'));
+            }
+
+            // export users as CSV
+            $this->exportUsers($groupId);
+
+            // note: this code is never reached as exportUsers does throw an
+            // InstanceException
+        }
+
+        // abort in case the template block for listing the existing
+        // user groups is missing
+        if (!$this->_objTpl->blockExists('access_group_list')) {
+            return;
+        }
+
+        // fetch active frontend groups
+        $objGroup = \FWUser::getFWUserObject()->objGroup->getGroups(
+            array(
+                'type' => 'frontend',
+                'is_active' => true,
+            )
+        );
+
+        // all text-variable 'All'
+        $this->_objTpl->setVariable('TXT_USER_ALL', $_CORELANG['TXT_USER_ALL']);
+
+        // parse list of active frontend groups
+        while (!$objGroup->EOF) {
+            $this->_objTpl->setVariable(array(
+                'ACCESS_GROUP_ID'    => $objGroup->getId(),
+                'ACCESS_GROUP_NAME'  => contrexx_raw2xhtml(
+                    $objGroup->getName()
+                ),
+                'ACCESS_GROUP_DESCRIPTION'  => contrexx_raw2xhtml(
+                    $objGroup->getDescription()
+                ),
+            ));
+
+            $this->_objTpl->parse('access_group_list');
+            $objGroup->next();
+        }
+    }
+
+    /**
+     * Sanitize the array $filter by ensuring that is only contains
+     * valid keys specified by $allowedFilterKeys.
+     * 
+     * @param   array   $filter Nested array containing profile attribute
+     *                          filter conditions.
+     * @param   array   $allowedFilterKeys  Array consisting of keys that
+     *                                      are allowed to be used as filter
+     *                                      keys.
+     */
+    protected function sanitizeProfileFilter(&$filter, $allowedFilterKeys) { 
+        // verify that the requested filter is valid
+        foreach ($filter as $attribute => &$argument) {
+            // verify $attribute
+            if (   !in_array(strtoupper($attribute), $allowedFilterKeys)
+                && (!is_int($attribute) || !is_array($argument))
+            ) {
+                unset($filter[$attribute]);
+                continue;
+            }
+
+            if (is_array($argument)) {
+                $this->sanitizeProfileFilter($argument, $allowedFilterKeys);
+                // in case $argument contains no valid filters, we shall
+                // remove it completely
+                if (empty($argument)) {
+                    unset($filter[$attribute]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Identifies all valid filter keys (of the current request) to be used
+     * for filtering the users. 
+     * Valid filter arguments can be specified in the application
+     * template in the form of template placeholders. I.e. add the
+     * following placeholder to allow filtering by firstname:
+     *     {ACCESS_FILTER_PROFILE_ATTRIBUTE_FIRSTNAME}
+     *
+     * @return  array   Array consisting of valid filter keys to be used for
+     *                  filtering users.
+     */
+    protected function fetchAllowedFilterAttributes() {
+        // fetch all placeholders from current application template
+        $placeholders = $this->_objTpl->getPlaceholderList();
+        $filterAttributePlaceholderPrefix = $this->modulePrefix.'FILTER_PROFILE_ATTRIBUTE_';
+
+        // filter out special placeholders that identify allowed filter attributes
+        $allowedFilterAttributes = preg_filter('/^' . $filterAttributePlaceholderPrefix . '/', '', $placeholders);
+
+        // verify that attributes are valid
+        $objFWUser = \FWUser::getFWUserObject();
+        foreach ($allowedFilterAttributes as $idx => $attributeId) {
+            $objAttribute = $objFWUser->objUser->objAttribute->getById(strtolower($attributeId));
+
+            // unkown attribute -> drop it from filter
+            if ($objAttribute->EOF) {
+                unset($allowedFilterAttributes[$idx]);
+                continue;
+            }
+
+            // user does not have read access to attribute -> drop it from filter
+            if (!$objAttribute->checkReadPermission()) {
+                unset($allowedFilterAttributes[$idx]);
+                continue;
+            }
+        }
+
+        // add filter join methods (OR and AND) to allowed filter attributes
+        $allowedFilterAttributes = array_merge($allowedFilterAttributes, array('AND', 'OR', '=', '<', '>', '!=', '<', '>', 'REGEXP', 'LIKE'));
+
+        return $allowedFilterAttributes;
+    }
+
+    /**
+     * Fetch sort flags from current application template
+     *
+     * Identifies all sort flags (of the current request) to be used
+     * for sorting the users.
+     * Valid sort arguments can be specified in the application
+     * template in the form of template placeholders having the following
+     * scheme: {ACCESS_SORT_<attribute-ID>_<direction>}
+     * I.e. add the following placeholder to sort by attribute 'firstname'
+     * in descending order:
+     * {ACCESS_SORT_FIRSTNAME_DESC}
+     *
+     * @return  array   Array consisting of valid sort flagsto be used for
+     *                  sorting the users.
+     */
+    protected function fetchSortFlags() {
+        // fetch all placeholders from current application template
+        $placeholders = $this->_objTpl->getPlaceholderList();
+        $sortPlaceholderPrefix = $this->modulePrefix.'SORT_';
+
+        // filter out special placeholders that identify sort flags
+        $sortFlags = preg_filter('/^' . $sortPlaceholderPrefix . '/', '', $placeholders);
+
+        $sortBy = array();
+        foreach ($sortFlags as $sortFlag) {
+            list($attribute, $direction) = array_map('strtolower', explode('_', $sortFlag));
+            $sortBy[$attribute] = $direction;
+        }
+
+        return $sortBy;
+    }
+
     private function members($groupId = null)
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $groupId = !empty($groupId) ? $groupId : (isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0);
+        if (empty($groupId)) {
+            $groupId = isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0;
+        }
+
         $search = isset($_REQUEST['search']) && !empty($_REQUEST['search']) ? preg_split('#\s+#', $_REQUEST['search']) : array();
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
-        $userFilter = array('active' => true);
+
+        $userFilter = array('AND' => array());
+        $userFilter['AND'][] = array('active' => true);
+        $profileFilter = array();
+
+        $limit = $_CONFIG['corePagingLimit'];
+        if ($this->_objTpl->placeholderExists($this->modulePrefix . 'LIMIT_OFF')) {
+            $limit = null;
+        }
+
+        if (isset($_REQUEST['profile_filter']) && is_array($_REQUEST['profile_filter'])) {
+            $profileFilter = $_REQUEST['profile_filter'];
+
+            // decode URL notation in supplied profile filter arguments
+            array_walk_recursive($profileFilter, function(&$value, $key) {$value = urldecode($value);});
+
+            // Ensure profile filter does only contain allowed filter arguments.
+            $this->sanitizeProfileFilter($profileFilter, $this->fetchAllowedFilterAttributes());
+            if (!empty($profileFilter)) {
+                $userFilter['AND'][] = $profileFilter;
+            }
+        }
+
+        $sort = array('username' => 'asc');
+        $sortFlags = $this->fetchSortFlags();
+        if ($sortFlags) {
+            $sort = $sortFlags;
+        }
 
         $this->parseLetterIndexList('index.php?section=Access&amp;cmd=members&amp;groupId='.$groupId, 'username_filter', $usernameFilter);
 
         $this->_objTpl->setVariable('ACCESS_SEARCH_VALUE', htmlentities(join(' ', $search), ENT_QUOTES, CONTREXX_CHARSET));
 
         if ($groupId) {
-            $userFilter['group_id'] = $groupId;
+            $userFilter['AND'][] = array('group_id' => $groupId);
         }
         if ($usernameFilter !== null) {
-            $userFilter['username'] = array('REGEXP' => '^'.($usernameFilter == '0' ? '[0-9]|-|_' : $usernameFilter));
+            $userFilter['AND'][] = array('username' => array('REGEXP' => '^'.($usernameFilter == '0' ? '[0-9]|-|_' : $usernameFilter)));
         }
 
         $objFWUser = \FWUser::getFWUserObject();
         $objGroup = $objFWUser->objGroup->getGroup($groupId);
-        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
+        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, $sort, null, $limit, $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
-            if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+            if ($limit && $userCount > $limit) {
+                $params = '';
+                if ($groupId) {
+                    $params .= '&groupId='.$groupId;
+                }
+                if (count($search)) {
+                    $params .= '&search='.htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET);
+                }
+                if ($usernameFilter) {
+                    $params .= '&username_filter='.$usernameFilter;
+                }
+                if (count($profileFilter)) {
+                    $params .= '&'.http_build_query(array('profile_filter' => $profileFilter));
+                }
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, $params, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
@@ -192,6 +411,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->parseAccountAttributes($objUser);
                 $this->_objTpl->setVariable('ACCESS_USER_ID', $objUser->getId());
                 $this->_objTpl->setVariable('ACCESS_USER_CLASS', $nr++ % 2 + 1);
+                $this->_objTpl->setVariable('ACCESS_USER_REGDATE', date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()));
 
                 if ($objUser->getProfileAccess() == 'everyone' ||
                     $objFWUser->objUser->login() &&
@@ -205,12 +425,18 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
                     while (!$objUser->objAttribute->EOF) {
                         $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                        if ($objAttribute->checkReadPermission()) {
+                            $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                        }
                         $objUser->objAttribute->next();
                     }
                 } else {
-                    $this->parseAttribute($objUser, 'picture', 0, false, false, false, false, false);
-                    $this->parseAttribute($objUser, 'gender', 0, false, false, false, false, false);
+                    foreach (array('picture', 'gender') as $attributeId) {
+                        $objAttribute = $objUser->objAttribute->getById($attributeId);
+                        if ($objAttribute->checkReadPermission()) {
+                            $this->parseAttribute($objUser, $attributeId, 0, false, false, false, false, false);
+                        }
+                    }
                 }
 
                 if($this->_objTpl->blockExists('u2u_addaddress')){
@@ -225,8 +451,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $this->_objTpl->parse('access_members');
+            if ($this->_objTpl->blockExists('access_no_members')) {
+                $this->_objTpl->hideBlock('access_no_members');
+            }
         } else {
             $this->_objTpl->hideBlock('access_members');
+            if ($this->_objTpl->blockExists('access_no_members')) {
+                $this->_objTpl->touchBlock('access_no_members');
+            }
         }
     }
 
@@ -242,6 +474,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $settingsDone = false;
         $objFWUser->objUser->loadNetworks();
 
+        $act = isset($_GET['act']) ? $_GET['act'] : '';
         if (isset($_POST['access_delete_account'])) {
             // delete account
             \Cx\Core\Csrf\Controller\Csrf::check_code();
@@ -337,7 +570,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $msg = implode('<br />', $result);
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
-        } elseif ($_GET['act'] == 'disconnect') {
+        } elseif ($act == 'disconnect') {
             $objFWUser->objUser->getNetworks()->deleteNetwork($_GET['provider']);
             $currentUrl = clone \Env::get('Resolver')->getUrl();
             $currentUrl->setParams(array(
@@ -367,6 +600,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         $this->attachJavaScriptFunction('accessSetWebsite');
+
+        $this->_objTpl->setGlobalVariable(array(
+            'ACCESS_USER_ID'  => $objFWUser->objUser->getId(),
+        ));
 
         $this->_objTpl->setVariable(array(
             'ACCESS_DELETE_ACCOUNT_BUTTON'  => '<input type="submit" name="access_delete_account" value="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'].'" />',
@@ -760,7 +997,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 '[[ACTIVATION_LINK]]',
                 '[[HOST_LINK]]',
                 '[[SENDER]]',
-                '[[LINK]]'
+                '[[LINK]]',
+                '[[YEAR]]',
             );
             $replaceTextTerms = array(
                 $_CONFIG['domainUrl'],
@@ -768,7 +1006,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 $objUserMail->getSenderName(),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             $replaceHtmlTerms = array(
                 $_CONFIG['domainUrl'],
@@ -776,7 +1015,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
                 contrexx_raw2xhtml($objUserMail->getSenderName()),
-                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId(),
+                date('Y'),
             );
             if ($mail2load == 'reg_confirm') {
                 $imagePath = 'http://'.$_CONFIG['domainUrl']
