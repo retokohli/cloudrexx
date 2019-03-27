@@ -67,6 +67,17 @@ class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
     const THEME_DEFAULT_PREVIEW_FILE = '/core/Core/View/Media/theme_preview.gif'; // path from the document root
     const THEME_COMPONENT_FILE = '/component.yml'; // path from theme folder
 
+    /**
+     * @var array The channel enum values
+     */
+    public static $channels = array(
+        'default', // web
+        self::THEME_TYPE_MOBILE,
+        self::THEME_TYPE_PRINT,
+        self::THEME_TYPE_PDF,
+        self::THEME_TYPE_APP,
+    );
+
     public function __construct($id = null, $themesname = null, $foldername = null, $expert = 1) {
         $this->db = \Env::get('db');
 
@@ -184,36 +195,29 @@ class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
     public function getLanguagesByType($type) {
         switch ($type) {
             case self::THEME_TYPE_PRINT:
-                $dbField = 'print_themes_id';
-                break;
             case self::THEME_TYPE_MOBILE:
-                $dbField = 'mobile_themes_id';
-                break;
             case self::THEME_TYPE_APP:
-                $dbField = 'app_themes_id';
-                break;
             case self::THEME_TYPE_PDF:
-                $dbField = 'pdf_themes_id';
+                $channel = $type;
                 break;
-            default:
-                $dbField = 'themesid';
+            default: // web
+                $channel = 'default';
                 break;
         }
 
         $languagesWithThisTheme = array();
-        $query = 'SELECT `id`
-                    FROM `'.DBPREFIX.'languages`
-                  WHERE
-                    `frontend` = 1
-                    AND
-                    `'. $dbField .'` = "'. $this->id .'"';
-
-        $result = $this->db->Execute($query);
-        if ($result !== false) {
-            while(!$result->EOF){
-                $languagesWithThisTheme[] = $result->fields['id'];
-                $result->MoveNext();
-            }
+        $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\View\Model\Entity\Frontend');
+        $criteria = array(
+            'theme' => $this->id,
+            'channel' => $channel
+        );
+        $frontends = $frontendRepo->findBy($criteria);
+        foreach ($frontends as $frontend) {
+            $locale = $frontend->getLocaleRelatedByIso1s();
+            $languagesWithThisTheme[$locale->getId()] = $locale->getShortForm();
         }
 
         return $languagesWithThisTheme;
@@ -223,25 +227,19 @@ class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
      * @return string the language abbreviations of activated languages
      * with this template, separated by comma
      */
-    public function getLanguages() {
+    public function getLanguages()
+    {
         $languagesWithThisTheme = array();
-        $query = 'SELECT `name`
-                    FROM `'.DBPREFIX.'languages`
-                  WHERE
-                    `frontend` = 1
-                    AND (
-                        `themesid` = '.$this->id.'
-                        OR `mobile_themes_id` = '.$this->id.'
-                        OR `print_themes_id` = '.$this->id.'
-                        OR `pdf_themes_id` = '.$this->id.'
-                        OR `app_themes_id` = '.$this->id.'
-                    )';
-        $result = $this->db->Execute($query);
-        if ($result !== false) {
-            while(!$result->EOF){
-                $languagesWithThisTheme[] = $result->fields['name'];
-                $result->MoveNext();
-            }
+        $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\View\Model\Entity\Frontend');
+        $criteria = array(
+            'theme' => $this->id
+        );
+        $frontends = $frontendRepo->findBy($criteria);
+        foreach($frontends as $frontend) {
+            $languagesWithThisTheme[] = $frontend->getLocaleRelatedByIso1s()->getShortForm();
         }
         return implode(', ', $languagesWithThisTheme);
     }
@@ -381,7 +379,7 @@ class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
             ->getFileSystem();
         $file = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath, $fileSystem);
 
-        return $fileSystem->getFullPath($file);
+        return $fileSystem->getFullPath($file) . $file->getFullName();
     }
 
     /**
@@ -391,7 +389,7 @@ class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
      */
     public function getPreviewImage()
     {
-        $filePath = $this->getFilePath($this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
+        $filePath = $this->getFilePath('/' . $this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
         if ($filePath && file_exists($filePath)) {
             return $this->cx->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
         }

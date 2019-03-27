@@ -133,8 +133,20 @@ class PdfDocument extends \mPDF
      * @param string $path     file path
      * @param string $basepath file base path
      */
-    public function GetFullPath(&$path, $basepath = '')
+    public function GetFullPath(&$path, $basepath = '', $tagname = '')
     {
+        if ($tagname == 'A') {
+            $url = \Cx\Core\Routing\Url::fromMagic($path);
+            if ($url->isInternal()) {
+                if (substr($path, 0, 1) == '/') {
+                    $path = substr($path, 1);
+                }
+                $docroot = \Cx\Core\Routing\Url::fromDocumentRoot();
+                $docroot->setMode('backend');
+                $path = $docroot->toString() . $path;
+            }
+            return;
+        }
         // When parsing CSS need to pass temporary basepath -
         // so links are relative to current stylesheet
         if (!$basepath) {

@@ -207,6 +207,16 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
             }
             // do not write the session data
             $this->discardChanges = true;
+            
+            // drop user specific ESI cache:
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*u' . $aKey . '*');
+            foreach ($esiFiles as $esiFile) {
+                try {
+                    $file = new \Cx\Lib\FileSystem\File($esiFile);
+                    $file->delete();
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+            }
         }
         return true;
     }
@@ -271,7 +281,15 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                 if (isset($this->data[$lockKey])) {
                     $sessionValue = $this->data[$lockKey];
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
+                        // Do flush session data to database through a transaction.
+                        // This will have a great impact on performance.
+                        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+                        $db->StartTrans();
                         static::updateToDb($sessionValue);
+                        if ($db->HasFailedTrans()) {
+                            \DBG::msg('Oops: Unable to flush session data to database. This will result in lost session data!');
+                        }
+                        $db->CompleteTrans();
                     } else {
                         if ($this->isDirty($lockKey)) {
                             // is_callable() can return true for type array, so we need to check that it is not an array
@@ -420,7 +438,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
         $sessionId = !empty($_COOKIE[session_name()]) ? $_COOKIE[session_name()] : null;
         if (isset($_POST['remember_me'])) {
             $this->rememberMe = true;
-            if ($this->sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
+            if (static::sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
                 \Env::get('db')->Execute('UPDATE `' . DBPREFIX . 'sessions` SET `remember_me` = 1 WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
             }
         } else {
@@ -434,13 +452,32 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
     }
 
     /**
-     * Checks if the passed session exists.
+     * Check if a session exists
      *
-     * @access  protected
-     * @param   string     $sessionId
-     * @return  boolean
+     * If a session-ID is passed as $sessionId, then it will check if a session
+     * identified by that session-ID is present.
+     * Otherwise it will check if a session identified by the session-cookie
+     * exists.
+     *
+     * @param   string     $sessionId   Session-ID to check for
+     * @return  boolean TRUE if a session exists. Otherwise FALSE.
      */
-    protected function sessionExists($sessionId) {
+    public static function sessionExists($sessionId = '') {
+        if (static::isInitialized()) {
+            return true;
+        }
+
+        if (
+            empty($sessionId) &&
+            !empty($_COOKIE[session_name()])
+        ) {
+            $sessionId = $_COOKIE[session_name()];
+        }
+
+        if (empty($sessionId)) {
+            return false;
+        }
+
         /** @var $objResult ADORecordSet */
         $objResult = \Env::get('db')->Execute('SELECT 1 FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
         if ($objResult && ($objResult->RecordCount() > 0)) {
@@ -701,6 +738,23 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                 \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_WEB_PATH . '/' . $sessionPath, true);
             }
         }
+        
+        // drop user specific ESI cache:
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*_u*');
+        foreach ($esiFiles as $esiFile) {
+            $match = array();
+            if (!preg_match('#/[0-9a-f]{32}(?:_[pl][a-z0-9]+){0,2}?_u([a-z0-9]+)(?:_|$)#', $esiFile, $match)) {
+                continue;
+            }
+            if (in_array($match[1], $sessions)) {
+                continue;
+            }
+            try {
+                $file = new \Cx\Lib\FileSystem\File($esiFile);
+                $file->delete();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+        }
     }
 
     /**
@@ -758,7 +812,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $data) {
+    public function offsetSet($offset, $data, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null) {
         static::validateSessionKeyLength($offset);
 
         if (!isset($this->locks[$offset])) {
@@ -899,6 +953,15 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                           ON DUPLICATE KEY UPDATE
                              `value` = "'. $serializedValue .'"';
                 \Env::get('db')->Execute($query);
+                if (
+                    is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') &&
+                    empty($value->id)
+                ) {
+                    $insertId = \Env::get('db')->Insert_ID();
+                    if ($insertId) {
+                        $value->id = $insertId;
+                    }
+                }
             }
             if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
                 $value->parentId = intval($recursiveArrayAccess->id);

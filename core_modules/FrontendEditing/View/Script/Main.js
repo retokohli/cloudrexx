@@ -146,6 +146,7 @@ cx.fe.contentEditor.initPageCkEditors = function() {
             toolbar: "FrontendEditingTitle",
             forcePasteAsPlainText: true,
             extraPlugins: extraPlugins.join(","),
+            removePlugins: 'bbcode',
             basicEntities: false,
             entities: false,
             entities_latin: false,
@@ -166,6 +167,7 @@ cx.fe.contentEditor.initPageCkEditors = function() {
             customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
             toolbar: "FrontendEditingContent",
             extraPlugins: extraPlugins.join(","),
+            removePlugins: 'bbcode',
             startupOutlineBlocks: false,
             on: {
                 instanceReady: function(event) {
@@ -217,7 +219,7 @@ cx.fe.contentEditor.initBlockCkEditors = function() {
             cx.fe.publishedBlocks["fe_block_" + blockId] = {};
             cx.fe.publishedBlocks["fe_block_" + blockId].contentHtml = cx.jQuery(this).html();
 
-            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=getBlockContent&block=" + blockId + "&lang=" + cx.jQuery.cookie("langId") + "&parsing=false";
+            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=getBlockContent&block=" + blockId + "&lang=" + Cookies.get("langId") + "&parsing=false";
             cx.jQuery.ajax({
                 url: url,
                 complete: function(response) {
@@ -421,7 +423,7 @@ cx.fe.confirmSaveAsDraft = function() {
  */
 cx.fe.toolbar = function() {
     // is toolbar already opened from last session
-    cx.fe.toolbar_opened = cx.jQuery.cookie("fe_toolbar") == "true";
+    cx.fe.toolbar_opened = Cookies.get("fe_toolbar") == "true";
 
     // if it was opened the last time, open now or hide
     if (cx.fe.toolbar_opened) {
@@ -569,7 +571,7 @@ cx.fe.toolbar.hide = function() {
 
     // save the status
     cx.fe.toolbar_opened = false;
-    cx.jQuery.cookie("fe_toolbar", cx.fe.toolbar_opened);
+    Cookies.set("fe_toolbar", cx.fe.toolbar_opened);
 };
 
 /**
@@ -593,7 +595,7 @@ cx.fe.toolbar.show = function() {
 
     // save the status
     cx.fe.toolbar_opened = true;
-    cx.jQuery.cookie("fe_toolbar", cx.fe.toolbar_opened);
+    Cookies.set("fe_toolbar", cx.fe.toolbar_opened);
 };
 
 
@@ -726,7 +728,7 @@ cx.fe.editorLoaded = function() {
  * @param callback
  */
 cx.fe.loadPageData = function(historyId, putTheData, callback) {
-    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.jQuery.cookie("langId") + "&userFrontendLangId=" + cx.jQuery.cookie("langId");
+    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + Cookies.get("langId") + "&userFrontendLangId=" + Cookies.get("langId");
     if (historyId) {
         url += "&history=" + historyId;
     }
@@ -983,7 +985,7 @@ cx.fe.savePage = function() {
  */
 cx.fe.saveBlock = function(editorInstance) {
     cx.jQuery.post(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + cx.jQuery.cookie("langId"),
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + Cookies.get("langId"),
         {
             content: editorInstance.getData()
         },

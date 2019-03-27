@@ -125,7 +125,6 @@ $_ARRAYLANG['TXT_PAGE_NAME'] = "Seitenname";
 $_ARRAYLANG['TXT_SECONDS'] = "Sekunden";
 $_ARRAYLANG['TXT_TRANSLATION'] = "Übersetzung";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Sprache";
-$_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Sprachen";
 $_ARRAYLANG['TXT_START_DATE'] = "Startdatum";
 $_ARRAYLANG['TXT_STATS'] = "Statistik";
 $_ARRAYLANG['TXT_STATS_SETTINGS'] = "Settings";

@@ -128,7 +128,15 @@ JSCaptchaValidation;
             return $this->securityCheck;
         }
 
-        $reCaptcha = new \ReCaptcha\ReCaptcha($this->secret_key, new \ReCaptcha\RequestMethod\CurlPost());
+        if (function_exists('curl_init')) {
+            $requestMethod = new \ReCaptcha\RequestMethod\CurlPost();
+        } elseif (function_exists('fsockopen')) {
+            $requestMethod = new \ReCaptcha\RequestMethod\SocketPost();
+        } else {
+            $requestMethod = new \ReCaptcha\RequestMethod\Post();
+        }
+
+        $reCaptcha = new \ReCaptcha\ReCaptcha($this->secret_key, $requestMethod);
         $resp = $reCaptcha->verify($_POST['g-recaptcha-response'], $_SERVER['REMOTE_ADDR']);
 
         if ($resp->isSuccess()) {
@@ -143,5 +151,15 @@ JSCaptchaValidation;
 
         $this->securityCheck = false;
         return false;
+    }
+
+    /**
+     * Disable the captcha check
+     *
+     * @return void
+     */
+    public function disable()
+    {
+        $this->securityCheck = true;
     }
 }

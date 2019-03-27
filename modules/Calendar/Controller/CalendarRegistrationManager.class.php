@@ -209,7 +209,7 @@ class CalendarRegistrationManager extends CalendarLibrary
      */
     function showRegistrationList($objTpl, $tpl)
     {
-        global $objDatabase, $_LANGID, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute('SELECT count(DISTINCT `field_id`) AS `count_form_fields` FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` WHERE `form_id` = '.$this->formId);
         $objTpl->setVariable($this->moduleLangVar.'_COUNT_FORM_FIELDS', $objResult->fields['count_form_fields'] + 4);
@@ -222,7 +222,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                     FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fieldName`
                     WHERE `fieldName`.`field_id` = `formField`.`id` AND `fieldName`.`form_id` = `formField`.`form`
                     ORDER BY CASE `fieldName`.`lang_id`
-                                WHEN '.$_LANGID.' THEN 1
+                                WHEN '.FRONTEND_LANG_ID.' THEN 1
                                 ELSE 2
                                 END
                     LIMIT 1
@@ -232,7 +232,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                     FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fieldDefault`
                     WHERE `fieldDefault`.`field_id` = `formField`.`id` AND `fieldDefault`.`form_id` = `formField`.`form`
                     ORDER BY CASE `fieldDefault`.`lang_id`
-                                WHEN '.$_LANGID.' THEN 1
+                                WHEN '.FRONTEND_LANG_ID.' THEN 1
                                 ELSE 2
                                 END
                     LIMIT 1
@@ -313,28 +313,44 @@ class CalendarRegistrationManager extends CalendarLibrary
                         case 'salutation':
                         case 'seating':
                         case 'select':
-                            $value = $options[$objResult->fields['value'] - 1];
+                            $optionIdx = $objResult->fields['value'] - 1;
+                            if (isset($options[$optionIdx])) {
+                                $value = $options[$optionIdx];
+                            }
                             break;
                         case 'radio':
                         case 'checkbox':
                             $output   = array();
                             $input    = '';
                             foreach (explode(',', $objResult->fields['value']) as $value) {
-                                $arrValue = explode('[[', $value);
-                                $value    = $arrValue[0];
-                                $input    = str_replace(']]','', $arrValue[1]);
+                                $input = '';
 
-                                $newOptions = explode('[[', $options[$value-1]);
+                                // extract data from input field (in case the magic [[INPUT]] function was used
+                                if (preg_match('/^([^\[]*)(?:\[\[([^\]]*)\]\])?$/', $value, $match)) {
+                                    $value = $match[1];
+                                    if (isset($match[2])) {
+                                        $input = $match[2];
+                                    }
+                                }
+
+                                // fetch label of selected option
+                                $optionIdx = $value - 1;
+                                $label = '';
+                                if (isset($options[$optionIdx])) {
+                                    $label = current(explode('[[', $options[$optionIdx]));
+                                }
+
+                                // fetch value of selected option (based on selection and magic [[INPUT]] field)
                                 if (!empty($input)) {
-                                    $output[]  = $newOptions[0].": ".$input;
+                                    $output[]  = $label . ': ' . $input;
                                 } else {
-                                    if ($newOptions[0] == '') {
-                                        $newOptions[0] = $value == 1 ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
+                                    if ($label == '') {
+                                        $label = $value == 1 ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
                                     }
 
-                                    $output[] = $newOptions[0];
+                                    $output[] = $label;
                                 }
-                                $value = implode(", ", $output);
+                                $value = implode(', ', $output);
                             }
                             break;
                     }
@@ -531,7 +547,7 @@ class CalendarRegistrationManager extends CalendarLibrary
      */
     function showRegistrationInputfields(\Cx\Core\Html\Sigma $objTpl, $regId = null)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $i = 0;
         $objForm         = new \Cx\Modules\Calendar\Controller\CalendarForm($this->formId);
@@ -561,7 +577,8 @@ class CalendarRegistrationManager extends CalendarLibrary
             if ($eventManager->_addToEventList($objEvent)) {
                 $eventManager->eventList[] = $objEvent;
             }
-            $eventManager->_setNextSeriesElement($objEvent);
+            $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
+            $eventManager->_setNextSeriesElement($objEvent, $additionalRecurrences);
 
             $regEventDateField = '<select style="width: 208px;" class="calendarSelect" name="registrationEventDate">';
             foreach ($eventManager->eventList as $event) {
@@ -581,7 +598,7 @@ class CalendarRegistrationManager extends CalendarLibrary
 
         foreach ($objForm->inputfields as $arrInputfield) {
             $inputfield = '';
-            $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
+            $options = explode(',', $arrInputfield['default_value'][FRONTEND_LANG_ID]);
             $optionSelect = true;
 
             if(isset($_POST['registrationField'][$arrInputfield['id']])) {
@@ -649,7 +666,7 @@ class CalendarRegistrationManager extends CalendarLibrary
             if ($arrInputfield['type'] != 'fieldset') {
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_ROW'                              => $i % 2 == 0 ? 'row1' : 'row2',
-                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'     => $arrInputfield['name'][$_LANGID],
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'     => $arrInputfield['name'][FRONTEND_LANG_ID],
                     $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_REQUIRED' => $arrInputfield['required'] == 1 ? '<font class="calendarRequired"> *</font>' : '',
                     $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'    => $inputfield,
                 ));
@@ -666,7 +683,7 @@ class CalendarRegistrationManager extends CalendarLibrary
      */
     function getEscortData()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $query = "SELECT
                     `n`.`field_id`
@@ -679,7 +696,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                   WHERE
                     `n`.`form_id` = '{$this->formId}'
                   AND
-                    `n`.`lang_id` = '{$_LANGID}'
+                    `n`.`lang_id` = '" . FRONTEND_LANG_ID . "'
                   AND
                     `f`.`type` = 'seating'
                 ";
@@ -688,12 +705,24 @@ class CalendarRegistrationManager extends CalendarLibrary
         if (empty($seatingFieldId))
             return (int) count($this->registrationList);
 
+        // Limit search to date of the event. This is critical for series!
+        $startDateBackup = $this->startDate;
+        $endDateBackup = $this->endDate;
+        $this->startDate = $this->event->startDate->format('U');
+        $this->endDate = $this->event->endDate->format('U');
         $this->getRegistrationList();
+        $this->startDate = $startDateBackup;
+        $this->endDate = $endDateBackup;
 
         $countSeating = 0;
         foreach ($this->registrationList as $registration) {
             $arrOptions    = explode(',', $registration->fields[$seatingFieldId]['default']);
-            $countSeating += (int) $arrOptions[$registration->fields[$seatingFieldId]['value'] - 1];
+            $optionIdx = $registration->fields[$seatingFieldId]['value'] - 1;
+            if (isset($arrOptions[$optionIdx])) {
+                $countSeating += (int) $arrOptions[$optionIdx];
+            } else {
+                $countSeating += 1;
+            }
         }
 
         return $countSeating;

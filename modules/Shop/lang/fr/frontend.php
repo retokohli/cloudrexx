@@ -95,7 +95,7 @@ $_ARRAYLANG['TXT_COMMENTS'] = "Communications";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'] = "Adresse client";
 $_ARRAYLANG['TXT_TAC'] = "Conditions générales";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Je confirme l'exactitude des données saisies et j'accepte les <a href=\"index.php?section=Agb\" target=\"_blank\">Conditions Générales</a> dont j'ai pris connaissance.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Je confirme l'exactitude des données saisies et j'accepte les <a href=\"index.php?section=Agb\" target=\"_blank\">Conditions Générales</a> et la <a href=\"index.php?section=Privacy\" target=\"_blank\">charte de confidentialité</a> dont j'ai pris connaissance.";
 $_ARRAYLANG['TXT_TOTAL_PRICE'] = "Prix total";
 $_ARRAYLANG['TXT_ORDER_INFOS'] = "Informations de commande";
 $_ARRAYLANG['TXT_ORDER_PREPARED'] = "Commande prête au paiement.";
@@ -215,7 +215,7 @@ $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "L'inscription sur notre site vous permet
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE_NO_REGISTRATION'] = "Sie sind momentan nicht angemeldet und können ohne Registrierung bestellen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Je suis déjà client.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Se connecter";
-$_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Catégories:";
+$_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Catégories";
 $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Articles de la catégorie";
 $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Aller à la catégorie";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_FIRST_NAME'] = "Prénom";
@@ -295,7 +295,7 @@ $_ARRAYLANG['TXT_SHOP_BACK_TO_PRODUCTS'] = "Retour à la boutique";
 $_ARRAYLANG['TXT_SHOP_CART'] = "Panier";
 $_ARRAYLANG['TXT_SHOP_CART_COLON'] = "Panier:";
 $_ARRAYLANG['TXT_SHOP_CART_JS_FORMAT_PRODUCT'] = "{SHOP_JS_PRODUCT_QUANTITY}x {SHOP_JS_PRODUCT_TITLE}<br />({SHOP_JS_PRODUCT_PRICE} {SHOP_JS_TOTAL_PRICE_UNIT})";
-$_ARRAYLANG['TXT_SHOP_CART_JS_FORMAT_TOTAL'] = "Total {SHOP_JS_PRODUCT_COUNT} article dans le valeur de<br /><b>{SHOP_JS_TOTAL_PRICE} {SHOP_JS_TOTAL_PRICE_UNIT}</b>";
+$_ARRAYLANG['TXT_SHOP_CART_JS_FORMAT_TOTAL'] = "Total {SHOP_JS_PRODUCT_COUNT} article(s) d'une valeur de<br /><b>{SHOP_JS_TOTAL_PRICE} {SHOP_JS_TOTAL_PRICE_UNIT}</b>";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_ALL'] = "Alle Kategorien";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_NAME'] = "Kategorie";
@@ -424,6 +424,8 @@ $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Si
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Continuer sans enregistrement";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Cochez cette case si vous voulez commander sans inscription.";
 $_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
+$_ARRAYLANG['TXT_SHOP_ORDER_QUANTITY'] = "Quantité";
+$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY'] = "Quantité minimale de commande";
 // Headers for Product ordering in list view
 $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'] = "Vorgabe";
 $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_TITLE'] = "Produktname";

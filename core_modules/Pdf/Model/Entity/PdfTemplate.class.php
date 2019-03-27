@@ -58,6 +58,11 @@ class PdfTemplate extends \Cx\Model\Base\EntityBase {
     protected $title;
 
     /**
+     * @var string $fileName
+     */
+    protected $fileName;
+
+    /**
      * @var text $htmlContent
      */
     protected $htmlContent;
@@ -96,6 +101,26 @@ class PdfTemplate extends \Cx\Model\Base\EntityBase {
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Set fileName
+     *
+     * @param string $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
+     * Get fileName
+     *
+     * @return string $fileName
+     */
+    public function getFileName()
+    {
+        return $this->fileName;
     }
 
     /**
