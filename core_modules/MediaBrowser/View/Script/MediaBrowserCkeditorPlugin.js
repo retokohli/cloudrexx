@@ -20,7 +20,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
                     }
                     $J.ajax({
                         type: "GET",
-                        url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + callback.data[0].datainfo.filepath
+                        url: cx.variables.get('cadminPath') + "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + callback.data[0].datainfo.filepath
                     });
                     var dialog = cx.variables.get('jquery', 'mediabrowser')(cx.variables.get('thumbnails_template', 'mediabrowser'));
                     var image = dialog.find('.image');
