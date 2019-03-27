@@ -1744,48 +1744,38 @@ namespace Cx\Core\Core\Controller {
             $this->request->getUrl()->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
+                $this->resolvedPage = $this->resolver->resolve();
+                return;
+            }
 
-                // TODO: Workaround for upload-component as it is loaded in preResolve-hook.
-                // Remove this workaround once the Upload-component has been replaced
-                // by the new Uploader-component which operates only through JsonData
-                // and does therefore not depend on the resolved page any longer.
-                if (isset($_GET['section']) && $_GET['section'] == 'Upload') {
-                    $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
-                    $this->resolvedPage->setVirtual(true);
-                } else {
-                    $this->resolvedPage = $this->resolver->resolve();
+            global $cmd, $act, $plainCmd;
+
+            // resolve pretty url's
+            $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
+            if ($path != 'index.php' && $path != '') {
+                $path = explode('/', $path, 2);
+                if (!isset($_GET['cmd'])) {
+                    $_REQUEST['cmd'] = $path[0];
+                    $_GET['cmd'] = $_REQUEST['cmd'];
                 }
-
-            } else {
-                global $cmd, $act, $plainCmd;
-
-                // resolve pretty url's
-                $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
-                if ($path != 'index.php' && $path != '') {
-                    $path = explode('/', $path, 2);
-                    if (!isset($_GET['cmd'])) {
-                        $_REQUEST['cmd'] = $path[0];
-                        $_GET['cmd'] = $_REQUEST['cmd'];
+                if (isset($path[1])) {
+                    if (substr($path[1], -1, 1) == '/') {
+                        $path[1] = substr($path[1], 0, -1);
                     }
-                    if (isset($path[1])) {
-                        if (substr($path[1], -1, 1) == '/') {
-                            $path[1] = substr($path[1], 0, -1);
-                        }
-                        if (!isset($_GET['act'])) {
-                            $_REQUEST['act'] = $path[1];
-                            $_GET['act'] = $_REQUEST['act'];
-                        }
+                    if (!isset($_GET['act'])) {
+                        $_REQUEST['act'] = $path[1];
+                        $_GET['act'] = $_REQUEST['act'];
                     }
                 }
+            }
 
-                $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
-                $this->resolvedPage->setVirtual(true);
+            $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $this->resolvedPage->setVirtual(true);
 
-                if (!isset($plainCmd)) {
-                    $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : 'Home';
-                    $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
-                    $plainCmd = $cmd;
-                }
+            if (!isset($plainCmd)) {
+                $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : 'Home';
+                $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
+                $plainCmd = $cmd;
             }
         }
 
