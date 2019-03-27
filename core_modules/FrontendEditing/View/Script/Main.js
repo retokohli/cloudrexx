@@ -219,7 +219,7 @@ cx.fe.contentEditor.initBlockCkEditors = function() {
             cx.fe.publishedBlocks["fe_block_" + blockId] = {};
             cx.fe.publishedBlocks["fe_block_" + blockId].contentHtml = cx.jQuery(this).html();
 
-            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=getBlockContent&block=" + blockId + "&lang=" + cx.variables.get("langId", "FrontendEditing");
+            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=getBlockContent&block=" + blockId + "&lang=" + cx.variables.get("language", "contrexx");
             cx.jQuery.ajax({
                 url: url,
                 complete: function(response) {
@@ -728,7 +728,7 @@ cx.fe.editorLoaded = function() {
  * @param callback
  */
 cx.fe.loadPageData = function(historyId, putTheData, callback) {
-    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.variables.get("langId", "FrontendEditing") + "&userFrontendLangId=" + cx.variables.get("langId", "FrontendEditing");
+    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.variables.get("language", "contrexx") + "&userFrontendLangId=" + cx.variables.get("language", "contrexx");
     if (historyId) {
         url += "&history=" + historyId;
     }
@@ -985,7 +985,7 @@ cx.fe.savePage = function() {
  */
 cx.fe.saveBlock = function(editorInstance) {
     cx.jQuery.post(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + cx.variables.get("langId", "FrontendEditing"),
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + cx.variables.get("language", "contrexx"),
         {
             content: editorInstance.getData()
         },

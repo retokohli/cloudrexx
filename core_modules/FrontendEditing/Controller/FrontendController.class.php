@@ -115,7 +115,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         $contrexxJavascript->setVariable('hasPublishPermission', \Permission::checkAccess(78, 'static', true), 'FrontendEditing');
         $contrexxJavascript->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'FrontendEditing');
         $contrexxJavascript->setVariable('defaultTemplate', $this->getDefaultTemplate(), 'FrontendEditing');
-        $contrexxJavascript->setVariable('langId', FRONTEND_LANG_ID, 'FrontendEditing');
 
         $configPath = $this->cx->getComponent('Wysiwyg')->getConfigPath();
         $contrexxJavascript->setVariable('configPath', $configPath, 'FrontendEditing');
