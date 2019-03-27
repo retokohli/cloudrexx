@@ -124,8 +124,10 @@ class InitCMS
     /**
      * Constructor
      */
-    function __construct($mode='frontend', $entityManager = null)
-    {
+    function __construct(
+        $mode = \Cx\Core\Core\Controller\Cx::MODE_BACKEND,
+        $entityManager = null
+    ) {
         // TODO: what is this used for?
         $this->em = $entityManager;
         $this->mode=$mode;
@@ -139,7 +141,7 @@ class InitCMS
         $this->defaultBackendLangId = \FWLanguage::getDefaultBackendLangId();
         $this->arrBackendLangNames = \FWLanguage::getNameArray('backend');
 
-        if ($mode == 'frontend') {
+        if ($mode == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             //$this->_initBackendLanguage();
             $this->getUserFrontendLangId();
         }
@@ -774,7 +776,7 @@ class InitCMS
 
         if(!isset($_CORELANG))
             $_CORELANG = array();
-        if ($mode == 'backend') {
+        if ($mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             if (isset($this->arrBackendLang[$this->backendLangId])) {
                 $langCode = $this->arrBackendLang[$this->backendLangId]['lang'];
             } else {
@@ -790,7 +792,7 @@ class InitCMS
 
         // check which module will be loaded
         if (empty($module)) {
-            if ($mode == 'backend') {
+            if ($mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
                 $module = isset($_REQUEST['cmd']) ? addslashes(strip_tags($_REQUEST['cmd'])) : 'core';
             } else {
                 $module = isset($_REQUEST['section']) ? addslashes(strip_tags($_REQUEST['section'])) : 'core';
@@ -840,7 +842,11 @@ class InitCMS
     public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId = 0, $loadFromYaml=true) {
         global $_ARRAYLANG;
 
-        $mode = $frontend ? 'frontend' : 'backend';
+        if ($frontend) {
+            $mode = \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+        } else {
+            $mode = \Cx\Core\Core\Controller\Cx::MODE_BACKEND;
+        }
 
         if (!$languageId) {
             if ($frontend) {
@@ -903,7 +909,11 @@ class InitCMS
         $arrayLangBackup = $_ARRAYLANG;
         $_ARRAYLANG = array();
 
-        $mode = $frontend ? 'frontend' : 'backend';
+        if ($frontend) {
+            $mode = \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+        } else {
+            $mode = \Cx\Core\Core\Controller\Cx::MODE_BACKEND;
+        }
 
         if ($componentName == 'Core') {
             $componentName = lcfirst($componentName);
