@@ -85,13 +85,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Generate PDF Document
      *
-     * @param integer $pdfTemplateId id of the PDF Template
-     * @param array   $substitution  array of substitution values
-     * @param string  $mailTplKey    MailTemplate key
+     * @param integer $pdfTemplateId          id of the PDF Template
+     * @param array   $substitution           array of substitution values
+     * @param string  $mailTplKey             MailTemplate key
+     * @param boolean $convertToHtmlEntities  convert input to HTML entities
      *
      * @return mixed array|null
      */
-    public function generatePDF($pdfTemplateId, $substitution, $mailTplKey)
+    public function generatePDF($pdfTemplateId, $substitution, $mailTplKey, $convertToHtmlEntities = false)
     {
         if (empty($mailTplKey)) {
             return;
@@ -108,26 +109,82 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         $tplContent = $pdfTemplates->getHtmlContent();
+
+        // parse blocks
+        $tplContent = preg_replace(
+            '/\[\[(BLOCK_[A-Z_0-9]+)\]\]/',
+            '{\1}',
+            $tplContent
+        );
+        \Cx\Modules\Block\Controller\Block::setBlocks($tplContent);
+        $tplContent = $this->getComponent('Cache')->internalEsiParsing(
+            $tplContent
+        );
+
         \Cx\Core\MailTemplate\Controller\MailTemplate::substitute(
             $tplContent,
             $substitution,
-            true
+            $convertToHtmlEntities
         );
 
-        $session    = $this->getComponent('Session')->getSession();
-        $datetime   = $this->getComponent('DateTime')->createDateTimeForUser('now')->format('d_m_Y_h_s_i');
-        $title      = $mailTplKey . '.pdf';
-        $fileName   = $mailTplKey . '_' . $datetime . '.pdf';
-        $pdf        = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
-        $pdf->SetTitle($title);
+        $fileName = $pdfTemplates->getFileName();
+        if (!empty($fileName)) {
+            \Cx\Core\MailTemplate\Controller\MailTemplate::substitute(
+                $fileName,
+                $substitution,
+                $convertToHtmlEntities
+            );
+        } else {
+            $datetime = $this->getComponent('DateTime')
+                ->createDateTimeForUser('now')->format('d_m_Y_h_s_i');
+            $fileName = $mailTplKey . '_' . $datetime;
+        }
+
+        $session = $this->getComponent('Session')->getSession();
+        $pdf     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
+        $pdf->SetTitle($fileName . '.pdf');
         $pdf->setContent($tplContent);
         $pdf->setDestination('F');
-        $pdf->setFilePath($session->getTempPath() . '/' . $fileName);
+        $pdf->setFilePath($session->getTempPath() . '/' . $fileName . '.pdf');
         $pdf->Create();
 
         return array(
-            'filePath' => $session->getWebTempPath() . '/' . $fileName,
-            'fileName' => $title
+            'filePath' => $session->getWebTempPath() . '/' . $fileName . '.pdf',
+            'fileName' => $fileName . '.pdf'
+        );
+    }
+
+    /**
+     * https://stackoverflow.com/questions/39120906/mpdf-use-another-font-without-editing-the-package-files
+     */
+    public function postComponentLoad()
+    {
+        if (
+            defined('_MPDF_TTFONTPATH') ||
+            defined('_MPDF_SYSTEM_TTFONTS_CONFIG')
+        ) {
+            return;
+        }
+        define(
+            '_MPDF_TTFONTPATH',
+            $this->cx->getWebsiteDocumentRootPath() . \Cx\Core\Core\Controller\Cx::FOLDER_NAME_MEDIA
+                . '/Pdf/ttfonts/'
+        );
+        define(
+            '_MPDF_SYSTEM_TTFONTS_CONFIG',
+            $this->getDirectory() . '/Controller/clx_config.php'
+        );
+        if (
+            defined('_MPDF_SYSTEM_TTFONTS')
+        ) {
+            return;
+        }
+        define(
+            '_MPDF_SYSTEM_TTFONTS',
+            ltrim(
+                $this->cx->getLibraryFolderName(),
+                '/'
+            ) . '/mpdf/ttfonts/'
         );
     }
 }

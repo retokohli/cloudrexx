@@ -673,12 +673,8 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlock($id, &$code, $pageId)
+    function _setBlock($id, &$code, $pageId = 0)
     {
-        if (!$this->checkTargetingOptions($id)) {
-            return;
-        }
-
         $now = time();
 
         $this->replaceBlocks(
@@ -736,7 +732,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setCategoryBlock($id, &$code, $pageId)
+    function _setCategoryBlock($id, &$code, $pageId = 0)
     {
         $category = $this->_getCategory($id);
         $separator = $category['seperator'];
@@ -792,7 +788,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockGlobal(&$code, $pageId)
+    function _setBlockGlobal(&$code, $pageId = 0)
     {
         global $objDatabase;
 
@@ -892,7 +888,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockRandom(&$code, $id, $pageId)
+    function _setBlockRandom(&$code, $id, $pageId = 0)
     {
         global $objDatabase;
 
@@ -931,16 +927,6 @@ class BlockLibrary
                 break;
         }
 
-
-        if ($objBlockName === false || $objBlockName->RecordCount() <= 0) {
-            return;
-        }
-
-        while (!$objBlockName->EOF) {
-            $arrActiveBlocks[] = $objBlockName->fields['id'];
-            $objBlockName->MoveNext();
-        }
-
         $this->replaceBlocks(
             $this->blockNamePrefix . 'RANDOMIZER' . $blockNr,
             $query,
@@ -955,6 +941,7 @@ class BlockLibrary
      * Replaces a placeholder with block content
      * @param string $placeholderName Name of placeholder to replace
      * @param string $query SQL query used to fetch blocks
+     * @param int $pageId ID of the current page, 0 if no page available
      * @param string $code (by reference) Code to replace placeholder in
      * @param string $separator (optional) Separator used to separate the blocks
      * @param boolean $randomize (optional) Wheter to randomize the blocks or not, default false
@@ -982,6 +969,7 @@ class BlockLibrary
         $em = $cx->getDb()->getEntityManager();
         $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
+        $settings = $this->getSettings();
 
         if ($randomize) {
             $esiBlockInfos = array();
@@ -1024,7 +1012,48 @@ class BlockLibrary
             }
             $content = implode($separator, $contentList);
         }
+
+        if (!empty($settings['markParsedBlock'])) {
+            $content = "<!-- start $placeholderName -->$content<!-- end $placeholderName -->";
+        }
+
         $code = str_replace('{' . $placeholderName . '}', $content, $code);
+    }
+
+    /**
+     * Get the settings from database
+     *
+     * @staticvar array $settings settings array
+     *
+     * @return array settings array
+     */
+    public function getSettings()
+    {
+
+        static $settings = array();
+        if (!empty($settings)) {
+            return $settings;
+        }
+
+        $query = '
+            SELECT
+                `name`,
+                `value`
+            FROM
+                `'. DBPREFIX .'module_block_settings`';
+        $setting = \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getDb()
+                    ->getAdoDb()
+                    ->Execute($query);
+        if ($setting === false) {
+            return array();
+        }
+        while (!$setting->EOF) {
+            $settings[$setting->fields['name']] = $setting->fields['value'];
+            $setting->MoveNext();
+        }
+
+        return $settings;
     }
 
     /**

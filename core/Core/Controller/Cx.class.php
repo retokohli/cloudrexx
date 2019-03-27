@@ -150,9 +150,15 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Request URL
-         * @var \Cx\Core\Routing\Url
+         * @var \Cx\Core\Routing\Model\Entity\Request
          */
         protected $request = null;
+
+        /**
+         * Response object
+         * @var \Cx\Core\Routing\Model\Entity\Response
+         */
+        protected $response = null;
 
         /**
          * Component handler
@@ -601,7 +607,7 @@ namespace Cx\Core\Core\Controller {
          */
         public function getEndcode()
         {
-            return $this->endcode;
+            return $this->getResponse()->getParsedContent();
         }
 
         /**
@@ -653,12 +659,6 @@ namespace Cx\Core\Core\Controller {
          * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
          */
         public static function registerInstance($cx, $configFilePath = null, $setAsPreferred = false) {
-            if (!isset(self::$instances[null])) {
-                $key = null;
-            } else {
-                $key = spl_object_hash($cx);
-            }
-
             self::$autoIncrementValueOfId++;
             $cx->setId(self::$autoIncrementValueOfId);
 
@@ -786,6 +786,10 @@ namespace Cx\Core\Core\Controller {
                  * Command mode is different ;-)
                  */
                 if ($this->mode == self::MODE_MINIMAL) {
+                    // Legacy:
+                    if (!defined('MODULE_INDEX')) {
+                        define('MODULE_INDEX', '');
+                    }
                     return;
                 }
                 $this->loadContrexx();
@@ -823,6 +827,7 @@ namespace Cx\Core\Core\Controller {
                 $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
                 $this->setPostContentLoadPlaceholders();
                 $this->finalize();
+                $this->getResponse()->send();
                 die;
             }
 
@@ -836,17 +841,25 @@ namespace Cx\Core\Core\Controller {
              *
              * Enable \DBG to see what happened
              */
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 if (file_exists($this->websiteDocumentRootPath . '/offline.html')) {
                     $offlinePath = $this->websiteDocumentRootPath;
                 } else {
                     $offlinePath = $this->codeBaseDocumentRootPath;
                 }
+                // remove CSRF token
+                output_reset_rewrite_vars();
                 echo file_get_contents($offlinePath . '/offline.html');
                 \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
                 \DBG::dump($e->getTrace());
+                \DBG::msg('GET:');
+                \DBG::dump($_GET);
+                \DBG::msg('POST:');
+                \DBG::dump($_POST);
+                \DBG::msg('COOKIE:');
+                \DBG::dump($_COOKIE);
                 die();
             }
         }
@@ -855,6 +868,10 @@ namespace Cx\Core\Core\Controller {
          * Starts time measurement for page parsing time
          */
         protected function startTimer() {
+            if ($this->startTime) {
+                return;
+            }
+
             $this->startTime = explode(' ', microtime());
         }
 
@@ -871,7 +888,7 @@ namespace Cx\Core\Core\Controller {
          * Stops time measurement and returns page parsing time
          * @return int Time needed to parse page in seconds
          */
-        protected function stopTimer() {
+        public function stopTimer() {
             $finishTime = explode(' ', microtime());
             return round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$this->startTime[0] + (float)$this->startTime[1]), 5);
         }
@@ -983,6 +1000,10 @@ namespace Cx\Core\Core\Controller {
             if (!isset($_CONFIG)) {
                 die('System halted: Unable to load basic configuration!');
             }
+
+            if (empty($_SERVER['SERVER_NAME'])) {
+                $_SERVER['SERVER_NAME'] = $_CONFIG['domainUrl'];
+            }
         }
 
         protected function setCustomizingPath() {
@@ -1065,11 +1086,11 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
+                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?' . self::FOLDER_NAME_COMMAND_MODE . '(?:[?/\#]|$)#', $_GET['__cap'])) {
                         $this->mode = self::MODE_COMMAND;
                         return;
                     }
-                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
                         break;
                     }
                     // this does not belong here:
@@ -1288,8 +1309,17 @@ namespace Cx\Core\Core\Controller {
             }
 
             // redirect to correct domain and protocol
+            $url = $protocol . '://' . $domain . $_SERVER['REQUEST_URI'];
+            $this->getComponent('Cache')->writeCacheFileForRequest(
+                null,
+                array(
+                    $_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently',
+                    'Location' => $url,
+                ),
+                ''
+            );
             \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
-            \header('Location: ' . $protocol . '://' . $domain . $_SERVER['REQUEST_URI']);
+            \header('Location: ' . $url);
             exit;
         }
 
@@ -1340,13 +1370,11 @@ namespace Cx\Core\Core\Controller {
          * (Env, API and InitCMS are deprecated)
          * @todo Remove deprecated elements
          * @todo Remove usage of globals
-         * @global array $_CONFIG
-         * @global type $_FTPCONFIG
+         * @global type $_DBCONFIG
          * @global type $objDatabase
-         * @global type $objInit
          */
         protected function init() {
-            global $objDatabase, $objInit, $_DBCONFIG, $_CONFIG;
+            global $objDatabase, $_DBCONFIG;
 
             $this->tryToSetMemoryLimit();
 
@@ -1381,7 +1409,8 @@ namespace Cx\Core\Core\Controller {
             \Env::set('db', $objDatabase);
 
             $em = $this->db->getEntityManager();
-            \Env::set('pageguard', new \PageGuard($this->db->getAdoDb()));
+            $pageGuard = new \PageGuard($this->db->getAdoDb());
+            \Env::set('pageguard', $pageGuard);
 
             \DBG::set_adodb_debug_mode();
 
@@ -1390,10 +1419,6 @@ namespace Cx\Core\Core\Controller {
             $this->eventManager->addEvent('preComponent');
             $this->eventManager->addEvent('postComponent');
 
-            // Initialize base system
-            // TODO: Get rid of InitCMS class, merge it with this class instead
-            $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::get('em'));
-            \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             //$bla->findAll();
         }
@@ -1444,6 +1469,12 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
+            $this->response = new \Cx\Core\Routing\Model\Entity\Response(
+                null,
+                200,
+                $this->request
+            );
+            $this->response->setContentType('text/html');
             //call post-init hooks
             $this->ch->callPostInitHooks();
         }
@@ -1483,6 +1514,11 @@ namespace Cx\Core\Core\Controller {
             // command mode is different
             if ($this->getMode() == static::MODE_COMMAND) {
                 global $argv;
+                
+                // Legacy:
+                if (!defined('MODULE_INDEX')) {
+                    define('MODULE_INDEX', '');
+                }
 
                 try {
                     // cleanup params
@@ -1502,16 +1538,54 @@ namespace Cx\Core\Core\Controller {
                         unset($params['__cap']);
                     }
                     $params = contrexx_input2raw($params);
+                    if (!isset($params['lang']) && isset($params['locale'])) {
+                        $params['lang'] = $params['locale'];
+                    }
+                    if (isset($params['lang'])) {
+                        $langId = \FWLanguage::getLanguageIdByCode($params['lang']);
+                        if ($langId) {
+                            if (!defined('FRONTEND_LANG_ID')) {
+                                define('FRONTEND_LANG_ID', $langId);
+                            }
+                            if (!defined('BACKEND_LANG_ID')) {
+                                define('BACKEND_LANG_ID', $langId);
+                            }
+                            if (!defined('LANG_ID')) {
+                                define('LANG_ID', $langId);
+                            }
+                            $this->getDb()->getTranslationListener()->setTranslatableLocale(
+                                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+                            );
+                        }
+                    }
+                    if (!\Env::get('Resolver')) {
+                        $url = $this->getRequest()->getUrl();
+                        $url->removeAllParams();
+                        $url->setPath('/');
+                        $resolver = new \Cx\Core\Routing\Resolver(
+                            $url,
+                            null,
+                            $this->getDb()->getEntityManager(),
+                            null,
+                            null
+                        );
+                        \Env::set('Resolver', $resolver);
+                    }
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
-                    $dataArguments = array();
+                    $input = '';
                     if (php_sapi_name() == 'cli') {
-                        // the following does block if there's no data:
-                        //$input = trim(stream_get_contents(STDIN));
+                        $read = array(fopen('php://stdin', 'r'));
+                        $write = null;
+                        $except = null;
+                        if (stream_select($read, $write, $except, 0) === 1) {
+                            $input = file_get_contents('php://stdin');
+                        }
                     } else {
                         $input = file_get_contents('php://input');
                     }
+                    $dataArguments = array();
                     parse_str($input, $dataArguments);
                     $dataArguments = contrexx_input2raw($dataArguments);
 
@@ -1538,7 +1612,11 @@ namespace Cx\Core\Core\Controller {
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
                 } catch (\Exception $e) {
-                    throw new \Exception($e);
+                    if (php_sapi_name() != 'cli') {
+                        throw $e;
+                    }
+                    fwrite(STDERR, 'ERROR: ' . $e->getMessage() . PHP_EOL);
+                    return;
                 }
 
             }
@@ -1550,8 +1628,8 @@ namespace Cx\Core\Core\Controller {
 
             // resolve
             $this->preResolve();                        // Call pre resolve hook scripts
-            $this->adjustRequest();                     // Adjust the protocol and the domain
             $this->resolve();                           // Resolving, Language
+            $this->adjustRequest();                     // Adjust the protocol and the domain
 
             // @TODO: remove this
             $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
@@ -1567,7 +1645,7 @@ namespace Cx\Core\Core\Controller {
             $this->preFinalize();                       // Call pre finalize hook scripts
             $this->finalize();                          // Set template vars
             $this->postFinalize();                      // Call post finalize hook scripts
-            echo $this->endcode;                        // Display content
+            $this->getResponse()->send();               // Send response
         }
 
         /**
@@ -1679,7 +1757,7 @@ namespace Cx\Core\Core\Controller {
                 }
 
             } else {
-                global $cmd, $act, $isRegularPageRequest, $plainCmd;
+                global $cmd, $act, $plainCmd;
 
                 // resolve pretty url's
                 $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
@@ -1708,9 +1786,6 @@ namespace Cx\Core\Core\Controller {
                     $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
                     $plainCmd = $cmd;
                 }
-
-                // If standalone is set, then we will not have to initialize/load any content page related stuff
-                $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
             }
         }
 
@@ -1719,7 +1794,9 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          */
         protected function postResolve() {
+            $this->getResponse()->setPage($this->getPage());
             $this->ch->callPostResolveHooks();
+            $this->ch->callAdjustResponseHooks($this->getResponse());
         }
 
         /**
@@ -1737,6 +1814,22 @@ namespace Cx\Core\Core\Controller {
             $this->ch->callPreContentLoadHooks();
 
             if ($this->mode == self::MODE_FRONTEND) {
+                // Set parse target
+                $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                $page = $this->getPage();
+                $resolvedTheme = $themeRepo->getDefaultTheme(
+                    \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                    $page->getLang()
+                );
+                if ($page->getSkin()) {
+                    $theme = $themeRepo->findById($page->getSkin());
+                    if ($theme) {
+                        $resolvedTheme = $theme;
+                    }
+                }
+                // TODO: Move template initialization to here instead
+                $this->template->setParseTarget($resolvedTheme);
+
                 // load content.html template (or customized version)
                 $this->template->setTemplate($themesPages['index']);
                 $this->template->addBlock('CONTENT_FILE', 'page_template', $page_template);
@@ -1775,21 +1868,7 @@ namespace Cx\Core\Core\Controller {
 
             $content = str_replace('{PAGE_URL}',            htmlspecialchars(\Env::get('init')->getPageUri()), $content);
             $content = str_replace('{PAGE_URL_ENCODED}',    urlencode(\Env::get('init')->getPageUri()->toString()), $content);
-            $content = str_replace('{STANDARD_URL}',        contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),     $content);
-            $content = str_replace('{MOBILE_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),     $content);
-            $content = str_replace('{PRINT_URL}',           contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),       $content);
-            $content = str_replace('{PDF_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
-            $content = str_replace('{APP_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
             $content = str_replace('{LOGOUT_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
-            $content = str_replace('{CONTACT_EMAIL}',       isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
-            $content = str_replace('{CONTACT_COMPANY}',     isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
-            $content = str_replace('{CONTACT_ADDRESS}',     isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
-            $content = str_replace('{CONTACT_ZIP}',         isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
-            $content = str_replace('{CONTACT_PLACE}',       isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
-            $content = str_replace('{CONTACT_COUNTRY}',     isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
-            $content = str_replace('{CONTACT_PHONE}',       isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
-            $content = str_replace('{CONTACT_FAX}',         isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
-            $content = str_replace('{CONTACT_NAME}',        isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
             $content = str_replace('{GOOGLE_MAPS_API_KEY}', isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '', $content);
         }
 
@@ -1852,6 +1931,37 @@ namespace Cx\Core\Core\Controller {
          * @return String The content of the application template
          */
         public static function getContentTemplateOfPage($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
+            $content = static::getContentTemplateOfPageWithoutWidget(
+                $page,
+                $component,
+                $themeType
+            );
+
+            // Components should not call this method. Instead they should set
+            // the correct template to the page directly. This requires the
+            // page to have a Sigma template as content.
+            if (static::instanciate()->getComponent('Widget')) {
+                $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
+                $template->setTemplate($content);
+                static::instanciate()->getComponent('Widget')->parseWidgets(
+                    $template,
+                    'ContentManager',
+                    'Page',
+                    static::instanciate()->getPage()->getId()
+                );
+                $content = $template->get();
+            }
+            return $content;
+        }
+
+        /**
+         * Fetch the application template of a content page.
+         * @param \Cx\Core\ContentManager\Model\Entity\Page $page The page object of which to fetch the application template from
+         * @param String $component Optional argument to specify the component to load the template from, instead of using the page's module-attribute
+         * @param String $themeType Optional argument to specify the output channel
+         * @return String The content of the application template
+         */
+        public static function getContentTemplateOfPageWithoutWidget($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
             try {
                 $component        = empty($component) ? $page->getModule() : $component;
                 $cmd              = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
@@ -1860,9 +1970,18 @@ namespace Cx\Core\Core\Controller {
                 $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
 
                 // use application template for all output channels
-                if ($page->getUseCustomApplicationTemplateForAllChannels() && $page->getSkin()) {
-                    $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
-                    $themeFolderName = $themeRepo->findById($page->getSkin())->getFoldername();
+                if ($page->getUseCustomApplicationTemplateForAllChannels()) {
+                    $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                    // Skin is '0' if set to "default"
+                    if (!$page->getSkin()) {
+                        $theme = $themeRepo->getDefaultTheme(
+                            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                            $page->getLang()
+                        );
+                    } else {
+                        $theme = $themeRepo->findById($page->getSkin());
+                    }
+                    $themeFolderName = $theme->getFoldername();
                 }
 
                 // use default theme in case a custom set theme is no longer available
@@ -1973,35 +2092,32 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
-            $metarobots = $this->resolvedPage->getMetarobots();
+            $googleAnalyticsId = '';
+            if (isset($_CONFIG['googleAnalyticsTrackingId'])) {
+                $googleAnalyticsId = contrexx_raw2xhtml(
+                    $_CONFIG['googleAnalyticsTrackingId']
+                );
+            }
+            $googleAnalyticsCode = 'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+                ga(\'create\', \'' . $googleAnalyticsId . '\', \'auto\');
+                ' . ($objCounter->arrConfig['exclude_identifying_info']['status'] ? 'ga(\'set\', \'anonymizeIp\', true);' : '') . '
+                ga(\'send\', \'pageview\');';
+            if (
+                \Cx\Core\Setting\Controller\Setting::getValue(
+                    'cookieNote',
+                    'Config'
+                ) == 'on'
+            ) {
+                $googleAnalyticsCode = ' function cxCookieNoteAccepted() {' .
+                    $googleAnalyticsCode . '}';
+            }
+
             $this->template->setVariable(array(
-                'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
-                'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
-                'METATITLE'                      => contrexx_raw2xhtml($this->resolvedPage->getMetatitle()),
-                'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
-                'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
-                'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
-                'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
-                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
-                'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
-                'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
-                'METAROBOTS'                     => $metarobots ? 'all' : 'none',
-                'METAIMAGE'                      => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetaimage()) : '',
-                'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
-                'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),
-                'STANDARD_URL'                   => contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),
-                'MOBILE_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),
-                'PRINT_URL'                      => contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),
-                'PDF_URL'                        => contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),
-                'APP_URL'                        => contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),
                 'LOGOUT_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
                 'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()->toString()),
                 'CURRENT_URL'                    => contrexx_raw2xhtml(\Env::get('init')->getCurrentPageUri()),
-                'DATE'                           => showFormattedDate(),
-                'TIME'                           => date('H:i', time()),
                 'NAVTREE'                        => $objNavbar->getTrail(),
                 'SUBNAVBAR_FILE'                 => $objNavbar->getSubnavigation($themesPages['subnavbar'], $this->license, $boolShop),
                 'SUBNAVBAR2_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar2'], $this->license, $boolShop),
@@ -2013,26 +2129,10 @@ namespace Cx\Core\Core\Controller {
                 'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
                 'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
-                'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
-                'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
-                'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
-                'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
-                'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
-                'CONTACT_NAME'                   => isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '',
-                'CONTACT_COMPANY'                => isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '',
-                'CONTACT_ADDRESS'                => isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '',
-                'CONTACT_ZIP'                    => isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '',
-                'CONTACT_PLACE'                  => isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '',
-                'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
-                'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
-                'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
-                'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
                                                         (function(d, s, id) {
@@ -2066,17 +2166,20 @@ namespace Cx\Core\Core\Controller {
                                                             s.parentNode.insertBefore(x, s);
                                                         })(document, "script");
                                                     </script>',
-                'GOOGLE_ANALYTICS'               => '<script type="text/javascript">
-                                                        var _gaq = _gaq || [];
-                                                        _gaq.push([\'_setAccount\', \''.(isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '').'\']);
-                                                        _gaq.push([\'_trackPageview\']);
-
-                                                        (function() {
-                                                            var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;
-                                                            ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';
-                                                            var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(ga, s);
-                                                        })();
-                                                    </script>',
+                'GOOGLE_ANALYTICS'               => '<script>
+                                                        var gaProperty = \'' . $googleAnalyticsId . '\';
+                                                        var disableStr = \'ga-disable-\' + gaProperty; 
+                                                        if (document.cookie.indexOf(disableStr + \'=true\') > -1) { 
+                                                            window[disableStr] = true;
+                                                        } 
+                                                        function gaOptout(successMsg) { 
+                                                            document.cookie = disableStr + \'=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/\'; 
+                                                            window[disableStr] = true; 
+                                                            alert(successMsg);
+                                                        }
+                                                        ' . $googleAnalyticsCode . '
+                                                    </script>
+                                                    <script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
             ));
         }
 
@@ -2103,20 +2206,11 @@ namespace Cx\Core\Core\Controller {
                     $subMenuTitle, $_CORELANG, $plainCmd, $cmd;
 
             if ($this->mode == self::MODE_FRONTEND) {
-                // parse system
-                $parsingTime = $this->stopTimer();
-                $this->template->setVariable('PARSING_TIME', $parsingTime);
-
                 $this->parseGlobalPlaceholders($themesPages['sidebar']);
 
                 $this->template->setVariable(array(
                     'SIDEBAR_FILE' => $themesPages['sidebar'],
                     'JAVASCRIPT_FILE' => $themesPages['javascript'],
-                    'BUILDIN_STYLE_FILE' => $themesPages['buildin_style'],
-                    'DATE_YEAR' => date('Y'),
-                    'DATE_MONTH' => date('m'),
-                    'DATE_DAY' => date('d'),
-                    'DATE_TIME' => date('H:i'),
                     'BUILDIN_STYLE_FILE' => $themesPages['buildin_style'],
                     'JAVASCRIPT_LIGHTBOX' =>
                         '<script type="text/javascript" src="lib/lightbox/javascript/mootools.js"></script>
@@ -2136,7 +2230,13 @@ namespace Cx\Core\Core\Controller {
                     $extenstion = empty($pageTitle) ? null : '.pdf';
                     $objPDF     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
                     $objPDF->SetTitle($pageTitle . $extenstion);
-                    $objPDF->setContent($this->template->get());
+                    $endcode = $this->template->get();
+                    $endcode = $this->getComponent(
+                        'Cache'
+                    )->internalEsiParsing(
+                        $endcode
+                    );
+                    $objPDF->setContent($endcode);
                     $objPDF->Create();
                     exit;
                 }
@@ -2201,7 +2301,7 @@ JSCODE;
                     $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
                     $endcode
                 );
-                $this->endcode = $ls->replace();
+                $this->getResponse()->setParsedContent($ls->replace());
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -2228,20 +2328,6 @@ JSCODE;
                     $this->template->touchBlock('backend_metanavigation');
                 }
 
-                // page parsing
-                $parsingTime = $this->stopTimer();
-//                var_dump($parsingTime);
-    /*echo ($finishTime[0] - $startTime[0]) . '<br />';
-    if (!isset($_SESSION['asdf1']) || isset($_GET['reset'])) {
-        $_SESSION['asdf1'] = 0;
-        $_SESSION['asdf2'] = 0;
-    }
-    echo $_SESSION['asdf1'] . '<br />';
-    if ($_SESSION['asdf1'] > 0) {
-        echo $_SESSION['asdf2'] / $_SESSION['asdf1'];
-    }
-    $_SESSION['asdf1']++;
-    $_SESSION['asdf2'] += ($finishTime[0] - $startTime[0]);//*/
                 $objAdminNav = new \adminMenu($plainCmd);
                 $objAdminNav->getAdminNavbar();
                 $this->template->setVariable(array(
@@ -2250,7 +2336,6 @@ JSCODE;
                     'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
                     'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
                     'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
-                    'PARSING_TIME'=> $parsingTime,
                     'LOGGED_NAME' => htmlentities($this->getUser()->objUser->getProfileAttribute('firstname').' '.$this->getUser()->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
                     'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
                     'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
@@ -2303,20 +2388,22 @@ JSCODE;
                     $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
                     $endcode
                 );
-                $this->endcode = $ls->replace();
+                $this->getResponse()->setParsedContent($ls->replace());
             }
 
-            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
+            \DBG::writeFinishLine($this, false);
         }
 
         /**
          * Calls hooks after call to finalize()
          */
         protected function postFinalize() {
-            $this->ch->callPostFinalizeHooks($this->endcode);
+            $endcode = $this->getResponse()->getParsedContent();
+            $this->ch->callPostFinalizeHooks($endcode);
+            $this->getResponse()->setParsedContent($endcode);
         }
 
-        /* GETTERS */
+        /* SETTERS AND GETTERS */
 
         /**
          * Returns the mode this instance of Cx is in
@@ -2328,10 +2415,18 @@ JSCODE;
 
         /**
          * Returns the request URL
-         * @return \Cx\Core\Routing\Url Request URL
+         * @return \Cx\Core\Routing\Model\Entity\Request
          */
         public function getRequest() {
             return $this->request;
+        }
+
+        /**
+         * Returns the Response object
+         * @return \Cx\Core\Routing\Model\Entity\Response Response object
+         */
+        public function getResponse() {
+            return $this->response;
         }
 
         /**
@@ -2418,6 +2513,9 @@ JSCODE;
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
                         }
+                        if (!$component->hasAccessToExecuteCommand($command, array())) {
+                            continue;
+                        }
                         $this->commands[$command] = $component;
                     }
                 }
@@ -2494,6 +2592,32 @@ JSCODE;
          */
         public function getThemesFolderName() {
             return self::FOLDER_NAME_THEMES;
+        }
+
+        /**
+         * Returns a list of system folders
+         * Contains all folders that are re-routed to Cloudrexx by .htaccess
+         * @return array List of folders relative to website offset path
+         */
+        public function getSystemFolders() {
+            return array(
+                $this->getBackendFolderName(),
+                $this->getConfigFolderName(),
+                $this->getCoreFolderName(),
+                $this->getCoreModuleFolderName(),
+                static::FOLDER_NAME_CUSTOMIZING,
+                static::FOLDER_NAME_FEED,
+                static::FOLDER_NAME_IMAGES,
+                '/installer',
+                '/lang',
+                $this->getLibraryFolderName(),
+                static::FOLDER_NAME_MEDIA,
+                $this->getModelFolderName(),
+                $this->getModuleFolderName(),
+                $this->getThemesFolderName(),
+                static::FOLDER_NAME_TEMP,
+                static::FOLDER_NAME_COMMAND_MODE,
+            );
         }
 
         /**

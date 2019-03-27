@@ -97,7 +97,7 @@ var Search = {
         }
 
         cx.ready(function() {
-            this.curRequest = new Ajax.Request("modules/Knowledge/Controller/search.php", {
+            this.curRequest = new Ajax.Request("/modules/Knowledge/Controller/search.php", {
                 method : "get",
                 parameters : {
                     section : "Knowledge",

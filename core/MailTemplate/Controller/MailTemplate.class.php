@@ -546,23 +546,9 @@ die("MailTemplate::init(): Empty section!");
     {
         global $_CONFIG; //, $_CORELANG;
 
-        if (!\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
-\DBG::log("MailTemplate::send(): ERROR: Failed to load phpMailer");
-            return false;
-        }
-        $objMail = new \phpmailer();
-        if (   !empty($_CONFIG['coreSmtpServer'])
-            && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-            $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-            if ($arrSmtp) {
-                $objMail->IsSMTP();
-                $objMail->SMTPAuth = true;
-                $objMail->Host     = $arrSmtp['hostname'];
-                $objMail->Port     = $arrSmtp['port'];
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
         if (empty($arrField['lang_id'])) {
             $arrField['lang_id'] = FRONTEND_LANG_ID;
         }
@@ -621,13 +607,15 @@ die("MailTemplate::init(): Empty section!");
             if ($strip) self::clearEmptyPlaceholders($value);
         }
         if ($arrTemplate['attach_pdf'] && isset($arrTemplate['pdf_template'])) {
-            $pdf = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('Pdf');
-            $pdfAttachment = $pdf->generatePDF(
-                $arrTemplate['pdf_template'],
-                $substitution,
-                $arrTemplate['key']
-            );
+            $pdf = $cx->getComponent('Pdf');
+            if ($pdf) {
+                $pdfAttachment = $pdf->generatePDF(
+                    $arrTemplate['pdf_template'],
+                    $substitution,
+                    $arrTemplate['key'],
+                    true
+                );
+            }
         }
 //DBG::log("MailTemplate::send(): Substituted: ".var_export($arrTemplate, true));
 //echo("MailTemplate::send(): Substituted:<br /><pre>".nl2br(htmlentities(var_export($arrTemplate, true), ENT_QUOTES, CONTREXX_CHARSET))."</PRE><hr />");
@@ -650,7 +638,6 @@ die("MailTemplate::init(): Empty section!");
 
         $objMail->SetFrom($arrTemplate['from'], $arrTemplate['sender']);
         $objMail->Subject = $arrTemplate['subject'];
-        $objMail->CharSet = CONTREXX_CHARSET;
 //        $objMail->IsHTML(false);
         if ($arrTemplate['html']) {
             $objMail->IsHTML(true);
@@ -695,25 +682,24 @@ die("MailTemplate::init(): Empty section!");
 //DBG::log("MailTemplate::send(): All Attachments: ".var_export($arrTemplate['attachments'], true));
         foreach ($arrTemplate['attachments'] as $path => $name) {
             if (is_numeric($path)) $path = $name;
-            $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.'/'.$path, $name);
+            $objMail->AddAttachment($cx->getWebsiteDocumentRootPath().'/'.$path, $name);
         }
         $arrTemplate['inline'] =
             self::attachmentsToArray($arrTemplate['inline']);
         if ($arrTemplate['inline']) $arrTemplate['html'] = true;
         foreach ($arrTemplate['inline'] as $path => $name) {
             if (is_numeric($path)) $path = $name;
-            $objMail->AddEmbeddedImage(ASCMS_DOCUMENT_ROOT.'/'.$path, uniqid(), $name);
+            $objMail->AddEmbeddedImage($cx->getWebsiteDocumentRootPath().'/'.$path, uniqid(), $name);
         }
         if (   isset($arrField['inline'])
             && is_array($arrField['inline'])) {
             $arrTemplate['html'] = true;
             foreach ($arrField['inline'] as $path => $name) {
                 if (is_numeric($path)) $path = $name;
-                $objMail->AddEmbeddedImage(ASCMS_DOCUMENT_ROOT.'/'.$path, uniqid(), $name);
+                $objMail->AddEmbeddedImage($cx->getWebsiteDocumentRootPath().'/'.$path, uniqid(), $name);
             }
         }
 //die("MailTemplate::send(): Attachments and inlines<br />".var_export($objMail, true));
-        $objMail->CharSet = CONTREXX_CHARSET;
         $objMail->IsHTML($arrTemplate['html']);
 //DBG::log("MailTemplate::send(): Sending: ".nl2br(htmlentities(var_export($objMail, true), ENT_QUOTES, CONTREXX_CHARSET))."<br />Sending...<hr />");
         $result = true;
@@ -957,7 +943,7 @@ die("MailTemplate::init(): Empty section!");
              WHERE `key`='".addslashes($key)."'")) {
             return \Message::error($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETING_FAILED']);
         }
-        $objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."core_mail_template`");
+
         return \Message::ok($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETED_SUCCESSFULLY']);
     }
 
@@ -1380,7 +1366,7 @@ die("MailTemplate::init(): Empty section!");
                         'MAILTEMPLATE_ROWCLASS' => ( ++$i % 2 + 1),
                         'MAILTEMPLATE_SPECIAL' => new \Cx\Core\Wysiwyg\Wysiwyg(
                             $name,
-                            $value,
+                            contrexx_raw2xhtml($value),
                             'fullpage'
                         ),
                     ));
@@ -1541,8 +1527,12 @@ die("MailTemplate::init(): Empty section!");
             return $objTemplate;
         }
         $to_test = contrexx_input2raw($_POST['to_test']);
-        $objTemplate->setVariable('CORE_MAILTEMPLATE_TO_TEST', $to_test);
-        self::sendTestMail($section, $key, $to_test);
+        $objTemplate->setVariable(array(
+            'CORE_MAILTEMPLATE_TO_TEST' => $to_test,
+            'TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE' => $_CORELANG[
+                'TXT_CORE_MAILTEMPLATE_TESTMAIL_NOTE'
+            ],
+        ));
         return $objTemplate;
     }
 
@@ -1551,10 +1541,24 @@ die("MailTemplate::init(): Empty section!");
 
         if (empty($email)) return;
 
+        // try to load "from" and use it if it contains no placeholder
+        $from = '';
+        $template = static::get($section, $key);
+        if (
+            $template &&
+            isset($template['from']) &&
+            !preg_match('/\[.*\]/', $template['from'])
+        ) {
+            $from = $template['from'];
+        }
+
         $sent = self::send(array(
             'section' => $section,
             'key' => $key,
             'to' => $email,
+            'from' => $from,
+            'cc' => '',
+            'bcc' => '',
             'do_not_strip_empty_placeholders' => true, ));
         if ($sent) {
             \Message::ok(sprintf(
