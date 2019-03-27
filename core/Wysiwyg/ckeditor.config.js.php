@@ -68,6 +68,19 @@ if (!empty($pageId) && $pageId != 'new') {
 }
 
 $ymlOption = $wysiwyg->getCustomCSSVariables($skinId);
+
+// load language data
+$lang = 0;
+if (!empty($_GET['locale'])) {
+    $locale = $_GET['locale'];
+    $lang = \FWLanguage::getLanguageIdByCode($locale);
+}
+$_ARRAYLANG = \Env::get('init')->getComponentSpecificLanguageData(
+    'Wysiwyg',
+    false,
+    $lang
+);
+
 ?>
 //if the wysiwyg css not defined in the session, then load the css variables and put it into the session
 if(!cx.variables.get('css', 'wysiwyg')) {
@@ -203,7 +216,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
         // add checkbox
         advancedTab.add({
             type: 'checkbox',
-            label: 'Bild in modalem Fenster anzeigen (Shadowbox)',
+            label: '<?php echo $_ARRAYLANG['TXT_WYSIWYG_MODAL_OPTION_LABEL']; ?>',
             id: 'txtdlgGenShadowbox',
             onClick: function() {
                 shadowboxSrc = this.getDialog().getContentElement( 'advanced', 'txtdlgGenShadowboxSrc' ).getElement();
@@ -239,7 +252,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
         // add input field for shadowbox source 
         advancedTab.add({
             type: 'text',
-            label: 'Bildquelle für die Anzeige in modalem Fenster',
+            label: '<?php echo $_ARRAYLANG['TXT_WYSIWYG_MODAL_OPTION_SRC']; ?>',
             id: 'txtdlgGenShadowboxSrc',
             style: 'display:none',
             setup : function( type, element ) {

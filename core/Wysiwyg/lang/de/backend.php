@@ -90,3 +90,7 @@ $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_STYLES'] = 'Formatierung';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_COLORS'] = 'Farben';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TOOLS'] = 'Werkzeuge';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_BIDI'] = 'Textrichtung';
+
+// GUI
+$_ARRAYLANG['TXT_WYSIWYG_MODAL_OPTION_LABEL'] = 'Bild in modalem Fenster anzeigen (Shadowbox)';
+$_ARRAYLANG['TXT_WYSIWYG_MODAL_OPTION_SRC'] = 'Bildquelle für die Anzeige in modalem Fenster';
