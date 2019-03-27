@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Calendar Language variables
- * 
+ *
  * @package    cloudrexx
  * @subpackage module_calendar
  * @author     Cloudrexx <info@cloudrexx.com>
@@ -316,6 +316,8 @@ $_ARRAYLANG['TXT_CALENDAR_CATEGORY'] = "Category";
 $_ARRAYLANG['TXT_CALENDAR_LANGUAGES'] = "Languages";
 $_ARRAYLANG['TXT_CALENDAR_FUNCTIONS'] = "Functions";
 $_ARRAYLANG['TXT_CALENDAR_NO_SERIES'] = "No repeat";
+$_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'] = "Not specified";
+$_ARRAYLANG['TXT_CALENDAR_MORE_INFO'] = "more information";
 $_ARRAYLANG['TXT_CALENDAR_GLOBAL'] = "General";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_FORM'] = "Registration Form";
 $_ARRAYLANG['TXT_CALENDAR_MAIL_TEMPLATES'] = "E-Mail templates";
@@ -357,7 +359,8 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_EDITED'] = "Entry was successfully 
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_DELETED'] = "Entry was successfully deleted.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_MOVED'] = "Entry was successfully moved.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'] = "Fehler beim Bearbeiten des Eintrages.";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_DELETED'] = "Fehler beim Läschen des Eintrages.";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTER_FORM_EDITED'] = "Das Registrationsforumlar kann nicht geändert werden, da bereits Registrationen bestehen.";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_DELETED'] = "Fehler beim Löschen des Eintrages.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_MOVED'] = "Fehler beim Verschieben des Eintrages.";
 $_ARRAYLANG['TXT_CALENDAR_NEW_MAIL_TEMPLATE'] = "Add new E-Mail template";
 $_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA'] = "Do you really want delete this data?";
@@ -414,11 +417,13 @@ $_ARRAYLANG['TXT_CALENDAR_RECIPIENTS'] = "Additional recipients";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_TITLE'] = "Title of the event";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_START_DATE'] = "Start date of the event";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_END_DATE'] = "EndDate of the event";
+$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_LINK_ATTACHMENT'] = "Link to attachment";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_LINK_EVENT'] = "Link to Event";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_LINK_REGISTRATION'] = "Link to the registration form";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_USERNAME'] = "Username of the recipient";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_FIRSTNAME'] = "Recipient\"s first name";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_LASTNAME'] = "Recipient\"s last name";
+$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_SALUTATION'] = "Salutation from user";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_URL'] = "Domainname";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_DATE'] = "Current Date";
 $_ARRAYLANG['TXT_CALENDAR_DEFAULT_VALUES'] = "Defaults";
@@ -454,6 +459,8 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'] = "Street / Nr.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'] = "Zip";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'] = "City";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'] = "Country";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_WEBSITE'] = "Website";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_PHONE'] = "Phone";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'] = "Map";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'] = "Use Google Maps";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'] = "Description";
@@ -481,9 +488,9 @@ $_ARRAYLANG['TXT_CALENDAR_DATE_FORMAT_DD/MM/YYYY'] = "DD/MM/YYYY";
 $_ARRAYLANG['TXT_CALENDAR_DATE_FORMAT_YYYY.MM.DD'] = "YYYY.MM.DD";
 $_ARRAYLANG['TXT_CALENDAR_DATE_FORMAT_MM/DD/YYYY'] = "MM/DD/YYYY";
 $_ARRAYLANG['TXT_CALENDAR_DATE_FORMAT_YYYY-MM-DD'] = "YYYY-MM-DD";
-$_ARRAYLANG['TXT_CALENDAR_COMMUNITY_GROUPS'] = "Community Groups";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_MORE_INVITATIONS'] = "Invite Others";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION'] = "Registration";
+$_ARRAYLANG['TXT_CALENDAR_COMMUNITY_GROUPS'] = "Community groups";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_MORE_INVITATIONS'] = "Invite others";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION'] = "Registration / Ticketing";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_INSERT_REGISTRATION'] = "Add application";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_EDIT_REGISTRATION'] = "Edit application";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SUBSCRIBER'] = "Number of participants";
@@ -492,7 +499,14 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL_TEMPLATE'] = "Email Template";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TICKET_SALES'] = "Ticket sales";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SEATING'] = "Number of seats per order";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION'] = "Send invitation";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT'] = "approximate number of guests";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_AGAIN_INVITATION'] = "Send invitation again";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO'] = "Send to";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL'] = "all";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_REGISTERED'] = "all regitered users";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN'] = "all signedin users";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_INACTIVE'] = "all inactive users";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_TOOLTIP'] = "Signedin guests: Guests which have accepted the invitation.<br />Inactive guests: Guests which have not accepted or declined the invitation and are not listed on the waiting list.";
 $_ARRAYLANG['TXT_CALENDAR_CATEGORY_COUNT_ENTRIES'] = "Show number of entries in the drop";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'] = "Event Type";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'] = "Event";
@@ -514,7 +528,6 @@ $_ARRAYLANG['TXT_CALENDAR_COPY'] = "Copy";
 $_ARRAYLANG['TXT_CALENDAR_USE_DATEPICKER'] = "Use Datepicker";
 $_ARRAYLANG['TXT_CALENDAR_DATEPICKER'] = "JS DatePickerControl";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO'] = "Add additional e-mail addresses in this field (comma separated) to be the person to whom an invitation by e-mail should be sent.";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SUBSCRIBER_INFO'] = "Number of participants must be greater than \\\"0\\\".";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_NOTIFICATION_TO_INFO'] = "Email This field allows addresses (comma separated) to specify to which a notification on and notices should be sent by e-mail.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL_TEMPLATE_INFO'] = "Here is the e-mail template can be (per event) selected for the confirmation email.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SEATING_INFO'] = "Can increase the number of seats that can be eye dials in front then in this field (comma separated) to specify.";
@@ -527,9 +540,9 @@ $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA'] = "Information about location";
 $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_HOST'] = "Information about host";
 $_ARRAYLANG['TXT_CALENDAR_SELECT_FORM_MEDIADIR'] = "Select entry-form from Media Directory";
 $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_STATUS_INFO'] = "On one hand, the information on the town can be entered manually, or be associated with the media directory module. Do you want to link this to the media directory, select the corresponding form from which you want to read the data.";
-$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'] = "Enter manually";    
-$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'] = "Select entry from Media Directory";    
-$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_BOTH'] = "Both";    
+$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'] = "Enter manually";
+$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'] = "Select entry from Media Directory";
+$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_BOTH'] = "Both";
 $_ARRAYLANG['TXT_CALENDAR_CONFIRMLIST'] = "Confirm list";
 $_ARRAYLANG['TXT_PAYMENT_METHODS'] = "On location,Bill,PostFinance";
 $_ARRAYLANG['TXT_PAYMENT_COMPLETED'] = "Paid";
@@ -588,11 +601,11 @@ $_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_FORM'] = "Application form";
 $_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_CONTACT'] = "Contact address";
 $_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_BILLING'] = "Billing address";
 $_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_TITLE'] = "Title";
-        
-$_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Type";   
-$_ARRAYLANG['TXT_CALENDAR_FIRST_EXPORT'] = "Export first";   
-$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "All Categories";  
-$_ARRAYLANG['TXT_CALENDAR_SHOW_EVENTS_ONLY_IN_ACTIVE_LANGUAGE'] = "Show Events only in active language";  
+
+$_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Type";
+$_ARRAYLANG['TXT_CALENDAR_FIRST_EXPORT'] = "Export first";
+$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "All Categories";
+$_ARRAYLANG['TXT_CALENDAR_SHOW_EVENTS_ONLY_IN_ACTIVE_LANGUAGE'] = "Show Events only in active language";
 $_ARRAYLANG['TXT_CALENDAR_SHOW_PREVIEW'] = "Preview";
 $_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Clock";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_TYPE'] = "Repeat event";
@@ -608,7 +621,7 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL']  = "E-Mail";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_FORMAT'] = "Export event data (iCal-Format)";
 $_ARRAYLANG['TXT_CALENDAR_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_TYPE'] = "Event registration type";
-$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_SALUTATION'] = "Title";
+$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_SALUTATION'] = "Salutation of the registered user";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_FIRSTNAME'] = "Registered user first name";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_LASTNAME'] = "Registered user last name";
 $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_EMAIL'] = "Registered user E-mail";
@@ -631,3 +644,31 @@ $_ARRAYLANG['TXT_CALENDAR_PREV'] = "Prev";
 $_ARRAYLANG['TXT_CALENDAR_NEXT'] = "Next";
 $_ARRAYLANG['TXT_CALENDAR_COPY'] = "Use as template for new event";
 $_ARRAYLANG['TXT_CALENDAR_DEFAULT'] = "Default";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'] = "Detail view";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'] = "Show link to detail view of this event";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_TEASER'] = "Teaser";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_TREAT_AS_INDEPENDENT'] = 'Treat as independent events';
+$_ARRAYLANG['TXT_CALENDAR_DATE_OF_THE_EVENT'] = 'Date of the event';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_NONE'] = 'None';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_INTERNAL'] = 'Internal';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_EXTERNAL'] = 'External';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_FULL_BOOKED'] = 'Fully booked';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_SUBMISSION'] = 'Submission';
+$_ARRAYLANG['TXT_CALENDAR_FRONTEND_PAST_EVENTS'] = 'Show events in frontend';
+$_ARRAYLANG['TXT_CALENDAR_FRONTEND_PAST_EVENTS_DAY'] = 'of current day and later';
+$_ARRAYLANG['TXT_CALENDAR_FRONTEND_PAST_EVENTS_START'] = 'until they start';
+$_ARRAYLANG['TXT_CALENDAR_FRONTEND_PAST_EVENTS_END'] = 'until they end';
+$_ARRAYLANG['TXT_CALENDAR_EXPORT_TITLE'] = 'Select export format';
+$_ARRAYLANG['TXT_CALENDAR_EXPORT_SUB_TITLE'] = 'Select the file format to be used for the export';
+$_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV'] = 'CSV';
+$_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV_FOR_MS_EXCEL'] = 'CSV for MS Excel';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_ADDITIONAL_RECURRENCES'] = "Additional recurrences";
+$_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE'] = "Add additional recurrence";
+$_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'] = "Select an additional recurrence date for this event";
+$_ARRAYLANG['TXT_CALENDAR_CRM_MEMBERSHIPS'] = 'CRM Customer groups';
+$_ARRAYLANG['TXT_CALENDAR_CRM_MEMBERSHIPS_TOOLTIP'] = 'All CRM persons of the included customer groups will be invited as long as they are not a member of any of the excluded customer groups.';
+$_ARRAYLANG['TXT_CALENDAR_CRM_INVITED_MEMBERSHIPS'] = 'Invite persons of customer groups:';
+$_ARRAYLANG['TXT_CALENDAR_CRM_EXCLUDED_MEMBERSHIPS'] = 'Exclude persons of customer groups:';
+$_ARRAYLANG['TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS'] = 'Select customer groups';
+$_ARRAYLANG['TXT_CALENDAR_PUBLISHED'] = 'Published';
+$_ARRAYLANG['TXT_CALENDAR_USE_CUSTOM_FORMAT'] = 'Use custom format';

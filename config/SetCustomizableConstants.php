@@ -62,6 +62,7 @@ define('ASCMS_CONTENT_IMAGE_PATH',          ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_O
 define('ASCMS_CONTENT_IMAGE_WEB_PATH',      ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/content');
 // Cx::getWebsiteFeedPath()
 define('ASCMS_FEED_PATH',                   ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/feed');
+// Cx::getWebsiteFeedWebPath()
 define('ASCMS_FEED_WEB_PATH',               ASCMS_INSTANCE_OFFSET.'/feed');
 // Cx::getWebsiteMediaForumUploadPath()
 define('ASCMS_FORUM_UPLOAD_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Forum/upload');
@@ -203,9 +204,3 @@ define('ASCMS_CURRENCY_SEPARATOR_THOUSANDS', '\'');
 define('ASCMS_CURRENCY_SEPARATOR_DECIMALS', '.');
 define('ASCMS_NUMBER_SEPARATOR_THOUSANDS', '\'');
 define('ASCMS_NUMBER_SEPARATOR_DECIMALS', '.');
-
-// LinkManager constants
-define('ASCMS_LINKMANAGER_CONTENT_HREF_QUERY','div#home-page a, div#page a, div#content a');
-define('ASCMS_LINKMANAGER_CONTENT_IMG_QUERY','div#home-page img, div#page img, div#content img');
-define('ASCMS_LINKMANAGER_CONTENT_PAGE_QUERY','div#home-page, div#page, div#content');
-define('ASCMS_LINKMANAGER_NAVIGATION_QUERY','ul#navigation, ul.navigation');

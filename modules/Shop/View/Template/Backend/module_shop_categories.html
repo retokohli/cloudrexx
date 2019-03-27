@@ -186,6 +186,15 @@
       </tr>
       <tr class="row1">
         <td>
+          <label for="short">{TXT_SHOP_CATEGORY_SHORT_DESCRIPTION}</label>
+        </td>
+        <td>
+          <textarea rows="5" id="short" name="short" style="width: 300px;"
+          >{SHOP_CATEGORY_SHORT_DESCRIPTION}</textarea>
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>
           <label for="desc">{TXT_SHOP_CATEGORY_DESCRIPTION}</label>
         </td>
         <td>
@@ -253,7 +262,7 @@ function setSelectedImage(data) {
     // Compute width/height ratio in order to set the correct size.
     // i.e.  2 =       200/100
     var newImg = new Image()
-    newImg.onload = function() {      
+    newImg.onload = function() {
       var height = newImg.height;
       var width  = newImg.width;
 
@@ -276,7 +285,7 @@ function setSelectedImage(data) {
     }
     newImg.src = url;
   }
-    
+
 }
 function cancelEdit() {
   window.location.replace("index.php?{CSRF_PARAM}&cmd=Shop{MODULE_INDEX}&act=categories");

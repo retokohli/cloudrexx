@@ -88,65 +88,100 @@ class ListingController {
     const FILTERING_HTML_AJAX = 18;
     const FILTERING_DATA_AJAX = 19;
     const FILTERING_CLIENT_ONLY = 20;
-    
+
     /**
      * How many lists are there for this request
      * @var int
      */
     protected static $listNumber = 0;
-    
+
     /**
      * Entity class name
      * @var String
      */
     protected $entityClass = null;
-    
+
     /**
      * Callback function to get data
      * @var Callable
      */
     protected $callback = null;
-    
+
     /**
      * Offset to start from
      * @var int
      */
     protected $offset = 0;
-    
+
     /**
      * How many results are returned
      * @var int
      */
     protected $count = 0;
-    
+
     /**
      * Order by array($field=>asc/desc)
      * @var Array
      */
     protected $order = array();
-    
+
     /**
      * Criteria the result must match
      * @var Array
      */
     protected $criteria = array();
-    
-    
+
+    /**
+     * Filter at least one field of the result must match
+     * @var string
+     */
+    protected $filter = '';
+
+
     private $paging;
-    
+
     /**
      * Entity name
      * @var String
      */
     private $entityName = '';
-    
+
+    /**
+     * List of field names that can be filtered
+     * @var array
+     */
+    protected $filterFields = array();
+
+    /**
+     * List of field names that can be searched by a term
+     * @var array
+     */
+    protected $searchFields = array();
+
+    /**
+     * Number of entries without filtering or paging
+     * @var int
+     */
+    protected $dataSize = 0;
+
+    /**
+     * @var \Cx\Core_Modules\Listing\Model\Entity\DataSet
+     */
+    protected $data = null;
+
+    /**
+     * List all custom field names that are not as a field in the db
+     * @var array
+     */
+    protected $customFields;
+
     /**
      * Handles a list
      * @param mixed $entities Entity class name as string or callback function
      * @param array $crit (optional) Doctrine style criteria array to use
      * @param array $options (Unused)
      */
-    public function __construct($entities, $crit = array(), $options = array()) {
+    public function __construct($entities, $crit = array(), $filter = '', $options = array()) {
         if (isset($options['paging'])) {
             $this->paging = $options['paging'];
         }
@@ -159,13 +194,27 @@ class ListingController {
         if (isset($options['sortBy']['entity'])) {
             $this->entityName = $options['sortBy']['entity'];
         }
+        $this->filtering = isset($options['filtering']) && $options['filtering'];
+        if (isset($options['filterFields'])) {
+            $this->filterFields = $options['filterFields'];
+        }
+        $this->searching = isset($options['searching']) && $options['searching'];
+        if (isset($options['searchFields'])) {
+            $this->searchFields = $options['searchFields'];
+        }
+        if (isset($options['customFields'])) {
+            $this->customFields = $options['customFields'];
+        }
         // init handlers (filtering, paging and sorting)
         $this->handlers[] = new FilteringController();
         if (!empty($options['sorting'])) {
             $this->handlers[] = new SortingController();
         }
-        $this->handlers[] = new PagingController();
-        
+
+        if ($this->paging) {
+            $this->handlers[] = new PagingController();
+        }
+
         if (is_callable($entities)) {
             \DBG::msg('Init ListingController using callback function');
             $this->callback = $entities;
@@ -177,23 +226,27 @@ class ListingController {
             $this->entityClass = $entities;
         }
         $this->criteria = $crit;
-        
+        $this->filter = $filter;
+
         // todo: allow multiple listing controllers per page request
         $this->args = contrexx_input2raw($_GET);
     }
-    
+
     /**
-     * Initializes listing for the given object
-     * @param Cx\Core_Modules\Listing\Model\Listable $listableObject
-     * @param int $mode (optional) A combination of the paging, sorting and filtering modes above (use |)
+     * Loads the data of an object
+     * @param bool $forceRegen (optional) If set to true, cached data is dropped
      * @returm Cx\Core_Modules\Listing\Model\DataSet Parsed data
      */
-    public function getData() {
+    public function getData($forceRegen = false) {
+        if ($this->data && !$forceRegen) {
+            return $this->data;
+        }
         $params = array(
             'offset'    => $this->offset,
             'count'     => $this->count,
             'order'     => $this->order,
             'criteria'  => $this->criteria,
+            'filter'    => $this->filter,
             'entity'    => $this->entityName,
         );
         foreach ($this->handlers as $handler) {
@@ -203,10 +256,13 @@ class ListingController {
         $this->count    = $params['count'];
         $this->order    = $params['order'];
         $this->criteria = $params['criteria'];
-        
+        $this->filter   = $params['filter'];
+
         // handle ajax requests
         if (false /* ajax request for this listing */) {
             $jd = new \Cx\Core\Json\JsonData();
+            // TODO: This does not work yet
+            // TODO: JsonData->json() expects a Response object
             $jd->json(array(
                 'filtering' => $this->getAjaxFilteringData(),
                 'sorting' => $this->getAjaxSortingData(),
@@ -214,69 +270,159 @@ class ListingController {
             ), true);
             // JsonData->json() does call die() itself
         }
-        
+
         if ($this->entityClass instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             //$data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
             $data = $this->entityClass;
-            
+
+            // filter data
+            if (is_array($this->criteria) && count($this->criteria)) {
+                $data->filter(function($entry) {
+                    foreach ($entry as $field=>$data) {
+                        if (
+                            isset($this->criteria[$field]) &&
+                            $this->criteria[$field] != $data
+                        ) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+
+            // filter data
+            if (!empty($this->filter)) {
+                $data->filter(function($entry) {
+                    foreach ($entry as $field=>$data) {
+                        if (is_int(strpos($data, $this->filter))) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            }
+
+            // sort data
             $data = $data->sort($this->order);
-            
-            // add sorting and filtering
-            $data = $data->limit($this->count, $this->offset);
+
+            // limit data
+            $this->dataSize = $data->size();
+            if ($this->count) {
+                $data = $data->limit($this->count, $this->offset);
+            }
+            // Add custom fields
+            foreach ($this->customFields as $customField) {
+                $data->addColumn($customField);
+            }
+
+            $this->data = $data;
             return $data;
         }
-        
-        // If a callback was specified, use it:
-        $qb = \Env::get('em')->createQueryBuilder();
-        $qb->select('e')->from($this->entityClass, 'e');
-        $query = $qb->getQuery();
-        if (is_callable($this->callback)) {
-            $callable = $this->callback;
-            $query = $callable($this->offset, $this->count, $this->order, $this->criteria);
-            if (!($query instanceof \Doctrine\ORM\Query)) {
-                return $query;
+        $em = \Env::get('em');
+        $entityRepository = $em->getRepository($this->entityClass);
+        foreach ($this->order as $field=>&$order) {
+            $order = $order == SORT_DESC ? 'DESC' : 'ASC';
+        }
+
+        // YAMLRepository:
+        if ($entityRepository instanceof \Countable) {
+            if (!empty($this->filter)) {
+                \DBG::msg('YAMLRepository does not support "filter" yet');
             }
-        }
-        
-        if (!class_exists($this->entityClass)) {
-            //throw new ListingException('No such entity "' . $this->entityClass . '"');
-        }
-        
-        // build query
-        // TODO: check if entity class is managed
-         //$qb = new \Doctrine\ORM\QueryBuilder();
-        $query->setFirstResult($this->offset);
-        $query->setMaxResults($this->count);
-        /*foreach ($this->order as $field=>$order) {
-            $query->orderBy($field, $order);
-        }
-        foreach ($this->criteria as $crit=>$param) {
-            $query->addWhere($crit);
-            if ($param) {
-                $query->addParameter($param[0], $param[1]);
+            $entities = $entityRepository->findBy(
+                $this->criteria,
+                $this->order,
+                $this->count ? $this->count : null,
+                $this->offset
+            );
+            $this->dataSize = count($entityRepository);
+        } else {
+            $qb = $em->createQueryBuilder();
+            $metaData = $em->getClassMetadata($this->entityClass);
+            $qb->select('x')->from($this->entityClass, 'x');
+            $i = 1;
+            // filtering: advanced search
+            if ($this->filtering) {
+                foreach ($this->criteria as $field=>$crit) {
+                    if (
+                        !empty($this->filterFields) &&
+                        !in_array($field, $this->filterFields)
+                    ) {
+                        continue;
+                    }
+                    if (isset($metaData->associationMappings[$field])) {
+                        $qb->andWhere($qb->expr()->eq('x.' . $field, '?' . $i));
+                    } else {
+                        $qb->andWhere($qb->expr()->like('x.' . $field, '?' . $i));
+                    }
+                    $qb->setParameter($i, $crit);
+                    $i++;
+                }
             }
+            // filtering: simple search by term
+            if ($this->searching) {
+                if (!empty($this->filter) && count($this->searchFields)) {
+                    $ors = array();
+                    $orX = new \Doctrine\DBAL\Query\Expression\CompositeExpression(
+                        \Doctrine\DBAL\Query\Expression\CompositeExpression::TYPE_OR
+                    );
+                    // TODO: If $this->searchFields is empty allow all
+                    foreach ($this->searchFields as $field) {
+                        $orX->add($qb->expr()->like('x.' . $field, '?' . $i));
+                    }
+                    $qb->andWhere($orX);
+                    $qb->setParameter($i, '%' . $this->filter . '%');
+                }
+            }
+            foreach ($this->order as $field=>&$order) {
+                $qb->orderBy('x.' . $field, $order);
+            }
+            $qb->setFirstResult($this->offset ? $this->offset : null);
+            $qb->setMaxResults($this->count ? $this->count : null);
+            $entities = $qb->getQuery()->getResult();
+
+            $metaData = $em->getClassMetaData($this->entityClass);
+            $qb->select(
+                'count(x.' . reset($metaData->getIdentifierFieldNames()) . ')'
+            );
+            $qb->setFirstResult(null);
+            $qb->setMaxResults(null);
+            $this->dataSize = $qb->getQuery()->getSingleScalarResult();
         }
-        var_dump($query->getDQL());*/
-        $entities = $query->getResult();
-        
-        // @todo: check if entities should be encapsulated in a class
-        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
-        
+
         // return calculated data
+        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
+
+        // Add custom fields
+        foreach ($this->customFields as $customField) {
+            $data->addColumn($customField);
+        }
+
+        $data->setDataType($this->entityClass);
+        $this->data = $data;
         return $data;
     }
-    
+
+    /**
+     * Returns the number of entries without filtering or paging
+     * This only returns the correct value after getData() is called
+     * @return int Number of entries
+     */
+    public function getDataSize() {
+        return $this->dataSize;
+    }
+
     /**
      * @todo: implement, this is just a draft!
      */
     public function toHtml() {
         return $this->getPagingControl();
     }
-    
+
     public function __toString() {
         return $this->toHtml();
     }
-    
+
     /**
      * Calculates the paging
      * @throws PagingException when paging type is unknown (see class constants)
@@ -303,33 +449,32 @@ class ListingController {
                 break;
         }
     }
-    
+
     /**
      * This renders the template for paging control element
      * @todo templating!
-     * @todo show only a certain number of pages
      * @todo move to pagingcontroller
      */
     protected function getPagingControl() {
         $html = '';
-        if(!$this->paging || $this->entityClass->size() <= $this->count){
-            return $html;    
+        if (!$this->paging || $this->dataSize <= $this->count) {
+            return $html;
         }
-        $numberOfPages = ceil($this->entityClass->size() / $this->count);
+        $numberOfPages = ceil($this->dataSize / $this->count);
         $activePageNumber = ceil(($this->offset + 1) / $this->count);
-        
+
         /*echo 'Number of entries: ' . count($this->entityClass->toArray()) . '<br />';
         echo 'Entries per page: ' . $this->count . '<br />';
         echo 'Number of pages: ' . $numberOfPages . '<br />';
         echo 'Active page: ' . $activePageNumber . '<br />';*/
-        
-        
+
+
         $paramName = !empty($this->entityName) ? $this->entityName . 'Pos' : 'pos';
         if ($this->offset) {
             // render goto start
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam($paramName, 0);
-            $html .= '<a href="' . $url . '">&lt;&lt;</a>&nbsp;';
+            $html .= '<a href="' . $url . '">&lt;&lt;</a> ';
 
             // render goto previous
             $pagePos = ($activePageNumber - 2) * $this->count;
@@ -338,25 +483,51 @@ class ListingController {
             }
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam($paramName, $pagePos);
-            $html .= '<a href="' . $url . '">&lt;</a>&nbsp;';
+            $html .= '<a href="' . $url . '">&lt;</a> ';
         } else {
             $html .= '&lt;&lt;&nbsp;&lt;&nbsp;';
         }
-        
+
+        $noOfPagesBeforeActive = $activePageNumber - 1;
+        $noOfPagesAfterActive = $numberOfPages - $activePageNumber;
+        $beforeSkipDone = false;
+        $afterSkipDone = false;
         for ($pageNumber = 1; $pageNumber <= $numberOfPages; $pageNumber++) {
-            if ($pageNumber == $activePageNumber) {
+            if (
+                $pageNumber < $activePageNumber &&
+                $noOfPagesBeforeActive >= 5 &&
+                $pageNumber > 1 &&
+                $pageNumber < $activePageNumber - 1
+            ) {
+                if (!$beforeSkipDone) {
+                    $beforeSkipDone = true;
+                    $html .= ' ... ';
+                }
+                continue;
+            } else if (
+                $pageNumber > $activePageNumber &&
+                $noOfPagesAfterActive >= 5 &&
+                $pageNumber > $activePageNumber + 1 &&
+                $pageNumber < $numberOfPages
+            ) {
+                if (!$afterSkipDone) {
+                    $afterSkipDone = true;
+                    $html .= ' ... ';
+                }
+                continue;
+            } else if ($pageNumber == $activePageNumber) {
                 // render page without link
-                $html .= $pageNumber . '&nbsp;';
+                $html .= $pageNumber . ' ';
                 continue;
             }
             // render page with link
             $pagePos = ($pageNumber - 1) * $this->count;
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam($paramName, $pagePos);
-            $html .= '<a href="' . $url . '">' . $pageNumber . '</a>&nbsp;';
+            $html .= '<a href="' . $url . '">' . $pageNumber . '</a> ';
         }
-        
-        if ($this->offset + $this->count < $this->entityClass->size()) {
+
+        if ($this->offset + $this->count < $this->dataSize) {
             // render goto next
             $pagePos = ($activePageNumber - 0) * $this->count;
             if ($pagePos < 0) {
@@ -364,8 +535,8 @@ class ListingController {
             }
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam($paramName, $pagePos);
-            $html .= '<a href="' . $url . '">&gt;</a>&nbsp;';
-            
+            $html .= '<a href="' . $url . '">&gt;</a> ';
+
             // render goto last page
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam($paramName, ($numberOfPages - 1) * $this->count);
@@ -373,13 +544,13 @@ class ListingController {
         } else {
             $html .= '&gt;&nbsp;&gt;&gt;';
         }
-        if($this->offset + $this->count > $this->entityClass->size()){
-            $to =  $this->entityClass->size();
-        }else{
+        if ($this->offset + $this->count > $this->dataSize) {
+            $to =  $this->dataSize;
+        } else {
             $to  = $this->offset + $this->count;
         }
         // entry x-y out of n
-        $html .= '&nbsp;Einträge ' . ($this->offset+1). ' - ' . $to . ' von ' . $this->entityClass->size();
+        $html .= '&nbsp;Einträge ' . ($this->offset+1). ' - ' . $to . ' von ' . $this->dataSize;
         return $html;
     }
 }

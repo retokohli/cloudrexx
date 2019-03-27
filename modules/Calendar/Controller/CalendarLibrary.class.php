@@ -36,6 +36,8 @@
  */
 namespace Cx\Modules\Calendar\Controller;
 
+class CalendarException extends \Exception { }
+
 /**
  * Calendar
  *
@@ -130,6 +132,13 @@ class CalendarLibrary
     public $arrSettings = array();
     
     /**
+     * Static settings array to cache the fetched data from the database
+     *
+     * @var array 
+     */
+    public static $settings = array();
+
+    /**
      * Community group array
      *
      * @access public
@@ -137,6 +146,16 @@ class CalendarLibrary
      */
     public $arrCommunityGroups = array();    
         
+    /**
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    protected $em;
+
     /**
      * map field key
      *
@@ -157,6 +176,34 @@ class CalendarLibrary
      * @var string
      */
     const ATTACHMENT_FIELD_KEY = 'attachment_id';
+
+    /**
+     * Setting value for option frontendPastEvents defining that all events
+     * having their start date as of today shall be listed in frontend till
+     * the end of today.
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_OF_TODAY = 0;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet ended (end date lies
+     * in the past)
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_END = 1;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet started (start date
+     * lies in the future)
+     *
+     * @todo Implement behavior of this option
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_START = 2;
     
     /**
      * Assign the template path
@@ -164,7 +211,7 @@ class CalendarLibrary
      * 
      * @param string $tplPath Template path
      */
-    function __construct($tplPath){                                                                      
+    public function __construct($tplPath = '') {
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
@@ -173,9 +220,19 @@ class CalendarLibrary
             $this->moduleLangVar.'_CSRF'         => 'csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),     
             $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
             $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
-        ));        
-    }         
-    
+        ));
+
+        $this->init();
+    }
+
+    /**
+     * Initialize $cx and $em
+     */
+    public function init() {
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->em = $this->cx->getDb()->getEntityManager();
+    }
+
     /**
      * Checks the access level for the given action     
      *      
@@ -281,16 +338,16 @@ class CalendarLibrary
 
                 switch($strStatus) {
                     case 'no_access':
-                        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
+                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
                         exit();
                         break;
                     case 'login':
                         $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                        \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
                         exit();
                         break;
                     case 'redirect':
-                        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);   
+                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);   
                         exit();
                         break;
                 }
@@ -315,6 +372,14 @@ class CalendarLibrary
             return;
         }
         
+        // hotfix: this fixes the issue that the settings are being fetch from the
+        // database over and over again.
+        // This is just workaround without having to refactor the whole implementation of CalendarLibrary::$arrSettings
+        if (isset(static::$settings[$this->moduleTablePrefix])) {
+            $this->arrSettings = static::$settings[$this->moduleTablePrefix];
+            return;
+        }
+
     	$arrSettings = array();
         $arrDateSettings =  array(
                             'separatorDateList','separatorDateTimeList', 'separatorSeveralDaysList', 'separatorTimeList',
@@ -333,9 +398,9 @@ class CalendarLibrary
                     
                     if($objInit->mode == 'backend') {
                         // This is for the preview in settings > Date
-                        $arrSettings["{$objSettings->fields['name']}_value"] = htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET);
+                        $arrSettings["{$objSettings->fields['name']}_value"] = isset($_ARRAYLANG["{$value}_VALUE"]) ? htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET) : '';
                     }
-                    $value = $_ARRAYLANG[$value];                    
+                    $value = isset($_ARRAYLANG[$value]) ? $_ARRAYLANG[$value] : '';
                     $arrSettings[$objSettings->fields['name']] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
                 } else {
                     //return all exept date settings
@@ -346,26 +411,8 @@ class CalendarLibrary
             }
         }
         
+        static::$settings[$this->moduleTablePrefix] = $arrSettings;
         $this->arrSettings = $arrSettings;
-    }
-    
-    /**
-     * Used to bulid the option menu from the array
-     * 
-     * @param type    $arrOptions  options value for the select menu
-     * @param integer $intSelected selected option in the select menu
-     * 
-     * @return string drop down options
-     */
-    function buildDropdownmenu($arrOptions, $intSelected=null)
-    {
-        $strOptions = '';
-        foreach ($arrOptions as $intValue => $strName) {
-            $checked = $intValue==$intSelected ? 'selected="selected"' : '';
-            $strOptions .= "<option value='".$intValue."' ".$checked.">".htmlspecialchars($strName, ENT_QUOTES, CONTREXX_CHARSET)."</option>";
-        }
-
-        return $strOptions;
     }
     
     /**
@@ -384,22 +431,18 @@ class CalendarLibrary
     
     /**
      * Return's the dataformat based on the type
-     * 
-     * Return's the dateformat by the given type 
-     * 1 => frontend else backend
-     *      
-     * @param integer $type type 1 => frontend else backend
-     * 
+     *
+     * Return's the dateformat by the given type
+     * 1 => frontend (javascript format alone) else backend
+     *
+     * @param integer $type type 1 => frontend (javascript format alone) else backend
+     *
      * @return string Date format
      */
     function getDateFormat($type=null)
     {
-        global $objDatabase;
-        
-        $objDateFormat = $objDatabase->Execute("SELECT value FROM  ".DBPREFIX."module_".$this->moduleTablePrefix."_settings WHERE name = 'dateFormat' LIMIT 1");
-        if ($objDateFormat !== false) {        
-            $dateFormat = $objDateFormat->fields['value'];      
-        }
+        self::getSettings();
+        $dateFormat = $this->arrSettings['dateFormat'];
         
         if($type == 1) {
             switch ($dateFormat) {
@@ -443,15 +486,22 @@ class CalendarLibrary
     }
     
     /**
-     * Return's the timestamp value from the given date
-     * 
-     * @param string  $date   Date
-     * @param integer $hour   Hours
+     * Returns a \DateTime object from a calendar date/time string.
+     * The format of a calendar date/time string can be configured
+     * in the settings section of the calendar component.
+     *
+     * Note: In constrast to this method, the method getUserDateTimeFromUser()
+     * expects a PHP date/time string.
+     *
+     * The SUPPLIED calendar date/time string must be in USER timezone.
+     * The RETURNED \DateTime object will be in INTERNAL timezone.
+     *
+     * @param string $date A calendar date/time string in user timezone
+     * @param integer $hour Hour value
      * @param integer $minute Minute value
-     * 
-     * @return integer Unix timestamp value
+     * @return \DateTime \DateTime object in internal timezone
      */
-    function getDateTimestamp($date, $hour=0, $minute=0)
+    function getDateTime($date, $hour = 0, $minute = 0)
     {
         self::getSettings();
         
@@ -490,12 +540,12 @@ class CalendarLibrary
         }
                                                                    
         $year = substr($date, $posYear,4);
-        $month = substr($date, $posMonth,2);
-        $day = substr($date, $posDay,2);      
-        
-        $timestamp = mktime($hour,$minute,0,$month,$day,$year);   
-        
-        return $timestamp;
+        $month = str_pad(substr($date, $posMonth,2), 2, '0', STR_PAD_LEFT);
+        $day = str_pad(substr($date, $posDay,2), 2, '0', STR_PAD_LEFT);
+        $hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
+        $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
+
+        return $this->getInternDateTimeFromUser($year . '-' . $month . '-' . $day . ' ' .$hour . ':' . $minute . ':00');
     }
     
     /**
@@ -542,7 +592,7 @@ class CalendarLibrary
         $javascript = <<< EOF
 <script type="text/javascript" src="lib/datepickercontrol/datepickercontrol.js"></script>
 EOF;
-        if($_GET['cmd'] == 'register') {
+        if (isset($_GET['cmd']) && $_GET['cmd'] == 'register') {
              $javascript .= <<< EOF
              
 <script type="text/javascript">
@@ -589,51 +639,9 @@ EOF;
      */
     function generateKey()
     {
-        $arrRandom = array();
-        $arrChars = array ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'); 
-        $arrNumerics =  array (0,1,2,3,4,5,6,7,8,9); 
-        
-        for ($i = 0; $i <= rand(15,40); $i++) {
-            $charOrNum = rand(0,1);
-            if($charOrNum == 1) {
-                $posChar = rand(0,25);
-                $upOrLow = rand(0,1);
-
-                if($upOrLow == 0) {
-                    $arrRandom[$i] = strtoupper($arrChars[$posChar]);
-                } else {
-                    $arrRandom[$i] = strtolower($arrChars[$posChar]);
-                }
-            } else {
-                $posNum = rand(0,9);
-                $arrRandom[$i] = $arrNumerics[$posNum];
-            }
-        }
-        
-        $key = join($arrRandom);
-            
-        return $key;
+        return bin2hex(openssl_random_pseudo_bytes(16));
     }
     
-    /**
-     * Returns the escaped value for processing csv
-     * 
-     * @param string &$value string to be send to the csv
-     * 
-     * @return string escaped value for csv
-     */
-    function escapeCsvValue(&$value)
-    {
-        $value = preg_replace('/\r\n/', "\n", $value);
-        $valueModified = str_replace('"', '""', $value);
-
-        if ($valueModified != $value || preg_match('/['.$this->csvSeparator.'\n]+/', $value)) {
-            $value = '"'.$valueModified.'"';
-        }
-        
-        return strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_decode($value) : $value;
-    }
-
     /**
      * Loads datepicker
      *      
@@ -685,12 +693,328 @@ EOF;
         
         $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         foreach ($objEventManager->eventList as $event) {
-            $exceptionDates[date(self::getDateFormat(), $event->startDate)] = $event->startDate != $event->endDate 
-                                                                              ? $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate).' - '. $dayArray[date("w", $event->endDate)] .", ". date(self::getDateFormat(), $event->endDate)
-                                                                              : $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate);
+            $startDate = $event->startDate;
+            $endDate   = $event->endDate;
+            $exceptionDates[$this->format2userDate($startDate)] = $this->format2userDate($startDate) != $this->format2userDate($endDate)
+                                                                    ? $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate) .' - ' . $dayArray[$this->formatDateTime2user($endDate, "w")] .", ". $this->format2userDate($endDate)
+                                                                    : $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate);
         }
-        
-        return $exceptionDates;        
+
+        return $exceptionDates;
     }
-    
+
+    /**
+     * Get component controller object
+     *
+     * @param string $name  component name  
+     *
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController
+     * The requested component controller or null if no such component exists
+     */
+    public function getComponent($name)
+    {
+        if (empty($name)) {
+            return null;
+        }
+        $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getDb()
+                            ->getEntityManager()
+                            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component     = $componentRepo->findOneBy(array('name' => $name));
+        if (!$component) {
+            throw new CalendarException('The component => '. $name .' not available');
+        }
+        return $component;
+    }
+
+    /**
+     * Returns the date/time string (according to the calendar's
+     * configuration) from a \DateTime object.
+     *
+     * The SUPPLIED \DateTime object must be in INTERNAL timezone.
+     * The RETURNED date/time string will be in USER timezone.
+     *
+     * @param \DateTime $dateTime DateTime object in internal timezone
+     * @return string A date/time string
+     */
+    public function format2userDateTime(\DateTime $dateTime)
+    {
+        return $this->formatDateTime2user($dateTime, $this->getDateFormat() .' H:i');
+    }
+
+    /**
+     * Returns the date string (according to the calendar's
+     * configuration) from a \DateTime object.
+     *
+     * The SUPPLIED \DateTime object must be in INTERNAL timezone.
+     * The RETURNED date string will be in USER timezone.
+     *
+     * @param \DateTime $dateTime DateTime object in internal timezone
+     * @return string A date string
+     */
+    public function format2userDate(\DateTime $dateTime)
+    {
+        return $this->formatDateTime2user($dateTime, $this->getDateFormat());
+    }
+
+    /**
+     * Returns the time string 'H:i' from a \DateTime object
+     *
+     * The SUPPLIED \DateTime object must be in INTERNAL timezone.
+     * The RETURNED time string will be in USER timezone.
+     *
+     * @param \DateTime $dateTime DateTime object in internal timezone
+     * @return string A time string
+     */
+    public function format2userTime(\DateTime $dateTime)
+    {
+        return $this->formatDateTime2user($dateTime, 'H:i');
+    }
+
+    /**
+     * Returns a date/time string from a \DateTime object.
+     *
+     * The SUPPLIED \DateTime object must be in INTERNAL timezone.
+     * The RETURNED date/time string will be in USER timezone.
+     *
+     * @param \DateTime $dateTime DateTime object in internal timezone
+     * @param string $format Format string
+     * @return string A date/time string formatted according to $format
+     */
+    public function formatDateTime2user(\DateTime $dateTime, $format)
+    {
+        return $this->getUserDateTimeFromIntern($dateTime)
+                    ->format($format);
+    }
+
+    /**
+     * Returns a \DateTime object in user timezone
+     *
+     * The SUPPLIED \DateTime object must be in INTERNAL timezone.
+     * The RETURNED \DateTime object will be in USER timezone.
+     *
+     * @param \DateTime $dateTime \DateTime object in internal timezone
+     * @return \DateTime \DateTime in user timezone
+     */
+    public function getUserDateTimeFromIntern(\DateTime $dateTime)
+    {
+        $dateTimeInUserTimezone = clone($dateTime);
+        return $this->getComponent('DateTime')->intern2user($dateTimeInUserTimezone);
+    }
+
+    /**
+     * Returns a \DateTime object from a date/time string.
+     *
+     * The SUPPLIED date/time string must be in USER timezone.
+     * The RETURNED \DateTime object will be in INTERNAL timezone.
+     * 
+     * @param string $time A date/time string in user timezone
+     * @return \DateTime \DateTime object in internal timezone
+     */
+    public function getInternDateTimeFromUser($time = 'now')
+    {
+        $dateTime = $this->getComponent('DateTime')->createDateTimeForUser($time);
+        return $this->getComponent('DateTime')->user2intern($dateTime);
+    }
+
+    /**
+     * Returns a \DateTime object from a date/time string.
+     *
+     * The SUPPLIED date/time string must be in DB timezone.
+     * The RETURNED \DateTime object will be in INTERNAL timezone.
+     * 
+     * @param string $time A date/time string in db timezone
+     * @return \DateTime \DateTime object in internal timezone
+     */
+    public function getInternDateTimeFromDb($time = 'now')
+    {
+        $dateTime = $this->getComponent('DateTime')->createDateTimeForDb($time);
+        return $this->getComponent('DateTime')->db2intern($dateTime);
+    }
+
+    /**
+     * Returns a \DateTime object in db timezone
+     *
+     * The SUPPLIED \DateTime object must be in INTERNAL timezone.
+     * The RETURNED \DateTime object will be in DB timezone.
+     *
+     * @param \DateTime $dateTime \DateTime object in internal timezone
+     * @return \DateTime \DateTime in db timezone
+     */
+    public function getDbDateTimeFromIntern(\DateTime $dateTime)
+    {
+        $dateTimeInDbTimezone = clone($dateTime);
+        return $this->getComponent('DateTime')
+                    ->intern2db($dateTimeInDbTimezone);
+    }
+
+    /**
+     * Trigger the event
+     *
+     * @param string  $eventName trigger event name
+     * @param object  $entity    entity object
+     * @param array   $relations entity relations
+     * @param boolean $isDetach  is detachable entity
+     *
+     * @return null
+     */
+    public function triggerEvent(
+        $eventName,
+        $entity = null,
+        $relations = array(),
+        $isDetach = false
+    ) {
+        if (empty($eventName)) {
+            return null;
+        }
+
+        if ($eventName == 'clearEsiCache') {
+            $this->cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array('Widget', static::getHeadlinePlaceholders())
+            );
+            return;
+        }
+
+        if ($eventName == 'model/postFlush') {
+            $this->cx->getEvents()->triggerEvent(
+                $eventName,
+                array(
+                    new \Doctrine\ORM\Event\PostFlushEventArgs($this->em)
+                )
+            );
+            return;
+        }
+
+        if (!$entity) {
+            return null;
+        }
+
+        if ($isDetach) {
+            if (!empty($relations) && $relations['relations']) {
+                $this->detachJoinedEntity(
+                    $entity,
+                    $relations['relations'],
+                    isset($relations['joinEntityRelations']) ? $relations['joinEntityRelations'] : array()
+                );
+            }
+            $this->em->detach($entity);
+        }
+
+        $this->cx->getEvents()->triggerEvent(
+            $eventName,
+            array(
+                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                    $entity, $this->em
+                )
+            )
+        );
+    }
+
+    /**
+     * Detach the entity
+     *
+     * @param object $entity             entity object
+     * @param string $methodName         method name
+     * @param array  $relation           relationship array
+     * @param array  $joinEntityRelation joined entity's relationship array
+     *
+     * @return null
+     */
+    public function detachEntity(
+        $entity,
+        $methodName,
+        $relation,
+        $joinEntityRelation
+    ) {
+        if (!$entity || empty($methodName) || empty($relation)) {
+            return null;
+        }
+
+        if (!method_exists($entity, $methodName) || !($entity->$methodName())) {
+            return null;
+        }
+
+        if ($relation == 'oneToMany') {
+            foreach ($entity->$methodName() as $subEntity) {
+                if (isset($joinEntityRelation[$methodName])) {
+                    $this->detachJoinedEntity(
+                        $subEntity,
+                        $joinEntityRelation[$methodName],
+                        $joinEntityRelation
+                    );
+                }
+                $this->em->detach($subEntity);
+            }
+        } else if ($relation == 'manyToOne') {
+            if (isset($joinEntityRelation[$methodName])) {
+                $this->detachJoinedEntity(
+                    $entity->$methodName(),
+                    $joinEntityRelation[$methodName],
+                    $joinEntityRelation
+                );
+            }
+            $this->em->detach($entity->$methodName());
+        }
+    }
+
+    /**
+     * Detach the jointed entity
+     *
+     * @param object $entity             entity object
+     * @param array  $relations          relationship array
+     * @param array  $joinEntityRelation joined entity's relationship array
+     *
+     * @return null
+     */
+    public function detachJoinedEntity(
+        $entity,
+        $relations,
+        $joinEntityRelation
+    ) {
+        if (!$entity || empty($relations)) {
+            return null;
+        }
+
+        foreach ($relations as $relation => $methodName) {
+            if (!is_array($methodName)) {
+                $this->detachEntity(
+                    $entity,
+                    $methodName,
+                    $relation,
+                    $joinEntityRelation
+                );
+                continue;
+            }
+
+            foreach ($methodName as $functionName) {
+                $this->detachEntity(
+                    $entity,
+                    $functionName,
+                    $relation,
+                    $joinEntityRelation
+                );
+            }
+        }
+    }
+
+    /**
+     * Get the list of calendar headline placeholders
+     *
+     * @return array
+     */
+    public static function getHeadlinePlaceholders()
+    {
+        $placeholders = array();
+        for ($i = 1; $i <= 21; $i++) {
+            $id = '';
+            if ($i > 1) {
+                $id = $i;
+            }
+
+            $placeholders[] = 'EVENTS' . $id . '_FILE';
+        }
+
+        return $placeholders;
+    }
 }

@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main controller for Routing
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -36,9 +36,9 @@
 
 namespace Cx\Core\Routing\Controller;
 
-/** 
+/**
  * Main controller for Routing
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -57,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         $em = $this->cx->getDb()->getEntityManager();
         $rewriteRuleRepo = $em->getRepository($this->getNamespace() . '\\Model\\Entity\\RewriteRule');
-        $rewriteRules = $rewriteRuleRepo->findAll(array(), array('order'=>'asc'));
+        $rewriteRules = $rewriteRuleRepo->findBy(array(), array('orderNo'=>'asc'));
         $last = false;
         $originalUrl = clone $url;
         foreach ($rewriteRules as $rewriteRule) {
@@ -71,8 +71,53 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
         if ($originalUrl->toString() != $url->toString()) {
-            \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $url->toString(), true, $rewriteRule->getRewriteStatusCode());
-            die();
+            if (
+                $rewriteRule->getRewriteStatusCode() !=
+                \Cx\Core\Routing\Model\Entity\RewriteRule::REDIRECTION_TYPE_INTERN
+            ) {
+                $headers = array(
+                    'Location' => $url->toString(),
+                );
+                if ($rewriteRule->getRewriteStatusCode() == 301) {
+                    array_push(
+                        $headers,
+                        $_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently'
+                    );
+                }
+                $this->getComponent('Cache')->writeCacheFileForRequest(
+                    null,
+                    $headers,
+                    ''
+                );
+                \Cx\Core\Csrf\Controller\Csrf::header(
+                    'Location: ' . $url->toString(),
+                    true,
+                    $rewriteRule->getRewriteStatusCode()
+                );
+                die();
+            }
+            try {
+                \DBG::log('Fetching content from ' . $url->toString());
+                $request = new \HTTP_Request2($url->toString(), \HTTP_Request2::METHOD_GET);
+                $request->setConfig(array(
+                    'follow_redirects' => true,
+                ));
+                $response = $request->send();
+                $content = $response->getBody();
+                foreach ($response->getHeader() as $key=>$value) {
+                    if (in_array($key, array(
+                        'content-encoding',
+                        'transfer-encoding',
+                    ))) {
+                        continue;
+                    }
+                    \Cx\Core\Csrf\Controller\Csrf::header($key . ':' . $value);
+                }
+                $continue = false;
+                die($content);
+            } catch (\HTTP_Request2_Exception $e) {
+                \DBG::dump($e);
+            }
         }
-    }    
+    }
 }

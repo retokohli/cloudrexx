@@ -51,9 +51,9 @@ class U2uLibrary {
     var $_intCurrentUserId;
     var $_arrSettings           = array();
     var $_arrLanguages          = array();
-   	var $_arrlistLevel = null;
-   	var $PaginactionCount;
-   	var $orderedResults,$orderofResult;
+       var $_arrlistLevel = null;
+       var $PaginactionCount;
+       var $orderedResults,$orderofResult;
     var $paginationCount,$counter;
 
     /**
@@ -153,7 +153,7 @@ class U2uLibrary {
       $count = $objResult->RecordCount();
       $this->counter=$count;
 
-	  $paging = getPaging($count, $pos, "&section=U2u&cmd=".$_REQUEST['cmd'],$pagingText, true);
+      $paging = getPaging($count, $pos, "&section=U2u&cmd=".$_REQUEST['cmd'],$pagingText, true);
 
       $selMessage ='SELECT
                         Log.message_text,
@@ -176,9 +176,11 @@ class U2uLibrary {
        $objResult = $objDatabase->SelectLimit($selMessage, $_CONFIG['corePagingLimit'], $pos);
        $this->paginationCount=$paging;
 
+       $arrMessage = array();
        while (!$objResult->EOF) {
           $userName = $this->_getName($objResult->fields['userid']);
           $messageID=$objResult->fields['message_id'];
+          $arrMessage[$messageID] = array();
           $arrMessage[$messageID]["message"]        =   $objResult->fields['message_text'];
           $arrMessage[$messageID]["message_title"]  =   $objResult->fields['message_title'];
           $arrMessage[$messageID]["username"]       =   $userName['username'];
@@ -221,7 +223,7 @@ class U2uLibrary {
       $objResult = $objDatabase->Execute($selMessage);
       $count = $objResult->RecordCount();
       $this->counter=$count;
-	  $paging = getPaging($count, $pos, "&section=U2u&cmd=outbox", "<b>".$_ARRAYLANG['TXT_OUTBOX_PAGING']."</b>", true);
+      $paging = getPaging($count, $pos, "&section=U2u&cmd=outbox", "<b>".$_ARRAYLANG['TXT_OUTBOX_PAGING']."</b>", true);
 
       $selMessage ='SELECT
                         Log.message_text,
@@ -248,8 +250,10 @@ class U2uLibrary {
       $this->paginationCount=$paging;
       //$objResult = $objDatabase->Execute($selMessage);
 
+      $arrMessage = array();
        while (!$objResult->EOF) {
           $messageID=$objResult->fields['message_id'];
+          $arrMessage[$messageID] = array();
           $arrMessage[$messageID]["message"]        =   $objResult->fields['message_text'];
           $arrMessage[$messageID]["message_title"]  =   $objResult->fields['message_title'];
           $arrMessage[$messageID]["username"]       =   $objResult->fields['username'];

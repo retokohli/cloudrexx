@@ -14,7 +14,7 @@ loadHistoryVersion = function(version) {
     if (isNaN(pageId)) {
         return;
     }
-    
+
     cx.cm.loadPage(pageId, 0, version, "content", false);
 };
 
@@ -109,34 +109,34 @@ var initMultiSelect = function(select) {
 
     // workaround for multiselect bug, disabled options are also moved to other select after click on removeAll()
     var allSel = select.next().children(".ms2side__select").children("select");
-    var	leftSel = allSel.eq(0);
-    var	rightSel = allSel.eq(1);
+    var  leftSel = allSel.eq(0);
+    var  rightSel = allSel.eq(1);
     leftSel.change(function() {
         // move all disabled options from left to right select
         leftSel.children('option[disabled]').remove().appendTo(rightSel);
     });
 };
 
-reloadCustomContentTemplates = function() {        
+reloadCustomContentTemplates = function() {
     var skinId = cx.jQuery('#page select[name="page[skin]"]').val();
     var module = cx.jQuery('#page select[name="page[application]"]').val();
     var select = cx.jQuery('#page select[name="page[customContent]"]');
     var lastChoice = select.data('sel');
     select.empty();
     select.append(cx.jQuery("<option value=\"\" selected=\"selected\">(Default)</option>"));
-        
+
     cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
-    
+
     // Default skin
     if (skinId == 0) {
         skinId = cx.variables.get('defaultTemplates', 'contentmanager/themes')[cx.cm.getCurrentLang()];
     }
-    
+
     var templates = cx.variables.get('contentTemplates', "contentmanager");
     if (templates[skinId] == undefined) {
         return;
     }
-    
+
     for (var i = 0; i < templates[skinId].length; i++) {
         var isHome = /^home_/.exec(templates[skinId][i]);
         if ((isHome && module == "Home") || !isHome && module != "Home") {
@@ -158,15 +158,17 @@ cx.ready(function() {
     cx.cm.pageContentTemplate = '';
     // initialise the page custom application template
     cx.cm.pageApplicationTemplate = '';
+    // this is true between the events loadingStart and loadingEnd
+    cx.cm.isAdjusting = true;
 
     // Disable the option use for all channels by default
     cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"], input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
-            
+
     setWebPageUrlCallback = function(data) {
       if(data.type=="page") {
         var url  = data.data[0].node;
         var path = data.data[0].url;
-        
+
         url = url.replace(cx.variables.get('contrexxPathOffset', 'contentmanager'), '');
         if (path == '') {
             path = url;
@@ -176,28 +178,28 @@ cx.ready(function() {
         }
         var lang = cx.variables.get('language', 'contrexx');
         cx.jQuery('#page_target_wrapper').hide();
-        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + lang + '/' + path).attr('href', function() {return cx.jQuery(this).text()});
-        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('.page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + lang + '/' + path).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text_wrapper').show();
         cx.jQuery('#page_target_protocol > option').removeAttr('selected');
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        cx.jQuery('#page_target, #page_target_backup').val(url);
+        cx.jQuery('#page_target, .page_target_backup').val(url);
       }
       else if (data.type == "file") {
         cx.jQuery('#page_target_wrapper').hide();
-        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
-        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('.page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text_wrapper').show();
         cx.jQuery('#page_target_protocol > option').removeAttr('selected');
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        cx.jQuery('#page_target, #page_target_backup').val(data.data[0].datainfo.filepath);
+        cx.jQuery('#page_target, .page_target_backup').val(data.data[0].datainfo.filepath);
       }
     }
-    
+
     cx.jQuery('#page_target').keyup(function() {
         var targetValue = cx.jQuery.trim(cx.jQuery(this).val());
         if (cx.jQuery(this).val() != targetValue) {
             cx.jQuery(this).val(targetValue);
         }
-        var targetValueBackup = cx.jQuery('#page_target_backup').val();
+        var targetValueBackup = cx.jQuery('.page_target_backup').val();
         var matchesPageTarget = regExpUriProtocol.exec(targetValueBackup);
         if (matchesPageTarget) {
             targetValueBackup = targetValueBackup.replace(matchesPageTarget[0], '');
@@ -209,7 +211,7 @@ cx.ready(function() {
         cx.jQuery('#page_target_check').toggle(showOrHide);
     });
     cx.jQuery('#page_target_protocol').change(function() {
-        var targetValueBackup    = cx.jQuery('#page_target_backup').val();
+        var targetValueBackup    = cx.jQuery('.page_target_backup').val();
         var matchesPageTarget    = regExpUriProtocol.exec(targetValueBackup);
         var targetProtocolBackup = '';
         if (matchesPageTarget) {
@@ -223,23 +225,26 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('#page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('#page_target_text_wrapper_redirect').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery("#page_target_backup").val(), cx.jQuery("#page_target_text").text());
+        cx.cm.setPageTarget(
+            cx.jQuery(".page_target_backup").val(),
+            cx.jQuery(this).parent().next(".page_target_text_wrapper").find(".page_target_text").text()
+        );
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();
-        cx.jQuery('#page_target_text').text('');
-        cx.jQuery('#page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
+        cx.jQuery('.page_target_text').text('');
+        cx.jQuery('.page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
         cx.jQuery.getJSON('index.php?cmd=JsonData&object=page&act=getPathByTarget', {
-            target: cx.jQuery('#page_target_backup').val()
+            target: cx.jQuery('.page_target_backup').val()
         }, function(data) {
-            cx.jQuery('#page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
+            cx.jQuery('.page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
         });
         cx.jQuery('#page_target_wrapper').hide().next().show();
     });
-    
+
     cx.jQuery('.jstree-action').click(function(event) {
         event.preventDefault();
         action = cx.jQuery(this).attr('class').split(' ')[1];
@@ -274,7 +279,7 @@ cx.ready(function() {
             cx.jQuery('#site-tree').jstree(action+'_all');
         }
     });
-    
+
     cx.jQuery('#multiple-actions-select').change(function() {
         data = new Object();
         data.action = cx.jQuery(this).children('option:selected').val();
@@ -341,23 +346,11 @@ cx.ready(function() {
             cx.jQuery('#multiple-actions-select').val(0);
         }
     });
-    
-    // aliases:
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
-    }
-    
+
     // alias input fields
     cx.jQuery("div.page_alias input").keyup(function() {
         cx.jQuery("div.page_alias input.warning").removeClass("warning");
-        
+
         var originalAlias  = cx.jQuery(this).val();
         var slugifiedAlias = cx.cm.slugify(originalAlias);
         if (originalAlias != slugifiedAlias) {
@@ -414,7 +407,7 @@ cx.ready(function() {
             }
         }
     });
-    
+
     var data = cx.jQuery.parseJSON(cx.variables.get("tree-data", "contentmanager/tree"));
     cx.cm.actions = data.data.actions;
     cx.cm.hasHome = data.data.hasHome;
@@ -429,19 +422,19 @@ cx.ready(function() {
         var dpOptions = {
             showSecond: false,
             dateFormat: 'dd.mm.yy',
-            timeFormat: 'hh:mm' 
+            timeFormat: 'hh:mm'
         };
         cx.jQuery("input.date").datetimepicker(dpOptions);
 
         node = cx.jQuery('#page input[name="page[node]"]').val();
         //pageId = cx.jQuery('#node_'+node+" a."+str).attr("id");
         pageId = cx.jQuery('#pageId').val();
-        
+
         // get translated page id (page->getNode()->getPage(lang)->getId())
         if (pageId) {
             pageId = cx.jQuery('li#node_'+node).children('.'+str).attr('id');
         }
-        
+
         if (fallbacks[str]) {
             cx.jQuery('.hidable_nofallback').show();
             cx.jQuery('#fallback').text(language_labels[fallbacks[str]]);
@@ -470,13 +463,13 @@ cx.ready(function() {
         var classes =  cx.jQuery(event.target).attr("class").split(/\s+/);
         var url = cx.jQuery(event.target).attr('data-href');
         var lang = cx.jQuery('#site-tree').jstree('get_lang');
-        
+
         var action = classes[1];
         var pageId = cx.jQuery(event.target).closest(".jstree-wrapper").nextAll("a." + lang).attr("id");
         var nodeId = cx.jQuery(event.target).closest(".jstree-wrapper").parent().attr("id").split("_")[1];
-        
+
         cx.cm.performAction(action, pageId, nodeId);
-        
+
         cx.jQuery(event.target).closest('.actions-expanded').hide();
     });
 
@@ -485,35 +478,35 @@ cx.ready(function() {
         if (parseInt(cx.jQuery(this).val()) == 0) {
             cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
             cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('disabled', 'disabled');
-        } else {            
+        } else {
             if (parseInt(cx.cm.pageSkin) == 0) {
                 cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
             }
             cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('disabled');
         }
-        
+
         cx.cm.pageSkin = cx.jQuery(this).val();
-        
+
         reloadCustomContentTemplates();
-        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(), 
-                                      cx.jQuery('#page input[name="page[area]"]').val(), 
+        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(),
+                                      cx.jQuery('#page input[name="page[area]"]').val(),
                                       cx.jQuery('#page select[name="page[skin]"]').val());
     });
-    
+
     cx.jQuery('#page select[name="page[customContent]"]').bind('change', function() {
         if (cx.jQuery(this).val() == '') {
             cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
             cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
-        } else {            
+        } else {
             if (cx.cm.pageContentTemplate == '') {
                 cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
             }
             cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('disabled');
-        }        
-        
+        }
+
         cx.cm.pageContentTemplate = cx.jQuery(this).val();
     });
-    
+
     cx.jQuery('#page select[name="page[applicationTemplate]"]').bind('change', function() {
         if (cx.jQuery(this).val() == '') {
             cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
@@ -523,11 +516,11 @@ cx.ready(function() {
                 cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
             }
             cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('disabled');
-        }        
-        
+        }
+
         cx.cm.pageApplicationTemplate = cx.jQuery(this).val();
     });
-    
+
     cx.jQuery('#page_skin_view, #page_skin_edit').click(function(event) {
         var themeId = 0;
         var themeName = "";
@@ -538,7 +531,7 @@ cx.ready(function() {
             themeId = cx.variables.get('themeId', 'contentmanager/theme');
             themeName = cx.variables.get('themeName', 'contentmanager/theme');
         }
-        
+
         if (themeId == 0) {
             themeId = cx.variables.get('defaultTemplates', 'contentmanager/themes')[cx.cm.getCurrentLang()];
         }
@@ -552,10 +545,26 @@ cx.ready(function() {
 
     cx.jQuery('#page select[name="page[application]"]').bind('blur', function() {
         reloadCustomContentTemplates();
-        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(), 
-                                      cx.jQuery('#page input[name="page[area]"]').val(), 
+        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(),
+                                      cx.jQuery('#page input[name="page[area]"]').val(),
                                       cx.jQuery('#page select[name="page[skin]"]').val());
     });
+
+    cx.bind("setEditorData", function(data) {
+        if (
+            cx.jQuery('input[name="page[type]"]:checked').val() != 'application' ||
+            !cx.cm.editorInUse() ||
+            cx.jQuery("[name=\"page[application]\"").val() == 'Home'
+        ) {
+            return;
+        }
+        var pattern = /\[\[APPLICATION_DATA\]\]/;
+
+        //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
+        if (!pattern.test(data.content)) {
+            data.content = data.content + '[[APPLICATION_DATA]]';
+        }
+    }, "contentmanager");
 
     // react to get ?loadpage=
     /*if (jQuery.getUrlVar('loadPage')) {
@@ -563,6 +572,8 @@ cx.ready(function() {
     }*/
     if (cx.jQuery.getUrlVar("page") || cx.jQuery.getUrlVar("node")) {
         cx.cm.loadPage(cx.jQuery.getUrlVar("page"), cx.jQuery.getUrlVar("node"), cx.jQuery.getUrlVar("version"), cx.jQuery.getUrlVar("tab"));
+    } else {
+        cx.cm.isAdjusting = false;
     }
 
     cx.cm();
@@ -570,7 +581,7 @@ cx.ready(function() {
 
 cx.cm = function(target) {
     cx.cm.initHistory();
-    
+
     var dpOptions = {
         showSecond: false,
         dateFormat: 'dd.mm.yy',
@@ -612,7 +623,7 @@ cx.cm = function(target) {
     inputs.blur(function(){
         cx.jQuery(this).css('color','#000000');
     });
-    
+
     cx.jQuery("#cancel").click(function() {
         cx.cm.hideEditView();
     });
@@ -655,7 +666,11 @@ cx.cm = function(target) {
                         page.visibility.type = "redirection";
                         page.visibility.fallback = false;
                         break;
-                    case "application": 
+                    case "symlink":
+                        page.visibility.type = "symlink";
+                        page.visibility.fallback = false;
+                        break;
+                    case "application":
                         var module = cx.jQuery("[name=\"page[application]\"").val();
                         if (module != "Home") {
                             page.visibility.type = "application";
@@ -735,6 +750,10 @@ cx.cm = function(target) {
                         page.visibility.type = "redirection";
                         page.visibility.fallback = false;
                         break;
+                    case "symlink":
+                        page.visibility.type = "symlink";
+                        page.visibility.fallback = false;
+                        break;
                     case "application":
                         var module = cx.jQuery("[name=\"page[application]\"").val();
                         if (module != "Home") {
@@ -807,7 +826,7 @@ cx.cm = function(target) {
         cx.jQuery('div.activeType').removeClass('activeType');
         cx.jQuery(event.target).parentsUntil('div.type').addClass('activeType');
     });
-    
+
     cx.jQuery('#page').bind('tabsselect', function(event, ui) {
         if (ui.index == 5) {
             if (cx.jQuery('#page_history').html() == '') {
@@ -844,27 +863,23 @@ cx.cm = function(target) {
         cx.jQuery('#page .type_hidable').hide();
         cx.jQuery('#page .type_'+cx.jQuery(event.target).val()).show();
         cx.jQuery('#page #type_toggle label').text(cx.jQuery(this).next().text());
+
+        // if we change type from fallback to content or application, we want to
+        // load content from fallback page:
+        var content = cx.cm.getEditorData();
+
         if (cx.jQuery(this).val() == 'application') {
-            var pattern = /\[\[APPLICATION_DATA\]\]/;
-            if (cx.jQuery('#page_sourceMode').prop('checked')) {
-                var content = cx.jQuery('#cm_ckeditor').val();
-
-                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
-                if (!pattern.test(content)) {
-                    cx.jQuery("#cm_ckeditor").val(content + '[[APPLICATION_DATA]]');
-                }
-            } else if (CKEDITOR.instances.cm_ckeditor != null) {
-                var content = CKEDITOR.instances.cm_ckeditor.getData();
-
-                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in ckeditor
-                if (!pattern.test(content)) {
-                    var range = CKEDITOR.instances['cm_ckeditor'].createRange();
-                    if (range && CKEDITOR.instances['cm_ckeditor'].getSelection()!=null) {
-                        range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
-                        CKEDITOR.instances['cm_ckeditor'].getSelection().selectRanges([range]);
-                    }
-                    CKEDITOR.instances['cm_ckeditor'].insertText('[[APPLICATION_DATA]]');
-                }
+            cx.bind("loadingStart", function() {
+                cx.cm.isAdjusting = true;
+            }, "contentmanager");
+            cx.bind("loadingEnd", function() {
+                cx.cm.isAdjusting = false;
+            }, "contentmanager");
+            if (    event.originalEvent !== undefined
+                &&  cx.cm.isAdjusting != undefined
+                &&  !cx.cm.isAdjusting
+            ) {
+                cx.cm.setEditorData(content);
             }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
         }
@@ -874,20 +889,12 @@ cx.cm = function(target) {
             cx.jQuery('#page #preview').show();
         }
         if (cx.jQuery(this).val() == 'fallback') {
-            cx.jQuery("#type_toggle").hide();
+            cx.jQuery("#type_toggle, #themes_toggle, #themes_container").hide();
         } else {
-            cx.jQuery("#type_toggle").show();
+            cx.jQuery("#type_toggle, #themes_toggle, #themes_container").show();
         }
         cx.cm.resizeEditorHeight();
-        
-        // if we change type from fallback to content or application, we want to
-        // load content from fallback page:
-        var content = cx.jQuery('#cm_ckeditor').val();
-        var isCkEditor = false;
-        if (CKEDITOR.instances.cm_ckeditor != null) {
-            content = CKEDITOR.instances.cm_ckeditor.getData();
-            isCkEditor = true;
-        }
+
         if (cx.cm.lastPageType == "fallback" && (cx.jQuery(this).val() == "content" || cx.jQuery(this).val() == "application") && content == "") {
             var fallbackLanguage = cx.cm.getCurrentLang();
             while (true) {
@@ -907,7 +914,7 @@ cx.cm = function(target) {
                         return;
                     }
                     var fallbackPageContent = response.data.content;
-                    if (isCkEditor) {
+                    if (cx.cm.editorInUse()) {
                         CKEDITOR.instances.cm_ckeditor.setData(fallbackPageContent);
                     } else {
                         cx.jQuery("#cm_ckeditor").val(fallbackPageContent);
@@ -952,7 +959,7 @@ cx.cm = function(target) {
             container.animate({height: 'toggle'}, 400);
         }
     });
-    
+
     cx.jQuery("#page_name").blur(function() {
         var val = cx.jQuery(this).val();
         if (val != "") {
@@ -973,12 +980,16 @@ cx.cm = function(target) {
             cx.jQuery("#preview").attr("href", previewTarget + "?pagePreview=1");
         }
     });
-    
-    cx.jQuery("select#page_application").change(cx.cm.homeCheck, cx.jQuery("#pageId").val());
-    cx.jQuery('#page input[name="page[area]"]').keyup(cx.cm.homeCheck, cx.jQuery("#pageId").val());
+
+    cx.jQuery("select#page_application").change(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
+    cx.jQuery('#page input[name="page[area]"]').keyup(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
     cx.jQuery('#page input[name="page[area]"]').change(function() {
-        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(), 
-                                      cx.jQuery('#page input[name="page[area]"]').val(), 
+        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(),
+                                      cx.jQuery('#page input[name="page[area]"]').val(),
                                       cx.jQuery('#page select[name="page[skin]"]').val());
     });
     // prevent enter key from opening fileBrowser
@@ -987,7 +998,7 @@ cx.cm = function(target) {
             return false;
         }
     });
-    
+
     cx.bind("pageStatusUpdate", cx.cm.updatePageIcons, "contentmanager");
     cx.bind("pageStatusUpdate", cx.cm.updateTranslationIcons, "contentmanager");
     cx.bind("pageStatusUpdate", cx.cm.updateActionMenu, "contentmanager");
@@ -1023,10 +1034,8 @@ cx.cm = function(target) {
     });
 };
 cx.cm.loadApplicationTemplate = function(application, area, template) {
-    cx.trigger("loadingStart", "contentmanager", {});
     cx.jQuery.ajax({
         url: "index.php?cmd=JsonData&object=page&act=loadApplicationTemplate&app=" + application + "&area=" + area + "&template=" + template,
-        async: false,
         success: function(response) {
             var templateFile = response.data.files;
             var select = cx.jQuery('#page select[name="page[applicationTemplate]"]');
@@ -1039,14 +1048,41 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
                     }).text(templateFile[i]));
                 }
             }
+
+            var page = cx.cm.page;
+            // in case we are creating a new page, then cx.cm.page is not yet defined
+            if (typeof(page) == 'undefined') {
+                page = {
+                    customContent:"",
+                    useCustomContentForAllChannels:0,
+                    applicationTemplate:"",
+                    useCustomApplicationTemplateForAllChannels:0
+                }
+            }
             cx.jQuery('span.area').text(response.data.area);
             cx.jQuery('span.folderPath').text(response.data.path);
-            cx.cm.pageApplicationTemplate = '';
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
+            cx.cm.pageContentTemplate = page.customContent;
+
+            if (page.useCustomContentForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
+
+
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
+            cx.cm.pageApplicationTemplate = page.applicationTemplate;
+
+            if (page.useCustomApplicationTemplateForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
         }
     }).always(function(response) {
-        //cx.trigger("loadingEnd", "contentmanager", response);
         if(response.hasOwnProperty('area')){
             delete response.data.area;
         }
@@ -1056,9 +1092,7 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
         if(response.hasOwnProperty('path')){
             delete response.data.path;
         }
-        cx.trigger("loadingEnd", "contentmanager", response);
     });
-    //cx.trigger("loadingEnd", "contentmanager", {});
 }
 
 cx.cm.homeCheck = function(addClasses, pageId) {
@@ -1072,12 +1106,12 @@ cx.cm.homeCheck = function(addClasses, pageId) {
     if (module.val() != "Home" || cmd.val() != "") {
         return false;
     }
-    
+
     // there is no home for this language yet
     if (!cx.cm.hasHome[cx.cm.getCurrentLang()]) {
         return false;
     }
-    
+
     // is the page not the current page?
     if (pageId && cx.cm.hasHome[cx.cm.getCurrentLang()] == pageId) {
         return false;
@@ -1102,9 +1136,9 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     try {
         target.jstree("destroy");
     } catch (ex) {}
-    
+
     var eventAdded = false;
-    
+
     target.jstree({
         // List of active plugins
         "plugins" : [
@@ -1182,7 +1216,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         },
         "cookies" : {
-            'save_selected' : false
+            'save_loaded' : cx.variables.get('save_loaded', 'contentmanager/jstree'),
+            'save_opened' : cx.variables.get('save_opened', 'contentmanager/jstree'),
+            'save_selected' : false,
+            'cookie_options': {path: cx.variables.get('basePath')}
         }
     })
     .bind("before.jstree", function(e, data) {
@@ -1277,7 +1314,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     cx.trigger("loadingEnd", "contentmanager", {});
                     return true;
                     // TODO: response/reporting/refresh
-                    if (!r.status) { 
+                    if (!r.status) {
                         cx.jQuery.jstree.rollback(data.rlbk);
                     } else {
                         cx.jQuery(data.rslt.oc).attr("id", "node_" + r.id);
@@ -1310,7 +1347,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             cx.jQuery(leaf).not('.jstree-move').click(function(event) {
                 var action;
                 // don't load a page if the user only meant to select/unselect its checkbox
-                if (!cx.jQuery(event.target).hasClass('jstree-checkbox') 
+                if (!cx.jQuery(event.target).hasClass('jstree-checkbox')
                     && !cx.jQuery(this).hasClass('broken')
                     && !cx.jQuery(event.target).is('ins')) {
                     var module = "";
@@ -1318,7 +1355,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         module = cx.jQuery.trim(cx.jQuery.parseJSON(cx.jQuery(leaf).attr("data-href")).module);
                         module = module.split(" ")[0];
                     } catch (ex) {}
-                    if (cx.jQuery.inArray(module, ["", "Home", "login", "Imprint", "Ids", "Error", "Sitemap", "Agb", "Privacy", "search"]) == -1) {
+                    if (cx.jQuery.inArray(module, ["", "Home", "Login", "Imprint", "Ids", "Error", "Sitemap", "Agb", "Privacy", "Search"]) == -1) {
                         cx.cm.showEditModeWindow(module, this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1]);
                     } else {
                         cx.cm.loadPage(this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1], null, "content");
@@ -1340,7 +1377,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     cx.cm.performAction(action, this.id, nodeId);
                 }
             });
-            
+
             cx.jQuery(this).hover(
                 function() {
                     if (mouseIsUp) {
@@ -1497,10 +1534,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 }
             });
         });
-        
+
         cx.jQuery("a.preview").click(function() {
             var pageId = cx.jQuery(this).parent().parent().children("a." + cx.cm.getCurrentLang()).attr("id");
-            var path = "../" + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
+            var path = cx.variables.get("basePath", "contrexx") + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
             cx.jQuery(this).attr("href", path);
         });
 
@@ -1512,7 +1549,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 });
             }
         });
-        
+
         // publishing and visibility icons
         cx.jQuery('#site-tree li a ins.jstree-icon').each(function(index, node) {
             if (cx.jQuery(node).hasClass("publishing") || cx.jQuery(node).hasClass("page")) {
@@ -1524,7 +1561,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             cx.jQuery(node).before('<ins class="jstree-icon publishing '+publishing+'">&nbsp;</ins>');
             cx.jQuery(node).addClass("page " + visibility);
         });
-        
+
         cx.jQuery("#site-tree ul li > a").each(function(index, element) {
             var pageId = cx.jQuery(element).attr("id");
             var nodeId = cx.jQuery(element).parent("li").attr("id").substr(5);
@@ -1535,14 +1572,12 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 cx.jQuery(element).contents().filter(function() {
                     return this.nodeType == 3;
                 }).each(function(index, el) {
-                    var content = el.textContent;
                     // It would be nicer if we could select all page <a>
                     // elements directly using a class and just remove all text
                     // nodes or not to add the text nodes in the first place.
                     // ATTENTION: The space " " is necessary otherwise drag&drop
                     // stops working.
-                    content = content.replace(pageName.replace("&", "&amp;"), " ");
-                    el.textContent = content;
+                    el.textContent = " ";
                 });
                 cx.jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
             }
@@ -1550,7 +1585,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 cx.cm.updateTreeEntry(cx.cm.getPageStatus(nodeId, lang));
             }
         });
-        
+
         var checkSiteTree = setInterval(function() {
             if (cx.jQuery('#site-tree li').length) {
                 cx.jQuery('.jstree-move').empty();
@@ -1582,7 +1617,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
                     var arrStatuses = new Array();
                     var arrTipMessage = new Array();
-                    
+
                     if (objTrigger.hasClass('unpublished')) {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_UNPUBLISHED', 'contentmanager/lang/tooltip'));
                     } else {
@@ -1629,7 +1664,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PAGE_STATUS_PROTECTED', 'contentmanager/lang/tooltip'));
                     }
 
-                    if (!objTrigger.hasClass('home') && !objTrigger.hasClass('application') && !objTrigger.hasClass('redirection')) {
+                    if (!objTrigger.hasClass('home') && !objTrigger.hasClass('application') && !objTrigger.hasClass('redirection') && !objTrigger.hasClass('symlink')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE', 'contentmanager/lang/tooltip'));
                     }
                     if (objTrigger.hasClass('application')) {
@@ -1637,6 +1672,9 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
                     if (objTrigger.hasClass('redirection')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_REDIRECTION', 'contentmanager/lang/tooltip'));
+                    }
+                    if (objTrigger.hasClass('symlink')) {
+                        arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_SYMLINK', 'contentmanager/lang/tooltip'));
                     }
                     if (objTrigger.hasClass('home')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_HOME', 'contentmanager/lang/tooltip'));
@@ -1676,7 +1714,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 }
             }
         });
-        
+
         if (cx.jQuery.browser.msie  && parseInt(cx.jQuery.browser.version, 10) === 7) {
             zIndex = cx.jQuery('#site-tree li').length * 10;
             cx.jQuery('#site-tree li').each(function() {
@@ -1693,7 +1731,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         cx.cm.is_opening = false;
         cx.jQuery("#site-tree").show();
         cx.tools.StatusMessage.removeAllDialogs();
-        
+
         var setPageTitlesWidth = setInterval(function() {
             if (cx.jQuery('#content-manager').hasClass('edit_view') && cx.jQuery('#site-tree .name').length) {
                 cx.jQuery('#site-tree .name').each(function() {
@@ -1740,7 +1778,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         }
         catch (e) {}
     });
-    if (typeof(langPreset) == 'string' && langPreset.length == 2) {
+    if (typeof(langPreset) == 'string' && langPreset.length >= 2) {
         cx.cm.setCurrentLang(langPreset);
     }
 };
@@ -1782,7 +1820,7 @@ cx.jQuery(window).resize(function() {
 
 cx.cm.resizeEditorHeight = function() {
     var windowHeight = cx.jQuery(window).height();
-    var contentHeightWithoutEditor = 
+    var contentHeightWithoutEditor =
         cx.jQuery('#header').outerHeight(true) +
         parseInt(cx.jQuery('#content').css('padding-top')) +
         cx.jQuery('.breadcrumb').outerHeight(true) +
@@ -1835,7 +1873,7 @@ cx.cm.validateFields = function() {
         if (el.val() == "") {
             error = true;
             el.addClass("warning");
-            
+
             if (firstError) {
                 var tabName = el.closest(".ui-tabs-panel").attr("id");
                 cx.cm.selectTab(tabName.substr(5));
@@ -1847,7 +1885,7 @@ cx.cm.validateFields = function() {
         error = true;
         if (firstError) {
             errorMessage = cx.variables.get('TXT_CORE_CM_HOME_FAIL', 'contentmanager/lang');
-            
+
             var tabName = cx.jQuery("#page_application").closest(".ui-tabs-panel").attr("id");
             cx.cm.selectTab(tabName.substr(5));
         }
@@ -1870,19 +1908,33 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             cx.jQuery('.tab.page_history').hide();
             cx.jQuery("#parent_node").val(nodeId);
             cx.cm.createEditor();
+            cx.cm.setEditorData("");
             return;
         case "copy":
             url = "index.php?cmd=JsonData&object=node&act=copy&id=" + nodeId;
             break;
         case "activate":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
+            // intentionally no "break" here!
         case "deactivate":
             // do not toggle activity for drafts
             if (page.publishing.hasDraft != "no") {
-                return
+                return;
             }
             break;
         case "show":
         case "hide":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
         case "publish":
             // nothing to do yet
             break;
@@ -1955,8 +2007,11 @@ cx.cm.updatePageIcons = function(args) {
         page.removeClass("inexistent");
     }
 
-    // reload the editor values
-    if (args.page.id == cx.jQuery('input#pageId').val()) {
+    // reload the editor values, in case a page had been loaded into the editor
+    if (
+        args.page.id > 0 &&
+        args.page.id == cx.jQuery('input#pageId').val()
+    ) {
         cx.cm.loadPage(args.page.id, undefined, args.page.version, undefined, false);
     }
 }
@@ -2001,10 +2056,10 @@ cx.cm.updateActionMenu = function(args) {
     if (args.page.lang != cx.cm.getCurrentLang()) {
         args.page = cx.cm.getPageStatus(args.page.nodeId, cx.cm.getCurrentLang());
     }
-    
+
     var node = cx.jQuery("#node_" + args.page.nodeId);
     var menu = node.children(".jstree-wrapper").children(".actions").children(".actions-expanded").children("ul");
-    
+
     if (!menu.length) {
         return;
     }
@@ -2129,7 +2184,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         // Illegal fallback state
         return false;
     }
-    if (cx.jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection"]) < 0) {
+    if (cx.jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection", "symlink"]) < 0) {
         // Illegal type
         return false;
     }
@@ -2178,6 +2233,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         case "application":
         case "home":
         case "redirection":
+        case "symlink":
             visibility.addClass(newStatus.visibility.type);
         default:
             break;
@@ -2279,6 +2335,8 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         type = "home";
     } else if (visibility.hasClass("redirection")) {
         type = "redirection";
+    } else if (visibility.hasClass("symlink")) {
+        type = "symlink";
     }
 
     var name = "";
@@ -2341,14 +2399,14 @@ cx.cm.getcontactFormId = function(pageId) {
         return null;
     }
     var page = cx.jQuery("a#" + pageId);
-    if (!page || !page.length) {        
+    if (!page || !page.length) {
         return null;
-    }    
-    
+    }
+
     formId = 0;
     module = cx.jQuery.trim(cx.jQuery.parseJSON(page.attr("data-href")).module);
     formId = module.split(" ")[1];
-    
+
     return formId;
 }
 
@@ -2374,6 +2432,7 @@ cx.cm.getCurrentLang = function() {
  */
 cx.cm.setCurrentLang = function(newLang) {
     cx.cm.getTree().jstree("set_lang", newLang);
+    cx.jQuery('.chzn-select').trigger("chosen:updated");
 }
 
 /**
@@ -2454,11 +2513,6 @@ cx.cm.resetEditView = function() {
         el = cx.jQuery(el);
         el.val("");
     });
-
-    // empty existing ckeditor
-    if (cx.cm.editorInUse()) {
-        CKEDITOR.instances.cm_ckeditor.setData('');
-    }
 
     // reset hidden fields
     cx.jQuery("input#pageId").val("new");
@@ -2553,9 +2607,9 @@ cx.cm.createEditor = function() {
             return base + sep + key + '=' + value;
         }
         var config = {
-            customConfig: buildUrl(cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
+            customConfig: buildUrl(cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
             toolbar: 'Full',
-            skin: 'moono'
+            removePlugins: 'bbcode'
         };
         CKEDITOR.replace('page[content]', config);
 
@@ -2575,6 +2629,9 @@ cx.cm.destroyEditor = function() {
 
 cx.cm.setEditorData = function(pageContent) {
     cx.jQuery(document).ready(function() {
+        var eventData = {content: pageContent};
+        cx.trigger("setEditorData", "contentmanager", eventData);
+        pageContent = eventData.content;
         if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
             // This is bit of a hacky solution but CKEDITOR seems to have
             // problems with setData() sometimes (without throwing an exception)
@@ -2588,6 +2645,14 @@ cx.cm.setEditorData = function(pageContent) {
     });
 };
 
+cx.cm.getEditorData = function() {
+    if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
+        return CKEDITOR.instances.cm_ckeditor.getData();
+    } else {
+        return cx.jQuery('#page textarea[name="page[content]"]').val();
+    }
+}
+
 cx.cm.showEditModeWindow = function(cmdName, pageId) {
     var dialog = cx.variables.get("editmodedialog", 'contentmanager');
     if (dialog) {
@@ -2599,21 +2664,21 @@ cx.cm.showEditModeWindow = function(cmdName, pageId) {
 
     var editModeLayoutLink = "cx.cm.hideEditModeWindow(); cx.cm.loadPage(" + pageId + ", null, null, 'content'); return false;";
     var editModeModuleLink = "index.php?cmd=" + cmdName + "&csrf=" + csrf;
-    
+
     // Redirect to edit page of the contact form if module is contact
     if (cmdName == 'Contact') {
         var contactFormId  = cx.cm.getcontactFormId(pageId);
         editModeModuleLink = "index.php?cmd=" + cmdName + "&act=forms&tpl=edit&formId=" + contactFormId + "&csrf=" + csrf;
-        
+
     // Redirect to media module for media1, 2, 3 and 4
     } else if (/Media[1-4]/.exec(cmdName)) {
         var archiveId = /Media([1-4])/.exec(cmdName)[1];
         editModeModuleLink = "index.php?cmd=Media&archive=archive" + archiveId + "&csrf=" + csrf;
     }
-    
+
     content = content.replace(/\%1/g, editModeLayoutLink);
     content = content.replace(/\%2/g, editModeModuleLink);
-    
+
     dialog = cx.ui.dialog({
         dialogClass: 'edit-mode',
         title: title,
@@ -2623,7 +2688,7 @@ cx.cm.showEditModeWindow = function(cmdName, pageId) {
         modal: true
     });
     cx.jQuery('.ui-dialog #edit_mode a').blur();
-    
+
     dialog.bind("close", function() {
         cx.variables.set("editmodedialog", null, "contentmanager");
     });
@@ -2642,7 +2707,7 @@ cx.cm.loadHistory = function(id, pos) {
     if (!pos) {
         pos = 0;
     }
-    
+
     var hideDrafts = "";
     if (cx.jQuery("#hideDrafts").length) {
         if (cx.jQuery("#hideDrafts").is(":checked")) {
@@ -2651,13 +2716,13 @@ cx.cm.loadHistory = function(id, pos) {
             hideDrafts = "&hideDrafts=off";
         }
     }
-    
-    cx.jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
+
+    cx.jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"" + cx.variables.get('basePath', 'contrexx') + "lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
     pageId = (id != undefined) ? parseInt(id) : parseInt(cx.jQuery('#pageId').val());
     if (isNaN(pageId) || (pageId == 0)) {
         return;
     }
-    
+
     cx.jQuery('#page_history').load('index.php?cmd=JsonData&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos+hideDrafts, function() {
         cx.jQuery("#history_paging").find("a").each(function(index, el) {
             el = cx.jQuery(el);
@@ -2688,11 +2753,11 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
     if (historyId) {
         url += '&history=' + historyId;
     }
-    
+
     if (reloadHistory == undefined) {
         reloadHistory = true;
     }
-    
+
     cx.trigger("loadingStart", "contentmanager", {});
     cx.jQuery.ajax({
         url : url,
@@ -2713,10 +2778,11 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
 };
 cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.cm.showEditView();
-    
+    cx.cm.page = page;
+
     // make sure history tab is shown
     cx.jQuery('.tab.page_history').show();
-    
+
     if (cx.jQuery('#page input[name="page[lang]"]').val() != page.lang) {
         // lang has changed, preselect correct entry in lang select an reload tree
         cx.jQuery("#site-tree").jstree("set_lang", page.lang);
@@ -2734,12 +2800,12 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     } else {
         cx.jQuery('.hidable_nofallback').hide();
     }
-    
+
     // set toggle statuses
     var toggleElements = new Array(
         ['toggleTitles', '#titles_container'],
         ['toggleType', '#type_container'],
-        ['toggleNavigation', '#navigation_container'], 
+        ['toggleNavigation', '#navigation_container'],
         ['toggleBlocks', '#blocks_container'],
         ['toggleApplication', '#application_container'],
         ['toggleThemes', '#themes_container']
@@ -2785,6 +2851,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.jQuery('#page input[name="page[metatitle]"]').val(page.metatitle);
     cx.jQuery('#page textarea[name="page[metadesc]"]').val(page.metadesc);
     cx.jQuery('#page textarea[name="page[metakeys]"]').val(page.metakeys);
+    cx.jQuery('#page input[name="page[metaimage]"]').val(page.metaimage);
 
     // tab access protection
     cx.jQuery('#page input[name="page[protection_frontend]"]').prop('checked', page.frontend_protection);
@@ -2798,37 +2865,16 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.jQuery('#page input[name="page[start]"]').val(page.start);
     cx.jQuery('#page input[name="page[end]"]').val(page.end);
 
-    cx.jQuery('#page select[name="page[skin]"]').val(page.skin);    
+    cx.jQuery('#page select[name="page[skin]"]').val(page.skin);
     cx.cm.pageSkin = page.skin;
-    
+
     if (page.useSkinForAllChannels == '1') {
         cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
     } else {
         cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
     }
     cx.jQuery('#page select[name="page[skin]"]').trigger('change');
-    
-    cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
-    cx.cm.pageContentTemplate = page.customContent;
-    
-    if (page.useCustomContentForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
-    
-    
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
-    cx.cm.pageApplicationTemplate = page.applicationTemplate;
-    
-    if (page.useCustomApplicationTemplateForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
-        
+
     cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
 
     if (page.module === 'Home') {
@@ -2836,13 +2882,13 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     } else {
         cx.jQuery(".content_template_info").html('content.html');
     }
-    
+
     cx.jQuery('#page input[name="page[caching]"]').prop('checked', page.caching);
 
     cx.jQuery('#page select[name="page[link_target]"]').val(page.linkTarget);
     cx.jQuery('#page input[name="page[slug]"]').val(page.slug);
     cx.jQuery('#page input[name="page[cssNavName]"]').val(page.cssNavName);
-    
+
     cx.jQuery("#page span#page_slug_breadcrumb").html(cx.jQuery("#site-tree").jstree("get_lang") + '/' + page.parentPath);
 
     cx.jQuery('#page input[name="page[sourceMode]"]').prop('checked', page.sourceMode);
@@ -2855,20 +2901,19 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     if (reloadHistory) {
         cx.jQuery('#page_history').empty();
-        cx.cm.loadHistory(page.id);
     }
-    
+
     if (page.editingStatus == 'hasDraftWaiting') {
         cx.jQuery('#page input#refuse').show();
     } else {
         cx.jQuery('#page input#refuse').hide();
     }
-    
-    if (page.type == 'redirect') {
+
+    if (page.type == 'redirect' || page.type == 'symlink') {
         cx.jQuery('#preview').hide();
     }
     cx.jQuery('#page #preview').attr('href', cx.variables.get('basePath', 'contrexx') + page.lang + '/' + page.parentPath + page.slug + '?pagePreview=1');
-    
+
     cx.cm.loadAccess(page.accessData);
 
     var data = {"groups": cx.jQuery.parseJSON(cx.variables.get('availableBlocks', 'contentmanager')).data,"assignedGroups": page.assignedBlocks};
@@ -2877,7 +2922,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     /*                'editingStatus' =>  $page->getEditingStatus(),
                 'display'       =>  $page->getDisplay(),
                 'active'        =>  $page->getActive(),*/
-    
+
     var container = cx.jQuery("div.page_alias").first().parent();
     var field = cx.jQuery("div.page_alias").first();
     if (cx.jQuery("div.page_alias").length > 1) {
@@ -2895,17 +2940,19 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         myField.children("span.noedit").html(alias);
         field.before(myField);
     });
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
+
+    // If alias management is forbidden
+    if (!aliasManagementAllowed) {
+        // never show the "new alias" field
+        jQuery("div.page_alias").show().last().hide();
+
+        // show alias title if there are any aliases
+        jQuery("label[for=page_alias]").parent().toggle(!!page.aliases.length);
+
+        // show if aliases
+        jQuery("#page_alias_container").toggle(!!page.aliases.length);
     }
-    
+
     if (selectTab != undefined) {
         cx.cm.selectTab(selectTab);
     } else {
@@ -2920,7 +2967,7 @@ cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
     if (pageTarget == null) {
         pageTarget = "";
     }
-    cx.jQuery('#page_target_backup').val(pageTarget);
+    cx.jQuery('.page_target_backup').val(pageTarget);
     cx.jQuery('#page_target_protocol > option').removeAttr("selected");
 
     var matchesPageTarget = regExpUriProtocol.exec(pageTarget);
@@ -2935,7 +2982,7 @@ cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
         cx.jQuery('#page_target_protocol > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
     }
     if (pageTarget != "") {
-        cx.jQuery('#page_target_text').text(pageTargetPath).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text').text(pageTargetPath).attr('href', function() {return cx.jQuery(this).text()});
         cx.jQuery('#page_target_wrapper').hide().next().show();
     }
     cx.jQuery('#page_target').val(pageTarget);
@@ -2967,7 +3014,7 @@ cx.cm.pushHistory = function(source) {
     }
     cx.cm.historyAdjusting = true;
     var History = window.History;
-    
+
     // get state
     var activeTabName = cx.jQuery("#cm-tabs li.ui-tabs-selected").children('a').attr('href');
     activeTabName = activeTabName.split("_")[1];
@@ -2986,7 +3033,7 @@ cx.cm.pushHistory = function(source) {
     try {
         oldVersion = /[?&]version=(\d+)/.exec(window.location)[1];
     } catch (e) {}
-    
+
     // prevent state from being written twice
     if (activeTabName == oldTabName && oldPageId == activePageId && oldVersion == activeVersion) {
         cx.cm.historyAdjusting = false;
@@ -3030,11 +3077,11 @@ cx.cm.hashChangeEvent = function(pageId, nodeId, lang, version, activeTab) {
     }
 
     cx.cm.historyAdjusting = true;
-    
+
     if (lang != undefined) {
         cx.jQuery("#site-tree").jstree("set_lang", lang);
     }
-    
+
     // load leaf if necessary
     if (pageId != undefined) {
         if (pageId != cx.jQuery("#pageId").val() || version != cx.jQuery("#historyId").val()) {
@@ -3051,7 +3098,7 @@ cx.cm.hashChangeEvent = function(pageId, nodeId, lang, version, activeTab) {
         cx.cm.hideEditView();
     }
     cx.cm.selectTab(activeTab, false);
-    
+
     cx.cm.historyAdjusting = false;
 }
 
@@ -3101,13 +3148,13 @@ cx.cm.updateHistoryTableHighlighting = function() {
 }
 
 cx.cm.slugify = function(string) {
+    // replace international characters
+    cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
+        string = string.replace(search, replace);
+    });
+    // replace spaces
     string = string.replace(/\s+/g, '-');
-    string = string.replace(/ä/g, 'ae');
-    string = string.replace(/ö/g, 'oe');
-    string = string.replace(/ü/g, 'ue');
-    string = string.replace(/Ä/g, 'Ae');
-    string = string.replace(/Ö/g, 'Oe');
-    string = string.replace(/Ü/g, 'Ue');
+    // replace all non-url characters
     string = string.replace(/[^a-zA-Z0-9-_]/g, '');
     return string;
 }
@@ -3158,4 +3205,15 @@ cx.cm.getPagePath = function(pageId) {
         pageId = cx.cm.getParentPageId(pageId);
     }
     return path;
+}
+
+/**
+ * Sets new meta image from media browser callback
+ * @param data
+ */
+cx.cm.setSelectedMetaimage = function (data) {
+    if (data.type == 'file') {
+        var url = data.data[0].datainfo;
+        document.getElementById('page_metaimage').value = url.filepath;
+    }
 }
