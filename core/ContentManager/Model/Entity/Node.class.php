@@ -464,6 +464,12 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
                 }
 
                 $em->flush($pageCopy);
+                // Copy the log entries of the $page to $pageCopy if the $page's editing status is draft.
+                // The $availableRevisions contains list of log entries of draft page($page).
+                // If $isChildPage is false, it will be parent draft $page and copy the array's($availableRevisions)
+                // offset 1 value to $pageCopy.
+                // If $isChildPage is true, it will be child draft page and copy the array's($availableRevisions)
+                // offset 0 and 1 value to $pageCopy.
                 $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
                 $availableRevisions = $logRepo->getLogEntries($page, true, 2);
                 $pageCopy->updateFromArray($availableRevisions[1]->getData());
