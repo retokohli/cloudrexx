@@ -3060,7 +3060,7 @@ class NewsletterManager extends NewsletterLib
         LEFT JOIN `".DBPREFIX."module_crm_customer_contact_emails` AS `crm`
                 ON `crm`.`email` = `s`.`email`
                AND `s`.`type` = '".self::USER_TYPE_CRM."'
-         LEFT JOIN `contrexx_module_crm_contacts` AS `contact`
+         LEFT JOIN `".DBPREFIX."module_crm_contacts` AS `contact`
                 ON `crm`.`contact_id` = `contact`.`id`
 
          LEFT JOIN `".DBPREFIX."access_users` AS `au`
