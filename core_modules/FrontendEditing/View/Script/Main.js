@@ -205,6 +205,7 @@ cx.fe.contentEditor.initBlockCkEditors = function() {
                         customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
                         toolbar: "FrontendEditingContent",
                         extraPlugins: extraPlugins.join(","),
+                        removePlugins: 'bbcode',
                         startupOutlineBlocks: false,
                         on: {
                             instanceReady: function(event) {
