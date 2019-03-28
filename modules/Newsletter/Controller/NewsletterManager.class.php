@@ -3576,10 +3576,20 @@ class NewsletterManager extends NewsletterLib
             $crmId = '&cId='.$userData['id'];
         }
 
-        $browserViewUrl = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID. $crmId;
+        $params = array(
+            'locale'=> \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+            'code'  => $code,
+            'email' => $userData['email'],
+            'id'    => $NewsletterID . $crmId,
+        );
+        $browserViewUrl = \Cx\Core\Routing\Url::fromApi(
+            'Newsletter',
+            array('View'),
+            $params
+        );
 
         if ($format == 'text') {
-            $NewsletterBody = $_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW']."\n".$browserViewUrl;
+            $NewsletterBody = $_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW']."\n".$browserViewUrl->toString();
             return $NewsletterBody;
         }
 
@@ -3668,7 +3678,7 @@ class NewsletterManager extends NewsletterLib
             '[[subject]]',
         );
         $replace = array(
-            $browserViewUrl,
+            $browserViewUrl->toString(),
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type'], false),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),

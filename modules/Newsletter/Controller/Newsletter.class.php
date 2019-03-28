@@ -87,9 +87,6 @@ class Newsletter extends NewsletterLib
             case 'confirm':
                 $this->_confirm();
                 break;
-            case 'displayInBrowser':
-                $this->displayInBrowser();
-                break;
             case 'subscribe':
             case 'profile':
             default:
@@ -1308,11 +1305,22 @@ class Newsletter extends NewsletterLib
             '[[website]]',
         );
 
+        $params = array(
+            'locale'=> \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+            'code'  => $code,
+            'email' => $email,
+            'id'    => $id,
+        );
+        $browserViewUrl = \Cx\Core\Routing\Url::fromApi(
+            'Newsletter',
+            array('View'),
+            $params
+        );
         $replace = array(
             // meta data
             $email,
             $date,
-            ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id,
+            $browserViewUrl->toString(),
             $subject,
 
             // subscription
