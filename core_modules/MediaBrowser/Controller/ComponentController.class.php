@@ -62,6 +62,12 @@ class ComponentController extends
     protected $mediaBrowserInstances = array();
 
     /**
+     * List of additional JavaScript files, that will be loaded before the
+     * the main MediaBrowser.js.
+     */
+    protected $customJsFiles = array();
+
+    /**
      * {@inheritdoc }
      */
     public function getControllerClasses() {
@@ -195,8 +201,23 @@ class ComponentController extends
         $this->cx->getEvents()->triggerEvent(
             'MediaBrowser.Plugin:initialize'
         );
+
+        // load custom js files (registered through 'MediaBrowser.Plugin:initialize')
+        foreach ($this->customJsFiles as $jsFile) {
+            \JS::registerJS($jsFile);
+        }
+
         // Load the dependant main part after extensions have been connected
         \JS::registerJS('core_modules/MediaBrowser/View/Script/MediaBrowser.js');
     }
 
+    /**
+     * Register custom JavaScript file to be loaded before the main
+     * MediaBrowser.js
+     *
+     * @param   string  $file   Relative path to a JavaScript file
+     */
+    public function registerCustomJs($file) {
+        $this->customJsFiles[] = $file;
+    }
 }
