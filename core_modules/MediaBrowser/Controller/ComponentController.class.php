@@ -65,16 +65,14 @@ class ComponentController extends
      * {@inheritdoc }
      */
     public function getControllerClasses() {
-        if (
-        in_array(
+        if (in_array(
             'Workbench',
             \Cx\Core\ModuleChecker::getInstance(
                 $this->cx->getDb()->getEntityManager(),
                 $this->cx->getDb()->getAdoDb(),
                 $this->cx->getClassLoader()
             )->getCoreModules()
-        )
-        ) {
+        )) {
             return array('Backend');
         }
         return array();
