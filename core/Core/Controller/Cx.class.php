@@ -2235,6 +2235,28 @@ namespace Cx\Core\Core\Controller {
                 $this->template->setVariable('JAVASCRIPT', 'javascript_inserting_here');
                 $endcode = $this->template->get();
 
+// TODO: The following code should be moved to ComponentController of Wysiwyg component.
+//       To make the following code work in the mentioned controller, we have to
+//       refactor the code of this method (finalize()) first. The functionality of \JS
+//       should also be moved into a proper ComponentController
+                if (strpos($endcode, 'data-shadowbox') !== false) {
+                    $jsCode = <<<JSCODE
+cx.ready(function() {
+    jQuery('img[data-shadowbox]').wrap(function() {
+        return jQuery('<a></a>').attr({
+            href: jQuery(this).attr('data-shadowbox'),
+            class: 'shadowbox'
+        });
+    })
+    if (jQuery('a.shadowbox').length) {
+        Shadowbox.setup(jQuery('a.shadowbox'));
+    }
+});
+JSCODE;
+                    \JS::registerCode($jsCode);
+                    \JS::activate('shadowbox');
+                }
+
                 /**
                  * Get all javascripts in the code, replace them with nothing, and register the js file
                  * to the javascript lib. This is because we don't want something twice, and there could be
