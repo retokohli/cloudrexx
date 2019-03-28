@@ -309,10 +309,10 @@ CREATE TABLE `contrexx_core_modules_access_permission` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `allowed_protocols` longtext NOT NULL COMMENT '(DC2Type:array)',
   `allowed_methods` longtext NOT NULL COMMENT '(DC2Type:array)',
-  `requires_login` tinyint(1) DEFAULT NULL,
-  `valid_user_groups` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
-  `valid_access_ids` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
-  `callback` longtext DEFAULT NULL COMMENT '(DC2Type:array)',
+  `requires_login` tinyint(1) NOT NULL,
+  `valid_user_groups` longtext NOT NULL COMMENT '(DC2Type:array)',
+  `valid_access_ids` longtext NOT NULL COMMENT '(DC2Type:array)',
+  `callback` longtext NOT NULL COMMENT '(DC2Type:array)',
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_data_access` (
