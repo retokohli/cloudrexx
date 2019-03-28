@@ -186,30 +186,6 @@ cx.fe.contentEditor.initPageCkEditors = function() {
 };
 
 /**
- * destroy all ckeditor instances without the currently active editor
- * @param CKEDITOR.editor editor
- */
-cx.fe.contentEditor.destroyAllCkEditorsExcept = function(editor) {
-    cx.jQuery.each(cx.fe.publishedBlocks, function(index, object) {
-        if (!CKEDITOR.instances[index]) {
-            return;
-        }
-        if (CKEDITOR.instances[index] != editor) {
-            CKEDITOR.instances[index].destroy();
-            cx.jQuery("#" + index).attr("contenteditable", false).removeClass("fe_outline");
-        }
-    });
-    if (CKEDITOR.instances.fe_content) {
-        CKEDITOR.instances.fe_content.destroy();
-    }
-    if (CKEDITOR.instances.fe_title) {
-        CKEDITOR.instances.fe_title.destroy();
-    }
-    // remove border around the editable contents
-    cx.jQuery("#fe_content,#fe_title").attr("contenteditable", false).removeClass("fe_outline");
-};
-
-/**
  * init ckeditors for all block areas
  */
 cx.fe.contentEditor.initBlockCkEditors = function() {
@@ -268,7 +244,8 @@ cx.fe.startPageEditing = function() {
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
     // show state icon
     cx.jQuery("#fe_state_wrapper").show();
-    // show action buttons
+    // show and hide action buttons
+    cx.fe.actionButtons.hideBlockButtons();
     cx.fe.actionButtons.showPageButtons();
     // remove all block editors
     cx.fe.contentEditor.destroyBlockCkEditors();
@@ -306,7 +283,8 @@ cx.fe.stopPageEditing = function() {
 cx.fe.startBlockEditing = function(editor) {
     // change value of cancel button
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
-    // show buttons for block editing
+    // show and hide action buttons
+    cx.fe.actionButtons.hidePageButtons();
     cx.fe.actionButtons.showBlockButtons();
 
     if (!cx.fe.currentEditor) {
@@ -314,9 +292,6 @@ cx.fe.startBlockEditing = function(editor) {
         editor.setData(cx.fe.publishedBlocks[editor.name].contentRaw);
     }
     cx.fe.currentEditor = editor;
-
-    // remove content page ckeditors
-    cx.fe.contentEditor.destroyAllCkEditorsExcept(editor);
 };
 
 /**
