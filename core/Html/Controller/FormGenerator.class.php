@@ -811,6 +811,15 @@ class FormGenerator {
                 }
                 return $textarea;
                 break;
+            case 'div':
+                $wrapper = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                $text = new \Cx\Core\Html\Model\Entity\TextElement($value);
+                $wrapper->addChild($text);
+                if (isset($options['attributes'])) {
+                    $wrapper->setAttributes($options['attributes']);
+                }
+                return $wrapper;
+                break;
             case 'phone':
                 // input field with type phone
                 $input = new \Cx\Core\Html\Model\Entity\DataElement($title, $value);
