@@ -2789,7 +2789,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             foreach (static::$errorFields as $field) {
                 $errorClassPlaceholders[
                     'SHOP_ACCOUNT_' . strtoupper($field) . '_CLASS'
-                ] = 'validationError ';
+                ] = 'error-validation ';
             }
             self::$objTemplate->setVariable($errorClassPlaceholders);
         }
