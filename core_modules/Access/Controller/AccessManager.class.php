@@ -931,8 +931,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $areaHidden = 'display:none;';
         }
 
-        $this->_objTpl->setVariable(array(
+        $this->_objTpl->setGlobalVariable(array(
             'ACCESS_AREA_ID'            => $arrAreas[$areaId]['access_id'],
+        ));
+        $this->_objTpl->setVariable(array(
             'ACCESS_AREA_NAME'          => isset($_CORELANG[$arrAreas[$areaId]['name']]) ? htmlentities($_CORELANG[$arrAreas[$areaId]['name']], ENT_QUOTES, CONTREXX_CHARSET) : $arrAreas[$areaId]['name'],
             'ACCESS_AREA_STYLE_NR'      => $arrAreas[$areaId]['type'] == 'group' ? 3 : ($arrAreas[$areaId]['type'] == 'navigation' ? 1 : 2),
             'ACCESS_AREA_TEXT_INDENT'   => $arrAreas[$areaId]['type'] == 'group' ? 0 : ($arrAreas[$areaId]['type'] == 'navigation' ? 20 : 40),
@@ -942,12 +944,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if ($arrAreas[$areaId]['scope'] == $scope || $arrAreas[$areaId]['scope'] == 'global') {
             $this->_objTpl->setVariable(array(
-                'ACCESS_AREA_ID'            => $arrAreas[$areaId]['access_id'],
-            'ACCESS_AREA_ALLOWED'       => $arrAreas[$areaId]['allowed'] ? 'checked="checked"' : ''
-        ));
+                'ACCESS_AREA_ALLOWED'       => $arrAreas[$areaId]['allowed'] ? 'checked="checked"' : ''
+            ));
             $this->_objTpl->parse('access_permission_in_scope');
 
-            $this->_objTpl->setVariable('ACCESS_AREA_ID', $arrAreas[$areaId]['access_id']);
             $this->_objTpl->parse('access_permission_access_id');
         } else {
             $this->_objTpl->hideBlock('access_permission_in_scope');
