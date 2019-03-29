@@ -2784,6 +2784,15 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),
             'SHOP_ACCOUNT_BIRTHDAY' => $birthdayDaySelect . $birthdayMonthSelect . $birthdayYearSelect,
         ));
+        if (count(static::$errorFields)) {
+            $errorClassPlaceholders = array();
+            foreach (static::$errorFields as $field) {
+                $errorClassPlaceholders[
+                    'SHOP_ACCOUNT_' . strtoupper($field) . '_CLASS'
+                ] = 'validationError ';
+            }
+            self::$objTemplate->setVariable($errorClassPlaceholders);
+        }
         $register = \Cx\Core\Setting\Controller\Setting::getValue('register','Shop');
 
 /**
