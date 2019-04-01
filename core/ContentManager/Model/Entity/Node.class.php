@@ -430,19 +430,23 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
      *
      * This does not persist anything.
      * @todo This is untested!
-     * @param boolean $recursive (optional) Wheter copy all children to the new node or not, default false
-     * @param Node $newParent (optional) New parent node for the copy, default is parent of this
-     * @param boolean $persist (optional) Wheter to persist new entities or not, default true, if set to false, be sure to persist everything
+     * @param boolean $recursive (optional) Whether copy all children to the new node or not, default false
+     * @param Node    $newParent (optional) New parent node for the copy, default is parent of this
+     * @param boolean $persist   (optional) Whether to persist new entities or not, default true, if set to false, be sure to persist everything
+     * @param integer $nodePosition         Node position
      * @return \Cx\Core\ContentManager\Model\Entity\Node Copy of this node
      */
-    public function copy($recursive = false, Node $newParent = null, $persist = true) {
-        $em = \Env::get('cx')->getDb()->getEntityManager();
+    public function copy($recursive = false, Node $newParent = null, $persist = true, &$nodePosition = 0)
+    {
+        global $_CORELANG;
 
-        $isChildPage = true;
+        $em           = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $isParentPage = false;
         if (!$newParent) {
-            $isChildPage = false;
-            $newParent   = $this->getParent();
+            $isParentPage = true;
+            $newParent    = $this->getParent();
         }
+
         $copy = new self();
         $copy->setParent($newParent);
         if ($persist) {
@@ -451,36 +455,47 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 
         foreach ($this->getPages(true) as $page) {
             $pageCopy = $page->copyToNode($copy);
-            if ($persist) {
-                $em->persist($pageCopy);
-                // If the $page is a draft page then we need to update the draft content in $pageCopy
-                if (
-                    !in_array(
-                        $page->getEditingStatus(),
-                        array('hasDraft', 'hasDraftWaiting')
-                    )
-                ) {
-                    continue;
-                }
-
-                $em->flush($pageCopy);
-                // Copy the log entries of the $page to $pageCopy if the $page's editing status is draft.
-                // The $availableRevisions contains list of log entries of draft page($page).
-                // If $isChildPage is false, it will be parent draft $page and copy the array's($availableRevisions)
-                // offset 1 value to $pageCopy.
-                // If $isChildPage is true, it will be child draft page and copy the array's($availableRevisions)
-                // offset 0 and 1 value to $pageCopy.
-                $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
-                $availableRevisions = $logRepo->getLogEntries($page, true, 2);
-                $pageCopy->updateFromArray($availableRevisions[1]->getData());
-
-                if (!$isChildPage) {
-                    continue;
-                }
-
-                $em->flush($pageCopy);
-                $pageCopy->updateFromArray($availableRevisions[0]->getData());
+            if (!$persist) {
+                continue;
             }
+
+            $em->persist($pageCopy);
+            // Copy the draft log of $page to $pageCopy only if the $page editing status is 'hasDraft' or 'hasDraftWaiting'
+            if (\FWValidator::isEmpty($page->getEditingStatus())) {
+                continue;
+            }
+
+            $cachedPageTitle = $pageCopy->getTitle();
+            // Update the $pageCopy title with the suffix '(Copy)' if the $page is parent otherwise not
+            if ($isParentPage) {
+                $title = $page->getTitle() . ' (' . $_CORELANG['TXT_CORE_CM_COPY_OF_PAGE'] . ')';
+                $i = 1;
+                while ($page->titleExists($copy->getParent(), $page->getLang(), $title)) {
+                    $i++;
+                    if ($page->getLang() == \FWLanguage::getDefaultLangId()) {
+                        $nodePosition++;
+                    }
+
+                    $title = $page->getTitle() . ' (' . sprintf($_CORELANG['TXT_CORE_CM_COPY_N_OF_PAGE'], $i) . ')';
+                }
+                $pageCopy->setTitle($title);
+            }
+
+            // Call the flush() method to make the create log for the $pageCopy
+            $em->flush();
+            // Get the last two log entries of $page
+            $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
+            $logEntriesOfPage = $logRepo->getLogEntries($page, true, 2);
+            // The value of offset '1' in the array $logEntriesOfPage contains the array of draft content of $page,
+            // copy this array of draft content into $pageCopy
+            $pageCopy->setTitle($cachedPageTitle);
+            $pageCopy->updateFromArray($logEntriesOfPage[1]->getData());
+            $pageCopy->setEditingStatus('hasDraft');
+            // Call the flush() method to make the update log for the $pageCopy
+            $em->flush();
+            // Now revert the $pageCopy to its create log version.
+            $logEntriesOfCopyPage = $logRepo->getLogEntries($pageCopy, true, 2);
+            $logRepo->revert($pageCopy, $logEntriesOfCopyPage[1]->getVersion());
         }
 
         if (!$recursive) {

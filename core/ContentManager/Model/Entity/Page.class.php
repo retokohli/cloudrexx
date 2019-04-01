@@ -2166,4 +2166,26 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
     public function getWidgetContentAttributeName($widgetName) {
         return 'content';
     }
+
+    /**
+     * Check whether the page $title already exists under the pages in $parentNode
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $parentNode Parent node object
+     * @param integer                                   $lang       Language ID
+     * @param string                                    $title      Page title
+     * @return boolean Return true if the page title exists, otherwise false
+     */
+    public function titleExists($parentNode, $lang, $title)
+    {
+        foreach ($parentNode->getChildren() as $childNode) {
+            if (
+                $childNode->getPage($lang) &&
+                $childNode->getPage($lang)->getTitle() == $title
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
