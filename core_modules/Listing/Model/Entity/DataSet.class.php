@@ -197,7 +197,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 $field = $em->getClassMetadata(get_class($object))->getFieldName($column);
                 $value = $em->getClassMetadata(get_class($object))->getFieldValue($object, $field);
                 if ($value instanceof \DateTime) {
-                    $value = $value->format('d.M.Y H:i:s');
+                    $value = $value->format(ASCMS_DATE_FORMAT_DATETIME);
                 } elseif (is_array($value)) {
                     $value = serialize($value);
                 }
