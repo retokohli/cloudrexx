@@ -280,12 +280,12 @@ class SystemComponentController extends Controller {
         $method = (php_sapi_name() === 'cli') ? array('cli') : null;
 
         $objPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(
-            null,
+            array(),
             $method,
             false,
-            null,
-            null,
-            null
+            array(),
+            array(),
+            array()
         );
         if (
             isset($commands[$command]) &&
