@@ -196,7 +196,7 @@ namespace Cx\Core\Core\Controller {
          * This will be null for all modes except command mode.
          * @var array
          */
-        protected $commands = null;
+        protected $commands = array();
 
         /**
          * Current language id
@@ -1592,7 +1592,7 @@ namespace Cx\Core\Core\Controller {
                     // find component (defaults to help)
                     $command = current($params);
                     $params = array_slice($params, 1);
-                    $this->getCommands($params);
+                    $this->getCommands($params, true);
 
                     if (!isset($this->commands[$command])) {
                         echo 'Command \'' . $command . '\' does not exist';
@@ -2493,7 +2493,10 @@ JSCODE;
             return $this->ch;
         }
 
-        public function getCommands($params = array()) {
+        public function getCommands($params = array(), $forceRegen = false) {
+            if (count($this->commands) && !$forceRegen) {
+                return $this->commands;
+            }
             // build command index
             $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
             $this->commands = array();
