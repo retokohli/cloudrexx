@@ -1604,10 +1604,7 @@ namespace Cx\Core\Core\Controller {
                     }
 
                     $objCommand = $this->commands[$command];
-                    //Check the access permission for the command.
-                    if(!$objCommand->hasAccessToExecuteCommand($command, $params)) {
-                        throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
-                    }
+
                     // execute command
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
