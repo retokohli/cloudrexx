@@ -1589,11 +1589,11 @@ namespace Cx\Core\Core\Controller {
                     parse_str($input, $dataArguments);
                     $dataArguments = contrexx_input2raw($dataArguments);
 
-                    $this->getCommands();
-
                     // find component (defaults to help)
                     $command = current($params);
                     $params = array_slice($params, 1);
+                    $this->getCommands($params);
+
                     if (!isset($this->commands[$command])) {
                         echo 'Command \'' . $command . '\' does not exist';
                         $command = 'help';
@@ -2493,7 +2493,7 @@ JSCODE;
             return $this->ch;
         }
 
-        public function getCommands() {
+        public function getCommands($params = array()) {
                 // build command index
                 $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
                 $this->commands = array();
@@ -2503,7 +2503,7 @@ JSCODE;
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
                         }
-                        if (!$component->hasAccessToExecuteCommand($command, array())) {
+                        if (!$component->hasAccessToExecuteCommand($command, $params)) {
                             continue;
                         }
                         $this->commands[$command] = $component;
