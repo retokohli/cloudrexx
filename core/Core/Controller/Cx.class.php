@@ -196,7 +196,7 @@ namespace Cx\Core\Core\Controller {
          * This will be null for all modes except command mode.
          * @var array
          */
-        protected $commands = null;
+        protected $commands = array();
 
         /**
          * Current language id
@@ -1589,25 +1589,24 @@ namespace Cx\Core\Core\Controller {
                     parse_str($input, $dataArguments);
                     $dataArguments = contrexx_input2raw($dataArguments);
 
-                    $this->getCommands();
-
                     // find component (defaults to help)
                     $command = current($params);
                     $params = array_slice($params, 1);
+                    $this->getCommands($params, true);
+
                     if (!isset($this->commands[$command])) {
                         echo 'Command \'' . $command . '\' does not exist';
                         $command = 'help';
                     }
 
                     if (!isset($this->commands[$command])) {
-                        throw new \Exception('Command \'' . $command . '\' does not exist');
+                        throw new \Exception(
+                            'Command \'' . $command . '\' does not exist or is not accessible'
+                        );
                     }
 
                     $objCommand = $this->commands[$command];
-                    //Check the access permission for the command.
-                    if(!$objCommand->hasAccessToExecuteCommand($command, $params)) {
-                        throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
-                    }
+
                     // execute command
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
@@ -2493,22 +2492,25 @@ JSCODE;
             return $this->ch;
         }
 
-        public function getCommands() {
-                // build command index
-                $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-                $this->commands = array();
-                foreach ($componentRepo->findAll() as $component) {
-                    foreach ($component->getCommandsForCommandMode() as $cmdKey => $cmdValue) {
-                        $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
-                        if (isset($this->commands[$command])) {
-                            throw new \Exception('Command \'' . $command . '\' is already in index');
-                        }
-                        if (!$component->hasAccessToExecuteCommand($command, array())) {
-                            continue;
-                        }
-                        $this->commands[$command] = $component;
+        public function getCommands($params = array(), $forceRegen = false) {
+            if (count($this->commands) && !$forceRegen) {
+                return $this->commands;
+            }
+            // build command index
+            $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $this->commands = array();
+            foreach ($componentRepo->findAll() as $component) {
+                foreach ($component->getCommandsForCommandMode() as $cmdKey => $cmdValue) {
+                    $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
+                    if (isset($this->commands[$command])) {
+                        throw new \Exception('Command \'' . $command . '\' is already in index');
                     }
+                    if (!$component->hasAccessToExecuteCommand($command, $params)) {
+                        continue;
+                    }
+                    $this->commands[$command] = $component;
                 }
+            }
             return $this->commands;
         }
 
