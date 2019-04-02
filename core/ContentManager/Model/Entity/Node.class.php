@@ -434,17 +434,22 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
      * @param Node    $newParent (optional) New parent node for the copy, default is parent of this
      * @param boolean $persist   (optional) Whether to persist new entities or not, default true, if set to false, be sure to persist everything
      * @param integer $nodePosition         Node position
+     * @param boolean $addCopySuffix        Add the suffix '(Copy)' to the page title if true otherwise not
      * @return \Cx\Core\ContentManager\Model\Entity\Node Copy of this node
      */
-    public function copy($recursive = false, Node $newParent = null, $persist = true, &$nodePosition = 0)
-    {
+    public function copy(
+        $recursive = false,
+        Node $newParent = null,
+        $persist = true,
+        &$nodePosition = 0,
+        $addCopySuffix = false
+    ) {
         global $_CORELANG;
 
-        $em           = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
-        $isParentPage = false;
+        $em = $this->cx->getDb()->getEntityManager();
         if (!$newParent) {
-            $isParentPage = true;
-            $newParent    = $this->getParent();
+            $addCopySuffix = true;
+            $newParent     = $this->getParent();
         }
 
         $copy = new self();
@@ -460,14 +465,9 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             }
 
             $em->persist($pageCopy);
-            // Copy the draft log of $page to $pageCopy only if the $page editing status is 'hasDraft' or 'hasDraftWaiting'
-            if (\FWValidator::isEmpty($page->getEditingStatus())) {
-                continue;
-            }
-
             $cachedPageTitle = $pageCopy->getTitle();
             // Update the $pageCopy title with the suffix '(Copy)' if the $page is parent otherwise not
-            if ($isParentPage) {
+            if ($addCopySuffix) {
                 $title = $page->getTitle() . ' (' . $_CORELANG['TXT_CORE_CM_COPY_OF_PAGE'] . ')';
                 $i = 1;
                 while ($page->titleExists($copy->getParent(), $page->getLang(), $title)) {
@@ -481,6 +481,13 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
                 $pageCopy->setTitle($title);
             }
 
+            // Copy the draft log of $page to $pageCopy only if the $page editing status is 'hasDraft' or 'hasDraftWaiting'
+            if (!$page->isDraft()) {
+                continue;
+            }
+
+            // Set editing status as empty to display the proper create log entry in the add/edit page 'history' tab
+            $pageCopy->setEditingStatus('');
             // Call the flush() method to make the create log for the $pageCopy
             $em->flush();
             // Get the last two log entries of $page
@@ -496,6 +503,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             // Now revert the $pageCopy to its create log version.
             $logEntriesOfCopyPage = $logRepo->getLogEntries($pageCopy, true, 2);
             $logRepo->revert($pageCopy, $logEntriesOfCopyPage[1]->getVersion());
+            $pageCopy->setEditingStatus('hasDraft');
         }
 
         if (!$recursive) {

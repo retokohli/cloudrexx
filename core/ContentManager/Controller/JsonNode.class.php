@@ -301,28 +301,8 @@ class JsonNode implements JsonAdapter {
         $this->em->getConnection()->beginTransaction();
         try {
             // copy the node recursively and persist changes
-            $newNode = $node->copy(true, null, true, $position);
+            $newNode = $node->copy(true, null, true, $position, true);
             $this->em->flush();
-
-            // Change the page title only if the page editing status is empty
-            foreach ($newNode->getPages() as $page) {
-                if (!\FWValidator::isEmpty($page->getEditingStatus())) {
-                    continue;
-                }
-
-                $title = $page->getTitle() . ' (' . $_CORELANG['TXT_CORE_CM_COPY_OF_PAGE'] . ')';
-                $i = 1;
-                while ($page->titleExists($node->getParent(), $page->getLang(), $title)) {
-                    $i++;
-                    if ($page->getLang() == \FWLanguage::getDefaultLangId()) {
-                        $position++;
-                    }
-                    $title = $page->getTitle() . ' (' . sprintf($_CORELANG['TXT_CORE_CM_COPY_N_OF_PAGE'], $i) . ')';
-                }
-                $page->setTitle($title);
-                $this->em->persist($page);
-            }
-
             // move the node to correct position
             $this->nodeRepo->moveUp($newNode, true);
             $this->nodeRepo->moveDown($newNode, $position, true);
