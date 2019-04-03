@@ -448,8 +448,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 
         $em = $this->cx->getDb()->getEntityManager();
         if (!$newParent) {
-            $addCopySuffix = true;
-            $newParent     = $this->getParent();
+            $newParent = $this->getParent();
         }
 
         $copy = new self();
@@ -459,14 +458,14 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
         }
 
         foreach ($this->getPages(true) as $page) {
-            $pageCopy = $page->copyToNode($copy);
+            $pageCopy = $page->copyToNode($copy, true, true, true, true, true, false);
             if (!$persist) {
                 continue;
             }
 
             $em->persist($pageCopy);
             $cachedPageTitle = $pageCopy->getTitle();
-            // Update the $pageCopy title with the suffix '(Copy)' if the $page is parent otherwise not
+            // Update the $pageCopy title with the suffix '(Copy)' if the $addCopySuffix is true otherwise not
             if ($addCopySuffix) {
                 $title = $page->getTitle() . ' (' . $_CORELANG['TXT_CORE_CM_COPY_OF_PAGE'] . ')';
                 $i = 1;
@@ -486,8 +485,6 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
                 continue;
             }
 
-            // Set editing status as empty to display the proper create log entry in the add/edit page 'history' tab
-            $pageCopy->setEditingStatus('');
             // Call the flush() method to make the create log for the $pageCopy
             $em->flush();
             // Get the last two log entries of $page

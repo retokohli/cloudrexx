@@ -1452,20 +1452,31 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
     /**
      * DO NOT CALL THIS METHOD! USE copyToLang() OR copyToNode() INSTEAD!
      * Copies data from another Page.
-     * @param boolean $includeContent Whether to copy content. Defaults to true.
-     * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
-     * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
-     * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
-     * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
-     * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
-     * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
+     *
+     * @param boolean $includeContent                   Whether to copy content. Defaults to true
+     * @param boolean $includeModuleAndCmd              Whether to copy module and cmd. Defaults to true
+     * @param boolean $includeName                      Whether to copy title, content title and slug. Defaults to true
+     * @param boolean $includeMetaData                  Whether to copy meta data. Defaults to true
+     * @param boolean $includeProtection                Whether to copy protection. Defaults to true
+     * @param boolean $includeEditingStatus             Copy the editing status if true otherwise not
+     * @param boolean $followRedirects                  Whether to return a redirection page or the page its pointing at.
+     *                                                  Defaults to false, which returns the redirection page
+     * @param boolean $followFallbacks                  Whether to return a fallback page or the page its pointing at.
+     *                                                  Defaults to false, witch returns the fallback page
      * @param \Cx\Core\ContentManager\Model\Entity\Page Page to use as target
      * @return \Cx\Core\ContentManager\Model\Entity\Page The copy of $this or null on error
      */
-    public function copy($includeContent=true, $includeModuleAndCmd=true,
-            $includeName = true, $includeMetaData = true,
-            $includeProtection = true, $followRedirects = false,
-            $followFallbacks = false, $page = null) {
+    public function copy(
+        $includeContent=true,
+        $includeModuleAndCmd=true,
+        $includeName = true,
+        $includeMetaData = true,
+        $includeProtection = true,
+        $includeEditingStatus = true,
+        $followRedirects = false,
+        $followFallbacks = false,
+        $page = null
+    ) {
 
         $targetPage = null;
         if ($followRedirects && $this->getType() == self::TYPE_REDIRECT) {
@@ -1477,13 +1488,14 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
         }
         if ($targetPage) {
             return $targetPage->copy(
-                    $includeContent,
-                    $includeModuleAndCmd,
-                    $includeName,
-                    $includeMetaData,
-                    $includeProtection,
-                    $followRedirects,
-                    $followFallbacks
+                $includeContent,
+                $includeModuleAndCmd,
+                $includeName,
+                $includeMetaData,
+                $includeProtection,
+                $includeEditingStatus,
+                $followRedirects,
+                $followFallbacks
             );
         }
 
@@ -1519,6 +1531,10 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             $page->setMetaimage($this->getMetaimage());
         }
 
+        if ($includeEditingStatus) {
+            $page->setEditingStatus($this->getEditingStatus());
+        }
+
         $page->setNode($this->getNode());
         $page->setActive($this->getActive());
         $page->setDisplay($this->getDisplay());
@@ -1531,7 +1547,6 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
         $page->setSkin($this->getSkin());
         $page->setStart($this->getStart());
         $page->setEnd($this->getEnd());
-        $page->setEditingStatus($this->getEditingStatus());
         $page->setTarget($this->getTarget());
         $page->setLinkTarget($this->getLinkTarget());
         $page->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
@@ -1578,30 +1593,42 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
      * Creates a copy of this page which belongs to another node.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Node $destinationNode The other node
-     * @param boolean $includeContent Whether to copy content. Defaults to true.
-     * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
-     * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
-     * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
-     * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
-     * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
-     * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
+     * @param boolean $includeContent                   Whether to copy content. Defaults to true
+     * @param boolean $includeModuleAndCmd              Whether to copy module and cmd. Defaults to true
+     * @param boolean $includeName                      Whether to copy title, content title and slug. Defaults to true
+     * @param boolean $includeMetaData                  Whether to copy meta data. Defaults to true
+     * @param boolean $includeProtection                Whether to copy protection. Defaults to true
+     * @param boolean $includeEditingStatus             Copy the editing status if true otherwise not
+     * @param boolean $followRedirects                  Whether to return a redirection page or the page its pointing at.
+     *                                                  Defaults to false, which returns the redirection page
+     * @param boolean $followFallbacks                  Whether to return a fallback page or the page its pointing at.
+     *                                                  Defaults to false, witch returns the fallback page
      * @param \Cx\Core\ContentManager\Model\Entity\Page Page to use as target
      * @return \Cx\Core\ContentManager\Model\Entity\Page The copy of $this or null on error
      */
-    public function copyToNode($destinationNode, $includeContent=true,
-            $includeModuleAndCmd=true, $includeName = true,
-            $includeMetaData = true, $includeProtection = true,
-            $followRedirects = false, $followFallbacks = false, $page = null) {
+    public function copyToNode(
+        $destinationNode,
+        $includeContent=true,
+        $includeModuleAndCmd=true,
+        $includeName = true,
+        $includeMetaData = true,
+        $includeProtection = true,
+        $includeEditingStatus = true,
+        $followRedirects = false,
+        $followFallbacks = false,
+        $page = null
+    ) {
 
         $copy = $this->copy(
-                $includeContent,
-                $includeModuleAndCmd,
-                $includeName,
-                $includeMetaData,
-                $includeProtection,
-                $followRedirects,
-                $followFallbacks,
-                $page
+            $includeContent,
+            $includeModuleAndCmd,
+            $includeName,
+            $includeMetaData,
+            $includeProtection,
+            $includeEditingStatus,
+            $followRedirects,
+            $followFallbacks,
+            $page
         );
         $copy->setNode($destinationNode);
         $destinationNode->addPage($copy);
@@ -1628,14 +1655,15 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             $followRedirects = false, $followFallbacks = false, $page = null) {
 
         $copy = $this->copy(
-                $includeContent,
-                $includeModuleAndCmd,
-                $includeName,
-                $includeMetaData,
-                $includeProtection,
-                $followRedirects,
-                $followFallbacks,
-                $page
+            $includeContent,
+            $includeModuleAndCmd,
+            $includeName,
+            $includeMetaData,
+            $includeProtection,
+            true,
+            $followRedirects,
+            $followFallbacks,
+            $page
         );
         $fallback_language = \FWLanguage::getFallbackLanguageIdById($destinationLang);
         if ($fallback_language && !$includeContent) {
