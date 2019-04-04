@@ -1113,12 +1113,12 @@ class Page extends \Cx\Core\ContentManager\Model\Entity\Page implements \Doctrin
     /**
      * {@inheritDoc}
      */
-    public function copyToLang($destinationLang, $includeContent = true, $includeModuleAndCmd = true, $includeName = true, $includeMetaData = true, $includeProtection = true, $followRedirects = false, $followFallbacks = false, $page = NULL)
+    public function copyToLang($destinationLang, $includeContent = true, $includeModuleAndCmd = true, $includeName = true, $includeMetaData = true, $includeProtection = true, $includeEditingStatus = true, $followRedirects = false, $followFallbacks = false, $page = NULL)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'copyToLang', array($destinationLang, $includeContent, $includeModuleAndCmd, $includeName, $includeMetaData, $includeProtection, $followRedirects, $followFallbacks, $page));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'copyToLang', array($destinationLang, $includeContent, $includeModuleAndCmd, $includeName, $includeMetaData, $includeProtection, $includeEditingStatus, $followRedirects, $followFallbacks, $page));
 
-        return parent::copyToLang($destinationLang, $includeContent, $includeModuleAndCmd, $includeName, $includeMetaData, $includeProtection, $followRedirects, $followFallbacks, $page);
+        return parent::copyToLang($destinationLang, $includeContent, $includeModuleAndCmd, $includeName, $includeMetaData, $includeProtection, $includeEditingStatus, $followRedirects, $followFallbacks, $page);
     }
 
     /**
