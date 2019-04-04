@@ -1467,8 +1467,8 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
      * @return \Cx\Core\ContentManager\Model\Entity\Page The copy of $this or null on error
      */
     public function copy(
-        $includeContent=true,
-        $includeModuleAndCmd=true,
+        $includeContent = true,
+        $includeModuleAndCmd = true,
         $includeName = true,
         $includeMetaData = true,
         $includeProtection = true,
@@ -1608,8 +1608,8 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
      */
     public function copyToNode(
         $destinationNode,
-        $includeContent=true,
-        $includeModuleAndCmd=true,
+        $includeContent = true,
+        $includeModuleAndCmd = true,
         $includeName = true,
         $includeMetaData = true,
         $includeProtection = true,
