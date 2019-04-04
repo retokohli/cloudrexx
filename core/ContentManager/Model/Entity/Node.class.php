@@ -414,6 +414,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
                 true,   // includeName
                 true,   // includeMetaData
                 true,   // includeProtection
+                false,  // includeEditingStatus
                 false,  // followRedirects
                 true    // followFallbacks
         );
@@ -487,20 +488,21 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 
             // Call the flush() method to make the create log for the $pageCopy
             $em->flush();
-            // Get the last two log entries of $page
+            // Get the draft log of $page. The draft log is the second latest log entry.
             $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
-            $logEntriesOfPage = $logRepo->getLogEntries($page, true, 2);
+            $logEntriesOfPage = $logRepo->getLogEntries($page, false, 1, 1);
             // The value of offset '1' in the array $logEntriesOfPage contains the array of draft content of $page,
             // copy this array of draft content into $pageCopy
             $pageCopy->setTitle($cachedPageTitle);
-            $pageCopy->updateFromArray($logEntriesOfPage[1]->getData());
+            $pageCopy->updateFromArray($logEntriesOfPage[0]->getData());
             $pageCopy->setEditingStatus('hasDraft');
             // Call the flush() method to make the update log for the $pageCopy
             $em->flush();
             // Now revert the $pageCopy to its create log version.
-            $logEntriesOfCopyPage = $logRepo->getLogEntries($pageCopy, true, 2);
-            $logRepo->revert($pageCopy, $logEntriesOfCopyPage[1]->getVersion());
-            $pageCopy->setEditingStatus('hasDraft');
+            $cachedPageEditingStatus = $pageCopy->getEditingStatus();
+            $logEntriesOfCopyPage    = $logRepo->getLogEntries($pageCopy, false, 1, 1);
+            $logRepo->revert($pageCopy, $logEntriesOfCopyPage[0]->getVersion());
+            $pageCopy->setEditingStatus($cachedPageEditingStatus);
         }
 
         if (!$recursive) {

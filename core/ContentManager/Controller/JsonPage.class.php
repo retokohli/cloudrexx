@@ -235,7 +235,6 @@ class JsonPage implements JsonAdapter {
                 $node = $this->nodeRepo->find($nodeId);
                 $page = $node->translatePage(true, \FWLanguage::getLanguageIdByCode($lang));
                 $page->setNodeIdShadowed($node->getId());
-                $page->setEditingStatus('');
 
                 $newPage = true;
                 $reload  = true;

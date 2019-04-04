@@ -1637,22 +1637,34 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
 
     /**
      * Creates a copy of this page with a different language.
+     *
      * @todo Define what to do if destination lang is not the fallback of $this->getLang() (always follow fallbacks or do not copy content)
-     * @param int $destinationLang Language ID to set
-     * @param boolean $includeContent Whether to copy content. Defaults to true.
-     * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
-     * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
-     * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
-     * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
-     * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
-     * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
+     * @param integer $destinationLang                  Language ID to set
+     * @param boolean $includeContent                   Whether to copy content. Defaults to true.
+     * @param boolean $includeModuleAndCmd              Whether to copy module and cmd. Defaults to true.
+     * @param boolean $includeName                      Whether to copy title, content title and slug. Defaults to true.
+     * @param boolean $includeMetaData                  Whether to copy meta data. Defaults to true.
+     * @param boolean $includeProtection                Whether to copy protection. Defaults to true.
+     * @param boolean $includeEditingStatus             Copy the editing status if true otherwise false
+     * @param boolean $followRedirects                  Whether to return a redirection page or the page its pointing at.
+     *                                                  Defaults to false, which returns the redirection page
+     * @param boolean $followFallbacks                  Whether to return a fallback page or the page its pointing at.
+     *                                                  Defaults to false, witch returns the fallback page
      * @param \Cx\Core\ContentManager\Model\Entity\Page Page to use as target
      * @return \Cx\Core\ContentManager\Model\Entity\Page The copy of $this or null on error
      */
-    public function copyToLang($destinationLang, $includeContent=true,
-            $includeModuleAndCmd=true, $includeName = true,
-            $includeMetaData = true, $includeProtection = true,
-            $followRedirects = false, $followFallbacks = false, $page = null) {
+    public function copyToLang(
+        $destinationLang,
+        $includeContent = true,
+        $includeModuleAndCmd = true,
+        $includeName = true,
+        $includeMetaData = true,
+        $includeProtection = true,
+        $includeEditingStatus = true,
+        $followRedirects = false,
+        $followFallbacks = false,
+        $page = null
+    ) {
 
         $copy = $this->copy(
             $includeContent,
@@ -1660,7 +1672,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             $includeName,
             $includeMetaData,
             $includeProtection,
-            true,
+            $includeEditingStatus,
             $followRedirects,
             $followFallbacks,
             $page
@@ -1936,11 +1948,11 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
                 true,   // includeName
                 true,   // includeMetaData
                 true,   // includeProtection
+                false,  // includeEditingStatus
                 false,  // followRedirects
                 true    // followFallbacks
             );
             $page->setDisplay(false);
-            $page->setEditingStatus('');
             \Env::get('em')->persist($page);
             // recursion
             return $pages[$sourceLang]->setupPath($targetLang);
