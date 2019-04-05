@@ -465,7 +465,6 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             }
 
             $em->persist($pageCopy);
-            $cachedPageTitle = $pageCopy->getTitle();
             // Update the $pageCopy title with the suffix '(Copy)' if the $addCopySuffix is true otherwise not
             if ($addCopySuffix) {
                 $title = $page->getTitle() . ' (' . $_CORELANG['TXT_CORE_CM_COPY_OF_PAGE'] . ')';
