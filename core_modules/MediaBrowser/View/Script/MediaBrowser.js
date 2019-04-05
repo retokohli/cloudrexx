@@ -1077,6 +1077,23 @@ cx.ready(function () {
                     if (!aIsDir && bIsDir) return 1;
 
                     // then list files
+                    //
+                    // but if we're sorting by size,
+                    // we have to modify the behaviour
+                    // a bit
+                    if (attribute == 'cleansize') {
+                        // cast sort value to integers
+                        aSortFlag = parseInt(aSortFlag, 10);
+                        bSortFlag = parseInt(bSortFlag, 10);
+
+                        // list directories alphabetical
+                        if (aIsDir) {
+                            aSortFlag = (a['datainfo']['name']);
+                        }
+                        if (bIsDir) {
+                            bSortFlag = (b['datainfo']['name']);
+                        }
+                    }
                     if (reverse) {
                         if (aSortFlag < bSortFlag) return -1;
                         if (aSortFlag > bSortFlag) return 1;
