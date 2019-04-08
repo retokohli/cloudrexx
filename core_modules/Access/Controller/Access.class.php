@@ -740,20 +740,35 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             '[HOST]',
             '[USER_ID]',
             '[PROFILE_NAME]',
-            '[PROFILE_DATA]',
             '[YEAR]',
 
             // now follow the new, regular placeholders
             'HOST',
             'USER_ID',
             'PROFILE_NAME',
-            'PROFILE_DATA',
             'YEAR',
             'PROFILE_ATTRIBUTE_LIST',
         );
 
-        $profileDataText = '';
-        $profileDataHtml = array();
+        // check if we shall parse the profile data into the legacy placeholder
+        $parseProfilePlaceholder = false;
+        if ((
+                $isTextMail &&
+                preg_match('/\[PROFILE_DATA\]/', $objUserMail->getBodyText())
+            ) || (
+                $isHtmlMail &&
+                preg_match('/\[PROFILE_DATA\]/', $objUserMail->getBodyHtml())
+            )
+        ) {
+            $parseProfilePlaceholder = true;
+            $profileDataText = '';
+            $profileDataHtml = array();
+
+            // legacy placeholder notation
+            $searchTerms[] = '[PROFILE_DATA]';
+            // new, regular placeholder notation
+            $searchTerms[] = 'PROFILE_DATA';
+        }
 
         $attributeDataText = array();
         $attributeDataHtml = array();
@@ -848,29 +863,30 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $attributeDataText[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
             $attributeDataHtml[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
 
-            $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
+            // data for placeholder PROFILE_DATA
+            if ($parseProfilePlaceholder) {
+                $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
 
-            $attributeInfo = array(
-                'label' => $label,
-                'new'   => $newValue,
-                'old'   => $oldValue,
-            );
-            $profileDataHtml[] = $attributeInfo;
+                $attributeInfo = array(
+                    'label' => $label,
+                    'new'   => $newValue,
+                    'old'   => $oldValue,
+                );
+                $profileDataHtml[] = $attributeInfo;
+            }
         }
 
         $replaceTextTerms = array(
             \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
             $objUser->getId(),
             \FWUser::getParsedUserTitle($objUser),
-            $profileDataText,
             date('Y'),
         );
-        $htmlTable = $this->generateHtmlForProfileNotificationPlaceholder($profileDataHtml);
+
         $replaceHtmlTerms = array(
             \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
             $objUser->getId(),
             \FWUser::getParsedUserTitle($objUser),
-            $htmlTable,
             date('Y'),
         );
 
@@ -891,6 +907,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $replaceHtmlTerms[] = $attributeDataHtml;
 
         if ($isTextMail) {
+            // add profile placeholder data
+            if ($parseProfilePlaceholder) {
+                // assign data twice. Once for legacy placeholder notation
+                // and once for the new, regular placeholder notation
+                $replaceTextTerms[] = $profileDataText;
+                $replaceTextTerms[] = $profileDataText;
+            }
+
             // preprocess substitution data
             $substitution = array_combine(
                 $searchTerms,
@@ -910,6 +934,16 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         if ($isHtmlMail) {
+            // add profile placeholder data
+            if ($parseProfilePlaceholder) {
+                $htmlTable = $this->generateHtmlForProfileNotificationPlaceholder($profileDataHtml);
+
+                // assign data twice. Once for legacy placeholder notation
+                // and once for the new, regular placeholder notation
+                $replaceHtmlTerms[] = $htmlTable;
+                $replaceHtmlTerms[] = $htmlTable;
+            }
+
             // preprocess substitution data
             $substitution = array_combine(
                 $searchTerms,
