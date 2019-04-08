@@ -728,11 +728,11 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             return false;
         }
 
-        $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
-        $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
-
         $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
         $objMail->Subject = $objUserMail->getSubject();
+
+        $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
+        $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
 
         $profileDataText = '';
         $profileDataHtml = array();
@@ -809,6 +809,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'PROFILE_DATA',
             'YEAR',
         );
+
         $replaceTextTerms = array(
             \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
             $objUser->getId(),
@@ -838,13 +839,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         );
 
         if ($isTextMail) {
-            $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-
             // preprocess substitution data
             $substitution = array_combine(
                 $searchTerms,
                 $replaceTextTerms
             );
+
+            // deactivate Html version in case we're sending a plain text mail (no multipart)
+            $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
 
             // parse body of mail
             $body = $objUserMail->getBodyText();
@@ -856,13 +858,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         if ($isHtmlMail) {
-            $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
-
             // preprocess substitution data
             $substitution = array_combine(
                 $searchTerms,
                 $replaceHtmlTerms
             );
+
+            // deactivate plaintext version in case we're sending a plain Html mail (no multipart)
+            $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
 
             // parse body of mail
             $body = $objUserMail->getBodyHtml();
