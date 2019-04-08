@@ -163,6 +163,24 @@ class User_Setting_Mail
             ),
             'required'    => array()
         ),
+        'user_profile_modification'    => array(
+            'title'    => 'TXT_ACCESS_USER_PROFILE_MODIFICATION',
+            'placeholders'    => array(
+                '[HOST]'          => 'TXT_ACCESS_HOST_DESC',
+                '[USER_ID]'       => 'TXT_ACCESS_USER_ID',
+                '[PROFILE_NAME]'  => 'TXT_ACCESS_PROFILE_NAME_DESC',
+                '[PROFILE_DATA]'  => 'TXT_ACCESS_PROFILE_DATA_DESC',
+                '[[PROFILE_ATTRIBUTE_LIST]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;[[PROFILE_ATTRIBUTE_CHANGED]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_NAME]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_OLD_VALUE]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_VALUE]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_CHANGED]]<br />
+                    [PROFILE_ATTRIBUTE_LIST]]'  => 'TXT_ACCESS_PROFILE_ATTRIBUTE_LIST_DESC',
+                '[YEAR]'          => 'TXT_ACCESS_YEAR_DESC',
+            ),
+            'required'    => array()
+        ),
     );
 
 
