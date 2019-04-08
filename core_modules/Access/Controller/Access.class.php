@@ -755,10 +755,26 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $profileDataHtml = array();
 
         foreach ($changedAttributes as $attribute) {
-            $objAttribute = $objUser->objAttribute->getById($attribute);
+            switch ($attribute) {
+                case 'email':
+                    // as email is no a regular profile attribute,
+                    // but an account attribute, we have to fetch it
+                    // manually
+                    $label = $_ARRAYLANG['TXT_ACCESS_EMAIL'];
+                    $attributeType = 'email';
+                    break;
+
+                default:
+                    // fetch meta-data of attribute
+                    $objAttribute = $objUser->objAttribute->getById($attribute);
+                    $label = $objAttribute->getName();
+                    $attributeType = $objAttribute->getType();
+                    break;
+            }
+
             $oldValue = $oldProfileData[$attribute][0];
             $newValue = $newProfileData[$attribute][0];
-            switch ($objAttribute->getType()) {
+            switch ($attributeType) {
                 case 'date':
                     $oldValue = date(ASCMS_DATE_FORMAT_DATE, $oldValue);
                     $newValue = date(ASCMS_DATE_FORMAT_DATE, $newValue);
@@ -800,7 +816,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     break;
             }
 
-            $label = $objAttribute->getName();
             $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
 
             $attributeInfo = array(
@@ -970,7 +985,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     protected function fetchProfileDataOfUser($objUser) {
         //get user's profile details
         $objUser->objAttribute->first();
-        $arrUserDetails = array();
+        $arrUserDetails = array(
+            'email' => array($objUser->getEmail()),
+        );
         while (!$objUser->objAttribute->EOF) {
             $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
             $objUser->objAttribute->next();
