@@ -392,7 +392,6 @@ class ListingController {
                         ) {
                             continue;
                         }
-
                         if (isset($metaData->associationMappings[$field])) {
                             $qb->andWhere(
                                 $qb->expr()->eq('x.' . $field, '?' . $i)
@@ -421,7 +420,7 @@ class ListingController {
                             $this->searchCallback['method'],
                             array(
                                 'qb' => $qb,
-                                'field' => $this->searchFields,
+                                'fields' => $this->searchFields,
                                 'crit' => $this->filter
                             )
                         );
@@ -433,8 +432,7 @@ class ListingController {
                         $qb = $searchCallback(
                             $qb,
                             $this->searchFields,
-                            $this->filter,
-                            $i
+                            $this->filter
                         );
                     } else {
                         $ors = array();
