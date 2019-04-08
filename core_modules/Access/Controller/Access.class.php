@@ -795,11 +795,19 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         $searchTerms = array(
-            '[[HOST]]',
-            '[[USER_ID]]',
-            '[[PROFILE_NAME]]',
-            '[[PROFILE_DATA]]',
-            '[[YEAR]]',
+            // those are the legacy placeholders
+            '[HOST]',
+            '[USER_ID]',
+            '[PROFILE_NAME]',
+            '[PROFILE_DATA]',
+            '[YEAR]',
+
+            // now follow the new, regular placeholders
+            'HOST',
+            'USER_ID',
+            'PROFILE_NAME',
+            'PROFILE_DATA',
+            'YEAR',
         );
         $replaceTextTerms = array(
             \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
@@ -817,13 +825,31 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             date('Y'),
         );
 
+        // data for plain text version
+        $replaceTextTerms = array_merge(
+            $replaceTextTerms,
+            $replaceTextTerms
+        );
+
+        // data for HTML version
+        $replaceHtmlTerms = array_merge(
+            $replaceHtmlTerms,
+            $replaceHtmlTerms
+        );
+
         if ($isTextMail) {
             $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-            $body = str_replace(
+
+            // preprocess substitution data
+            $substitution = array_combine(
                 $searchTerms,
-                $replaceTextTerms,
-                $objUserMail->getBodyText()
+                $replaceTextTerms
             );
+
+            // parse body of mail
+            $body = $objUserMail->getBodyText();
+            \Cx\Core\MailTemplate\Controller\MailTemplate::substitute($body, $substitution);
+            \Cx\Core\MailTemplate\Controller\MailTemplate::clearEmptyPlaceholders($body);
             $body = preg_replace('/\[\[([A-Za-z0-9_]*?)\]\]/', '{\\1}', $body);
             \LinkGenerator::parseTemplate($body, true);
             $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = $body;
@@ -831,11 +857,17 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if ($isHtmlMail) {
             $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
-            $body = str_replace(
+
+            // preprocess substitution data
+            $substitution = array_combine(
                 $searchTerms,
-                $replaceHtmlTerms,
-                $objUserMail->getBodyHtml()
+                $replaceHtmlTerms
             );
+
+            // parse body of mail
+            $body = $objUserMail->getBodyHtml();
+            \Cx\Core\MailTemplate\Controller\MailTemplate::substitute($body, $substitution);
+            \Cx\Core\MailTemplate\Controller\MailTemplate::clearEmptyPlaceholders($body);
             $body = preg_replace('/\[\[([A-Za-z0-9_]*?)\]\]/', '{\\1}', $body);
             \LinkGenerator::parseTemplate($body, true);
             $objMail->Body = $body;
