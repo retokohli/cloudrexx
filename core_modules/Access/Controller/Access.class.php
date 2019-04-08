@@ -740,14 +740,17 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objAttribute = $objUser->objAttribute->getById($attribute);
             $oldValue = $oldProfileData[$attribute][0];
             $newValue = $newProfileData[$attribute][0];
-
             switch ($objAttribute->getType()) {
                 case 'date':
                     $oldValue = date(ASCMS_DATE_FORMAT_DATE, $oldValue);
                     $newValue = date(ASCMS_DATE_FORMAT_DATE, $newValue);
                     break;
 
-                //case 'checkbox':
+                case 'checkbox':
+                    $oldValue = $oldValue ? $_ARRAYLANG['TXT_ACCESS_YES'] : $_ARRAYLANG['TXT_ACCESS_NO'];
+                    $newValue = $newValue ? $_ARRAYLANG['TXT_ACCESS_YES'] : $_ARRAYLANG['TXT_ACCESS_NO'];
+                    break;
+
                 case 'menu':
                     switch ($attribute) {
                         case 'gender':
