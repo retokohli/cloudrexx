@@ -811,22 +811,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $profileDataHtml[] = $attributeInfo;
         }
 
-        $searchTerms = array(
-            // those are the legacy placeholders
-            '[HOST]',
-            '[USER_ID]',
-            '[PROFILE_NAME]',
-            '[PROFILE_DATA]',
-            '[YEAR]',
-
-            // now follow the new, regular placeholders
-            'HOST',
-            'USER_ID',
-            'PROFILE_NAME',
-            'PROFILE_DATA',
-            'YEAR',
-        );
-
         $replaceTextTerms = array(
             \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
             $objUser->getId(),
