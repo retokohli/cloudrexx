@@ -568,17 +568,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     $arrNewProfileData = $this->fetchProfileDataOfUser($objFWUser->objUser);    
 
                     // identify changed attributes
-                    $profileDiff = call_user_func(function($arrOriginalProfileData, $arrNewProfileData) {
-                        $difference=array();
-                        foreach ($arrOriginalProfileData as $key => $value) {
-                            if (!isset($arrNewProfileData[$key]) ||
-                                $arrNewProfileData[$key] != $value
-                            ) {
-                                $difference[] = $key;
-                            }
+                    $profileDiff = array();
+                    foreach ($arrOriginalProfileData as $key => $value) {
+                        if (!isset($arrNewProfileData[$key]) ||
+                            $arrNewProfileData[$key] != $value
+                        ) {
+                            $profileDiff[] = $key;
                         }
-                        return $difference;
-                    }, $arrOriginalProfileData, $arrNewProfileData);
+                    }
 
                     // send notification mail regarding modified user profile
                     $this->sendProfileChangeNotificationMail($objFWUser->objUser, $profileDiff, $arrOriginalProfileData, $arrNewProfileData);
