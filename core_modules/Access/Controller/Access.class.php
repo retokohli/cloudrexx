@@ -780,8 +780,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $newValue = $newProfileData[$attribute][0];
             switch ($attributeType) {
                 case 'date':
-                    $oldValue = date(ASCMS_DATE_FORMAT_DATE, $oldValue);
-                    $newValue = date(ASCMS_DATE_FORMAT_DATE, $newValue);
+                    if (!empty($oldValue)) {
+                        $oldValue = date(ASCMS_DATE_FORMAT_DATE, $oldValue);
+                    }
+                    if (!empty($newValue)) {
+                        $newValue = date(ASCMS_DATE_FORMAT_DATE, $newValue);
+                    }
                     break;
 
                 case 'checkbox':
