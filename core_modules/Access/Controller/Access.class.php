@@ -734,6 +734,23 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
         $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
 
+        // placeholder list
+        $searchTerms = array(
+            // those are the legacy placeholders
+            '[HOST]',
+            '[USER_ID]',
+            '[PROFILE_NAME]',
+            '[PROFILE_DATA]',
+            '[YEAR]',
+
+            // now follow the new, regular placeholders
+            'HOST',
+            'USER_ID',
+            'PROFILE_NAME',
+            'PROFILE_DATA',
+            'YEAR',
+        );
+
         $profileDataText = '';
         $profileDataHtml = array();
 
