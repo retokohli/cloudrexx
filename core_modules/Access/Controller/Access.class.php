@@ -758,7 +758,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $attributeDataText = array();
         $attributeDataHtml = array();
 
-        foreach ($changedAttributes as $attribute) {
+        $profileAttributes = array_keys($this->fetchProfileDataOfUser($objFWUser->objUser));
+        $idx = 0;
+        foreach ($profileAttributes as $attribute) {
             switch ($attribute) {
                 case 'email':
                     // as email is no a regular profile attribute,
@@ -829,8 +831,22 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $attributeData['PROFILE_ATTRIBUTE_NAME'] = $label;
             $attributeData['PROFILE_ATTRIBUTE_VALUE'] = $newValue;
             $attributeData['PROFILE_ATTRIBUTE_OLD_VALUE'] = $oldValue;
-            $attributeDataText[] = $attributeData;
-            $attributeDataHtml[] = contrexx_raw2xhtml($attributeData);
+            // the index $idx is required for referencing the array
+            // elements below in case the attribute's value has changed
+            $idx++;
+            $attributeDataText[$idx] = $attributeData;
+            $attributeDataHtml[$idx] = contrexx_raw2xhtml($attributeData);
+
+            // abort in case the attribute had not been changed,
+            // as the following code is only related to attributes that
+            // have been changed
+            if (!in_array($attribute, $changedAttributes)) {
+                continue;
+            }
+
+            // touch block changed
+            $attributeDataText[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
+            $attributeDataHtml[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
 
             $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
 
