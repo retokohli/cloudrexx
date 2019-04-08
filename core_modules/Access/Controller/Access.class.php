@@ -752,11 +752,11 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'PROFILE_ATTRIBUTE_LIST',
         );
 
-        $attributeDataText = array();
-        $attributeDataHtml = array();
-
         $profileDataText = '';
         $profileDataHtml = array();
+
+        $attributeDataText = array();
+        $attributeDataHtml = array();
 
         foreach ($changedAttributes as $attribute) {
             switch ($attribute) {
