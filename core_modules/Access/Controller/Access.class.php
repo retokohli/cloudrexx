@@ -836,6 +836,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     } else {
                         $newValue = '';
                     }
+                    break;
                     
                 default:
                     break;
@@ -865,8 +866,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             // data for placeholder PROFILE_DATA
             if ($parseProfilePlaceholder) {
+                // plain text version
                 $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
 
+                // html version
                 $attributeInfo = array(
                     'label' => $label,
                     'new'   => $newValue,
@@ -936,12 +939,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         if ($isHtmlMail) {
             // add profile placeholder data
             if ($parseProfilePlaceholder) {
-                $htmlTable = $this->generateHtmlForProfileNotificationPlaceholder($profileDataHtml);
+                $htmlData = $this->generateHtmlForProfileNotificationPlaceholder($profileDataHtml);
 
                 // assign data twice. Once for legacy placeholder notation
                 // and once for the new, regular placeholder notation
-                $replaceHtmlTerms[] = $htmlTable;
-                $replaceHtmlTerms[] = $htmlTable;
+                $replaceHtmlTerms[] = $htmlData;
+                $replaceHtmlTerms[] = $htmlData;
             }
 
             // preprocess substitution data
