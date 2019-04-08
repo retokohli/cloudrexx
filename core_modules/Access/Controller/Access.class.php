@@ -671,8 +671,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
      *                                      modification.
      */
     protected function sendProfileChangeNotificationMail($objUser, $changedAttributes, $oldProfileData, $newProfileData) {
-        global $_ARRAYLANG;
-
         if (empty($changedAttributes)) {
             return;
         }
@@ -682,60 +680,61 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             return;
         }
 
-        $objFWUser = \FWUser::getFWUserObject();
-        $objUserMail = $objFWUser->getMail();
-        if (!$objUserMail->load('user_profile_modification', FRONTEND_LANG_ID) &&
-            !$objUserMail->load('user_profile_modification')
-        ) {
-            return;
-        }
-        
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         if (!$objMail) {
             return;
         }
 
+        if (!$this->preprocessProfileNotificationMail('user_profile_modification', $objMail, $objUser, $changedAttributes, $newProfileData, $oldProfileData)) {
+            return;
+        }
+
+        $recipientAddrs = array_map('trim', explode(',', $arrSettings['user_change_notification_address']['value']));
+        foreach ($recipientAddrs as $recipientMail) {
+            $objMail->AddAddress($recipientMail);
+            $objMail->Send();
+            $objMail->ClearAddresses();
+        }
+    }
+
+    /**
+     * Preprocess the notification mail sent after a new user did sign-up or
+     * after a profile modification had been done
+     *
+     * @param   string  $type   The notification action. One of:
+     *                          user_profile_modification / signup_notification
+     * @param   \Cx\Core\MailTemplate\Model\Entity\Mail The mail instance
+     * @param   \User   $objUser    The user that triggered the event
+     * @param   array   $changedAttributes  A one-dimensional list of user
+     *                                      profile attributes that had
+     *                                      been stored.
+     * @param   array   $newProfileData     Two-dimensional array of the user's
+     *                                      profile data after the event.
+     * @param   array   $oldProfileData     Two-dimensional array of the user's
+     *                                      profile data before the event.
+     */
+    protected function preprocessProfileNotificationMail($type, $objMail, $objUser, $changedAttributes, $newProfileData, $oldProfileData) {
+        global $_ARRAYLANG;
+
+        $objFWUser = \FWUser::getFWUserObject();
+
+        // load email template
+        $objUserMail = $objFWUser->getMail();
+        if (
+            !$objUserMail->load($type, FRONTEND_LANG_ID) &&
+            !$objUserMail->load($type)
+        ) {
+            return false;
+        }
+
         $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
         $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
-        $recipientAddrs = array_map('trim', explode(',', $arrSettings['user_change_notification_address']['value']));
 
         $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
         $objMail->Subject = $objUserMail->getSubject();
 
         $profileDataText = '';
-
-        $htmlTable = new \Cx\Core\Html\Model\Entity\HtmlElement('table');
-        $htmlTable->setAttribute('width', '100%');
-
-        $htmlTableHead = new \Cx\Core\Html\Model\Entity\HtmlElement('thead');
-        $htmlTable->addChild($htmlTableHead);
-
-        $htmlTableHeadRow = new \Cx\Core\Html\Model\Entity\HtmlElement('tr');
-        $htmlTableHead->addChild($htmlTableHeadRow);
-
-        $htmlTableHeadCellAttribute = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-        $htmlTableHeadRow->addChild($htmlTableHeadCellAttribute);
-
-        $htmlValueAttributeStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
-        $htmlTableHeadCellAttribute->addChild($htmlValueAttributeStrong);
-        $htmlValueAttributeStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_ATTRIBUTE']));
-
-        $htmlTableHeadCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-        $htmlTableHeadRow->addChild($htmlTableHeadCellOldValue);
-
-        $htmlValueOldStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
-        $htmlTableHeadCellOldValue->addChild($htmlValueOldStrong);
-        $htmlValueOldStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_OLD_VALUE']));
-
-        $htmlTableHeadCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-        $htmlTableHeadRow->addChild($htmlTableHeadCellNewValue);
-
-        $htmlValueNewStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
-        $htmlTableHeadCellNewValue->addChild($htmlValueNewStrong);
-        $htmlValueNewStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_NEW_VALUE']));
-
-        $htmlTableBody = new \Cx\Core\Html\Model\Entity\HtmlElement('tbody');
-        $htmlTable->addChild($htmlTableBody);
+        $profileDataHtml = array();
 
         foreach ($changedAttributes as $attribute) {
             $objAttribute = $objUser->objAttribute->getById($attribute);
@@ -783,23 +782,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $label = $objAttribute->getName();
             $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
 
-            $htmlTableBodyRow = new \Cx\Core\Html\Model\Entity\HtmlElement('tr');
-            $htmlTableBody->addChild($htmlTableBodyRow);
-
-            $htmlTableBodyCellAttribute = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-            $htmlTableBodyRow->addChild($htmlTableBodyCellAttribute);
-            $htmlTableBodyCellAttribute->setAttribute('class', 'attribute');
-            $htmlTableBodyCellAttribute->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($label)));
-
-            $htmlTableBodyCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-            $htmlTableBodyRow->addChild($htmlTableBodyCellOldValue);
-            $htmlTableBodyCellOldValue->setAttribute('class', 'value old');
-            $htmlTableBodyCellOldValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($oldValue)));
-
-            $htmlTableBodyCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-            $htmlTableBodyRow->addChild($htmlTableBodyCellNewValue);
-            $htmlTableBodyCellNewValue->setAttribute('class', 'value new');
-            $htmlTableBodyCellNewValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($newValue)));
+            $attributeInfo = array(
+                'label' => $label,
+                'new'   => $newValue,
+                'old'   => $oldValue,
+            );
+            $profileDataHtml[] = $attributeInfo;
         }
 
         $searchTerms = array(
@@ -816,6 +804,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $profileDataText,
             date('Y'),
         );
+        $htmlTable = $this->generateHtmlForProfileNotificationPlaceholder($profileDataHtml);
         $replaceHtmlTerms = array(
             \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
             $objUser->getId(),
@@ -848,11 +837,85 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objMail->Body = $body;
         }
 
-        foreach ($recipientAddrs as $recipientMail) {
-            $objMail->AddAddress($recipientMail);
-            $objMail->Send();
-            $objMail->ClearAddresses();
+        return true;
+    }
+
+    /**
+     * Generate a Html table of user's changed profile attributes
+     *
+     * @param   array   $data   List of profile attributes. The array should
+     *                          have the following format:
+     *                          <pre>array(
+     *                              array(
+     *                                  'label' => '<attribute-#1-name>',
+     *                                  'new'   => '<value-after-event>',
+     *                                  'old'   => '<value-before-event>',
+     *                              ),
+     *                              array(
+     *                                  'label' => '<attribute-#2-name>',
+     *                                  'new'   => '<value-after-event>',
+     *                                  'old'   => '<value-before-event>',
+     *                              ),
+     *                          )</pre>
+     * @return  string  The generated Html table
+     */
+    protected function generateHtmlForProfileNotificationPlaceholder($data) {
+        global $_ARRAYLANG;
+
+        $htmlTable = new \Cx\Core\Html\Model\Entity\HtmlElement('table');
+        $htmlTable->setAttribute('width', '100%');
+
+        $htmlTableHead = new \Cx\Core\Html\Model\Entity\HtmlElement('thead');
+        $htmlTable->addChild($htmlTableHead);
+
+        $htmlTableHeadRow = new \Cx\Core\Html\Model\Entity\HtmlElement('tr');
+        $htmlTableHead->addChild($htmlTableHeadRow);
+
+        $htmlTableHeadCellAttribute = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+        $htmlTableHeadRow->addChild($htmlTableHeadCellAttribute);
+
+        $htmlValueAttributeStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+        $htmlTableHeadCellAttribute->addChild($htmlValueAttributeStrong);
+        $htmlValueAttributeStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_ATTRIBUTE']));
+
+        $htmlTableHeadCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+        $htmlTableHeadRow->addChild($htmlTableHeadCellOldValue);
+
+        $htmlValueOldStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+        $htmlTableHeadCellOldValue->addChild($htmlValueOldStrong);
+        $htmlValueOldStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_OLD_VALUE']));
+
+        $htmlTableHeadCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+        $htmlTableHeadRow->addChild($htmlTableHeadCellNewValue);
+
+        $htmlValueNewStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+        $htmlTableHeadCellNewValue->addChild($htmlValueNewStrong);
+        $htmlValueNewStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_NEW_VALUE']));
+
+        $htmlTableBody = new \Cx\Core\Html\Model\Entity\HtmlElement('tbody');
+        $htmlTable->addChild($htmlTableBody);
+
+        foreach ($data as $attribute) {
+            $htmlTableBodyRow = new \Cx\Core\Html\Model\Entity\HtmlElement('tr');
+            $htmlTableBody->addChild($htmlTableBodyRow);
+
+            $htmlTableBodyCellAttribute = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+            $htmlTableBodyRow->addChild($htmlTableBodyCellAttribute);
+            $htmlTableBodyCellAttribute->setAttribute('class', 'attribute');
+            $htmlTableBodyCellAttribute->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($attribute['label'])));
+
+            $htmlTableBodyCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+            $htmlTableBodyRow->addChild($htmlTableBodyCellOldValue);
+            $htmlTableBodyCellOldValue->setAttribute('class', 'value old');
+            $htmlTableBodyCellOldValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($attribute['old'])));
+
+            $htmlTableBodyCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+            $htmlTableBodyRow->addChild($htmlTableBodyCellNewValue);
+            $htmlTableBodyCellNewValue->setAttribute('class', 'value new');
+            $htmlTableBodyCellNewValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($attribute['new'])));
         }
+
+        return (string) $htmlTable;
     }
 
     /**
