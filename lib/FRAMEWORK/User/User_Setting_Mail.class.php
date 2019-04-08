@@ -171,9 +171,11 @@ class User_Setting_Mail
                 '[PROFILE_NAME]'  => 'TXT_ACCESS_PROFILE_NAME_DESC',
                 '[PROFILE_DATA]'  => 'TXT_ACCESS_PROFILE_DATA_DESC',
                 '[[PROFILE_ATTRIBUTE_LIST]<br />
-                    &nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_NAME]<br />
-                    &nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_OLD_VALUE]<br />
-                    &nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_VALUE]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;[[PROFILE_ATTRIBUTE_CHANGED]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_NAME]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_OLD_VALUE]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_VALUE]<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;[PROFILE_ATTRIBUTE_CHANGED]]<br />
                     [PROFILE_ATTRIBUTE_LIST]]'  => 'TXT_ACCESS_PROFILE_ATTRIBUTE_LIST_DESC',
                 '[YEAR]'          => 'TXT_ACCESS_YEAR_DESC',
             ),
