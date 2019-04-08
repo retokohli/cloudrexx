@@ -749,7 +749,11 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'PROFILE_NAME',
             'PROFILE_DATA',
             'YEAR',
+            'PROFILE_ATTRIBUTE_LIST',
         );
+
+        $attributeDataText = array();
+        $attributeDataHtml = array();
 
         $profileDataText = '';
         $profileDataHtml = array();
@@ -816,6 +820,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     break;
             }
 
+            // data for block template
+            $attributeData = array();
+            $attributeData['PROFILE_ATTRIBUTE_NAME'] = $label;
+            $attributeData['PROFILE_ATTRIBUTE_VALUE'] = $newValue;
+            $attributeData['PROFILE_ATTRIBUTE_OLD_VALUE'] = $oldValue;
+            $attributeDataText[] = $attributeData;
+            $attributeDataHtml[] = contrexx_raw2xhtml($attributeData);
+
             $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
 
             $attributeInfo = array(
@@ -853,6 +865,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $replaceHtmlTerms,
             $replaceHtmlTerms
         );
+
+        // add PROFILE_ATTRIBUTE_LIST data
+        $replaceTextTerms[] = $attributeDataText;
+        $replaceHtmlTerms[] = $attributeDataHtml;
 
         if ($isTextMail) {
             // preprocess substitution data
