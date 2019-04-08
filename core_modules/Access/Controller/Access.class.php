@@ -671,6 +671,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
      *                                      modification.
      */
     protected function sendProfileChangeNotificationMail($objUser, $changedAttributes, $oldProfileData, $newProfileData) {
+        // do skip mail notification if no attributes have been changed
         if (empty($changedAttributes)) {
             return;
         }
