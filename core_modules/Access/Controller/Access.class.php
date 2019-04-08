@@ -750,6 +750,24 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'PROFILE_ATTRIBUTE_LIST',
         );
 
+
+        // general replacement data
+        $replaceTerms = array(
+            \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
+            $objUser->getId(),
+            \FWUser::getParsedUserTitle($objUser),
+            date('Y'),
+        );
+
+        // data for plain text version
+        $replaceTextTerms = array_merge(
+            $replaceTerms,
+            $replaceTerms
+        );
+
+        // data for HTML version
+        $replaceHtmlTerms = $replaceTextTerms;
+
         // check if we shall parse the profile data into the legacy placeholder
         $parseProfilePlaceholder = false;
         if ((
@@ -878,32 +896,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $profileDataHtml[] = $attributeInfo;
             }
         }
-
-        $replaceTextTerms = array(
-            \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
-            $objUser->getId(),
-            \FWUser::getParsedUserTitle($objUser),
-            date('Y'),
-        );
-
-        $replaceHtmlTerms = array(
-            \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
-            $objUser->getId(),
-            \FWUser::getParsedUserTitle($objUser),
-            date('Y'),
-        );
-
-        // data for plain text version
-        $replaceTextTerms = array_merge(
-            $replaceTextTerms,
-            $replaceTextTerms
-        );
-
-        // data for HTML version
-        $replaceHtmlTerms = array_merge(
-            $replaceHtmlTerms,
-            $replaceHtmlTerms
-        );
 
         // add PROFILE_ATTRIBUTE_LIST data
         $replaceTextTerms[] = $attributeDataText;
