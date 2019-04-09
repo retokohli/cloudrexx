@@ -186,30 +186,6 @@ cx.fe.contentEditor.initPageCkEditors = function() {
 };
 
 /**
- * destroy all ckeditor instances without the currently active editor
- * @param CKEDITOR.editor editor
- */
-cx.fe.contentEditor.destroyAllCkEditorsExcept = function(editor) {
-    cx.jQuery.each(cx.fe.publishedBlocks, function(index, object) {
-        if (!CKEDITOR.instances[index]) {
-            return;
-        }
-        if (CKEDITOR.instances[index] != editor) {
-            CKEDITOR.instances[index].destroy();
-            cx.jQuery("#" + index).attr("contenteditable", false).removeClass("fe_outline");
-        }
-    });
-    if (CKEDITOR.instances.fe_content) {
-        CKEDITOR.instances.fe_content.destroy();
-    }
-    if (CKEDITOR.instances.fe_title) {
-        CKEDITOR.instances.fe_title.destroy();
-    }
-    // remove border around the editable contents
-    cx.jQuery("#fe_content,#fe_title").attr("contenteditable", false).removeClass("fe_outline");
-};
-
-/**
  * init ckeditors for all block areas
  */
 cx.fe.contentEditor.initBlockCkEditors = function() {
@@ -219,7 +195,7 @@ cx.fe.contentEditor.initBlockCkEditors = function() {
             cx.fe.publishedBlocks["fe_block_" + blockId] = {};
             cx.fe.publishedBlocks["fe_block_" + blockId].contentHtml = cx.jQuery(this).html();
 
-            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=getBlockContent&block=" + blockId + "&lang=" + Cookies.get("langId");
+            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=getBlockContent&block=" + blockId + "&lang=" + cx.variables.get("language", "contrexx") + "&parsing=false";
             cx.jQuery.ajax({
                 url: url,
                 complete: function(response) {
@@ -229,6 +205,7 @@ cx.fe.contentEditor.initBlockCkEditors = function() {
                         customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
                         toolbar: "FrontendEditingContent",
                         extraPlugins: extraPlugins.join(","),
+                        removePlugins: 'bbcode',
                         startupOutlineBlocks: false,
                         on: {
                             instanceReady: function(event) {
@@ -268,7 +245,8 @@ cx.fe.startPageEditing = function() {
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
     // show state icon
     cx.jQuery("#fe_state_wrapper").show();
-    // show action buttons
+    // show and hide action buttons
+    cx.fe.actionButtons.hideBlockButtons();
     cx.fe.actionButtons.showPageButtons();
     // remove all block editors
     cx.fe.contentEditor.destroyBlockCkEditors();
@@ -306,7 +284,8 @@ cx.fe.stopPageEditing = function() {
 cx.fe.startBlockEditing = function(editor) {
     // change value of cancel button
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
-    // show buttons for block editing
+    // show and hide action buttons
+    cx.fe.actionButtons.hidePageButtons();
     cx.fe.actionButtons.showBlockButtons();
 
     if (!cx.fe.currentEditor) {
@@ -314,9 +293,6 @@ cx.fe.startBlockEditing = function(editor) {
         editor.setData(cx.fe.publishedBlocks[editor.name].contentRaw);
     }
     cx.fe.currentEditor = editor;
-
-    // remove content page ckeditors
-    cx.fe.contentEditor.destroyAllCkEditorsExcept(editor);
 };
 
 /**
@@ -329,6 +305,8 @@ cx.fe.stopBlockEditing = function(editorInstance) {
                 cx.fe.saveBlock(editorInstance);
             }
         }
+        // load html content
+        editorInstance.setData(cx.fe.publishedBlocks[editorInstance.name].contentHtml);
     }
     // change value of cancel button
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_FINISH_EDIT_MODE);
@@ -336,8 +314,6 @@ cx.fe.stopBlockEditing = function(editorInstance) {
     cx.fe.actionButtons.hideBlockButtons();
     // show outlines
     cx.jQuery("#fe_content,#fe_title").attr("contenteditable", true).addClass("fe_outline");
-    // load html content
-    editorInstance.setData(cx.fe.publishedBlocks[editorInstance.name].contentHtml);
 };
 
 /**
@@ -728,7 +704,7 @@ cx.fe.editorLoaded = function() {
  * @param callback
  */
 cx.fe.loadPageData = function(historyId, putTheData, callback) {
-    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + Cookies.get("langId") + "&userFrontendLangId=" + Cookies.get("langId");
+    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.variables.get("language", "contrexx") + "&userFrontendLangId=" + cx.variables.get("language", "contrexx");
     if (historyId) {
         url += "&history=" + historyId;
     }
@@ -985,7 +961,7 @@ cx.fe.savePage = function() {
  */
 cx.fe.saveBlock = function(editorInstance) {
     cx.jQuery.post(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + Cookies.get("langId"),
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=Block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + cx.variables.get("language", "contrexx"),
         {
             content: editorInstance.getData()
         },
@@ -1000,7 +976,7 @@ cx.fe.saveBlock = function(editorInstance) {
                 cx.fe.publishedBlocks[editorInstance.name].contentHtml = response.data.content;
                 cx.fe.publishedBlocks[editorInstance.name].contentRaw = editorInstance.getData();
             }
-            cx.fe.stopBlockEditing();
+            cx.fe.stopBlockEditing(editorInstance);
         }
     );
 };

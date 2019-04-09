@@ -1064,14 +1064,25 @@ cx.ready(function () {
             }
             array.sort(function (a, b) {
                 if (a.datainfo && b.datainfo) {
-                    a = (a['datainfo'][attribute]);
-                    b = (b['datainfo'][attribute]);
+                    // check if any of the entries is a directory
+                    aIsDir = a['datainfo']['type'] == 'dir';
+                    bIsDir = b['datainfo']['type'] == 'dir';
+
+                    // fetch the value to sort by
+                    aSortFlag = (a['datainfo'][attribute]);
+                    bSortFlag = (b['datainfo'][attribute]);
+
+                    // first list directories
+                    if (aIsDir && !bIsDir) return -1;
+                    if (!aIsDir && bIsDir) return 1;
+
+                    // then list files
                     if (reverse) {
-                        if (a < b) return -1;
-                        if (a > b) return 1;
+                        if (aSortFlag < bSortFlag) return -1;
+                        if (aSortFlag > bSortFlag) return 1;
                     } else {
-                        if (a < b) return 1;
-                        if (a > b) return -1;
+                        if (aSortFlag < bSortFlag) return 1;
+                        if (aSortFlag > bSortFlag) return -1;
                     }
                 }
                 return 0;

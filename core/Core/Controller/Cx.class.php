@@ -196,7 +196,7 @@ namespace Cx\Core\Core\Controller {
          * This will be null for all modes except command mode.
          * @var array
          */
-        protected $commands = null;
+        protected $commands = array();
 
         /**
          * Current language id
@@ -1589,25 +1589,24 @@ namespace Cx\Core\Core\Controller {
                     parse_str($input, $dataArguments);
                     $dataArguments = contrexx_input2raw($dataArguments);
 
-                    $this->getCommands();
-
                     // find component (defaults to help)
                     $command = current($params);
                     $params = array_slice($params, 1);
+                    $this->getCommands($params, true);
+
                     if (!isset($this->commands[$command])) {
                         echo 'Command \'' . $command . '\' does not exist';
                         $command = 'help';
                     }
 
                     if (!isset($this->commands[$command])) {
-                        throw new \Exception('Command \'' . $command . '\' does not exist');
+                        throw new \Exception(
+                            'Command \'' . $command . '\' does not exist or is not accessible'
+                        );
                     }
 
                     $objCommand = $this->commands[$command];
-                    //Check the access permission for the command.
-                    if(!$objCommand->hasAccessToExecuteCommand($command, $params)) {
-                        throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
-                    }
+
                     // execute command
                     $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
@@ -1744,48 +1743,38 @@ namespace Cx\Core\Core\Controller {
             $this->request->getUrl()->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
+                $this->resolvedPage = $this->resolver->resolve();
+                return;
+            }
 
-                // TODO: Workaround for upload-component as it is loaded in preResolve-hook.
-                // Remove this workaround once the Upload-component has been replaced
-                // by the new Uploader-component which operates only through JsonData
-                // and does therefore not depend on the resolved page any longer.
-                if (isset($_GET['section']) && $_GET['section'] == 'Upload') {
-                    $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
-                    $this->resolvedPage->setVirtual(true);
-                } else {
-                    $this->resolvedPage = $this->resolver->resolve();
+            global $cmd, $act, $plainCmd;
+
+            // resolve pretty url's
+            $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
+            if ($path != 'index.php' && $path != '') {
+                $path = explode('/', $path, 2);
+                if (!isset($_GET['cmd'])) {
+                    $_REQUEST['cmd'] = $path[0];
+                    $_GET['cmd'] = $_REQUEST['cmd'];
                 }
-
-            } else {
-                global $cmd, $act, $plainCmd;
-
-                // resolve pretty url's
-                $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
-                if ($path != 'index.php' && $path != '') {
-                    $path = explode('/', $path, 2);
-                    if (!isset($_GET['cmd'])) {
-                        $_REQUEST['cmd'] = $path[0];
-                        $_GET['cmd'] = $_REQUEST['cmd'];
+                if (isset($path[1])) {
+                    if (substr($path[1], -1, 1) == '/') {
+                        $path[1] = substr($path[1], 0, -1);
                     }
-                    if (isset($path[1])) {
-                        if (substr($path[1], -1, 1) == '/') {
-                            $path[1] = substr($path[1], 0, -1);
-                        }
-                        if (!isset($_GET['act'])) {
-                            $_REQUEST['act'] = $path[1];
-                            $_GET['act'] = $_REQUEST['act'];
-                        }
+                    if (!isset($_GET['act'])) {
+                        $_REQUEST['act'] = $path[1];
+                        $_GET['act'] = $_REQUEST['act'];
                     }
                 }
+            }
 
-                $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
-                $this->resolvedPage->setVirtual(true);
+            $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $this->resolvedPage->setVirtual(true);
 
-                if (!isset($plainCmd)) {
-                    $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : 'Home';
-                    $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
-                    $plainCmd = $cmd;
-                }
+            if (!isset($plainCmd)) {
+                $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : 'Home';
+                $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
+                $plainCmd = $cmd;
             }
         }
 
@@ -2245,6 +2234,28 @@ namespace Cx\Core\Core\Controller {
                 $this->template->setVariable('JAVASCRIPT', 'javascript_inserting_here');
                 $endcode = $this->template->get();
 
+// TODO: The following code should be moved to ComponentController of Wysiwyg component.
+//       To make the following code work in the mentioned controller, we have to
+//       refactor the code of this method (finalize()) first. The functionality of \JS
+//       should also be moved into a proper ComponentController
+                if (strpos($endcode, 'data-shadowbox') !== false) {
+                    $jsCode = <<<JSCODE
+cx.ready(function() {
+    jQuery('img[data-shadowbox]').wrap(function() {
+        return jQuery('<a></a>').attr({
+            href: jQuery(this).attr('data-shadowbox'),
+            class: 'shadowbox'
+        });
+    })
+    if (jQuery('a.shadowbox').length) {
+        Shadowbox.setup(jQuery('a.shadowbox'));
+    }
+});
+JSCODE;
+                    \JS::registerCode($jsCode);
+                    \JS::activate('shadowbox');
+                }
+
                 /**
                  * Get all javascripts in the code, replace them with nothing, and register the js file
                  * to the javascript lib. This is because we don't want something twice, and there could be
@@ -2481,22 +2492,25 @@ namespace Cx\Core\Core\Controller {
             return $this->ch;
         }
 
-        public function getCommands() {
-                // build command index
-                $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-                $this->commands = array();
-                foreach ($componentRepo->findAll() as $component) {
-                    foreach ($component->getCommandsForCommandMode() as $cmdKey => $cmdValue) {
-                        $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
-                        if (isset($this->commands[$command])) {
-                            throw new \Exception('Command \'' . $command . '\' is already in index');
-                        }
-                        if (!$component->hasAccessToExecuteCommand($command, array())) {
-                            continue;
-                        }
-                        $this->commands[$command] = $component;
+        public function getCommands($params = array(), $forceRegen = false) {
+            if (count($this->commands) && !$forceRegen) {
+                return $this->commands;
+            }
+            // build command index
+            $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $this->commands = array();
+            foreach ($componentRepo->findAll() as $component) {
+                foreach ($component->getCommandsForCommandMode() as $cmdKey => $cmdValue) {
+                    $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
+                    if (isset($this->commands[$command])) {
+                        throw new \Exception('Command \'' . $command . '\' is already in index');
                     }
+                    if (!$component->hasAccessToExecuteCommand($command, $params)) {
+                        continue;
+                    }
+                    $this->commands[$command] = $component;
                 }
+            }
             return $this->commands;
         }
 

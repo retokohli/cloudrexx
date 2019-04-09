@@ -117,7 +117,10 @@ class CalendarManager extends CalendarLibrary
             case 'modify_registration':
             case 'add_registration':
                 \Permission::checkAccess(182, 'static');
-                $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['reg_id']));
+                $this->modifyRegistration(
+                    contrexx_input2int($_GET['event_id']),
+                    contrexx_input2int($_GET['rid'])
+                );
                 break;
             case 'get_exception_dates':
                 $this->getExeceptionDates();
