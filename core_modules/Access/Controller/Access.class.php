@@ -534,7 +534,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 // fetch current profile data
-                $arrOriginalProfileData = $this->fetchProfileDataOfUser($objFWUser->objUser);    
+                $arrOriginalProfileData = $this->fetchProfileDataOfUser($objFWUser->objUser);
 
                 // profile modifications to be stored
                 $arrProfile = $_POST['access_profile_attribute'];
@@ -565,7 +565,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     && $objFWUser->objUser->store()
                 ) {
                     // fetch new profile data
-                    $arrNewProfileData = $this->fetchProfileDataOfUser($objFWUser->objUser);    
+                    $arrNewProfileData = $this->fetchProfileDataOfUser($objFWUser->objUser);
 
                     // identify changed attributes
                     $profileDiff = array();
@@ -797,7 +797,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'YEAR',
             'PROFILE_ATTRIBUTE_LIST',
         );
-
 
         // general replacement data
         $replaceTerms = array(
