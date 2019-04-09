@@ -51,7 +51,7 @@ class TableGenerator extends \BackendTable
      * @param $attrs   array attributes and values
      * @param $options array options for view generator
      */
-    public function __construct($attrs = array(), $options = array())
+    public function __construct($attrs = array(), $options = array(), $readOnly)
     {
         global $_ARRAYLANG;
 
@@ -61,7 +61,62 @@ class TableGenerator extends \BackendTable
             if (isset($_ARRAYLANG[$rowname])) {
                 $newRowName = $_ARRAYLANG[$rowname];
             }
-            $rows[$newRowName] = $row;
+
+            if (
+                $readOnly &&
+                isset($options['fields']) &&
+                isset($options['fields'][$rowname]) &&
+                isset($options['fields'][$rowname]['showReadOnly']) &&
+                !$options['fields'][$rowname]['showReadOnly']
+            ) {
+                continue;
+            }
+
+            if (
+                $readOnly &&
+                isset($options['fields']) &&
+                isset($options['fields'][$rowname]) &&
+                isset($options['fields'][$rowname]['showfield'])
+            ) {
+                $callback = $options['fields'][$rowname]['showfield'];
+                $vgId = null;
+                if (
+                    isset($options['functions']) &&
+                    isset($options['functions']['vg_increment_number'])
+                ) {
+                    $vgId = $options['functions']['vg_increment_number'];
+                }
+                if (
+                    is_array($callback) &&
+                    isset($callback['adapter']) &&
+                    isset($callback['method'])
+                ) {
+                    $json = new \Cx\Core\Json\JsonData();
+                    $jsonResult = $json->data(
+                        $callback['adapter'],
+                        $callback['method'],
+                        array(
+                            'data' => $row,
+                            'rows' => $attrs,
+                            'options' => $options['fields'][$rowname],
+                            'vgId' => $vgId,
+                        )
+                    );
+                    if ($jsonResult['status'] == 'success') {
+                        $data = $jsonResult["data"];
+                    }
+                } else if(is_callable($callback)){
+                    $data = $callback(
+                        $row,
+                        $attrs,
+                        $options['fields'][$rowname],
+                        $vgId
+                    );
+                }
+            } else {
+                $data = $row;
+            }
+            $rows[$newRowName] = $data;
         }
 
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
