@@ -79,13 +79,6 @@ class TableGenerator extends \BackendTable
                 isset($options['fields'][$rowname]['showfield'])
             ) {
                 $callback = $options['fields'][$rowname]['showfield'];
-                $vgId = null;
-                if (
-                    isset($options['functions']) &&
-                    isset($options['functions']['vg_increment_number'])
-                ) {
-                    $vgId = $options['functions']['vg_increment_number'];
-                }
                 if (
                     is_array($callback) &&
                     isset($callback['adapter']) &&
@@ -96,10 +89,9 @@ class TableGenerator extends \BackendTable
                         $callback['adapter'],
                         $callback['method'],
                         array(
-                            'data' => $row,
-                            'rows' => $attrs,
+                            'value' => $row,
+                            'entity' => $attrs,
                             'options' => $options['fields'][$rowname],
-                            'vgId' => $vgId,
                         )
                     );
                     if ($jsonResult['status'] == 'success') {
@@ -109,8 +101,7 @@ class TableGenerator extends \BackendTable
                     $data = $callback(
                         $row,
                         $attrs,
-                        $options['fields'][$rowname],
-                        $vgId
+                        $options['fields'][$rowname]
                     );
                 }
             } else {
