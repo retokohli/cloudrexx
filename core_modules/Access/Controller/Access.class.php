@@ -713,8 +713,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
      *                                      profile data after the event.
      * @param   array   $oldProfileData     Two-dimensional array of the user's
      *                                      profile data before the event.
+     *                                      If argument is set, then any
+     *                                      associated element in
+     *                                      $newProfileData will be marked
+     *                                      as changed.
      */
-    protected function preprocessProfileNotificationMail($type, $objMail, $objUser, $changedAttributes, $newProfileData, $oldProfileData) {
+    protected function preprocessProfileNotificationMail($type, $objMail, $objUser, $changedAttributes, $newProfileData, $oldProfileData = null) {
         global $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
@@ -726,6 +730,13 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             !$objUserMail->load($type)
         ) {
             return false;
+        }
+
+        // whether or not we shall output the difference
+        // of the profile before and after the event
+        $showDiff = false;
+        if (isset($oldProfileData)) {
+            $showDiff = true;
         }
 
         $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
@@ -811,11 +822,16 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     break;
             }
 
-            $oldValue = $oldProfileData[$attribute][0];
+
+            // preprocess attribute data for output
+            $oldValue = '';
+            if ($showDiff) {
+                $oldValue = $oldProfileData[$attribute][0];
+            }
             $newValue = $newProfileData[$attribute][0];
             switch ($attributeType) {
                 case 'date':
-                    if (!empty($oldValue)) {
+                    if ($showDiff && !empty($oldValue)) {
                         $oldValue = date(ASCMS_DATE_FORMAT_DATE, $oldValue);
                     }
                     if (!empty($newValue)) {
@@ -824,7 +840,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     break;
 
                 case 'checkbox':
-                    $oldValue = $oldValue ? $_ARRAYLANG['TXT_ACCESS_YES'] : $_ARRAYLANG['TXT_ACCESS_NO'];
+                    if ($showDiff) {
+                        $oldValue = $oldValue ? $_ARRAYLANG['TXT_ACCESS_YES'] : $_ARRAYLANG['TXT_ACCESS_NO'];
+                    }
                     $newValue = $newValue ? $_ARRAYLANG['TXT_ACCESS_YES'] : $_ARRAYLANG['TXT_ACCESS_NO'];
                     break;
 
@@ -833,19 +851,25 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         case 'gender':
                             break;
                         case 'title':
-                            $oldValue = 'title_' . $oldValue;
+                            if ($showDiff) {
+                                $oldValue = 'title_' . $oldValue;
+                            }
                             $newValue = 'title_' . $newValue;
                             break;
                         case 'country':
-                            $oldValue = 'country_' . $oldValue;
+                            if ($showDiff) {
+                                $oldValue = 'country_' . $oldValue;
+                            }
                             $newValue = 'country_' . $newValue;
                             break;
                     }
-                    $objAttributeValue = $objAttribute->getById($oldValue);
-                    if ($objAttributeValue->getId()) {
-                        $oldValue = $objAttributeValue->getName();
-                    } else {
-                        $oldValue = '';
+                    if ($showDiff) {
+                        $objAttributeValue = $objAttribute->getById($oldValue);
+                        if ($objAttributeValue->getId()) {
+                            $oldValue = $objAttributeValue->getName();
+                        } else {
+                            $oldValue = '';
+                        }
                     }
                     
                     $objAttributeValue = $objAttribute->getById($newValue);
@@ -864,7 +888,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $attributeData = array();
             $attributeData['PROFILE_ATTRIBUTE_NAME'] = $label;
             $attributeData['PROFILE_ATTRIBUTE_VALUE'] = $newValue;
-            $attributeData['PROFILE_ATTRIBUTE_OLD_VALUE'] = $oldValue;
+            if ($showDiff) {
+                $attributeData['PROFILE_ATTRIBUTE_OLD_VALUE'] = $oldValue;
+            }
             // the index $idx is required for referencing the array
             // elements below in case the attribute's value has changed
             $idx++;
@@ -878,21 +904,28 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 continue;
             }
 
-            // touch block changed
-            $attributeDataText[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
-            $attributeDataHtml[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
+            // touch block changed (if case we shall show which attributes
+            // have changed)
+            if ($showDiff) {
+                $attributeDataText[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
+                $attributeDataHtml[$idx]['PROFILE_ATTRIBUTE_CHANGED'] = array(0 => array());
+            }
 
             // data for placeholder PROFILE_DATA
             if ($parseProfilePlaceholder) {
-                // plain text version
-                $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
-
-                // html version
                 $attributeInfo = array(
                     'label' => $label,
                     'new'   => $newValue,
-                    'old'   => $oldValue,
                 );
+                // plain text version
+                if ($showDiff) {
+                    $profileDataText .= $label . ":\t" . $oldValue . ' => ' . $newValue . "\n";
+                    $attributeInfo['old'] = $oldValue;
+                } else {
+                    $profileDataText .= $label . ":\t" . $newValue . "\n";
+                }
+
+                // html version
                 $profileDataHtml[] = $attributeInfo;
             }
         }
@@ -931,7 +964,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         if ($isHtmlMail) {
             // add profile placeholder data
             if ($parseProfilePlaceholder) {
-                $htmlData = $this->generateHtmlForProfileNotificationPlaceholder($profileDataHtml);
+                $htmlData = $this->generateHtmlForProfileNotificationPlaceholder($profileDataHtml, $showDiff);
 
                 // assign data twice. Once for legacy placeholder notation
                 // and once for the new, regular placeholder notation
@@ -977,9 +1010,11 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
      *                                  'old'   => '<value-before-event>',
      *                              ),
      *                          )</pre>
+     * @param   boolean $showDiff   Whether or not to output the differnce
+     *                              of the changed profile attributes
      * @return  string  The generated Html table
      */
-    protected function generateHtmlForProfileNotificationPlaceholder($data) {
+    protected function generateHtmlForProfileNotificationPlaceholder($data, $showDiff = false) {
         global $_ARRAYLANG;
 
         $htmlTable = new \Cx\Core\Html\Model\Entity\HtmlElement('table');
@@ -998,19 +1033,26 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $htmlTableHeadCellAttribute->addChild($htmlValueAttributeStrong);
         $htmlValueAttributeStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_ATTRIBUTE']));
 
-        $htmlTableHeadCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-        $htmlTableHeadRow->addChild($htmlTableHeadCellOldValue);
+        if ($showDiff) {
+            $htmlTableHeadCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+            $htmlTableHeadRow->addChild($htmlTableHeadCellOldValue);
 
-        $htmlValueOldStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
-        $htmlTableHeadCellOldValue->addChild($htmlValueOldStrong);
-        $htmlValueOldStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_OLD_VALUE']));
+            $htmlValueOldStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+            $htmlTableHeadCellOldValue->addChild($htmlValueOldStrong);
+            $htmlValueOldStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_OLD_VALUE']));
+        }
 
         $htmlTableHeadCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
         $htmlTableHeadRow->addChild($htmlTableHeadCellNewValue);
 
         $htmlValueNewStrong = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
         $htmlTableHeadCellNewValue->addChild($htmlValueNewStrong);
-        $htmlValueNewStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_ACCESS_NEW_VALUE']));
+        if ($showDiff) {
+            $label = $_ARRAYLANG['TXT_ACCESS_NEW_VALUE'];
+        } else {
+            $label = $_ARRAYLANG['TXT_ACCESS_VALUE'];
+        }
+        $htmlValueNewStrong->addChild(new \Cx\Core\Html\Model\Entity\TextElement($label));
 
         $htmlTableBody = new \Cx\Core\Html\Model\Entity\HtmlElement('tbody');
         $htmlTable->addChild($htmlTableBody);
@@ -1024,10 +1066,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $htmlTableBodyCellAttribute->setAttribute('class', 'attribute');
             $htmlTableBodyCellAttribute->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($attribute['label'])));
 
-            $htmlTableBodyCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
-            $htmlTableBodyRow->addChild($htmlTableBodyCellOldValue);
-            $htmlTableBodyCellOldValue->setAttribute('class', 'value old');
-            $htmlTableBodyCellOldValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($attribute['old'])));
+            if ($showDiff) {
+                $htmlTableBodyCellOldValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
+                $htmlTableBodyRow->addChild($htmlTableBodyCellOldValue);
+                $htmlTableBodyCellOldValue->setAttribute('class', 'value old');
+                $htmlTableBodyCellOldValue->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($attribute['old'])));
+            }
 
             $htmlTableBodyCellNewValue = new \Cx\Core\Html\Model\Entity\HtmlElement('td');
             $htmlTableBodyRow->addChild($htmlTableBodyCellNewValue);
