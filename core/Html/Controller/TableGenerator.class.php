@@ -51,7 +51,7 @@ class TableGenerator extends \BackendTable
      * @param $attrs   array attributes and values
      * @param $options array options for view generator
      */
-    public function __construct($attrs = array(), $options = array(), $readOnly)
+    public function __construct($attrs = array(), $options = array(), $readOnly = false)
     {
         global $_ARRAYLANG;
 
