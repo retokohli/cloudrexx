@@ -657,7 +657,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
      * user profile
      *
      * @todo    Migrate this code to an event listener as soon as User
-     *          is a proper doctrine event
+     *          is a proper doctrine entity
      * @param   \User   $objUser    The user who did sign-up
      * @param   array   $changedAttributes  A one-dimensional list of user
      *                                      profile attributes that had
