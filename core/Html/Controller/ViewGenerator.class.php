@@ -345,8 +345,21 @@ class ViewGenerator {
                     $lcOptions['searchFields'][] = $field;
                 }
             }
+            if (isset($this->options['functions']['searchCallback'])) {
+                $lcOptions['searchCallback'] = $this->options['functions'][
+                    'searchCallback'
+                ];
+            }
         } else {
             $lcOptions['searchFields'] = array();
+        }
+        if (
+            isset($lcOptions['filtering']) &&
+            isset($this->options['functions']['filterCallback'])
+        ) {
+            $lcOptions['filterCallback'] = $this->options['functions'][
+                'filterCallback'
+            ];
         }
         if (!isset($lcOptions['filterFields'])) {
             $lcOptions['filterFields'] = false;
