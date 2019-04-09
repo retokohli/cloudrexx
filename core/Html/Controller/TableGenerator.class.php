@@ -50,6 +50,7 @@ class TableGenerator extends \BackendTable
      *
      * @param $attrs   array attributes and values
      * @param $options array options for view generator
+     * @param boolean $readOnly if view is only readable
      */
     public function __construct($attrs = array(), $options = array(), $readOnly = false)
     {
@@ -66,8 +67,9 @@ class TableGenerator extends \BackendTable
                 $readOnly &&
                 isset($options['fields']) &&
                 isset($options['fields'][$rowname]) &&
-                isset($options['fields'][$rowname]['showReadOnly']) &&
-                !$options['fields'][$rowname]['showReadOnly']
+                isset($options['fields'][$rowname]['show']) &&
+                isset($options['fields'][$rowname]['show']['show']) &&
+                !$options['fields'][$rowname]['show']['show']
             ) {
                 continue;
             }
@@ -76,9 +78,10 @@ class TableGenerator extends \BackendTable
                 $readOnly &&
                 isset($options['fields']) &&
                 isset($options['fields'][$rowname]) &&
-                isset($options['fields'][$rowname]['showfield'])
+                isset($options['fields'][$rowname]['show']) &&
+                isset($options['fields'][$rowname]['show']['parse'])
             ) {
-                $callback = $options['fields'][$rowname]['showfield'];
+                $callback = $options['fields'][$rowname]['show']['parse'];
                 if (
                     is_array($callback) &&
                     isset($callback['adapter']) &&
@@ -97,7 +100,7 @@ class TableGenerator extends \BackendTable
                     if ($jsonResult['status'] == 'success') {
                         $data = $jsonResult["data"];
                     }
-                } else if(is_callable($callback)){
+                } else if (is_callable($callback)) {
                     $data = $callback(
                         $row,
                         $attrs,
@@ -124,6 +127,6 @@ class TableGenerator extends \BackendTable
 
         $data = $data->flip();
 
-        parent::__construct($data, $options, true);
+        parent::__construct($data, $options, true, null, $readOnly);
     }
 }

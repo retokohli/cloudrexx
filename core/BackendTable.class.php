@@ -78,9 +78,10 @@ class BackendTable extends HTML_Table {
      * @param array $options      options of view generator
      * @param string $entityClass class name of entity
      * @param \Cx\Core\Html\Controller\ViewGenerator $viewGenerator instance of ViewGenerator
+     * @param boolean $readOnly if view is only readable
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewGenerator = null) {
+    public function __construct($attrs = array(), $options = array(), $entityClass = '', $viewGenerator = null, $readOnly = false) {
         global $_ARRAYLANG;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -329,6 +330,11 @@ class BackendTable extends HTML_Table {
                     ) {
                         $cellAttrs = $options['fields'][$origHeader]['table']['attributes'];
                     }
+
+                    if (empty($readOnly)) {
+                        $encode = false;
+                    }
+
                     $this->setCellAttributes($row, $col, $cellAttrs);
                     $this->setCellContents($row, $col, $data, 'TD', 0, $encode);
                     $col++;
