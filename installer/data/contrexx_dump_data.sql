@@ -412,6 +412,7 @@ INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_config_email_access','',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_config_profile_access','',1);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_delete_account','',1);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('signup_notification_address','info@example.com',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('user_change_notification_address','info@example.com',0);
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (1,'Manager','Administrator',1,'backend','');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (3,'Community','Community',1,'frontend','');
