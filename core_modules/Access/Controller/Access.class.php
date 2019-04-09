@@ -755,7 +755,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
      *                                      $newProfileData will be marked
      *                                      as changed.
      */
-    protected function preprocessProfileNotificationMail($type, $objMail, $objUser, $changedAttributes, $newProfileData, $oldProfileData = null) {
+    protected function preprocessProfileNotificationMail($type, $objMail, $objUser, $changedAttributes, $newProfileData, $oldProfileData = array()) {
         global $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
@@ -772,7 +772,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         // whether or not we shall output the difference
         // of the profile before and after the event
         $showDiff = false;
-        if (isset($oldProfileData)) {
+        if (!empty($oldProfileData)) {
             $showDiff = true;
         }
 
