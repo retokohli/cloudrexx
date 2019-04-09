@@ -331,7 +331,7 @@ class BackendTable extends HTML_Table {
                         $cellAttrs = $options['fields'][$origHeader]['table']['attributes'];
                     }
 
-                    if (empty($readOnly)) {
+                    if (!empty($readOnly)) {
                         $encode = false;
                     }
 
