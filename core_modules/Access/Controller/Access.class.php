@@ -653,6 +653,43 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     }
 
     /**
+     * Send mail notification (signup_notification) regarding a signed-up
+     * user profile
+     *
+     * @todo    Migrate this code to an event listener as soon as User
+     *          is a proper doctrine event
+     * @param   \User   $objUser    The user who did sign-up
+     * @param   array   $changedAttributes  A one-dimensional list of user
+     *                                      profile attributes that had
+     *                                      been set.
+     * @param   array   $newProfileData     Two-dimensional array of the user's
+     *                                      profile data after the
+     *                                      modification.
+     */
+    protected function sendSignUpNotificationMail($objUser, $profileData) {
+        $arrSettings = \User_Setting::getSettings();
+        if (!$arrSettings['signup_notification_address']['status']) {
+            return;
+        }
+
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+        if (!$objMail) {
+            return;
+        }
+
+        if (!$this->preprocessProfileNotificationMail('signup_notification', $objMail, $objUser, array_keys($profileData), $profileData)) {
+            return;
+        }
+
+        $recipientAddrs = array_map('trim', explode(',', $arrSettings['signup_notification_address']['value']));
+        foreach ($recipientAddrs as $recipientMail) {
+            $objMail->AddAddress($recipientMail);
+            $objMail->Send();
+            $objMail->ClearAddresses();
+        }
+    }
+
+    /**
      * Send mail notification (user_profile_modification) regarding a modified
      * user profile
      *
@@ -1199,6 +1236,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $arrSettings = \User_Setting::getSettings();
             if (!$arrSettings['user_activation_timeout']['status'] || $objUser->getRestoreKeyTime() >= time()) {
                 if ($objUser->finishSignUp()) {
+                    // fetch profile data
+                    $profileData = $this->fetchProfileDataOfUser($objUser);
+
+                    // send notification mail regarding signed-up user
+                    $this->sendSignUpNotificationMail($objUser, $profileData);
+
                     return true;
                 }
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
