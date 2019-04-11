@@ -301,7 +301,7 @@ class JsonNode implements JsonAdapter {
         $this->em->getConnection()->beginTransaction();
         try {
             // copy the node recursively and persist changes
-            $newNode = $node->copy(true, null, true, $position, true);
+            $newNode = $node->copy(true, null, $position, true);
             $this->em->flush();
             // move the node to correct position
             $this->nodeRepo->moveUp($newNode, true);

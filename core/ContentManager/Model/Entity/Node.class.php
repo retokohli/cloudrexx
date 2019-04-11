@@ -429,11 +429,8 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Creates a copy of this node including its pages
      *
-     * This does not persist anything.
-     * @todo This is untested!
      * @param boolean $recursive (optional) Whether copy all children to the new node or not, default false
      * @param Node    $newParent (optional) New parent node for the copy, default is parent of this
-     * @param boolean $persist   (optional) Whether to persist new entities or not, default true, if set to false, be sure to persist everything
      * @param integer $nodePosition         Node position
      * @param boolean $addCopySuffix        Add the suffix '(Copy)' to the page title if true otherwise not
      * @return \Cx\Core\ContentManager\Model\Entity\Node Copy of this node
@@ -441,7 +438,6 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function copy(
         $recursive = false,
         Node $newParent = null,
-        $persist = true,
         &$nodePosition = 0,
         $addCopySuffix = false
     ) {
@@ -454,15 +450,10 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 
         $copy = new self();
         $copy->setParent($newParent);
-        if ($persist) {
-            $em->persist($copy);
-        }
+        $em->persist($copy);
 
         foreach ($this->getPages(true) as $page) {
             $pageCopy = $page->copyToNode($copy, true, true, true, true, true, false);
-            if (!$persist) {
-                continue;
-            }
 
             $em->persist($pageCopy);
             // Update the $pageCopy title with the suffix '(Copy)' if the $addCopySuffix is true otherwise not
