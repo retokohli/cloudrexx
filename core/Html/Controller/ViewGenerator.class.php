@@ -2236,6 +2236,44 @@ class ViewGenerator {
     }
 
     /**
+     * Calls the given callback with the given arguments
+     *
+     * If the callback is a JsonAdapter, $info must have the indexes "adapter"
+     * and "method" set.
+     * @param array $info Callable or JsonAdapter
+     * @param array $arguments Associative array of arguments
+     * @param boolean $throwIfNoCallback If set to true, throws an exception on error
+     * @throws ViewGeneratorException If $throwIfNoCallback is true and an error happens
+     */
+    public static function callCallbackByInfo($info, $arguments, $throwIfNoCallback = false) {
+        if (
+            is_array($info) &&
+            isset($info['adapter']) &&
+            isset($info['method'])
+        ) {
+            $json = new \Cx\Core\Json\JsonData();
+            $jsonResult = $json->data(
+                $info['adapter'],
+                $info['method'],
+                $arguments
+            );
+            if ($jsonResult['status'] == 'success') {
+                $data = $jsonResult['data'];
+            } else {
+                if ($jsonResult['status'] == 'error' && !empty($jsonResult['message'])) {
+                    throw new \Cx\Core\Error\Model\Entity\ShinyException($jsonResult['message']);
+                }
+                throw new ViewGeneratorException($jsonResult['message']);
+            }
+        } else if (is_callable($info)) {
+            $data = call_user_func_array($info, $arguments);
+        } else if ($throwIfNoCallback) {
+            throw new ViewGeneratorException('Given argument is not a valid callback');
+        }
+        return $data;
+    }
+
+    /**
      * Return the value of the value callback.
      *
      * @param $callback    array  callback options
