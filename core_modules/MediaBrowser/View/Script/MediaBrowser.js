@@ -1069,8 +1069,8 @@ cx.ready(function () {
                     bIsDir = b['datainfo']['type'] == 'dir';
 
                     // fetch the value to sort by
-                    aSortFlag = (a['datainfo'][attribute]);
-                    bSortFlag = (b['datainfo'][attribute]);
+                    aSortFlag = a['datainfo'][attribute];
+                    bSortFlag = b['datainfo'][attribute];
 
                     // first list directories
                     if (aIsDir && !bIsDir) return -1;
@@ -1087,11 +1087,9 @@ cx.ready(function () {
                         bSortFlag = parseInt(bSortFlag, 10);
 
                         // list directories alphabetical
-                        if (aIsDir) {
-                            aSortFlag = (a['datainfo']['name']);
-                        }
-                        if (bIsDir) {
-                            bSortFlag = (b['datainfo']['name']);
+                        if (aIsDir && bIsDir) {
+                            aSortFlag = a['datainfo']['name'];
+                            bSortFlag = b['datainfo']['name'];
                         }
                     }
                     if (reverse) {
