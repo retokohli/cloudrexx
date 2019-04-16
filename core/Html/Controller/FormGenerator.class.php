@@ -1076,7 +1076,25 @@ CODE;
                 if (isset($options['attributes'])) {
                     $input->setAttributes($options['attributes']);
                 }
-                return $input;
+                if (!isset($options['mode']) || $options['mode'] != 'nocomplete') {
+                    return $input;
+                }
+                // in order to circumvent forced autocompletion by modern
+                // browsers we need to add an additional field and set the type
+                // "dynamically"...
+                // For more info see CLX-2388
+                $container = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                $dummyInput = new \Cx\Core\Html\Model\Entity\DataElement($title, '');
+                $dummyInput->setAttribute('style', 'display:none;');
+                $container->addChild($dummyInput);
+                $container->addChild($input);
+                $dummyInput2 = new \Cx\Core\Html\Model\Entity\DataElement(
+                    'not-an-email',
+                    ''
+                );
+                $dummyInput2->setAttribute('style', 'display:none;');
+                $container->addChild($dummyInput2);
+                return $container;
                 break;
         }
     }
