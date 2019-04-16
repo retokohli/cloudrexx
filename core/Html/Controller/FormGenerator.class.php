@@ -1089,7 +1089,7 @@ CODE;
                 $container->addChild($dummyInput);
                 $container->addChild($input);
                 $dummyInput2 = new \Cx\Core\Html\Model\Entity\DataElement(
-                    'not-an-email',
+                    'not-a-' . $title,
                     ''
                 );
                 $dummyInput2->setAttribute('style', 'display:none;');
