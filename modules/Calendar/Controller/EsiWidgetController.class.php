@@ -98,7 +98,9 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             return;
         }
 
-        $content = file_get_contents($fileSystem->getFullPath($file));
+        $content = file_get_contents(
+            $fileSystem->getFullPath($file) . $file->getFullName()
+        );
         if (
             preg_match(
                 '/\{CALENDAR_CATEGORY_([0-9]+)\}/',
@@ -109,13 +111,20 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             $category = $catMatches[1];
         }
 
+        // check if set limit shall be ignored
+        //
+        // note: placeholder can never be at position 0,
+        // as the content does always first contain the
+        // opening template block calendar_headlines_row
+        $listAll = (bool) strpos($content, '{CALENDAR_LIMIT_OFF}');
+
         $_ARRAYLANG = array_merge(
             $_ARRAYLANG,
             \Env::get('init')->getComponentSpecificLanguageData('Calendar', true, $_LANGID)
         );
 
         $headlines = new CalendarHeadlines($content);
-        $template->setVariable($name, $headlines->getHeadlines($category));
+        $template->setVariable($name, $headlines->getHeadlines($category, $listAll));
 
         //Set expiration date
         // get next event

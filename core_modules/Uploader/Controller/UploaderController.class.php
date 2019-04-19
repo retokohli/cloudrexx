@@ -133,6 +133,7 @@ class UploaderController {
     static function handleRequest($conf = array()) {
 
         $cx = Cx::instanciate();
+        $session = $cx->getComponent('Session')->getSession();
         // 5 minutes execution time
         @set_time_limit(5 * 60);
 
@@ -140,8 +141,8 @@ class UploaderController {
 
         $conf = self::$conf = array_merge(array(
             'file_data_name' => 'file',
-            'tmp_dir' => $_SESSION->getTempPath(),
-            'target_dir' => 'images/content/',
+            'tmp_dir' => $session->getTempPath(),
+            'target_dir' => $session->getTempPath(),
             'cleanup' => true,
             'max_file_age' => 5 * 3600,
             'chunk' => isset($_REQUEST['chunk']) ? intval($_REQUEST['chunk']) : 0,
@@ -220,8 +221,8 @@ class UploaderController {
 
                 \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
 
-                $rootPath      = $cx->getWebsitePath() . $conf['target_dir'];
-                $rootPathFull  = $cx->getWebsitePath() . $new_path;
+                $rootPath      = $conf['target_dir'];
+                $rootPathFull  = $new_path;
                 $filePathinfo  = pathinfo($rootPathFull);
                 $fileExtension = $filePathinfo['extension'];
                 $fileNamePlain = $filePathinfo['filename'];
@@ -235,7 +236,7 @@ class UploaderController {
                         $thumbnail
                     ) {
                         $im->_createThumb(
-                            $rootPath, $conf['target_dir'], $fileName,
+                            $rootPath, '', $fileName,
                             $thumbnail['size'], $thumbnail['quality'],
                             $fileNamePlain . $thumbnail['value'] . '.'
                             . $fileExtension

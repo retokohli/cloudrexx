@@ -181,14 +181,7 @@ class ContentManager extends \Module
             'CORE_CM_METAIMAGE_BUTTON' => static::showMediaBrowserButton('Metaimage')
         ));
 
-        $mediaBrowser = new MediaBrowser();
-        $mediaBrowser->setCallback('target_page_callback');
-        $mediaBrowser->setOptions(array(
-            'type' => 'button',
-            'data-cx-mb-views' => 'sitestructure',
-            'id' => 'page_target_browse'
-        ));
-
+        // MediaBrowser used by the WYSIWYG-editor
         $mediaBrowserCkeditor = new MediaBrowser();
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
         $mediaBrowserCkeditor->setOptions(array(
@@ -198,11 +191,7 @@ class ContentManager extends \Module
         ));
 
         $this->template->setVariable(array(
-            'MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']),
-            'MEDIABROWSER_BUTTON_CKEDITOR' => $mediaBrowserCkeditor->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
-        ));
-
-        $this->template->setVariable(array(
+            'MEDIABROWSER_BUTTON_CKEDITOR' => $mediaBrowserCkeditor->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']),
             'ALIAS_PERMISSION'  => $alias_permission,
             'ALIAS_DENIAL'      => $alias_denial,
             'CONTREXX_BASE_URL' => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
@@ -266,16 +255,25 @@ class ContentManager extends \Module
             }
         }
 
-        // Mediabrowser
+        // MediaBrowser for redirect selection
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array('type' => 'button'));
         $mediaBrowser->setCallback('setWebPageUrlCallback');
         $mediaBrowser->setOptions(array(
-            'data-cx-mb-startview' => 'sitestructure',
+            'startview' => 'sitestructure',
+            'views' => 'uploader,filebrowser,sitestructure',
             'id' => 'page_target_browse'
         ));
         $this->template->setVariable(array(
             'CM_MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+        ));
+
+        // MediaBrowser for symlink selection
+        $mediaBrowser->setOptions(array(
+            'views' => 'sitestructure',
+        ));
+        $this->template->setVariable(array(
+            'CM_MEDIABROWSER_BUTTON_SYMLINK' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
         ));
 
         $toggleTitles      = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
@@ -446,7 +444,7 @@ class ContentManager extends \Module
         $cxjs->setVariable(array(
             'editmodetitle'      => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
             'editmodecontent'    => $editmodeTemplate->get(),
-            'ckeditorconfigpath' => substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH . '/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT) + 1),
+            'ckeditorconfigpath' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Wysiwyg')->getConfigPath(),
             'regExpUriProtocol'  =>  \FWValidator::REGEX_URI_PROTO,
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,
@@ -565,6 +563,9 @@ class ContentManager extends \Module
             $theme = $themeRepo->getDefaultTheme(
                 \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
                 $frontendLanguage['id']);
+            if (!$theme) {
+                continue;
+            }
             $defaultThemes[$frontendLanguage['lang']] = $theme->getId();
         }
 
@@ -606,7 +607,7 @@ class ContentManager extends \Module
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
             'type' => 'button',
-            'data-cx-mb-views' => $type
+            'views' => $type
         ));
         $mediaBrowser->setCallback('cx.cm.setSelected' . ucfirst($name));
 

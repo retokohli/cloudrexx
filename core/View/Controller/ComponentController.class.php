@@ -92,7 +92,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
-                false,
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_PLACEHOLDER,
                 '',
                 '',
                 array(
@@ -105,6 +105,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
     }
+
+    /**
+     * @{inheritdoc}
+     */
+    public function registerEvents() {
+        $evm = $this->cx->getEvents();
+        $evm->addEvent($this->getName() . '.Sigma:loadContent');
+        $evm->addEvent($this->getName() . '.Sigma:setVariable');
+    }
+
     /**
      * Register your event listeners here
      *

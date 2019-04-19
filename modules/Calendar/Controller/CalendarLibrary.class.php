@@ -211,7 +211,7 @@ class CalendarLibrary
      * 
      * @param string $tplPath Template path
      */
-    function __construct($tplPath){                                                                      
+    public function __construct($tplPath = '') {
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
@@ -871,7 +871,7 @@ EOF;
         if ($eventName == 'clearEsiCache') {
             $this->cx->getEvents()->triggerEvent(
                 'clearEsiCache',
-                array('Widget', $this->getHeadlinePlaceholders())
+                array('Widget', static::getHeadlinePlaceholders())
             );
             return;
         }
@@ -1003,10 +1003,10 @@ EOF;
      *
      * @return array
      */
-    public function getHeadlinePlaceholders()
+    public static function getHeadlinePlaceholders()
     {
         $placeholders = array();
-        for ($i = 1; $i <= 20; $i++) {
+        for ($i = 1; $i <= 21; $i++) {
             $id = '';
             if ($i > 1) {
                 $id = $i;

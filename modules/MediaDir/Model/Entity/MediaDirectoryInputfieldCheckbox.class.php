@@ -61,9 +61,10 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit;
+        global $objDatabase, $objInit;
 
         $intId = intval($arrInputfield['id']);
+        $langId = static::getOutputLocale()->getId();
 
         switch ($intView) {
             default:
@@ -84,17 +85,17 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                     if(!empty($objInputfieldValue->fields['value'])) {
                         $arrValue = explode(",",$objInputfieldValue->fields['value']);
                     } else {
-                        $arrValue = null;
+                        $arrValue = array();
                     }
                 } else {
-                    $arrValue = null;
+                    $arrValue = array();
                 }
 
-                $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $strOptions = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrOptions = explode(",", $strOptions);
 
                 if(!empty($arrInputfield['info'][0])){
-                    $strInfoValue = empty($arrInputfield['info'][$_LANGID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$_LANGID].'"';
+                    $strInfoValue = empty($arrInputfield['info'][$langId]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$langId].'"';
                     $strInfoClass = 'mediadirInputfieldHint';
                 } else {
                     $strInfoValue = null;
@@ -139,7 +140,7 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                 break;
             case 2:
                 //search View
-                $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $strOptions = empty($arrInputfield['default_value'][$langId]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$langId];
                 $arrOptions = explode(",", $strOptions);
 
                 $arrSelected = isset($_GET[$intId]) ? $_GET[$intId] : array();

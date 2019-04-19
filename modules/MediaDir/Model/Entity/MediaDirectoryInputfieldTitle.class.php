@@ -64,7 +64,7 @@ class MediaDirectoryInputfieldTitle extends \Cx\Modules\MediaDir\Controller\Medi
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;
+        global $objDatabase, $objInit, $_ARRAYLANG;
 
         switch ($intView) {
             default:

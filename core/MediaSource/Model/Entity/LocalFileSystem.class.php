@@ -67,7 +67,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
     /**
      * @todo    Option $recursive does not work. It always acts as recursive is set to TRUE
      */
-    public function getFileList($directory, $recursive = false, $readonly = false) {
+    public function getFileList($directory, $recursive = true, $readonly = false) {
         if (isset($this->fileListCache[$directory][$recursive][$readonly])) {
             return $this->fileListCache[$directory][$recursive][$readonly];
         }
@@ -77,12 +77,24 @@ class LocalFileSystem extends EntityBase implements FileSystem
             return array();
         }
 
-        $recursiveIteratorIterator = new \RegexIterator(
-            new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($dirPath),
-                \RecursiveIteratorIterator::SELF_FIRST
-            ), '/^((?!thumb(_[a-z]+)?).)*$/'
-        );
+        $regex = '/^((?!thumb(_[a-z]+)?).)*$/';
+        if ($recursive) {
+            $iteratorIterator = new \RegexIterator(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator(
+                        $dirPath
+                    ), \RecursiveIteratorIterator::SELF_FIRST
+                ), $regex
+            );
+        } else {
+            $iteratorIterator = new \RegexIterator(
+                new \IteratorIterator(
+                    new \DirectoryIterator(
+                        $dirPath
+                    )
+                ), $regex
+            );
+        }
 
         $jsonFileArray = array();
 
@@ -90,7 +102,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
             ->getThumbnailGenerator()
             ->getThumbnails();
 
-        foreach ($recursiveIteratorIterator as $file) {
+        foreach ($iteratorIterator as $file) {
             /**
              * @var $file \SplFileInfo
              */
@@ -165,14 +177,15 @@ class LocalFileSystem extends EntityBase implements FileSystem
                 $file->getFilename() => array('datainfo' => $fileInfos)
             );
 
-            for (
-                $depth = $recursiveIteratorIterator->getDepth() - 1;
-                $depth >= 0; $depth--
-            ) {
-                $path = array(
-                    $recursiveIteratorIterator->getSubIterator($depth)->current(
-                    )->getFilename() => $path
-                );
+            if ($recursive) {
+                for (
+                    $depth = $iteratorIterator->getDepth() - 1;
+                    $depth >= 0; $depth--
+                ) {
+                    $path = array(
+                        $iteratorIterator->getSubIterator($depth)->current()->getFilename() => $path
+                    );
+                }
             }
             $jsonFileArray = $this->array_merge_recursive($jsonFileArray, $path);
         }
@@ -214,7 +227,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
 
         foreach ($arrays as $array) {
             reset($base); //important
-            while (list($key, $value) = each($array)) {
+            foreach ($array as $key => $value) {
                 if (is_array($value) && isset($base[$key]) && is_array($base[$key])) {
                     $base[$key] = $this->array_merge_recursive($base[$key], $value);
                 } else {
@@ -472,11 +485,12 @@ class LocalFileSystem extends EntityBase implements FileSystem
         $iterator = new \RegexIterator(
             new \DirectoryIterator(
                 $this->getFullPath($file)
-            ), '/' . preg_quote($file->getName(), '/') . '.thumb_[a-z]+/'
+            ),
+            '/' . preg_quote($file->getName(), '/') . '.thumb_[a-z]+\.' . $file->getExtension() . '/'
         );
         foreach ($iterator as $thumbnail){
             \Cx\Lib\FileSystem\FileSystem::delete_file(
-                $thumbnail
+                $thumbnail->getPathName()
             );
         }
     }

@@ -209,7 +209,7 @@ class CalendarRegistrationManager extends CalendarLibrary
      */
     function showRegistrationList($objTpl, $tpl)
     {
-        global $objDatabase, $_LANGID, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute('SELECT count(DISTINCT `field_id`) AS `count_form_fields` FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` WHERE `form_id` = '.$this->formId);
         $objTpl->setVariable($this->moduleLangVar.'_COUNT_FORM_FIELDS', $objResult->fields['count_form_fields'] + 4);
@@ -222,7 +222,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                     FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fieldName`
                     WHERE `fieldName`.`field_id` = `formField`.`id` AND `fieldName`.`form_id` = `formField`.`form`
                     ORDER BY CASE `fieldName`.`lang_id`
-                                WHEN '.$_LANGID.' THEN 1
+                                WHEN '.FRONTEND_LANG_ID.' THEN 1
                                 ELSE 2
                                 END
                     LIMIT 1
@@ -232,7 +232,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                     FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fieldDefault`
                     WHERE `fieldDefault`.`field_id` = `formField`.`id` AND `fieldDefault`.`form_id` = `formField`.`form`
                     ORDER BY CASE `fieldDefault`.`lang_id`
-                                WHEN '.$_LANGID.' THEN 1
+                                WHEN '.FRONTEND_LANG_ID.' THEN 1
                                 ELSE 2
                                 END
                     LIMIT 1
@@ -410,7 +410,7 @@ class CalendarRegistrationManager extends CalendarLibrary
 
             $links = '
                 <a style="float: right;" class="delete_registration" href="index.php?cmd='. $this->moduleName .'&amp;act=event_registrations&amp;tpl='.$tpl.'&amp;id='.$this->eventId.'&amp;delete='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'" /></a>
-                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&amp;act=modify_registration&amp;tpl='.$tpl.'&amp;event_id='.$this->eventId.'&amp;amp;reg_id='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
+                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&amp;act=modify_registration&amp;tpl='.$tpl.'&amp;event_id='.$this->eventId.'&amp;amp;rid='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
             ';
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $links);
             $objTpl->parse('eventRegistrationValue');
@@ -547,7 +547,7 @@ class CalendarRegistrationManager extends CalendarLibrary
      */
     function showRegistrationInputfields(\Cx\Core\Html\Sigma $objTpl, $regId = null)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $i = 0;
         $objForm         = new \Cx\Modules\Calendar\Controller\CalendarForm($this->formId);
@@ -598,7 +598,7 @@ class CalendarRegistrationManager extends CalendarLibrary
 
         foreach ($objForm->inputfields as $arrInputfield) {
             $inputfield = '';
-            $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
+            $options = explode(',', $arrInputfield['default_value'][FRONTEND_LANG_ID]);
             $optionSelect = true;
 
             if(isset($_POST['registrationField'][$arrInputfield['id']])) {
@@ -666,7 +666,7 @@ class CalendarRegistrationManager extends CalendarLibrary
             if ($arrInputfield['type'] != 'fieldset') {
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_ROW'                              => $i % 2 == 0 ? 'row1' : 'row2',
-                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'     => $arrInputfield['name'][$_LANGID],
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'     => $arrInputfield['name'][FRONTEND_LANG_ID],
                     $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_REQUIRED' => $arrInputfield['required'] == 1 ? '<font class="calendarRequired"> *</font>' : '',
                     $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'    => $inputfield,
                 ));
@@ -683,7 +683,7 @@ class CalendarRegistrationManager extends CalendarLibrary
      */
     function getEscortData()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $query = "SELECT
                     `n`.`field_id`
@@ -696,7 +696,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                   WHERE
                     `n`.`form_id` = '{$this->formId}'
                   AND
-                    `n`.`lang_id` = '{$_LANGID}'
+                    `n`.`lang_id` = '" . FRONTEND_LANG_ID . "'
                   AND
                     `f`.`type` = 'seating'
                 ";

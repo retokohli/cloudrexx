@@ -41,6 +41,12 @@
           <option value="1" {CALENDAR_EVENT_TYPE_REDIRECT}>{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</option>
         </select>
       </div>
+      <div>
+        <label>{TXT_CALENDAR_EVENT_DETAIL_VIEW}</label>
+        <div class="checkbox"><label class="eventDetailLink">
+          <input type="checkbox" name="show-detail-view" {CALENDAR_EVENT_SHOW_DETAIL_VIEW} value="1" /> {TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL} </label>
+        </div>
+      </div>
       <div id="event-tabs">
         <ul style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
           <!-- BEGIN eventTabMenuDescTab -->
@@ -184,6 +190,7 @@
         <div class="event_place_manual">
           <label>{TXT_CALENDAR_EVENT_MAP}</label>
           <div class="formUploadedFiles">
+            {CALENDAR_EVENT_PLACE_MAP_LINK}
             {MAPUPLOAD_WIDGET_CODE}
             <input type="file" name="mapUpload" id="mapUpload" />
             <input type="hidden" name="placeMap" value="{CALENDAR_EVENT_PLACE_MAP}" />
@@ -325,6 +332,7 @@
       <div>
         <label>{TXT_CALENDAR_EVENT_PICTURE}</label>
         <div class="formUploadedFiles">
+          {CALENDAR_EVENT_PICTURE_THUMB}
           {PICTUREUPLOAD_WIDGET_CODE}
           <input type="file" name="pictureUpload" id="pictureUpload" />
           <input type="hidden" name="picture" value="{CALENDAR_EVENT_PICTURE}" />
@@ -333,6 +341,7 @@
       <div>
         <label>{TXT_CALENDAR_EVENT_ATTACHMENT}</label>
         <div class="formUploadedFiles">
+          {CALENDAR_EVENT_ATTACHMENT_LINK}
           {ATTACHMENTUPLOAD_WIDGET_CODE}
           <input type="file" name="attachmentUpload" id="attachmentUpload" />
           <input type="hidden" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" />

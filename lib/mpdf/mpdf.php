@@ -10892,7 +10892,7 @@ class mPDF
 	{
 		$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
 		reset($this->images);
-		while (list($file, $info) = each($this->images)) {
+		foreach ($this->images as $file => $info) {
 			$this->_newobj();
 			$this->images[$file]['n'] = $this->n;
 			$this->_out('<</Type /XObject');
@@ -13035,7 +13035,7 @@ class mPDF
 	function _putformobjects()
 	{
 		reset($this->formobjects);
-		while (list($file, $info) = each($this->formobjects)) {
+		foreach ($this->formobjects as $file => $info) {
 			$this->_newobj();
 			$this->formobjects[$file]['n'] = $this->n;
 			$this->_out('<</Type /XObject');
@@ -14133,7 +14133,7 @@ class mPDF
 		}
 	}
 
-	function GetFullPath(&$path, $basepath = '')
+	function GetFullPath(&$path, $basepath = '', $tagname = '')
 	{
 		// When parsing CSS need to pass temporary basepath - so links are relative to current stylesheet
 		if (!$basepath) {
@@ -16445,12 +16445,12 @@ class mPDF
 					// mPDF 6
 					$this->tag->CloseTag($endtag, $a, $i); // mPDF 6
 				} else { // OPENING TAG
+					if (strpos($e, ' ')) {
+						$te = strtoupper(substr($e, 0, strpos($e, ' ')));
+					} else {
+						$te = strtoupper($e);
+					}
 					if ($this->blk[$this->blklvl]['hide']) {
-						if (strpos($e, ' ')) {
-							$te = strtoupper(substr($e, 0, strpos($e, ' ')));
-						} else {
-							$te = strtoupper($e);
-						}
 						// mPDF 6
 						if ($te == 'THEAD' || $te == 'TBODY' || $te == 'TFOOT' || $te == 'TR' || $te == 'TD' || $te == 'TH') {
 							$this->lastoptionaltag = $te;
@@ -16465,11 +16465,6 @@ class mPDF
 
 					/* -- CSS-POSITION -- */
 					if ($this->inFixedPosBlock) {
-						if (strpos($e, ' ')) {
-							$te = strtoupper(substr($e, 0, strpos($e, ' ')));
-						} else {
-							$te = strtoupper($e);
-						}
 						$this->fixedPosBlock .= '<' . $e . '>';
 						if (in_array($te, $this->outerblocktags) || in_array($te, $this->innerblocktags)) {
 							$this->fixedPosBlockDepth++;
@@ -16499,8 +16494,8 @@ class mPDF
 						}
 						if (trim($path) != '' && !(stristr($e, "src=") !== false && substr($path, 0, 4) == 'var:') && substr($path, 0, 1) != '@') {
 							$path = htmlspecialchars_decode($path); // mPDF 5.7.4 URLs
-							$orig_srcpath = $path;
-							$this->GetFullPath($path);
+                            $orig_srcpath = $path;
+							$this->GetFullPath($path, '', $te);
 							$regexp = '/ (href|src)="(.*?)"/i';
 							$e = preg_replace($regexp, ' \\1="' . $path . '"', $e);
 						}
@@ -26346,9 +26341,9 @@ class mPDF
 					if (isset($tpl['resources'])) {
 						$this->current_parser = $tpl['parser'];
 						reset($tpl['resources'][1]);
-						while (list($k, $v) = each($tpl['resources'][1])) {
+						foreach ($tpl['resources'][1] as $k => $v) {
 							if ($k == '/Shading') {
-								while (list($k2, $v2) = each($v[1])) {
+							    foreach ($v[1] as $k2 => $v2) {
 									$this->_out($k2 . " ", false);
 									$this->pdf_write_value($v2);
 								}
@@ -31091,7 +31086,7 @@ class mPDF
 				// A dictionary.
 				$this->_out("<<", false);
 				reset($value[1]);
-				while (list($k, $v) = each($value[1])) {
+				foreach ($value[1] as $k => $v) {
 					$this->_out($k . ' ',false);
 					$this->pdf_write_value($v);
 				}

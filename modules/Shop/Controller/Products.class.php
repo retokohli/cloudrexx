@@ -1148,7 +1148,9 @@ class Products
         if ($selected && !$showAllOptions) {
             $arrName = array();
             $product = Product::getById($selected);
-            $arrName[$product->id()] = $product->name();
+            if ($product) {
+                $arrName[$product->id()] = $product->name();
+            }
         }
         return \Html::getOptions($arrName, $selected);
     }

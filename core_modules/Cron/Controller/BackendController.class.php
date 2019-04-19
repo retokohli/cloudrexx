@@ -157,14 +157,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 $value = explode(' ', $value, 2);
                                 $commandSelect = new \Cx\Core\Html\Model\Entity\DataElement(
                                     $name . '[command]',
-                                    \Html::getOptions(
-                                        array_combine(
-                                            array_values($commandSelectOptions),
-                                            array_values($commandSelectOptions)
-                                        ),
-                                        isset($value[0]) ? $value[0] : ''
-                                    ),
-                                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                                    isset($value[0]) ? $value[0] : '',
+                                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+                                    null,
+                                    array_combine(
+                                        array_values($commandSelectOptions),
+                                        array_values($commandSelectOptions)
+                                    )
                                 );
                                 $commandArguments = new \Cx\Core\Html\Model\Entity\DataElement(
                                     $name . '[arguments]',

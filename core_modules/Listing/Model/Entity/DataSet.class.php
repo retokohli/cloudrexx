@@ -54,7 +54,7 @@ class DataSetException extends \Exception {}
  * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
-class DataSet implements \Iterator {
+class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
     protected static $yamlInterface = null;
     protected $data = array();
     protected $dataType = 'array';
@@ -69,11 +69,25 @@ class DataSet implements \Iterator {
      */
     protected $identifier = '';
 
-    // TODO: DataSet must be extended, that it can handle objects
-    public function __construct($data = array(), callable $converter = null) {
+    /**
+     * List of options
+     * @var array
+     */
+    protected $options = array();
+
+    /**
+     * Constructor for DataSet
+     *
+     * @param array $data (optional) Array of data to convert and store
+     * @param callable $converter (optional) Custom data converter
+     * @param array $options (optional): Options for conversion
+     * @todo: DataSet must be extended, that it can handle objects
+     */
+    public function __construct($data = array(), callable $converter = null, $options = array()) {
         if (!count($data)) {
             return;
         }
+        $this->options = $options;
         if (is_callable($converter)) {
             $this->data = $converter($data);
         } else {
@@ -90,6 +104,9 @@ class DataSet implements \Iterator {
         }
         if (is_array($value)) {
             foreach ($value as $attribute=>$property) {
+                if (!isset($convertedData[$key])) {
+                    $convertedData[$key] = array();
+                }
                 $convertedData[$key][$attribute] = $property;
             }
         } else if (is_object($value)) {
@@ -100,6 +117,18 @@ class DataSet implements \Iterator {
             $convertedData[$key] = $convertedObject;
         } else {
              throw new DataSetException('Supplied argument could not be converted to DataSet');
+        }
+    }
+
+    /**
+     * Add column to each entry
+     *
+     * @param $column string title of column
+     */
+    public function addColumn($column)
+    {
+        foreach ($this->data as $key=>$data) {
+            $this->data[$key][$column] = '';
         }
     }
 
@@ -141,7 +170,21 @@ class DataSet implements \Iterator {
         return $convertedData;
     }
 
-    protected function convertObject($object, &$key) {
+    /**
+     * Default conversion of objects
+     * @param Object $object Object to convert
+     * @param string $key (Reference) Object key, might get replaced by object's ID
+     * @param array $forbiddenClasses (Optional) List of classes to skip recursion of
+     * @param string $prefix (Optional) Path to current object (see
+     *                          \Cx\Core\DataSource\Model\Entity\DoctrineRepository)
+     * @return array Converted data
+     */
+    protected function convertObject(
+        $object,
+        &$key,
+        $forbiddenClasses = array('Doctrine\ORM\PersistentCollection'),
+        $prefix = 'x.'
+    ) {
         $data = array();
         if ($object instanceof \Cx\Model\Base\EntityBase) {
             $em = \Env::get('em');
@@ -154,26 +197,90 @@ class DataSet implements \Iterator {
                 $field = $em->getClassMetadata(get_class($object))->getFieldName($column);
                 $value = $em->getClassMetadata(get_class($object))->getFieldValue($object, $field);
                 if ($value instanceof \DateTime) {
-                    $value = $value->format('d.M.Y H:i:s');
+                    $value = $value->format(ASCMS_DATE_FORMAT_DATETIME);
                 } elseif (is_array($value)) {
                     $value = serialize($value);
                 }
                 $data[$field] = $value;
             }
             $associationMappings = $em->getClassMetadata(get_class($object))->getAssociationMappings();
+            // loop over all relations of this entity
             foreach ($associationMappings as $field => $associationMapping) {
                 $classMethods = get_class_methods($object);
-                $methodNameToFetchAssociation = 'get'.ucfirst($field);
-                if (in_array($methodNameToFetchAssociation, $classMethods)) {
-                    $data[$field] = $object->$methodNameToFetchAssociation();
+                $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify(
+                    $field
+                );
+                $methodNameToFetchAssociation = 'get' . $methodBaseName;
+                // stop if getter does not exist
+                if (!in_array($methodNameToFetchAssociation, $classMethods)) {
+                    continue;
+                }
+                $data[$field] = $object->$methodNameToFetchAssociation();
+                // stop if recursion is not configured or target is not an object
+                if (
+                    !isset($this->options['recursions'][$prefix.$field]) ||
+                    !is_object($data[$field])
+                ) {
+                    // If we don't recurse, we want to know about this field.
+                    // If we recurse, it's misleading to show this field as
+                    // an empty array even if it might have content.
+                    if (count($this->options['recursions'])) {
+                        unset($data[$field]);
+                    }
+                    continue;
+                }
+                $className = $associationMapping['targetEntity'];
+                // stop if entity is already parsed
+                if (
+                    in_array(
+                        $className,
+                        $forbiddenClasses
+                    )
+                ) {
+                    unset($data[$field]);
+                    continue;
+                }
+                $foo = '';
+                $data[$field] = $this->convertObject(
+                    $data[$field],
+                    $foo,
+                    array_merge(
+                        $forbiddenClasses,
+                        array($className)
+                    ),
+                    $prefix . $field . '.'
+                );
+                // if a relation is empty, it's to be an empty object!
+                if (!count($data[$field])) {
+                    $data[$field] = new \stdClass();
                 }
             }
-            $data['virtual'] = $object->isVirtual();
+            if (
+                !isset($this->options['skipVirtual']) ||
+                !$this->options['skipVirtual']
+            ) {
+                $data['virtual'] = $object->isVirtual();
+            }
             return $data;
         }
         foreach ($object as $attribute => $property) {
             if (is_object($property)) {
-                $data[$attribute] = $this->convertObject($property, $key);
+                // if $object is an array collection, $attribute will be numeric
+                if ($object instanceof \Doctrine\Common\Collections\Collection) {
+                    // index collection entries by their "identifying field"
+                    $attribute = $property->getKeyAsString();
+                } else {
+                    $prefix .= $attribute . '.';
+                }
+                $data[$attribute] = $this->convertObject(
+                    $property,
+                    $key,
+                    array_merge(
+                        $forbiddenClasses,
+                        array(get_class($property))
+                    ),
+                    $prefix
+                );
             } else {
                 $data[$attribute] = $property;
             }
@@ -182,14 +289,14 @@ class DataSet implements \Iterator {
     }
 
     protected static function getYamlInterface() {
-        if (empty(self::$yamlInterface)) {
-            self::$yamlInterface = new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface();
+        if (empty(static::$yamlInterface)) {
+            static::$yamlInterface = new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface();
         }
-        return self::$yamlInterface;
+        return static::$yamlInterface;
     }
 
     public function toYaml() {
-        return $this->export(self::getYamlInterface());
+        return $this->export(static::getYamlInterface());
     }
 
     public static function import(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $content) {
@@ -226,7 +333,7 @@ class DataSet implements \Iterator {
         }
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objImport = self::import($importInterface, $objFile->getData());
+            $objImport = static::import($importInterface, $objFile->getData());
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
             throw new DataSetException("Failed to load data from file $filename!");
@@ -284,7 +391,7 @@ class DataSet implements \Iterator {
     }
 
     public static function fromYaml($data) {
-        return self::import(self::getYamlInterface(), $data);
+        return static::import(static::getYamlInterface(), $data);
     }
 
     /**
@@ -295,7 +402,7 @@ class DataSet implements \Iterator {
      * @return type
      */
     public static function load($filename, $useCache = true) {
-        return self::importFromFile(self::getYamlInterface(), $filename, $useCache);
+        return static::importFromFile(static::getYamlInterface(), $filename, $useCache);
     }
 
     public function getDataType() {
@@ -430,11 +537,17 @@ class DataSet implements \Iterator {
 
         foreach ($this as $key => $subarr) {
             if (!$this->is_iterable($subarr)) {
+                if (!isset($result[0])) {
+                    $result[0] = array();
+                }
                 $result[0][$key] = $subarr;
                 continue;
             }
             foreach ($subarr as $subkey => $subvalue) {
-                 $result[$subkey][$key] = $subvalue;
+                if (!isset($result[$subkey])) {
+                    $result[$subkey] = array();
+                }
+                $result[$subkey][$key] = $subvalue;
             }
         }
 

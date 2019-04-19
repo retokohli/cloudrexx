@@ -73,7 +73,7 @@ class CalendarManager extends CalendarLibrary
         global $_ARRAYLANG, $objTemplate;
 
         parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/View/Template/Backend');
-        $this->act = $_REQUEST['act'];
+        $this->act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
 
         $contentNavigation = '<a href="index.php?cmd='.$this->moduleName.'" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'].' </a>';
         $contentNavigation .= \Permission::checkAccess(180, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_event" class="'.($this->act == 'modify_event' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_NEW_EVENT'].' </a>' : '';
@@ -92,7 +92,8 @@ class CalendarManager extends CalendarLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-        switch ($_GET['act']) {
+        $act = isset($_GET['act']) ? $_GET['act'] : '';
+        switch ($act) {
             case 'settings':
                 \Permission::checkAccess(181, 'static');
                 $this->showSettings();
@@ -116,7 +117,10 @@ class CalendarManager extends CalendarLibrary
             case 'modify_registration':
             case 'add_registration':
                 \Permission::checkAccess(182, 'static');
-                $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['reg_id']));
+                $this->modifyRegistration(
+                    contrexx_input2int($_GET['event_id']),
+                    contrexx_input2int($_GET['rid'])
+                );
                 break;
             case 'get_exception_dates':
                 $this->getExeceptionDates();
@@ -340,8 +344,8 @@ class CalendarManager extends CalendarLibrary
 
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
-                    'type'             => 'button',
-                    'data-cx-mb-views' => $type
+                    'type'  => 'button',
+                    'views' => $type
         ));
         $mediaBrowser->setCallback('setSelected' . ucfirst($name));
 
@@ -356,36 +360,43 @@ class CalendarManager extends CalendarLibrary
      * @return null
      */
     function modifyEvent($eventId){
-        global $_ARRAYLANG, $_CORELANG, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_modify_event.html');
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
         \JS::registerJS('modules/Calendar/View/Script/Backend.js');
 
-        \ContrexxJavascript::getInstance()->setVariable(array(
-            'language_id' => \FWLanguage::getDefaultLangId()
-        ), 'calendar');
+        \ContrexxJavascript::getInstance()->setVariable(
+            array(
+                'language_id' => \FWLanguage::getDefaultLangId()
+            ),
+            'calendar'
+        );
         $this->getSettings();
         $this->getFrontendLanguages();
 
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
-        if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
-            if($objEvent->save($_POST)) {
-                    $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
-                    if (isset($_POST['save_and_publish'])) {
-                        \Permission::checkAccess(180, 'static');
-                        if($objEvent->confirm()) {
-                            // do nothing
-                        } else {
-                            $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
-                        }
+        if (isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
+            if ($objEvent->save($_POST)) {
+                $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
+                if (isset($_POST['save_and_publish'])) {
+                    \Permission::checkAccess(180, 'static');
+                    if($objEvent->confirm()) {
+                        // do nothing
+                    } else {
+                        $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
                     }
-                    $this->showOverview();
-                    return;
+                }
+                $this->showOverview();
+                return;
             } else {
+                if ($objEvent->hasErrorMessage()) {
+                    $this->errMessage = $objEvent->getErrorMessage();
+                } else {
                     $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'];
+                }
             }
-            if($this->arrSettings['rssFeedStatus'] == 1) {
+            if ($this->arrSettings['rssFeedStatus'] == 1) {
                 $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
                 $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
                 $objFeed->creatFeed();
@@ -404,9 +415,25 @@ class CalendarManager extends CalendarLibrary
         $copy = isset($_REQUEST['copy']) && !empty($_REQUEST['copy']);
         $this->_pageTitle = $copy || empty($eventId) ? $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT'] : $_ARRAYLANG['TXT_CALENDAR_EVENT']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
 
-        if($eventId != 0) {
+        if ($eventId != 0) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
             $objEvent->getData();
+
+            // Fetch requested event.
+            $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+            $event = $eventRepo->findOneBy(array(
+                'id' => $eventId,
+            ));
+
+            // abort in case the event does not exist
+            if (!$event) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromMagic(
+                        $this->cx->getWebsiteBackendPath() . '/' . $this->moduleName
+                    )
+                );
+                return;
+            }
         }
 
         //parse weekdays
@@ -458,6 +485,8 @@ class CalendarManager extends CalendarLibrary
 
         $eventStartDate = $this->format2userDateTime($startDate);
         $eventEndDate   = $this->format2userDateTime($endDate);
+
+        $_ARRAYLANG += \Env::get('init')->getComponentSpecificLanguageData('Html', false);
 
         //parse globals
         $this->_objTpl->setGlobalVariable(array(
@@ -528,6 +557,14 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_SERIES_PATTERN_APPONTMENTS'       => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS'],
             'TXT_'.$this->moduleLangVar.'_SERIES_PATTERN_ENDS'              => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS'],
             'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION'            => $objEvent->invitationSent == 0 ? $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION'] : $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_AGAIN_INVITATION'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_COUNT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO_ALL'     => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO_TOOLTIP' => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_TOOLTIP'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO_REGISTERED' => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_REGISTERED'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO_SIGNEDIN'=> $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO_INACTIVE'=> $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_INACTIVE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_EXCLUDE_TOOLTIP'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_EXCLUDE_TOOLTIP'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE'                       => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_EVENT'                 => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'              => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
@@ -588,13 +625,14 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_ADD'                                 => $_ARRAYLANG['TXT_CALENDAR_ADD'],
             'TXT_'.$this->moduleLangVar.'_SELECT_ADDITIONAL_RECURRENCES_TITLE' => $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE'],
             'TXT_'.$this->moduleLangVar.'_SELECT_ADDITIONAL_RECURRENCES_INFO'  => $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'],
+            'TXT_CORE_HTML_PLEASE_CHOOSE'  => $_ARRAYLANG['TXT_CORE_HTML_PLEASE_CHOOSE'],
             //show media browser button
             $this->moduleLangVar.'_EVENT_REDIRECT_BROWSE_BUTTON'            => self::showMediaBrowserButton('eventRedirect', 'sitestructure'),
             $this->moduleLangVar.'_EVENT_PICTURE_BROWSE_BUTTON'             => self::showMediaBrowserButton('eventPicture'),
             $this->moduleLangVar.'_EVENT_ATTACHMENT_BROWSE_BUTTON'          => self::showMediaBrowserButton('eventAttachment'),
             $this->moduleLangVar.'_PLACE_MAP_SOURCE_BROWSE_BUTTON'          => self::showMediaBrowserButton('inputPlaceMap'),
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
-            $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
+            $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => FRONTEND_LANG_ID,
             $this->moduleLangVar.'_EVENT_DATE_FORMAT'                       => $this->getDateFormat(1),
             $this->moduleLangVar.'_EVENT_CURRENCY'                          => $this->arrSettings['paymentCurrency'],
             $this->moduleLangVar.'_EVENT_CATEGORIES'                        =>
@@ -975,8 +1013,12 @@ class CalendarManager extends CalendarLibrary
         $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
         $crmMemberships = array_keys($objCrmLibrary->getMemberships());
         $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'calendar_event_invite_crm_membership', $objEvent->invitedCrmGroups);
+        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'calendar_event_excluded_crm_membership', $objEvent->excludedCrmGroups);
         $this->_objTpl->setVariable(array(
             'TXT_CALENDAR_CRM_MEMBERSHIPS'          => $_ARRAYLANG['TXT_CALENDAR_CRM_MEMBERSHIPS'],
+            'TXT_CALENDAR_CRM_MEMBERSHIPS_TOOLTIP'  => $_ARRAYLANG['TXT_CALENDAR_CRM_MEMBERSHIPS_TOOLTIP'],
+            'TXT_CALENDAR_CRM_INVITED_MEMBERSHIPS'  => $_ARRAYLANG['TXT_CALENDAR_CRM_INVITED_MEMBERSHIPS'],
+            'TXT_CALENDAR_CRM_EXCLUDED_MEMBERSHIPS' => $_ARRAYLANG['TXT_CALENDAR_CRM_EXCLUDED_MEMBERSHIPS'],
             'TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS'   => $_ARRAYLANG['TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS'],
         ));
         \JS::activate('chosen');
@@ -1102,7 +1144,7 @@ class CalendarManager extends CalendarLibrary
 
             //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
+                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => '',
             ));
 
             $this->_objTpl->parse('eventTabMenuDescTab');
@@ -1113,7 +1155,7 @@ class CalendarManager extends CalendarLibrary
                 'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $arrLang['is_default'] == 'true' ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg('description['.$arrLang['id'].']', !empty($objEvent->arrData['description'][$arrLang['id']]) ? contrexx_raw2xhtml($objEvent->arrData['description'][$arrLang['id']]) : contrexx_raw2xhtml($objEvent->description), 'full'),
-                $this->moduleLangVar.'_EVENT_REDIRECT'                  => isset($objEvent->arrData['redirect']) ? (!empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID]) : '',
+                $this->moduleLangVar.'_EVENT_REDIRECT'                  => isset($objEvent->arrData['redirect']) ? (!empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][FRONTEND_LANG_ID]) : '',
                 $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
                 $this->moduleLangVar.'_ONSUBMIT_PUBLICATION'            => $onsubmitPublications,
@@ -1278,7 +1320,7 @@ class CalendarManager extends CalendarLibrary
      * @return null
      */
     function modifyCategory($categoryId){
-        global $_ARRAYLANG, $_CORELANG, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_modify_category.html');
 
@@ -1296,7 +1338,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_CATEGORY_HOSTS'       => $_ARRAYLANG['TXT_CALENDAR_HOSTS'],
             'TXT_'.$this->moduleLangVar.'_CATEGORY_HOSTS_INFO'  => $_ARRAYLANG['TXT_CALENDAR_HOSTS_INFO'],
             'TXT_'.$this->moduleLangVar.'_MORE'                 => $_ARRAYLANG['TXT_CALENDAR_MORE'],
-            $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID'    => $_LANGID,
+            $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID'    => FRONTEND_LANG_ID,
         ));
 
         if($categoryId != 0) {
@@ -1389,7 +1431,8 @@ class CalendarManager extends CalendarLibrary
 
         $objSettings = new \Cx\Modules\Calendar\Controller\CalendarSettings();
 
-        switch ($_GET['tpl']) {
+        $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
+        switch ($tpl) {
             /* case 'hosts':
                 $objSettings->hosts($this->_objTpl);
                 break;
@@ -1450,7 +1493,7 @@ class CalendarManager extends CalendarLibrary
      * @return mixed csv file with registered users list
      */
     function exportRegistrations($eventId, $registrationType) {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         if (empty($eventId)) {
             \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?cmd=".$this->moduleName);
@@ -1501,7 +1544,8 @@ class CalendarManager extends CalendarLibrary
 
             $firstKey = key($objRegistrationManager->registrationList);
 
-            foreach ($objRegistrationManager->registrationList[$firstKey]->fields as $id => $arrField) {
+            foreach ($objRegistrationManager->registrationList[$firstKey]->getForm()->inputfields as $arrInputfield) {
+                $arrField = $objRegistrationManager->registrationList[$firstKey]->fields[$arrInputfield['id']];
                 if ($arrField['type'] != 'fieldset') {
                     print (self::escapeCsvValue($this->parseCsvData($arrField['name'], $fileFormat)).$this->csvSeparator);
                 }
@@ -1540,12 +1584,13 @@ class CalendarManager extends CalendarLibrary
                 print ($this->parseCsvData($objEvent->title, $fileFormat)." - ". $this->format2userDate($registrationDate).$this->csvSeparator);
 
                 if($objRegistration->langId == null) {
-                    print ($this->arrFrontendLanguages[$_LANGID]['name'].$this->csvSeparator);
+                    print ($this->arrFrontendLanguages[FRONTEND_LANG_ID]['name'].$this->csvSeparator);
                 } else {
                     print ($this->arrFrontendLanguages[$objRegistration->langId]['name'].$this->csvSeparator);
                 }
 
-                foreach ($objRegistration->fields as $id => $arrField) {
+                foreach ($objRegistration->getForm()->inputfields as $arrInputfield) {
+                    $arrField = $objRegistration->fields[$arrInputfield['id']];
                     $output = array();
                     switch($arrField['type']) {
                         case 'inputtext':

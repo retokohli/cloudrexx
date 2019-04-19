@@ -45,7 +45,14 @@ namespace Cx\Modules\MediaDir\Model\Entity;
  */
 class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary implements Inputfield
 {
-    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE','MEDIADIR_INPUTFIELD_LINK', 'MEDIADIR_INPUTFIELD_LINK_HREF');
+    public $arrPlaceholders = array(
+        'TXT_MEDIADIR_INPUTFIELD_NAME',
+        'MEDIADIR_INPUTFIELD_VALUE',
+        'MEDIADIR_INPUTFIELD_LINK',
+        'MEDIADIR_INPUTFIELD_LINK_HREF',
+        'MEDIADIR_INPUTFIELD_MAP_LAT',
+        'MEDIADIR_INPUTFIELD_MAP_LONG',
+    );
 
     private $imagePath;
     private $imageWebPath;
@@ -62,7 +69,7 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase,$_CORELANG, $_ARRAYLANG, $_LANGID, $objInit, $_CONFIG;
+        global $objDatabase,$_CORELANG, $_ARRAYLANG, $objInit, $_CONFIG;
 
         switch ($intView) {
             default:
@@ -179,17 +186,17 @@ function initialize() {
             animation: google.maps.Animation.DROP
         });
         setPosition(new google.maps.LatLng($strValueLat, $strValueLon));
-    }
 
-    google.maps.event.addListener(marker, 'dragend', function(event){
-        if(event.latLng.lat()){
-           elLat.value = event.latLng.lat();
-        }
-        if(event.latLng.lng()){
-           elLon.value = event.latLng.lng();
-        }
-        map.setCenter(new google.maps.LatLng(event.latLng.lat(), event.latLng.lng()));
-    });
+        google.maps.event.addListener(marker, 'dragend', function(event){
+            if(event.latLng.lat()){
+               elLat.value = event.latLng.lat();
+            }
+            if(event.latLng.lng()){
+               elLon.value = event.latLng.lng();
+            }
+            map.setCenter(new google.maps.LatLng(event.latLng.lat(), event.latLng.lng()));
+        });
+    }
 
     geocoder = new google.maps.Geocoder();
 
@@ -301,6 +308,8 @@ EOF;
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $objGoogleMap->getMap();
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK'] = $strValueLink;
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK_HREF'] = $strValueLinkHref;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_MAP_LAT'] = $strValueLat;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_MAP_LONG'] = $strValueLon;
         } else {
             $arrContent = null;
         }

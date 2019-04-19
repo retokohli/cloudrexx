@@ -255,6 +255,28 @@ class Country extends \Cx\Core\Country\Model\Entity\Country implements \Doctrine
     /**
      * {@inheritDoc}
      */
+    public function addLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addLocale', array($locales));
+
+        return parent::addLocale($locales);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeLocale(\Cx\Core\Locale\Model\Entity\Locale $locales)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeLocale', array($locales));
+
+        return parent::removeLocale($locales);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function addLocales(\Cx\Core\Locale\Model\Entity\Locale $locales)
     {
 

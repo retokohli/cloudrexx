@@ -218,7 +218,7 @@ $J(document).ready(function(){
         <td width="280" valign="top">{TXT_MEDIADIR_SETTINGS_ACTIVE_LANGUAGES}</td>
         <td>
             <!-- BEGIN activeLanguageList -->
-            <input type="checkbox" name="settingsActiveLanguages[]" value="{MEDIADIR_SETTINGS_ACTIVE_LANG_ID}" {MEDIADIR_SETTINGS_ACTIVE_LANG_STATUS} /> {MEDIADIR_SETTINGS_ACTIVE_LANG_NAME}<br />
+            <input type="checkbox" name="settingsActiveLanguages[]" id="settingsActiveLanguages{MEDIADIR_SETTINGS_ACTIVE_LANG_ID}" value="{MEDIADIR_SETTINGS_ACTIVE_LANG_ID}" {MEDIADIR_SETTINGS_ACTIVE_LANG_STATUS} /><label for="settingsActiveLanguages{MEDIADIR_SETTINGS_ACTIVE_LANG_ID}">{MEDIADIR_SETTINGS_ACTIVE_LANG_NAME}</label><br />
             <!-- END activeLanguageList -->
         </td>
     </tr>
