@@ -333,9 +333,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'dependencies' => array('jquery'),
             'specialcode'  => '
                 cx.jQuery(document).ready(function() {
-                    if(cx.jQuery(".chzn-select").length > 0) {
-                        cx.jQuery(".chzn-select").chosen({
-                            disable_search: true
+                    if (cx.jQuery(\'.chzn-select\').length > 0) {
+                        cx.jQuery(\'.chzn-select\').each(function(i, e) {
+                            cx.jQuery(e).chosen(
+                                cx.jQuery(e).data()
+                            )
                         });
                     }
                 });'
