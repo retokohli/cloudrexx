@@ -125,7 +125,7 @@ class InitCMS
      * Constructor
      */
     function __construct(
-        $mode = \Cx\Core\Core\Controller\Cx::MODE_BACKEND,
+        $mode = \Cx\Core\Core\Controller\Cx::MODE_FRONTEND,
         $entityManager = null
     ) {
         // TODO: what is this used for?
