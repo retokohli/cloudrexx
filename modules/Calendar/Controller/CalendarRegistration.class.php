@@ -328,11 +328,11 @@ class CalendarRegistration extends CalendarLibrary
             /* } */
         }
         
-        $regId = empty($data['regid']) ? 0 : intval($data['regid']);
-        $eventId = intval($data['id']);
-        $formId = intval($data['form']);
+        $regId     = empty($data['regid']) ? 0 : intval($data['regid']);
+        $eventId   = intval($data['id']);
+        $formId    = intval($data['form']);
         $eventDate = intval($data['date']);
-        $userId = intval($data['userid']);
+        $userId    = intval($data['userid']);
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
@@ -341,7 +341,7 @@ class CalendarRegistration extends CalendarLibrary
         ) {
             $eventDate = isset($data['registrationEventDate']) ? contrexx_input2int($data['registrationEventDate']) : $eventDate;
 
-            $endDate   = new \DateTime();
+            $endDate = new \DateTime();
             $endDate->modify('+10 years');
 
             $eventManager = new CalendarEventManager(null, $endDate);
@@ -582,14 +582,23 @@ class CalendarRegistration extends CalendarLibrary
 
         if ($objInit->mode == 'frontend') {
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
-            
+
             // send notification mail about successful registration to user
-            $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $objEvent->emailTemplate);
+            $objMailManager->sendMail(
+                $objEvent,
+                \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG,
+                $this->id,
+                $objEvent->emailTemplate
+            );
             
             // send notification mail about new registration to admin
-            $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
+            $objMailManager->sendMail(
+                $objEvent,
+                \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG,
+                $this->id
+            );
         }
-        
+
         return true;
     }
 

@@ -117,7 +117,10 @@ class CalendarManager extends CalendarLibrary
             case 'modify_registration':
             case 'add_registration':
                 \Permission::checkAccess(182, 'static');
-                $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['reg_id']));
+                $this->modifyRegistration(
+                    contrexx_input2int($_GET['event_id']),
+                    contrexx_input2int($_GET['rid'])
+                );
                 break;
             case 'get_exception_dates':
                 $this->getExeceptionDates();
@@ -1801,7 +1804,7 @@ class CalendarManager extends CalendarLibrary
      * Add / Edit registration
      *
      * @param integer $eventId Event id
-     * @param integer $regId   Rgistration id
+     * @param integer $regId   Registration id
      */
     function modifyRegistration($eventId, $regId)
     {
@@ -1810,25 +1813,29 @@ class CalendarManager extends CalendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_modify_registration.html');
 
         if (isset($_POST['submitModifyRegistration'])) {
-            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']), $regId);
+            $objRegistration =
+                new \Cx\Modules\Calendar\Controller\CalendarRegistration(
+                    contrexx_input2int($_POST['form']),
+                    $regId
+                );
             if ($objRegistration->save($_POST)) {
-                    switch ($_POST['registrationType']) {
-                        case 0:
-                            $tpl = 'd';
-                            break;
-                        case 1:
-                        default:
-                            $tpl = 'r';
-                            break;
-                        case 2:
-                            $tpl = 'w';
-                            break;
-                    }
-                    $tpl = !empty($_POST['regtpl']) ? $_POST['regtpl'] : $tpl;
-                    $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_SAVED'];
-                    \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$tpl.'&id='.$eventId);
+                switch ($_POST['registrationType']) {
+                    case 0:
+                        $tpl = 'd';
+                        break;
+                    case 1:
+                    default:
+                        $tpl = 'r';
+                        break;
+                    case 2:
+                        $tpl = 'w';
+                        break;
+                }
+                $tpl = !empty($_POST['regtpl']) ? $_POST['regtpl'] : $tpl;
+                $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_SAVED'];
+                \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$tpl.'&id='.$eventId);
             } else {
-                    $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_CORRUPT_SAVED'];
+                $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_CORRUPT_SAVED'];
             }
         }
 
