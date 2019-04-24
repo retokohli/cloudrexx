@@ -782,6 +782,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
         $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
 
+        // fetch domain repo
+        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+
         // placeholder list
         $searchTerms = array(
             // those are the legacy placeholders
@@ -800,7 +803,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // general replacement data
         $replaceTerms = array(
-            \Cx\Core\Setting\Controller\Setting::getValue('domainUrl', 'Config'),
+            $domainRepo->getMainDomain()->getName(),
             $objUser->getId(),
             \FWUser::getParsedUserTitle($objUser),
             date('Y'),
