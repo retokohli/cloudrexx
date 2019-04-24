@@ -204,7 +204,6 @@ class ContentManager extends \Module
         $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_TRANSLATIONS', $_CORELANG['TXT_CORE_CM_TRANSLATIONS'], 'contentmanager/lang');
-        $objCx->setVariable('TXT_CORE_CM_LOCALE_DOESNT_EXIST', $_CORELANG['TXT_CORE_CM_LOCALE_DOESNT_EXIST'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_VALIDATION_FAIL', $_CORELANG['TXT_CORE_CM_VALIDATION_FAIL'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_HOME_FAIL', $_CORELANG['TXT_CORE_CM_HOME_FAIL'], 'contentmanager/lang');
 
@@ -491,10 +490,12 @@ class ContentManager extends \Module
 
     protected function getLangOptions()
     {
+        global $_CORELANG;
+
         $output = '';
         $language=\FWLanguage::getActiveFrontendLanguages();
         if (count($language)>1) {
-            $output .= '<select id="language" class="chzn-select" data-disable_search="true">';
+            $output .= '<select id="language" class="chzn-select" data-disable_search="false" data-no_results_text="' . $_CORELANG['TXT_CORE_CM_LOCALE_DOESNT_EXIST'] . '">';
             foreach ($language as $lang) {
                 $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
                 $output .= '<option value="' . \FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';
