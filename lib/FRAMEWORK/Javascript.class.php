@@ -333,10 +333,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'dependencies' => array('jquery'),
             'specialcode'  => '
                 cx.jQuery(document).ready(function() {
-                    if(cx.jQuery(".chzn-select").length > 0) {
-                        cx.jQuery(".chzn-select").chosen({
-                            disable_search: false,
-                            no_results_text:  cx.variables.get(\'TXT_CORE_CM_LOCALE_DOESNT_EXIST\', \'contentmanager/lang\')
+                    if (cx.jQuery(\'.chzn-select\').length > 0) {
+                        cx.jQuery(\'.chzn-select\').each(function(i, e) {
+                            cx.jQuery(e).chosen(
+                                cx.jQuery(e).data()
+                            )
                         });
                     }
                 });'
