@@ -104,6 +104,12 @@ class CalendarMailManager extends CalendarLibrary {
     const MAIL_INVITATION_TO_INACTIVE = 'inactive';
 
     /**
+     * Send the invitation mail only to new contacts that have not yet
+     * received an invitation
+     */
+    const MAIL_INVITATION_TO_NEW = 'new';
+
+    /**
      * Notification mail types
      *
      * @var array
@@ -897,6 +903,21 @@ class CalendarMailManager extends CalendarLibrary {
                         $recipients,
                         $signedinRecipients
                     );
+                    break;
+
+                case self::MAIL_INVITATION_TO_NEW:
+                    // exclude all guests that are already registered as invitees
+                    $query = 'SELECT `email`
+                        FROM `'.DBPREFIX.'module_calendar_invite`
+                        WHERE `event_id` = ' . $objEvent->getId();
+                    $result = $db->Execute($query);
+                    if ($result !== false) {
+                        while (!$result->EOF) {
+                            // delete all registered guests out of the recipients
+                            unset($recipients[$result->fields['email']]);
+                            $result->MoveNext();
+                        }
+                    }
                     break;
 
                 case self::MAIL_INVITATION_TO_REGISTERED:
