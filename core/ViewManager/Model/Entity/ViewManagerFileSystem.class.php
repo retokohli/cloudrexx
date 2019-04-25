@@ -69,7 +69,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function getFileList($directory, $recursive = true, $readonly = false)
     {
-        $filesList = $this->getFullFileList($directory, $recursive, $readonly);
+        $filesList = $this->getFullFileList($directory, $recursive);
 
         // filter out folders of non-used themes
         $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
@@ -87,12 +87,19 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
     /**
      * Return the full/raw file list
      *
-     * @param            $directory
-     * @param bool|false $recursive
+     * This returns the complete list of directories and files in the root
+     * directory as they exist in the underlying file system.
+     * This method is solely used by this component and should not be used
+     * anywhere else.
+     * Instead you should use {@see ViewManagerFileSystem::getFileList()}.
      *
-     * @return array
+     * @param   string  $directory Path to fetch the directories and files of
+     * @param   boolean $recursive Whether or not to return any subdirectories
+     *                             and files.
+     *
+     * @return array List of directories and files in $directory
      */
-    public function getFullFileList($directory, $recursive = true, $readonly = false) {
+    public function getFullFileList($directory, $recursive = true) {
         $fileList = array();
 
         // fetch files from additional file systems
