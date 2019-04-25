@@ -882,7 +882,7 @@ class CalendarMailManager extends CalendarLibrary {
                     $result = $db->Execute($query);
                     if ($result === false) {
                         throw new CalendarException(
-                            'Unable to process invitation type ' . $sendInvitationTo;
+                            'Unable to process invitation type ' . $sendInvitationTo
                         );
                     }
                     while (!$result->EOF) {
@@ -899,7 +899,7 @@ class CalendarMailManager extends CalendarLibrary {
                     $result = $db->Execute($query);
                     if ($result === false) {
                         throw new CalendarException(
-                            'Unable to process invitation type ' . $sendInvitationTo;
+                            'Unable to process invitation type ' . $sendInvitationTo
                         );
                     }
                     while (!$result->EOF) {
@@ -920,7 +920,7 @@ class CalendarMailManager extends CalendarLibrary {
                     $result = $db->Execute($query);
                     if ($result === false) {
                         throw new CalendarException(
-                            'Unable to process invitation type ' . $sendInvitationTo;
+                            'Unable to process invitation type ' . $sendInvitationTo
                         );
                     }
                     while (!$result->EOF) {
