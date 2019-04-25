@@ -1648,7 +1648,7 @@ CODE;
     function getDropdownNotInDb()
     {
         
-        $filesList     = $this->fileSystem->getFileList('/');
+        $filesList     = $this->fileSystem->getFullFileList('/');
 
         ksort($filesList);
         $result = '';
