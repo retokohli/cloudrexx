@@ -1400,8 +1400,8 @@
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
                 <td width="1%">
-                    <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
-                    ({TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT}  <div style="display: inline-block;" id="recipientsCount"></div>)
+                    <input name="sendInvitation" id="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
+                    <label for="sendInvitation">({TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT}  <div style="display: inline-block;" id="recipientsCount"></div>)</label>
                 </td>
                 <td>
                     <div class="invitationEmailTemplateContainer" style="display: none;">
@@ -1423,10 +1423,14 @@
                     <span class="tooltip-message">{TXT_CALENDAR_EVENT_SEND_INVITATION_TO_TOOLTIP}</span>
                 </td>
                 <td colspan="2">
-                    <input type="radio" name="sendMailTo" id="allUsers" value="all" checked="checked"/><label for="allUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL}</label><br />
-                    <input type="radio" name="sendMailTo" id="registeredUsers" value="registered" /><label for="registeredUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_REGISTERED}</label><br />
-                    <input type="radio" name="sendMailTo" id="signedInUsers" value="signedIn" /><label for="signedInUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN}</label><br />
+                    <input type="radio" name="sendMailTo" id="allUsers" value="all" checked="checked"/><label for="allUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL}</label>
+                    <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL_TOOLTIP}</span><br />
+                    <input type="radio" name="sendMailTo" id="registeredUsers" value="registered" /><label for="registeredUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_REGISTERED}</label>
+                    <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_SEND_INVITATION_TO_REGISTERED_TOOLTIP}</span><br />
+                    <input type="radio" name="sendMailTo" id="signedInUsers" value="signedIn" /><label for="signedInUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN}</label>
+                    <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN_TOOLTIP}</span><br />
                     <input type="radio" name="sendMailTo" id="inactiveUsers" value="inactive" /><label for="inactiveUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_INACTIVE}</label>
+                    <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_SEND_INVITATION_TO_INACTIVE_TOOLTIP}</span>
 
                 </td>
             </tr>
