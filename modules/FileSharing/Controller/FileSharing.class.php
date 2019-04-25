@@ -102,6 +102,19 @@ class FileSharing extends FileSharingLib
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
+
+        // load source code if cmd value is integer
+        if ($this->objTemplate->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('FileSharing');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->objTemplate->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
+
         $this->objUrl = \Env::get("Resolver")->getUrl();
         $this->uriParams = $this->objUrl->getParamArray();
     }
