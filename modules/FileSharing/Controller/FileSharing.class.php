@@ -103,7 +103,9 @@ class FileSharing extends FileSharingLib
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
 
-        // load source code if cmd value is integer
+        // load default application template as fallback, in case
+        // there is no matching application template present (in the
+        // webdesign template) for the current 'cmd'
         if ($this->objTemplate->placeholderExists('APPLICATION_DATA')) {
             $page = new \Cx\Core\ContentManager\Model\Entity\Page();
             $page->setVirtual(true);
