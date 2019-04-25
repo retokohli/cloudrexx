@@ -677,7 +677,7 @@ class InitCMS
         $templateFiles = array();
         $folder = $customTemplateForTheme->getFoldername();
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $templateFiles = $cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem()->getFileList($folder);
+        $templateFiles = $cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem()->getFileList($folder, false);
 
         foreach ($templateFiles as $fileName => $fileInfo){
             $match = null;
