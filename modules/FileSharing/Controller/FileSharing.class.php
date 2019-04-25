@@ -464,7 +464,6 @@ class FileSharing extends FileSharingLib
 
         $cx          = \Cx\Core\Core\Controller\Cx::instanciate();
         $fileSystem  = new \Cx\Lib\FileSystem\FileSystem();
-        $imageUrl    = clone \Env::get("Resolver")->getUrl(); // get the image url
         $files       = array();
         $directory   = \Env::get('Resolver')->getCmd();
 
@@ -503,6 +502,7 @@ class FileSharing extends FileSharingLib
                 continue;
             }
 
+            $imageUrl = clone \Env::get("Resolver")->getUrl(); // get the image url
             $imageUrl->setParam("act", "image");
             $imageUrl->setParam("hash", $hash);
 
