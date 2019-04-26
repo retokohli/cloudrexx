@@ -170,7 +170,7 @@ h1{ font-size: 20px }
     overflow-x: auto;
 }
 
-#site-structure th.lastupdate {
+#site-structure .lastupdate {
     position: absolute;
     text-align: right;
     left: auto;
@@ -267,10 +267,6 @@ th.translation .switch-tag-dropdown {
     margin: 0;
 }
 
-.adminlist tr {
-    font-size: 0;
-}
-
 #content-manager table.adminlist th {
     box-sizing: border-box;
     display: inline-block;
@@ -283,12 +279,10 @@ th.translation .switch-tag-dropdown {
     display: table-cell;
 }
 
-.adminlist th.page,
+#content-manager .adminlist th.page,
 #site-tree > ul {
     min-width: 40%;
 }
-
-.adminlist th.page
 
 *+html #site-tree ul,
 *+html #site-tree ul li {
@@ -324,12 +318,7 @@ th.translation .switch-tag-dropdown {
     box-sizing: border-box;
 }
 
-.adminlist th {
-    height: 31px;
-    line-height: 31px;
-}
-
-.adminlist th.translation {
+#content-manager .adminlist th.translation {
     min-width: 15%;
 }
 
@@ -337,7 +326,7 @@ th.translation .switch-tag-dropdown {
     left: 40%;
 }
 
-.adminlist th.module {
+#content-manager .adminlist th.module {
     min-width: 14%;
 }
 
@@ -345,7 +334,7 @@ th.translation .switch-tag-dropdown {
     left: 55%;
 }
 
-.adminlist th.preview {
+#content-manager .adminlist th.preview {
     min-width: 7%;
 }
 
@@ -353,7 +342,7 @@ th.translation .switch-tag-dropdown {
     left: 69%;
 }
 
-.adminlist th.actions {
+#content-manager .adminlist th.actions {
     min-width: 15%;
 }
 
@@ -361,12 +350,8 @@ th.translation .switch-tag-dropdown {
     left: 76%;
 }
 
-.adminlist th.lastupdate {
+#content-manager .adminlist th.lastupdate {
     min-width: 9%;
-}
-
-#site-tree .jstree-wrapper .lastupdate {
-    left: 91%;
 }
 
 #site-tree .jstree-wrapper.hover,
@@ -425,10 +410,6 @@ th.translation .switch-tag-dropdown {
 #site-tree .preview {
     background: url(../Media/Preview.png) no-repeat 10px center;
     padding: 0 0 0 26px !important;
-}
-
-#site-tree .lastupdate {
-    text-align: right;
 }
 
 #site-tree .lastupdate .date {
