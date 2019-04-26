@@ -1701,10 +1701,10 @@ CODE;
                 $dir = str_replace(basename($themesPage),"", $themesPage);
                 \Cx\Lib\FileSystem\FileSystem::make_folder($this->websiteThemesPath.$themes.'/'.$dir, true);
             }
-            $filePath    = $this->websiteThemesPath . $themes . $themesPage;
+            $filePath    = $this->websiteThemesPath.$themes.$themesPage;
             $pathInfo    = pathinfo($filePath);
             $pageContent = contrexx_input2raw($_POST['content']);
-            if ($pathInfo['extension'] === 'html') {
+            if ($pathInfo['extension'] === 'html' || $pathInfo['extension'] === 'htm') {
                 // Change the replacement variables from [[TITLE]] into {TITLE}
                 $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
             }
@@ -2250,7 +2250,7 @@ CODE;
                 $this->fileSystem->getFullPath($file) . $file->getFullName(),
                 PATHINFO_EXTENSION
             );
-            if ($pathInfo === 'html') {
+            if ($pathInfo === 'html' || $pathInfo === 'htm') {
                 // replace placeholder format
                 $content = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $content);
             }
