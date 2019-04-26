@@ -197,6 +197,7 @@ $_ARRAYLANG['TXT_DOC_SYS_MODULE_DESCRIPTION'] = "Document management system";
 $_ARRAYLANG['TXT_SHOP_MODULE_DESCRIPTION'] = "B2B und B2C Online Shop Solution";
 $_ARRAYLANG['TXT_SITEMAP_MODULE_DESCRIPTION'] = "Dynamical site map system. Displays the site map in Explorer style.";
 $_ARRAYLANG['TXT_LINKS_MODULE_DESCRIPTION'] = "Directory";
+$_ARRAYLANG['TXT_DIRECTORY_MODULE'] = "Directory";
 $_ARRAYLANG['TXT_IDS_MODULE_DESCRIPTION'] = "Integrated Intrusion Detection System ( IDS )";
 $_ARRAYLANG['TXT_ERROR_MODULE_DESCRIPTION'] = "Error reporting system";
 $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "CMS Startpage Module";
