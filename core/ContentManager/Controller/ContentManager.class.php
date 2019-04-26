@@ -495,7 +495,7 @@ class ContentManager extends \Module
         $output = '';
         $language=\FWLanguage::getActiveFrontendLanguages();
         if (count($language)>1) {
-            $output .= '<select id="language" class="chzn-select" data-disable_search="false" data-no_results_text="' . $_CORELANG['TXT_CORE_CM_LOCALE_DOESNT_EXIST'] . '">';
+            $output .= '<select id="language" class="chzn-select" data-disable_search="false" data-no_results_text="' . $_CORELANG['TXT_CORE_LOCALE_DOESNT_EXIST'] . '">';
             foreach ($language as $lang) {
                 $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
                 $output .= '<option value="' . \FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';

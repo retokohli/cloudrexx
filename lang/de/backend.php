@@ -1391,7 +1391,7 @@ $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = '%s. Kopie';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_ENTRIES'] = 'Einträge';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Entwürfe ausblenden';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
-$_ARRAYLANG['TXT_CORE_CM_LOCALE_DOESNT_EXIST'] = 'Es wurde keine Sprache gefunden';
+$_ARRAYLANG['TXT_CORE_LOCALE_DOESNT_EXIST'] = 'Es wurde keine Sprache gefunden';
 
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
