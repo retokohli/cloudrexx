@@ -237,6 +237,13 @@ class LinkSanitizer {
 
         if (strpos($value, '?') !== false) {
             list($path, $query) = explode('?', $value, 2);
+            // TODO: this is basically wrong as question marks are valid
+            // characters within a query string. See rfc for reference:
+            // https://tools.ietf.org/html/rfc3986#section-3.4
+            // However, this is probably a workaround to fix javascript
+            // code, that wrongly produces infinite redirect loops in
+            // combination with the 'preview' URL argument.
+            // See CLX-1780
             $query = str_replace('?', '&', $query);
             $query = \Cx\Core\Routing\Url::params2array($query);
         } else {

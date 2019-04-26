@@ -62,6 +62,13 @@ class UrlException extends \Exception {};
  * @package     cloudrexx
  * @subpackage  core_routing
  * @todo        Edit PHP DocBlocks!
+ * @todo        This class does not properly handle question marks in
+ *              query strings. According to the RFC (
+ *              https://tools.ietf.org/html/rfc3986#section-3.4), question
+ *              marks are valid characters within the query string. Therefore,
+ *              all operations on the question mark '?' character in this
+ *              class must be reviewed and where applicable being fixed.
+ *              See CLX-1780 for associated issue in LinkSanitizer.
  */
 class Url {
 
