@@ -602,6 +602,10 @@ cx.ready(function() {
         cx.cm.isAdjusting = false;
     }
 
+    cx.jQuery(document).click(function() {
+        cx.jQuery(".translations-expanded, .actions-expanded").hide();
+    });
+
     cx.cm();
 });
 
@@ -1509,8 +1513,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
               .append('<div class="label">' + cx.variables.get('TXT_CORE_CM_TRANSLATIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
               .prepend("<div class=\"translations-expanded\" style=\"display: none;\"><ul></ul></div>")
               .click(function(e) {
+                  e.stopPropagation();
                   if (!cx.jQuery(e.target).is(".translations > .translation")) {
                       cx.jQuery(this).children(".translations-expanded").toggle();
+                      cx.jQuery(".translations.dropdown").not(this).children(".translations-expanded").hide();
                   }
               });
             var translationDropdown = translations.find(".translations-expanded ul");
@@ -1532,8 +1538,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
             var actions = cx.jQuery('<div class="actions"><div class="label">' + cx.variables.get('TXT_CORE_CM_ACTIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
                             .prepend("<div class=\"actions-expanded\" style=\"display: none;\"><ul></ul></div>")
-                            .click(function() {
+                            .click(function(e) {
+                                e.stopPropagation();
                                 cx.jQuery(this).children(".actions-expanded").toggle();
+                                cx.jQuery(".actions").not(this).children(".actions-expanded").hide();
                             });
             var wrapper = cx.jQuery(actions).wrap('<div class="jstree-wrapper" />').parent();
             wrapper.prepend(translations);
@@ -1610,24 +1618,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         cx.jQuery(".switch-tag-dropdown").unbind("click").bind("click", function(e) {
             e.preventDefault();
             cx.cm.switchTagDropdown(true);
-        });
-
-        cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
-            if (!cx.jQuery(event.target).is('li.translation') &&
-                cx.jQuery('.translations-expanded').length > 0
-            ) {
-                cx.jQuery('.translations-expanded').each(function() {
-                    cx.jQuery(this).hide();
-                });
-            }
-        });
-
-        cx.jQuery('.jstree li, .actions-expanded').live('mouseleave', function(event) {
-            if (!cx.jQuery(event.target).is('li.action-item') && cx.jQuery('.actions-expanded').length > 0) {
-                cx.jQuery('.actions-expanded').each(function() {
-                    cx.jQuery(this).hide();
-                });
-            }
         });
 
         // publishing and visibility icons
