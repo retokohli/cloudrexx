@@ -1696,7 +1696,7 @@ CODE;
         $pageContent = contrexx_input2raw($_POST['content']);
 
         // Change the replacement variables from [[TITLE]] into {TITLE}
-        $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
+        $pageContent = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{\\1}' ,$pageContent);
 
         try {
             if (self::isFileTypeComponent($themesPage)) {
@@ -2247,7 +2247,7 @@ CODE;
             $content = $this->fileSystem->readFile($file);
 
             // replace placeholder format
-            $content = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $content);
+            $content = preg_replace('/\{([A-Z0-9_]+)\}/', '[[\\1]]', $content);
 
             // escape special characters
             $contenthtml = htmlspecialchars($content);
