@@ -1654,8 +1654,29 @@ div.date img{
 
 span.app-template-tooltip { word-wrap: break-word;}
 
-@media only screen and (max-width: 1279px) {
-    #site-structure {
-        min-width: 1022px;
+/* hide log column for small screens */
+@media only screen and (max-width: 919px),
+       only screen and (min-width: 1000px) and (max-width: 1139px) {
+    #content-manager #site-structure .lastupdate {
+        display: none;
+    }
+    #content-manager #site-structure .actions {
+        right: 5px;
+        left: auto;
+    }
+    #content-manager #site-structure .actions-expanded {
+        right: 0;
+        left: auto;
+    }
+    #content-manager #site-structure th.actions {
+        text-align: right;
+        position: absolute;
+    }
+}
+
+/* hide preview column for very small screens */
+@media only screen and (max-width: 569px) {
+    #content-manager #site-structure .preview {
+        display: none;
     }
 }
