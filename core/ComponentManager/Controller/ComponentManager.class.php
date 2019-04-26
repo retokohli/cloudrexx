@@ -333,7 +333,7 @@ class ComponentManager
                     ));
                     $descExtended = substr($description, strpos($description, '.') + 1);
                     $description = substr($description, 0, strpos($description, '.') + 1) .
-                        ' <img src="core/Core/View/Media/angle-down-1x.png" alt=""/><span class="desc-extended"><br />' .
+                        ' <img src="/core/Core/View/Media/AngleDown1x.png" alt=""/><span class="desc-extended"><br />' .
                         $descExtended . '</span>';
                 }
 
