@@ -325,11 +325,8 @@ class ComponentManager
                 }
 
                 if (
-                    strpos($description, '.') !== (strlen($description) - 1) &&
-                    (
-                        strpos($description, '.') != false ||
-                        strpos($description, '.' != NULL )
-                    )
+                    strpos($description, '.') !== false &&
+                    strpos($description, '.') !== (strlen($description) - 1)
                 ) {
                     $objTemplate->setVariable(array(
                         'MODULE_DESCRIPTION_CLASS' => 'description',
