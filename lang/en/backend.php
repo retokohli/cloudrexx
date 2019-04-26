@@ -515,6 +515,7 @@ $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY'] = "Cache folder has been emptied.";
 $_ARRAYLANG['TXT_IMPORT'] = "Import";
 $_ARRAYLANG['TXT_CHOOSE_FILE'] = "Choose The File";
 $_ARRAYLANG['TXT_ADD_PAIR'] = "Add a pair";
+$_ARRAYLANG['TXT_MARKET_MODULE'] = "Advertisement";
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisement";
 $_ARRAYLANG['TXT_CORE_MARKET_TITLE'] = "Advertisement";
 $_ARRAYLANG['TXT_SEPARATOR'] = "Separator";
