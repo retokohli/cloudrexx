@@ -521,7 +521,6 @@ $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY'] = "Cache-Ordner wurde geleert.";
 $_ARRAYLANG['TXT_IMPORT'] = "Importieren";
 $_ARRAYLANG['TXT_CHOOSE_FILE'] = "Wählen Sie die Datei";
 $_ARRAYLANG['TXT_ADD_PAIR'] = "Paar hinzufügen";
-$_ARRAYLANG['TXT_MARKET'] = 'Inserate';
 $_ARRAYLANG['TXT_MARKET_MODULE'] = 'Inserate';
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Mit dieser Anwendung können Inserate kategorisiert und zeitlich begrenzt veröffentlicht werden.";
 $_ARRAYLANG['TXT_CORE_MARKET_TITLE'] = "Inserate";
