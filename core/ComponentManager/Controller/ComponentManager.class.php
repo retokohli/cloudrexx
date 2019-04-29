@@ -235,7 +235,6 @@ class ComponentManager
             while (!$objResult->EOF) {
                 $class = (++$i % 2 ? 'row1' : 'row2');
                 if (   in_array($objResult->fields['id'], $arrayInstalledModules)
-                    || in_array($objResult->fields['id'], array(6, 100, 101, 102, 103, 104, 105, 106, 107))
                 ) {
                     $moduleStatusLink = $objResult->fields['is_active']
                                         ? sprintf($statusLink, (int) $objResult->fields['id'], 0, sprintf($statusIcon, 'led_green.gif'))
@@ -281,8 +280,8 @@ class ComponentManager
 
                 if (!in_array($objResult->fields['name'], array('Agb', 'Error', 'Home', 'Ids', 'Imprint', 'Login', 'Privacy', 'Search', 'Sitemap'))
                     && (   in_array($objResult->fields['id'], $arrayInstalledModules)
-                        || $objResult->fields['id'] == 6)
-                    ) {
+                    )
+                ) {
                         switch ($objResult->fields['name']) {
                             case 'Media1':
                             case 'Media2':
