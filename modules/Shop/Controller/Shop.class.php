@@ -1342,7 +1342,10 @@ die("Failed to update the Cart!");
 
 //\DBG::activate(DBG_ERROR_FIREPHP);
         // Use Sorting class for the Product order
-        $uri = \Html::getRelativeUri_entities();
+        $uri =
+// TODO: Use the alias, if any
+            '&amp;section=Shop'. MODULE_INDEX . $pagingCmd .
+            $pagingCatId.$pagingManId.$pagingTerm;
         $arrOrder = array(
             // Must be disambiguated from Category::ord using the table alias!
             'product.ord' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'],
