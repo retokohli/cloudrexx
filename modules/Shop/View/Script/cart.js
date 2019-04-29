@@ -47,6 +47,7 @@ function shopUpdateCart(data, textStatus, jqXHR) {
             cartProduct = cartProductsTpl.replace('{SHOP_JS_PRODUCT_QUANTITY}', i.quantity);
             cartProduct = cartProduct.replace('{SHOP_JS_PRODUCT_TITLE}', i.title + i.options_cart);
             cartProduct = cartProduct.replace('{SHOP_JS_PRODUCT_PRICE}', i.price);
+            cartProduct = cartProduct.replace('{SHOP_JS_PRODUCT_SALE_PRICE}', i.sale_price);
             cartProduct = cartProduct.replace('{SHOP_JS_PRODUCT_ITEM_PRICE}', i.itemprice);
             cartProduct = cartProduct.replace('{SHOP_JS_TOTAL_PRICE_UNIT}', objCart.unit);
             cartProduct = cartProduct.replace('{SHOP_JS_PRODUCT_ID}', i.cart_id);
@@ -89,7 +90,9 @@ function shopUpdateCart(data, textStatus, jqXHR) {
         // New
         cart = cart.replace('{SHOP_JS_PRODUCT_COUNT}', objCart.item_count);
         cart = cart.replace('{SHOP_JS_TOTAL_PRICE}', objCart.total_price);
+        cart = cart.replace('{SHOP_JS_TOTAL_PRICE_WITHOUT_VAT}', objCart.total_price_without_vat);
         cart = cart.replace('{SHOP_JS_TOTAL_PRICE_CART}', objCart.total_price_cart);
+        cart = cart.replace('{SHOP_JS_TOTAL_PRICE_CART_WITHOUT_VAT}', objCart.total_price_cart_without_vat);
         cart = cart.replace('{SHOP_JS_TOTAL_PRICE_UNIT}', objCart.unit);
         showCart(cart);
     } catch (e) {
