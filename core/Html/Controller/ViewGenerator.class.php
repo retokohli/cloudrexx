@@ -416,7 +416,7 @@ class ViewGenerator {
      * @param $entityData array  post values
      * @return mixed      edited value
      */
-    protected function callStorecallback($name, $entityData)
+    protected function callStorecallback($name, $entityData, $entity)
     {
         if (
             !isset($this->options['fields']) ||
@@ -442,13 +442,15 @@ class ViewGenerator {
                 $storecallback['method'],
                 array(
                     'postedValue' => $postedValue,
+                    'fieldName' => $name,
+                    'entity' => $entity
                 )
             );
             if ($jsonResult['status'] == 'success') {
                 $entityData[$name] = $jsonResult["data"];
             }
         } else if (is_callable($storecallback)) {
-            $entityData[$name] = $storecallback($postedValue);
+            $entityData[$name] = $storecallback($postedValue, $name, $entity);
         }
         return $entityData[$name];
     }
@@ -499,7 +501,9 @@ class ViewGenerator {
             $methodBaseName = \Doctrine\Common\Inflector\Inflector::classify($name);
             $fieldSetMethodName = 'set' . $methodBaseName;
             $fieldGetMethodName = 'get' . $methodBaseName;
-            $entityData[$name] = $this->callStorecallback($name, $entityData);
+            $entityData[$name] = $this->callStorecallback(
+                $name, $entityData, $entity
+            );
 
             if (isset($entityData[$name]) && !in_array($name, $primaryKeyNames)) {
                 $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
@@ -633,7 +637,9 @@ class ViewGenerator {
         // Foreach custom attribute we call the storecallback function if it exits
         foreach ($this->options['fields'] as $name=>$field) {
             if (!empty($field['custom'])) {
-                $entityData[$name] = $this->callStorecallback($name, $entityData);
+                $entityData[$name] = $this->callStorecallback(
+                    $name, $entityData, $entity
+                );
             }
         }
     }
