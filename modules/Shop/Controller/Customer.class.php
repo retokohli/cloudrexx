@@ -548,6 +548,7 @@ class Customer extends \User
             $this->firstname(), $this->lastname(), $this->company(), $title);
         $arrSubstitution = array(
             'CUSTOMER_SALUTATION' => $salutation,
+            'CUSTOMER_TITLE' => $title,
             'CUSTOMER_ID' => $this->id(),
             'CUSTOMER_EMAIL' => $this->email(),
             'CUSTOMER_COMPANY' => $this->company(),
