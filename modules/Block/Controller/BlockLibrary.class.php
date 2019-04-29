@@ -96,6 +96,9 @@ class BlockLibrary
      */
     function __construct()
     {
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() != \Cx\Core\Core\Controller\Cx::MODE_COMMAND) {
+            return;
+        }
     }
 
 
@@ -349,16 +352,14 @@ class BlockLibrary
                                                    content='".contrexx_raw2db($content)."',
                                                    active='".intval((isset($arrLangActive[$langId]) ? $arrLangActive[$langId] : 0))."'",
                                                   $blockId));
-            global $objCache;
-            $objCache->clearSsiCachePage(
+        }
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
                 'Block',
                 'getBlockContent',
                 array(
                     'block' => $blockId,
-                    'lang' => \FWLanguage::getLanguageCodeById($langId),
                 )
             );
-        }
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrLangActive))).")");
     }
@@ -672,12 +673,8 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlock($id, &$code, $pageId)
+    function _setBlock($id, &$code, $pageId = 0)
     {
-        if (!$this->checkTargetingOptions($id)) {
-            return;
-        }
-
         $now = time();
 
         $this->replaceBlocks(
@@ -718,6 +715,7 @@ class BlockLibrary
                     AND
                         tblBlock.active = 1
             ',
+            $pageId,
             $code
         );
     }
@@ -734,7 +732,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setCategoryBlock($id, &$code, $pageId)
+    function _setCategoryBlock($id, &$code, $pageId = 0)
     {
         $category = $this->_getCategory($id);
         $separator = $category['seperator'];
@@ -773,6 +771,7 @@ class BlockLibrary
                 ORDER BY
                     tblBlock.`order`
             ',
+            $pageId,
             $code,
             $separator
         );
@@ -789,7 +788,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockGlobal(&$code, $pageId)
+    function _setBlockGlobal(&$code, $pageId = 0)
     {
         global $objDatabase;
 
@@ -872,6 +871,7 @@ class BlockLibrary
                 ORDER BY
                     `order`
             ',
+            $pageId,
             $code,
             $separator
         );
@@ -888,7 +888,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockRandom(&$code, $id)
+    function _setBlockRandom(&$code, $id, $pageId = 0)
     {
         global $objDatabase;
 
@@ -910,36 +910,27 @@ class BlockLibrary
         //Get Block Name and Status
         switch ($id) {
             case '1':
-                $objBlockName   = $objDatabase->Execute($query."AND tblBlock.random=1");
+                $query .= "AND tblBlock.random=1";
                 $blockNr        = "";
                 break;
             case '2':
-                $objBlockName   = $objDatabase->Execute($query."AND tblBlock.random_2=1");
+                $query .= "AND tblBlock.random_2=1";
                 $blockNr        = "_2";
                 break;
             case '3':
-                $objBlockName = $objDatabase->Execute($query."AND tblBlock.random_3=1");
+                $query .= "AND tblBlock.random_3=1";
                 $blockNr        = "_3";
                 break;
             case '4':
-                $objBlockName = $objDatabase->Execute($query."AND tblBlock.random_4=1");
+                $query .= "AND tblBlock.random_4=1";
                 $blockNr        = "_4";
                 break;
         }
 
-
-        if ($objBlockName === false || $objBlockName->RecordCount() <= 0) {
-            return;
-        }
-
-        while (!$objBlockName->EOF) {
-            $arrActiveBlocks[] = $objBlockName->fields['id'];
-            $objBlockName->MoveNext();
-        }
-
         $this->replaceBlocks(
             $this->blockNamePrefix . 'RANDOMIZER' . $blockNr,
-            'SELECT ' . implode(' AS id UNION SELECT ', $arrActiveBlocks),
+            $query,
+            $pageId,
             $code,
             '',
             true
@@ -948,14 +939,15 @@ class BlockLibrary
 
     /**
      * Replaces a placeholder with block content
-     * @param string $placeholerName Name of placeholder to replace
+     * @param string $placeholderName Name of placeholder to replace
      * @param string $query SQL query used to fetch blocks
+     * @param int $pageId ID of the current page, 0 if no page available
      * @param string $code (by reference) Code to replace placeholder in
      * @param string $separator (optional) Separator used to separate the blocks
      * @param boolean $randomize (optional) Wheter to randomize the blocks or not, default false
      */
-    protected function replaceBlocks($placeholderName, $query, &$code, $separator = '', $randomize = false) {
-        global $objDatabase, $objCache;
+    protected function replaceBlocks($placeholderName, $query, $pageId, &$code, $separator = '', $randomize = false) {
+        global $objDatabase;
 
         // find all block IDs to parse
         $objResult = $objDatabase->Execute($query);
@@ -964,14 +956,20 @@ class BlockLibrary
             return;
         }
         while(!$objResult->EOF) {
+            if (!$this->checkTargetingOptions($objResult->fields['id'])) {
+                $objResult->MoveNext();
+                continue;
+            }
             $blockIds[] = $objResult->fields['id'];
             $objResult->MoveNext();
         }
 
         // parse
-        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
+        $settings = $this->getSettings();
 
         if ($randomize) {
             $esiBlockInfos = array();
@@ -982,10 +980,11 @@ class BlockLibrary
                     array(
                         'block' => $blockId,
                         'lang' => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+                        'page' => $pageId,
                     )
                 );
             }
-            $blockContent = $objCache->getRandomizedEsiContent(
+            $blockContent = $cx->getComponent('Cache')->getRandomizedEsiContent(
                 $esiBlockInfos
             );
             $frontendEditingComponent->prepareBlock(
@@ -996,12 +995,13 @@ class BlockLibrary
         } else {
             $contentList = array();
             foreach ($blockIds as $blockId) {
-                $blockContent = $objCache->getEsiContent(
+                $blockContent = $cx->getComponent('Cache')->getEsiContent(
                     'Block',
                     'getBlockContent',
                     array(
                         'block' => $blockId,
                         'lang' => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+                        'page' => $pageId,
                     )
                 );
                 $frontendEditingComponent->prepareBlock(
@@ -1012,7 +1012,48 @@ class BlockLibrary
             }
             $content = implode($separator, $contentList);
         }
+
+        if (!empty($settings['markParsedBlock'])) {
+            $content = "<!-- start $placeholderName -->$content<!-- end $placeholderName -->";
+        }
+
         $code = str_replace('{' . $placeholderName . '}', $content, $code);
+    }
+
+    /**
+     * Get the settings from database
+     *
+     * @staticvar array $settings settings array
+     *
+     * @return array settings array
+     */
+    public function getSettings()
+    {
+
+        static $settings = array();
+        if (!empty($settings)) {
+            return $settings;
+        }
+
+        $query = '
+            SELECT
+                `name`,
+                `value`
+            FROM
+                `'. DBPREFIX .'module_block_settings`';
+        $setting = \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getDb()
+                    ->getAdoDb()
+                    ->Execute($query);
+        if ($setting === false) {
+            return array();
+        }
+        while (!$setting->EOF) {
+            $settings[$setting->fields['name']] = $setting->fields['value'];
+            $setting->MoveNext();
+        }
+
+        return $settings;
     }
 
     /**

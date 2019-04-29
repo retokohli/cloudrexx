@@ -225,10 +225,13 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('.page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('#page_target_text_wrapper_redirect').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery(".page_target_backup").val(), cx.jQuery(".page_target_text").text());
+        cx.cm.setPageTarget(
+            cx.jQuery(".page_target_backup").val(),
+            cx.jQuery(this).parent().next(".page_target_text_wrapper").find(".page_target_text").text()
+        );
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();
@@ -965,7 +968,6 @@ cx.cm = function(target) {
                 "page_metatitle",
                 "page_metadesc",
                 "page_metakeys",
-                "page_metaimage",
                 "page_slug"
             ];
             cx.jQuery.each(fields, function(index, el) {
@@ -979,8 +981,12 @@ cx.cm = function(target) {
         }
     });
 
-    cx.jQuery("select#page_application").change(cx.cm.homeCheck, cx.jQuery("#pageId").val());
-    cx.jQuery('#page input[name="page[area]"]').keyup(cx.cm.homeCheck, cx.jQuery("#pageId").val());
+    cx.jQuery("select#page_application").change(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
+    cx.jQuery('#page input[name="page[area]"]').keyup(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
     cx.jQuery('#page input[name="page[area]"]').change(function() {
         cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(),
                                       cx.jQuery('#page input[name="page[area]"]').val(),
@@ -1028,10 +1034,8 @@ cx.cm = function(target) {
     });
 };
 cx.cm.loadApplicationTemplate = function(application, area, template) {
-    cx.trigger("loadingStart", "contentmanager", {});
     cx.jQuery.ajax({
         url: "index.php?cmd=JsonData&object=page&act=loadApplicationTemplate&app=" + application + "&area=" + area + "&template=" + template,
-        async: false,
         success: function(response) {
             var templateFile = response.data.files;
             var select = cx.jQuery('#page select[name="page[applicationTemplate]"]');
@@ -1044,14 +1048,41 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
                     }).text(templateFile[i]));
                 }
             }
+
+            var page = cx.cm.page;
+            // in case we are creating a new page, then cx.cm.page is not yet defined
+            if (typeof(page) == 'undefined') {
+                page = {
+                    customContent:"",
+                    useCustomContentForAllChannels:0,
+                    applicationTemplate:"",
+                    useCustomApplicationTemplateForAllChannels:0
+                }
+            }
             cx.jQuery('span.area').text(response.data.area);
             cx.jQuery('span.folderPath').text(response.data.path);
-            cx.cm.pageApplicationTemplate = '';
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
+            cx.cm.pageContentTemplate = page.customContent;
+
+            if (page.useCustomContentForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
+
+
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
+            cx.cm.pageApplicationTemplate = page.applicationTemplate;
+
+            if (page.useCustomApplicationTemplateForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
         }
     }).always(function(response) {
-        //cx.trigger("loadingEnd", "contentmanager", response);
         if(response.hasOwnProperty('area')){
             delete response.data.area;
         }
@@ -1061,9 +1092,7 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
         if(response.hasOwnProperty('path')){
             delete response.data.path;
         }
-        cx.trigger("loadingEnd", "contentmanager", response);
     });
-    //cx.trigger("loadingEnd", "contentmanager", {});
 }
 
 cx.cm.homeCheck = function(addClasses, pageId) {
@@ -1187,7 +1216,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         },
         "cookies" : {
-            'save_selected' : false
+            'save_loaded' : cx.variables.get('save_loaded', 'contentmanager/jstree'),
+            'save_opened' : cx.variables.get('save_opened', 'contentmanager/jstree'),
+            'save_selected' : false,
+            'cookie_options': {path: cx.variables.get('basePath')}
         }
     })
     .bind("before.jstree", function(e, data) {
@@ -1323,7 +1355,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         module = cx.jQuery.trim(cx.jQuery.parseJSON(cx.jQuery(leaf).attr("data-href")).module);
                         module = module.split(" ")[0];
                     } catch (ex) {}
-                    if (cx.jQuery.inArray(module, ["", "Home", "login", "Imprint", "Ids", "Error", "Sitemap", "Agb", "Privacy", "search"]) == -1) {
+                    if (cx.jQuery.inArray(module, ["", "Home", "Login", "Imprint", "Ids", "Error", "Sitemap", "Agb", "Privacy", "Search"]) == -1) {
                         cx.cm.showEditModeWindow(module, this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1]);
                     } else {
                         cx.cm.loadPage(this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1], null, "content");
@@ -1505,7 +1537,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
         cx.jQuery("a.preview").click(function() {
             var pageId = cx.jQuery(this).parent().parent().children("a." + cx.cm.getCurrentLang()).attr("id");
-            var path = "../" + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
+            var path = cx.variables.get("basePath", "contrexx") + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
             cx.jQuery(this).attr("href", path);
         });
 
@@ -1746,7 +1778,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         }
         catch (e) {}
     });
-    if (typeof(langPreset) == 'string' && langPreset.length == 2) {
+    if (typeof(langPreset) == 'string' && langPreset.length >= 2) {
         cx.cm.setCurrentLang(langPreset);
     }
 };
@@ -1882,14 +1914,27 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             url = "index.php?cmd=JsonData&object=node&act=copy&id=" + nodeId;
             break;
         case "activate":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
+            // intentionally no "break" here!
         case "deactivate":
             // do not toggle activity for drafts
             if (page.publishing.hasDraft != "no") {
-                return
+                return;
             }
             break;
         case "show":
         case "hide":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
         case "publish":
             // nothing to do yet
             break;
@@ -1962,8 +2007,11 @@ cx.cm.updatePageIcons = function(args) {
         page.removeClass("inexistent");
     }
 
-    // reload the editor values
-    if (args.page.id == cx.jQuery('input#pageId').val()) {
+    // reload the editor values, in case a page had been loaded into the editor
+    if (
+        args.page.id > 0 &&
+        args.page.id == cx.jQuery('input#pageId').val()
+    ) {
         cx.cm.loadPage(args.page.id, undefined, args.page.version, undefined, false);
     }
 }
@@ -2559,9 +2607,9 @@ cx.cm.createEditor = function() {
             return base + sep + key + '=' + value;
         }
         var config = {
-            customConfig: buildUrl(cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
+            customConfig: buildUrl(cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
             toolbar: 'Full',
-            skin: 'moono'
+            removePlugins: 'bbcode'
         };
         CKEDITOR.replace('page[content]', config);
 
@@ -2669,7 +2717,7 @@ cx.cm.loadHistory = function(id, pos) {
         }
     }
 
-    cx.jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
+    cx.jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"" + cx.variables.get('basePath', 'contrexx') + "lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
     pageId = (id != undefined) ? parseInt(id) : parseInt(cx.jQuery('#pageId').val());
     if (isNaN(pageId) || (pageId == 0)) {
         return;
@@ -2730,6 +2778,7 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
 };
 cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.cm.showEditView();
+    cx.cm.page = page;
 
     // make sure history tab is shown
     cx.jQuery('.tab.page_history').show();
@@ -2826,27 +2875,6 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     }
     cx.jQuery('#page select[name="page[skin]"]').trigger('change');
 
-    cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
-    cx.cm.pageContentTemplate = page.customContent;
-
-    if (page.useCustomContentForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
-
-
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
-    cx.cm.pageApplicationTemplate = page.applicationTemplate;
-
-    if (page.useCustomApplicationTemplateForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
-
     cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
 
     if (page.module === 'Home') {
@@ -2873,7 +2901,6 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     if (reloadHistory) {
         cx.jQuery('#page_history').empty();
-        cx.cm.loadHistory(page.id);
     }
 
     if (page.editingStatus == 'hasDraftWaiting') {
@@ -3121,13 +3148,13 @@ cx.cm.updateHistoryTableHighlighting = function() {
 }
 
 cx.cm.slugify = function(string) {
+    // replace international characters
+    cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
+        string = string.replace(search, replace);
+    });
+    // replace spaces
     string = string.replace(/\s+/g, '-');
-    string = string.replace(/ä/g, 'ae');
-    string = string.replace(/ö/g, 'oe');
-    string = string.replace(/ü/g, 'ue');
-    string = string.replace(/Ä/g, 'Ae');
-    string = string.replace(/Ö/g, 'Oe');
-    string = string.replace(/Ü/g, 'Ue');
+    // replace all non-url characters
     string = string.replace(/[^a-zA-Z0-9-_]/g, '');
     return string;
 }

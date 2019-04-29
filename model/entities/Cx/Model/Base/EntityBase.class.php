@@ -112,9 +112,12 @@ class EntityBase {
      */
     public function getComponentController() {
         $matches = array();
-        preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/', get_class($this), $matches);
+        preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\|Cx\\\\Model\\\\Proxies\\\\Cx(?:Core_Modules|Core|Modules)([^\\\\]*)ModelEntity/', get_class($this), $matches);
         if (empty($matches[1])) {
-            throw new \Exception('Could not find component name');
+            if (empty($matches[2])) {
+                throw new \Exception('Could not find component name');
+            }
+            $matches[1] = $matches[2];
         }
         $em = $this->cx->getDb()->getEntityManager();
         $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
@@ -165,10 +168,38 @@ class EntityBase {
             throw new ValidationException($errors);
     }
 
-    public function __toString() {
+    /**
+     * Route methods like getName(), getType(), getDirectory(), etc.
+     * @param string $methodName Name of method to call
+     * @param array $arguments List of arguments for the method to call
+     * @return mixed Return value of the method to call
+     */
+    public function __call($methodName, $arguments) {
+        return call_user_func_array(array($this->getComponentController(), $methodName), $arguments);
+    }
+
+    /**
+     * Returns this entity's key
+     *
+     * If this entity has a composite key, the fields are separated by $separator.
+     * @param string $separator (optional) Separator for composite key fields, default "/"
+     * @return string Entity key as string
+     */
+    public final function getKeyAsString($separator = '/') {
         $em = $this->cx->getDb()->getEntityManager();
         $cmf = $em->getMetadataFactory();
         $meta = $cmf->getMetadataFor(get_class($this));
-        return (string) implode('/', $meta->getIdentifierValues($this));
+        return (string) implode($separator, $meta->getIdentifierValues($this));
+    }
+
+    /**
+     * Returns this entity's identifying value
+     *
+     * By default this returns the same as getKeyAsString(), but this method
+     * might get overridden by subclasses.
+     * @return string Identifying value for this entity
+     */
+    public function __toString() {
+        return $this->getKeyAsString();
     }
 }
