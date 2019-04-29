@@ -31,13 +31,10 @@ function showCart(html) {
 function shopUpdateCart(data, textStatus, jqXHR) {
     try {
         objCart = data;
-//console.log('Cart: '+objCart.toSource());
         if (cx.jQuery('#shopJsCart').length == 0) {
-//console.log('No shopJsCart!');
             return;
         }
         if (objCart.item_count == 0) {
-//console.log('Empty cart!');
             showCart('<ul><li class="empty">' + cx.variables.get('TXT_EMPTY_SHOPPING_CART', 'shop/cart') +
                 '</li></ul>');
             return;
