@@ -349,6 +349,11 @@ class Customer extends \User
     function active($active=null)
     {
         if (isset($active)) {
+            // do not change the status of the currently signed-in user
+            if ($this->getId() == \FWUser::getFWUserObject()->objUser->getId()) {
+                return $this->getActiveStatus();
+            }
+
             $this->setActiveStatus($active);
         }
         return $this->getActiveStatus();
