@@ -1373,11 +1373,15 @@ die("Failed to update the Cart!");
         } elseif ($product_id) {
             $arrProduct = self::getValidProducts(array($product_id));
         } else {
+            $sortOrder = $objSorting->getOrder();
+            if ($term != '') {
+                $sortOrder = 'score1 DESC, score2 DESC, score3 DESC';
+            }
             $arrProduct = Products::getByShopParams(
                 $count, \Paging::getPosition(),
                 $product_id, $category_id, $manufacturer_id, $term,
                 $flagSpecialoffer, $flagLastFive,
-                $objSorting->getOrder(),
+                $sortOrder,
                 self::$objCustomer && self::$objCustomer->is_reseller()
             );
         }
