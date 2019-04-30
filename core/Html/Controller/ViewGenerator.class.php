@@ -1743,15 +1743,19 @@ class ViewGenerator {
 
             // Foreach custom attribute we call the postCallback function if
             // it exits
+            $storeAgain = false;
             foreach ($this->options['fields'] as $name=>$field) {
                 if (isset($field['postCallback'])) {
                     $this->callPostCallback($name, $entity, $entityData);
+                    $storeAgain = true;
                 }
             }
-            if (!$entityRepository->isManaged($entity)) {
-                $entityRepository->add($entity);
+            if ($storeAgain) {
+                if (!$entityRepository->isManaged($entity)) {
+                    $entityRepository->add($entity);
+                }
+                $entityRepository->flush();
             }
-            $entityRepository->flush();
             $showSuccessMessage = true;
         } else if ($entity instanceof \Cx\Model\Base\EntityBase) {
             /* We try to store the prepared em. This may fail if (for example) we have a one to many association which
@@ -1770,13 +1774,17 @@ class ViewGenerator {
                 $em->flush();
                 // Foreach custom attribute we call the postCallback function if
                 // it exits
+                $storeAgain = false;
                 foreach ($this->options['fields'] as $name=>$field) {
                     if (isset($field['postCallback'])) {
                         $this->callPostCallback($name, $entity, $entityData);
+                        $storeAgain = true;
                     }
                 }
-                $em->persist($entity);
-                $em->flush();
+                if ($storeAgain) {
+                    $em->persist($entity);
+                    $em->flush();
+                }
                 $showSuccessMessage = true;
             } catch(\Cx\Core\Error\Model\Entity\ShinyException $e){
                 /* Display the message from the exception. If this message is empty, we output a general message,
