@@ -485,20 +485,6 @@ cx.ready(function() {
     cx.jQuery(".chzn-select").trigger('change');
     cx.cm.updateLocaleSelect();
 
-    cx.jQuery('div.actions-expanded li.action-item').live('click', function(event) {
-        var classes =  cx.jQuery(event.target).attr("class").split(/\s+/);
-        var url = cx.jQuery(event.target).attr('data-href');
-        var lang = cx.jQuery('#site-tree').jstree('get_lang');
-
-        var action = classes[1];
-        var pageId = cx.jQuery(event.target).closest(".jstree-wrapper").nextAll("a." + lang).attr("id");
-        var nodeId = cx.jQuery(event.target).closest(".jstree-wrapper").parent().attr("id").split("_")[1];
-
-        cx.cm.performAction(action, pageId, nodeId);
-
-        cx.jQuery(event.target).closest('.actions-expanded').hide();
-    });
-
     //add callback to reload custom content templates available as soon as template or module changes
     cx.jQuery('#page select[name="page[skin]"]').bind('change', function() {
         if (parseInt(cx.jQuery(this).val()) == 0) {
@@ -1517,6 +1503,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                   if (!cx.jQuery(e.target).is(".translations > .translation")) {
                       cx.jQuery(this).children(".translations-expanded").toggle();
                       cx.jQuery(".translations.dropdown").not(this).children(".translations-expanded").hide();
+                      cx.jQuery('.actions-expanded').hide();
                   }
               });
             var translationDropdown = translations.find(".translations-expanded ul");
@@ -1542,6 +1529,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                                 e.stopPropagation();
                                 cx.jQuery(this).children(".actions-expanded").toggle();
                                 cx.jQuery(".actions").not(this).children(".actions-expanded").hide();
+                                cx.jQuery('.translations-expanded').hide();
                             });
             var wrapper = cx.jQuery(actions).wrap('<div class="jstree-wrapper" />').parent();
             wrapper.prepend(translations);
@@ -2208,6 +2196,19 @@ cx.cm.updateActionMenu = function(args) {
             menu.append(cx.jQuery("<li class=\"action-item\">").addClass("show").text(cx.variables.get("show", "contentmanager/lang/actions")));
         }
         menu.append(cx.jQuery("<li class=\"action-item\">").addClass("delete").text(cx.variables.get("delete", "contentmanager/lang/actions")));
+        menu.find('li.action-item').click(function(event) {
+            var classes = cx.jQuery(event.target).attr('class').split(/\s+/);
+            var lang    = cx.jQuery('#site-tree').jstree('get_lang');
+            var action  = classes[1];
+            var pageId  = cx.jQuery(event.target).closest('.jstree-wrapper').nextAll('a.' + lang).attr('id');
+            var nodeId  = cx.jQuery(event.target).closest('.jstree-wrapper').parent().attr('id').split('_')[1];
+
+            cx.cm.performAction(action, pageId, nodeId);
+
+            setTimeout(function(){
+                cx.jQuery(event.target).closest('.actions-expanded').hide();
+            }, 100);
+        });
     }
 }
 
