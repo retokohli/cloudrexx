@@ -443,7 +443,10 @@ class ContentManager extends \Module
             'regExpUriProtocol'  =>  \FWValidator::REGEX_URI_PROTO,
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,
-            'showLocaleTagsByDefault'  => $_CONFIG['showLocaleTagsByDefault'],
+            'showLocaleTagsByDefault'  => \Cx\Core\Setting\Controller\Setting::getValue(
+                'showLocaleTagsByDefault',
+                'Config'
+            ),
         ), 'contentmanager');
 
         // manually set Wysiwyg variables as the Ckeditor will be
