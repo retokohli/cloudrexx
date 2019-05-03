@@ -289,7 +289,7 @@ cx.ready(function() {
         }
         data.lang  = cx.jQuery('#site-tree').jstree('get_lang');
         data.nodes = new Array();
-        cx.jQuery('#site-tree ul li.jstree-checked').not(".action-item").each(function() {
+        cx.jQuery('#site-tree ul li.jstree-checked:not(.action-item):not(.translation)').each(function() {
             nodeId = cx.jQuery(this).attr('id').match(/\d+$/)[0];
             data.nodes.push(nodeId);
         });
