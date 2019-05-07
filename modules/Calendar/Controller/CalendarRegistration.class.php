@@ -168,7 +168,22 @@ class CalendarRegistration extends CalendarLibrary
      * @var \Cx\Modules\Calendar\Model\Entity\Invite
      */
     protected $invite;
-    
+
+    /**
+     * Registration type normal registration
+     */
+    const REGISTRATION_TYPE_REGISTRATION = 1;
+
+    /**
+     * Registration type waiting list
+     */
+    const REGISTRATION_TYPE_WAITLIST = 2;
+
+    /**
+     * Registration type cancellation
+     */
+    const REGISTRATION_TYPE_CANCELLATION = 0;
+
     /**
      * Constructor for registration class
      * 
@@ -381,11 +396,11 @@ class CalendarRegistration extends CalendarLibrary
             !empty($objEvent->numSubscriber) &&
             intval($objEvent->getFreePlaces() - $numSeating) < 0
         ) {
-            $type = 2;
+            $type = self::REGISTRATION_TYPE_WAITLIST;
         } elseif (isset($data['registrationType'])) {
             $type = intval($data['registrationType']);
         } else {
-            $type = 1;
+            $type = self::REGISTRATION_TYPE_REGISTRATION;
         }
         $this->saveIn = intval($type);
 
