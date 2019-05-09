@@ -703,24 +703,52 @@ class ImageManager
     {
         $arrSizeInfo = getimagesize($file);
         if (!is_array($arrSizeInfo)) return false;
+
+        // fetch channels of image
+        if (
+            !isset($arrSizeInfo['channels']) ||
+            $arrSizeInfo['channels'] < 3
+        ) {
+            $channels = 3;
+        } else {
+            $channels = $arrSizeInfo['channels'];
+        }
+
+        // fetch bits per pixel of image
+        if (!isset($arrSizeInfo['bits'])) {
+            $bits = 8;
+        } else {
+            $bits = $arrSizeInfo['bits'];
+        }
+
         $type = $this->_isImage($file);
-        $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * 1.8;
+
+        // see comments of https://www.php.net/manual/en/function.imagecreatefromjpeg.php
+        $fudgeFactor = 2.2;
+
+        // width * height * "fudge factor"
+        $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * $fudgeFactor;
+
+        // multiple required memory by number of bits and channels per pixel
+        // depending on image type
         switch($type) {
             case self::IMG_TYPE_GIF:
                 $function = 'imagecreatefromgif';
                 break;
             case self::IMG_TYPE_JPEG:
                 $function = 'imagecreatefromjpeg';
-                $potentialRequiredMemory *=
-                    ($arrSizeInfo['bits']/8) * ($arrSizeInfo['channels'] < 3 ? 3 : $arrSizeInfo['channels']);
+                $potentialRequiredMemory *= $bits / 8 * $channels;
                 break;
             case self::IMG_TYPE_PNG:
                 $function = 'imagecreatefrompng';
-                $potentialRequiredMemory *= 4;
+                $potentialRequiredMemory *= $bits;
                 break;
             default:
                 return '';
         }
+
+        // round potential required memory to int
+        $potentialRequiredMemory = round($potentialRequiredMemory);
 
         require_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
         $objSystem = new FWSystem();
@@ -731,11 +759,14 @@ class ImageManager
             // set default php memory limit of 8 MBytes
             $memoryLimit = 8 * pow(1024, 2);
         }
+        // fetch already used memory
         if (function_exists('memory_get_usage')) {
             $potentialRequiredMemory += memory_get_usage();
         } else {
-            // add a default of 3 MBytes
-            $potentialRequiredMemory += 3 * pow(1024, 2);
+            // as we are unable to fetch the currently used memory,
+            // we do continue our calculation with an expected
+            // amount of used memory of 32 MB
+            $potentialRequiredMemory += 32 * pow(1024, 2);
         }
         if ($potentialRequiredMemory > $memoryLimit) {
             // try to set a higher memory_limit
