@@ -50,8 +50,6 @@ class ComponentManagerException extends \Exception {};
  */
 class ComponentManager
 {
-    var $strErrMessage = '';
-    var $strOkMessage = '';
     var $arrayInstalledModules = array();
     var $arrayRemovedModules = array();
     var $langId;
@@ -124,11 +122,6 @@ class ComponentManager
                 break;
         }
 
-        $objTemplate->setVariable(array(
-            'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
-            'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
-        ));
-
         if (isset($_REQUEST['act'])) {
             $this->act = $_REQUEST['act'];
         } else {
@@ -154,7 +147,7 @@ class ComponentManager
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult) {
-            $this->strOkMessage = $status ? $_ARRAYLANG['TXT_MODULE_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_MODULE_DEACTIVATED_SUCCESSFULLY'];
+            \Message::ok($status ? $_ARRAYLANG['TXT_MODULE_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_MODULE_DEACTIVATED_SUCCESSFULLY']);
         } else {
             $this->errorHandling();
             return false;
@@ -357,7 +350,7 @@ class ComponentManager
                 $installedModules .=
                     (empty($installedModules) ? '' : ', ').$moduleName;
             }
-            $this->strOkMessage .= sprintf($_ARRAYLANG['TXT_MODULES_INSTALLED_SUCCESFULL'], $installedModules);
+            \Message::ok(sprintf($_ARRAYLANG['TXT_MODULES_INSTALLED_SUCCESFULL'], $installedModules));
         }
         if ($this->removeModules()) {
             $removedModules = '';
@@ -365,7 +358,7 @@ class ComponentManager
                 $removedModules .=
                     (empty($removedModules) ? '' : ', ').$moduleName;
             }
-            $this->strOkMessage .= ' '.sprintf($_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'], $removedModules);
+            \Message::ok(sprintf($_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'], $removedModules));
         }
     }
 
@@ -614,6 +607,6 @@ class ComponentManager
 
     function errorHandling() {
         global $_ARRAYLANG;
-        $this->strErrMessage.= " ".$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']." ";
+        \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
     }
 }
