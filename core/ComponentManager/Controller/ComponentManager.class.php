@@ -344,6 +344,8 @@ class ComponentManager
     function modModules()
     {
         global $_ARRAYLANG;
+
+        $reload = false;
         if ($this->installModules()) {
             $installedModules = '';
             foreach (array_keys($this->arrayInstalledModules) as $moduleName) {
@@ -351,6 +353,7 @@ class ComponentManager
                     (empty($installedModules) ? '' : ', ').$moduleName;
             }
             \Message::ok(sprintf($_ARRAYLANG['TXT_MODULES_INSTALLED_SUCCESFULL'], $installedModules));
+            $reload = true;
         }
         if ($this->removeModules()) {
             $removedModules = '';
@@ -359,7 +362,14 @@ class ComponentManager
                     (empty($removedModules) ? '' : ', ').$moduleName;
             }
             \Message::ok(sprintf($_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'], $removedModules));
+            $reload = true;
         }
+
+        if (!$reload) {
+            return;
+        }
+
+        \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromBackend('ComponentManager'));
     }
 
 
