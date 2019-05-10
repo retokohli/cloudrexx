@@ -194,6 +194,7 @@ $J(function(){
                     $J('#Done').removeClass('disabled');
                     $J('#cancelled').attr('disabled', 'disabled');
                     $J('#Done').removeAttr('disabled');
+                    $J('#progressBar').hide(2000);
                 }
             }
         });
