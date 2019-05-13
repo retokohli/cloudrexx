@@ -332,6 +332,7 @@ class BackendTable extends HTML_Table {
                     }
 
                     if (!empty($readOnly)) {
+                        // defined in TableGenerator
                         $encode = false;
                     }
 
