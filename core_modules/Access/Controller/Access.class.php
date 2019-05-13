@@ -606,6 +606,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $this->parseAccountAttributes($objFWUser->objUser, true);
         $this->parseNewsletterLists($objFWUser->objUser);
 
+        $objFWUser->objUser->objAttribute->first();
         while (!$objFWUser->objUser->objAttribute->EOF) {
             $objAttribute = $objFWUser->objUser->objAttribute->getById($objFWUser->objUser->objAttribute->getId());
 
