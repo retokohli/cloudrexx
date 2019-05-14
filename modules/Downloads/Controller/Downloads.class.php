@@ -633,7 +633,7 @@ class Downloads extends DownloadsLibrary
 
     private function processCreateDirectory($objCategory)
     {
-        if ($this->isRegularMode || empty($_POST['downloads_category_name'])) {
+        if (!$this->isRegularMode || empty($_POST['downloads_category_name'])) {
             return;
         } else {
             $name = contrexx_stripslashes($_POST['downloads_category_name']);
