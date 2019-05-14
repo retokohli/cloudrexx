@@ -105,6 +105,15 @@ class Downloads extends DownloadsLibrary
 
         $objFWUser = \FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
+
+        // if $requestedPage is set, then we're about to process a widget
+        if ($requestedPage) {
+            $this->isRegularMode = false;
+            $this->requestedPage = $requestedPage;
+        } else {
+            $this->requestedPage = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
+        }
+
         $this->parseURLModifiers($queryParams);
         if ($pageContent instanceof \Cx\Core\Html\Sigma) {
             $this->objTemplate = $pageContent;
@@ -113,14 +122,6 @@ class Downloads extends DownloadsLibrary
             $this->objTemplate->setTemplate($pageContent);
             \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
             $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        }
-
-        // if $requestedPage is set, then we're about to process a widget
-        if ($requestedPage) {
-            $this->isRegularMode = false;
-            $this->requestedPage = $requestedPage;
-        } else {
-            $this->requestedPage = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
         }
     }
 
