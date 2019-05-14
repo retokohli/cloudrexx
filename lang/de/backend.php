@@ -1278,7 +1278,7 @@ $_ARRAYLANG['TXT_CORE_CONTENTTITLE'] = "Titel (Seite)";
 
 // CORE/CM
 $_ARRAYLANG['TXT_CORE_CM_STATUS_PAGE'] = 'Status / Seite';
-$_ARRAYLANG['TXT_CORE_CM_TRANSLATIONS'] = 'Übersetzungen';
+$_ARRAYLANG['TXT_CORE_CM_TRANSLATIONS'] = 'Sprachversionen';
 $_ARRAYLANG['TXT_CORE_CM_SECTION_CMD'] = 'Section / CMD';
 $_ARRAYLANG['TXT_CORE_CM_LOG'] = 'Log';
 $_ARRAYLANG['TXT_CORE_CM_LAST_MODIFIED'] = 'Letzte Änderung durch Benutzer';
@@ -1402,6 +1402,7 @@ $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = '%s. Kopie';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_ENTRIES'] = 'Einträge';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Entwürfe ausblenden';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
+$_ARRAYLANG['TXT_CORE_LOCALE_DOESNT_EXIST'] = 'Es wurde keine Sprache gefunden';
 
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
