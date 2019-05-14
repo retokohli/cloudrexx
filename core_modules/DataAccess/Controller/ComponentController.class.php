@@ -183,12 +183,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (isset($arguments['order']) && is_array($arguments['order'])) {
                 foreach ($arguments['order'] as $field=>$sortOrder) {
                     if (!$dataSource->hasField($field)) {
-                        throw new \InvalidArgumentsException(
+                        throw new \InvalidArgumentException(
                             'Unknown field "' . $field . '"'
                         );
                     }
                     if (!in_array(strtolower($sortOrder), array('asc', 'desc'))) {
-                        throw new \InvalidArgumentsException(
+                        throw new \InvalidArgumentException(
                             'Unknown sort order "' . $sortOrder . '"'
                         );
                     }
@@ -209,7 +209,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             );
                         }
                         if (!$dataSource->supportsOperation($operation)) {
-                            throw new \InvalidArgumentsException(
+                            throw new \InvalidArgumentException(
                                 'Unsupported operation "' . $operation . '"'
                             );
                         }
