@@ -387,7 +387,7 @@ class GuestBook extends GuestBookLibrary {
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $from = isset($email) ? $email : $mailto;
+        $from = $mailto;
         $objMail->SetFrom($from);
         $objMail->Subject = $subject;
         $objMail->IsHTML(false);
