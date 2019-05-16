@@ -161,21 +161,24 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
      */
     public static function getInstance()
     {
-        if (!isset(static::$instance))
-        {
-            static::$instance = new static();
-            $_SESSION = static::$instance;
+        try {
+            if (!isset(static::$instance)) {
+                static::$instance = new static();
+                $_SESSION = static::$instance;
 
-            // read the session data
-            $_SESSION->readData();
+                // read the session data
+                $_SESSION->readData();
 
-            //earliest possible point to set debugging according to session.
-            $_SESSION->restoreDebuggingParams();
+                //earliest possible point to set debugging according to session.
+                $_SESSION->restoreDebuggingParams();
 
-            $_SESSION->cmsSessionExpand();
+                $_SESSION->cmsSessionExpand();
+            }
+
+            return static::$instance;
+        } catch (\Exception $e) {
+            return null;
         }
-
-        return static::$instance;
     }
 
     /**
@@ -278,6 +281,12 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
      * This does set the following:
      * - initial lifetime of the cookie
      * - httpOnly flag
+     * - secure flag in case HTTPS is forced in both, back- and frontend
+     *
+     * @throws \Exception If the cookie is only allowed to be transmitted
+     *                    over HTTPS (secure flag), but the request has been
+     *                    made over HTTP, then an exception is thrown to
+     *                    prevent the disclosure of the session ID over HTTP.
      */
     protected function initCookieConfig() {
         // init config
@@ -288,6 +297,35 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
 
         // see https://www.owasp.org/index.php/HttpOnly
         $httponly = true;
+
+        // transfer cookie only over HTTPS if
+        // HTTPS has been forced
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $forceProtocolBackend = \Cx\Core\Setting\Controller\Setting::getValue(
+            'forceProtocolBackend',
+            'Config'
+        );
+        $forceProtocolFrontend = \Cx\Core\Setting\Controller\Setting::getValue(
+            'forceProtocolFrontend',
+            'Config'
+        );
+        // secure flag is only enabled, if HTTPS is beeing forced in both,
+        // front- and backend
+        if (
+            $forceProtocolBackend == 'https' &&
+            $forceProtocolFrontend == 'https'
+        ) {
+            $secure = true;
+        }
+        // abort session initialization in case session is only allowed
+        // over an encrypted connection, but the request has been made
+        // over an non-encrypted connection
+        if (
+            $secure &&
+            $cx->getRequest()->getUrl()->getProtocol() != 'https'
+        ) {
+            throw new \Exception('Unable to initialize session over a non encrypted connection');
+        }
 
         // set cookie config
         session_set_cookie_params(
