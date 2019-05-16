@@ -729,7 +729,7 @@ class ImageManager
         // width * height * "fudge factor"
         $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * $fudgeFactor;
 
-        // multiple required memory by number of bits and channels per pixel
+        // multiply required memory by number of bits and channels per pixel
         // depending on image type
         switch($type) {
             case self::IMG_TYPE_GIF:
