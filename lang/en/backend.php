@@ -140,7 +140,6 @@ $_ARRAYLANG['TXT_PAGING_OUT_OF'] = "out of";
 $_ARRAYLANG['TXT_PAGING_TO'] = "to";
 $_ARRAYLANG['TXT_FIRST_NAME'] = "First name";
 $_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "If the password field remains empty, the current password is maintained!";
-$_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "The password is encoded with the MD5 hashing algorithm.";
 $_ARRAYLANG['TXT_VALUE'] = "Value";
 $_ARRAYLANG['TXT_SIZE'] = "File size";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database Query Error!";
