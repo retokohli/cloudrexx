@@ -68,6 +68,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'get',
                     'post',
                     'put',
+                    'patch',
                     'delete',
                     'trace',
                     'options',
