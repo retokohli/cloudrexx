@@ -140,7 +140,6 @@ $_ARRAYLANG['TXT_PAGING_OUT_OF'] = "von";
 $_ARRAYLANG['TXT_PAGING_TO'] = "bis";
 $_ARRAYLANG['TXT_FIRST_NAME'] = "Vorname";
 $_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "Wenn das Passwortfeld leer bleibt, wird das aktuelle Passwort beibehalten! ";
-$_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "Das Passwort wird mit dem MD5 Logarithmus verschlüsselt.";
 $_ARRAYLANG['TXT_VALUE'] = "Wert";
 $_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbankabfrage!";
