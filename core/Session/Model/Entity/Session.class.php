@@ -260,6 +260,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
             $this->initDatabase();
             $this->initRememberMe();
             $this->initSessionLifetime();
+        $this->initCookieConfig();
 
         if (session_set_save_handler(
             $this, true))
@@ -269,6 +270,33 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
         } else {
             $this->cmsSessionError();
         }
+    }
+
+    /**
+     * Initialize session cookie configuration
+     *
+     * This does set the following:
+     * - initial lifetime of the cookie
+     * - httpOnly flag
+     */
+    protected function initCookieConfig() {
+        // init config
+        $lifetime = $this->lifetime;
+        $path = '/';
+        $domain = ini_get('session.cookie_domain');
+        $secure = false;
+
+        // see https://www.owasp.org/index.php/HttpOnly
+        $httponly = true;
+
+        // set cookie config
+        session_set_cookie_params(
+            $lifetime,
+            $path,
+            $domain,
+            $secure,
+            $httponly
+        );
     }
 
     /**
@@ -519,7 +547,15 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
         $ses = session_name();
         if (isset($_COOKIE[$ses])) {
             $expirationTime = ($this->lifetime > 0 ? $this->lifetime + time() : 0);
-            setcookie($ses, $_COOKIE[$ses], $expirationTime, '/');
+            setcookie(
+                $ses,
+                $_COOKIE[$ses],
+                $expirationTime,
+                '/',
+                ini_get('session.cookie_domain'),
+                ini_get('session.cookie_secure'),
+                ini_get('session.cookie_httponly')
+            );
         }
     }
 
