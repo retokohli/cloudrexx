@@ -580,6 +580,14 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @var array
      */
     private static $registeredJsFiles = array();
+
+    /**
+     * Remembers all css files already added in some way.
+     *
+     * @access protected
+     * @static
+     * @var array
+     */
     protected static $registeredCssFiles = array();
 
     private static $re_name_postfix = 1;
@@ -1028,7 +1036,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      *                  files has been replaced, in case there is a customized
      *                  version available.
      */
-    protected function getRealCssFiles($cssFiles) {
+    protected static function getRealCssFiles($cssFiles) {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         $files = array();
@@ -1166,7 +1174,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // The file has already been added to the js list
             if (array_search($file, self::$registeredCssFiles) !== false)
                 continue;
-            self::$registeredCssFiles[] = $file;
+            static::$registeredCssFiles[] = $file;
             $path = '';
 
             if (!preg_match('#^https?://#', $file)) {
