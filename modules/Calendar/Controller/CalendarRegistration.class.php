@@ -171,16 +171,19 @@ class CalendarRegistration extends CalendarLibrary
 
     /**
      * Registration type normal registration
+     * @var integer
      */
     const REGISTRATION_TYPE_REGISTRATION = 1;
 
     /**
      * Registration type waiting list
+     * @var integer
      */
     const REGISTRATION_TYPE_WAITLIST = 2;
 
     /**
      * Registration type cancellation
+     * @var integer
      */
     const REGISTRATION_TYPE_CANCELLATION = 0;
 
@@ -396,11 +399,11 @@ class CalendarRegistration extends CalendarLibrary
             !empty($objEvent->numSubscriber) &&
             intval($objEvent->getFreePlaces() - $numSeating) < 0
         ) {
-            $type = self::REGISTRATION_TYPE_WAITLIST;
+            $type = static::REGISTRATION_TYPE_WAITLIST;
         } elseif (isset($data['registrationType'])) {
             $type = intval($data['registrationType']);
         } else {
-            $type = self::REGISTRATION_TYPE_REGISTRATION;
+            $type = static::REGISTRATION_TYPE_REGISTRATION;
         }
         $this->saveIn = intval($type);
 
