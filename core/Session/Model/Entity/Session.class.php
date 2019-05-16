@@ -251,25 +251,20 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
     /**
      * Default object constructor.
      */
-    public function __construct()
-    {
-
+    public function __construct() {
         if (ini_get('session.auto_start')) {
             session_destroy();
         }
 
         register_shutdown_function(array(& $this, 'releaseLocks'));
 
-            $this->initDatabase();
-            $this->initRememberMe();
-            $this->initSessionLifetime();
+        $this->initDatabase();
+        $this->initRememberMe();
+        $this->initSessionLifetime();
         $this->initCookieConfig();
 
-        if (session_set_save_handler(
-            $this, true))
-        {
+        if (session_set_save_handler($this, true)) {
             session_start();
-
         } else {
             $this->cmsSessionError();
         }
