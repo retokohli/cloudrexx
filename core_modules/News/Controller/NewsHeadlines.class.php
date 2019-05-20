@@ -158,7 +158,10 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
         $nextUpdateDate = null;
         if ($objResult !== false && $objResult->RecordCount() >= 0) {
-            while (!$objResult->EOF) {
+            while (
+                !$objResult->EOF &&
+                $i < $newsLimit
+            ) {
                 // check next update date
                 if (
                     $objResult->fields['startdate'] != '0000-00-00 00:00:00' ||
