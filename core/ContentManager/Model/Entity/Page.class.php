@@ -2195,8 +2195,17 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             $page->getType() == static::TYPE_APPLICATION &&
             $template->blockExists('APPLICATION_DATA')
         ) {
-            $contentTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPageWithoutWidget($page, null, $channel);
-            $template->addBlock('APPLICATION_DATA', 'cx_application_data', $contentTemplate);
+            $contentTemplate =
+                \Cx\Core\Core\Controller\Cx::getContentTemplateOfPageWithoutWidget(
+                $page,
+                null,
+                $channel
+            );
+            $template->addBlock(
+                'APPLICATION_DATA',
+                'cx_application_data',
+                $contentTemplate
+            );
         }
 
         return $template;
