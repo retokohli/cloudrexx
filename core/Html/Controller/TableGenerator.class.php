@@ -54,8 +54,6 @@ class TableGenerator extends \BackendTable
      */
     public function __construct($attrs = array(), $options = array(), $readOnly = false)
     {
-        global $_ARRAYLANG;
-
         // Rename Key Fields
         foreach ($attrs as $rowname=>$row) {
             if (
