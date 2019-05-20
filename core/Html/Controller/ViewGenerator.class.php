@@ -1217,9 +1217,17 @@ class ViewGenerator {
         $actionUrl = $renderOptions['actionUrl'];
 
         //sets the order of the fields
-        if(!empty($this->options['order']['form'])) {
+        if(!empty($this->options['order']['form']) && !$readOnly) {
             $sortedData = array();
             foreach ($this->options['order']['form'] as $orderVal) {
+                if(array_key_exists($orderVal, $renderArray)){
+                    $sortedData[$orderVal] = $renderArray[$orderVal];
+                }
+            }
+            $renderArray = array_merge($sortedData,$renderArray);
+        } else if (!empty($this->options['order']['show'])) {
+            $sortedData = array();
+            foreach ($this->options['order']['show'] as $orderVal) {
                 if(array_key_exists($orderVal, $renderArray)){
                     $sortedData[$orderVal] = $renderArray[$orderVal];
                 }

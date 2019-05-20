@@ -378,18 +378,20 @@ class BackendTable extends HTML_Table {
                     $options['functions']
                 );
                 $this->updateCellAttributes(
-                    0, 
-                    0, 
+                    0,
+                    0,
                     array(
                         'colspan' => $headerColspan
                     )
                 );
 
-                // prepare overall functions code
-                $overallFunctionsCode = $this->getOverallFunctionsCode($options['functions'], $attrs);
-                $this->setHeaderContents(0, $col, $overallFunctionsCode);
-                $this->updateCellAttributes(0, $col, array('style' => 'text-align:right;'));
-                $this->updateRowAttributes(1, array('class' => 'row3'), true);
+                if (!$readOnly) {
+                    // prepare overall functions code
+                    $overallFunctionsCode = $this->getOverallFunctionsCode($options['functions'], $attrs);
+                    $this->setHeaderContents(0, $col, $overallFunctionsCode);
+                    $this->updateCellAttributes(0, $col, array('style' => 'text-align:right;'));
+                    $this->updateRowAttributes(1, array('class' => 'row3'), true);
+                }
             }
             // add multi-actions
             if (isset($options['multiActions'])) {
@@ -515,6 +517,8 @@ class BackendTable extends HTML_Table {
                     'sortField' => $sortField,
                 )
             );
+        } else if ($readOnly) {
+            $className .= ' view-show';
         }
 
         if (!empty($status)) {

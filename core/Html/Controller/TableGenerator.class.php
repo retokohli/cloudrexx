@@ -58,11 +58,6 @@ class TableGenerator extends \BackendTable
 
         // Rename Key Fields
         foreach ($attrs as $rowname=>$row) {
-            $newRowName = $rowname;
-            if (isset($_ARRAYLANG[$rowname])) {
-                $newRowName = $_ARRAYLANG[$rowname];
-            }
-
             if (
                 isset($options['fields'][$rowname]['show']['show']) &&
                 !$options['fields'][$rowname]['show']['show']
@@ -132,24 +127,36 @@ class TableGenerator extends \BackendTable
                     -1
                 );
             }
-
-            $rows[$newRowName] = $data;
+            $rows[$rowname] = $data;
         }
 
         $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
             array('key' => array_keys($rows), 'value' => array_values($rows))
         );
+
         $options['fields']['key']['sorting'] = false;
         $options['fields']['value']['sorting'] = false;
-        $options['functions']['add'] = false;
-        $options['functions']['edit'] = false;
-        $options['functions']['delete'] = false;
-        $options['functions']['show'] = false;
+        // After the flip(), the options can no longer be assigned to the rows.
+        // But to get the options they are passed with use().
+        // Therefore a PHP callback function is used and not a JsonAdapter.
+        $options['fields']['key']['table']['parse'] = function ($rowname) use ($options) {
+            global $_ARRAYLANG;
+            $newRowName = $rowname;
+
+            if (!empty($options['fields'][$rowname]['show']['header'])) {
+                $newRowName = $options['fields'][$rowname]['show']['header'];
+            } else if (!empty($options['fields'][$rowname]['header'])) {
+                $newRowName = $options['fields'][$rowname]['header'];
+            } else if (isset($_ARRAYLANG[$rowname])) {
+                $newRowName = $_ARRAYLANG[$rowname];
+            }
+            return $newRowName;
+        };
+        unset($options['functions']);
         unset($options['multiActions']);
         unset($options['tabs']);
 
         $data = $data->flip();
-
         parent::__construct($data, $options, true, null, $readOnly);
     }
 }
