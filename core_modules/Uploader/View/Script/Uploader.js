@@ -281,7 +281,10 @@
                     var preloader = new mOxie.Image();
                     preloader.onload = function () {
                         preloader.downsize(120, 120);
-                        image.attr("src", preloader.getAsDataURL());
+                        let src = preloader.getAsDataURL();
+                        image.attr('src', src);
+                        cx.jQuery('img.image_uploader_source_image')
+                          .trigger('uploadingImage', [src]);
                     };
                     preloader.load(file.getSource());
 

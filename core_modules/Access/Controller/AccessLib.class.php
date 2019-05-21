@@ -1617,7 +1617,22 @@ JSaccessValidatePrimaryGroupAssociation
             uploaderField.find('.uploader_rel_field_remove_icon').show();
         }
     }
-
+    cx.ready(function() {
+      cx.jQuery(
+        '#access_profile_attribute_picture_0 img.image_uploader_source_image'
+      ).bind('uploadingImage', uploadingImage);
+      /**
+       * Update the thumbnail on uploading a new image
+       * @param {Event} event
+       * @param {String} src
+       * @returns {undefined}
+       */
+      function uploadingImage(event, src) {
+        cx.jQuery(
+          '#access_profile_attribute_picture_0 img.image_uploader_source_image'
+        ).attr('src', src);
+      }
+    });
 // ]]>
 </script>
 JSimageUploaderCode
