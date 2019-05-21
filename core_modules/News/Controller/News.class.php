@@ -189,49 +189,93 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 //       in case the message doesn't exist in the requested language. But only try load the
 //       the message in the fallback-language in case the associated news-detail content page
 //       is setup to use the content of the fallback-language
-        $objResult = $objDatabase->SelectLimit('SELECT  news.id                 AS id,
-                                                        news.userid             AS userid,
-                                                        news.redirect           AS redirect,
-                                                        news.source             AS source,
-                                                        news.changelog          AS changelog,
-                                                        news.url1               AS url1,
-                                                        news.url2               AS url2,
-                                                        news.date               AS date,
-                                                        news.publisher          AS publisher,
-                                                        news.publisher_id       AS publisherid,
-                                                        news.enddate            AS enddate,
-                                                        news.author             AS author,
-                                                        news.author_id          AS authorid,
-                                                        news.changelog          AS changelog,
-                                                        news.teaser_image_path  AS newsimage,
-                                                        news.enable_related_news AS enableRelatedNews,
-                                                        news.enable_tags         AS enableTags,
-                                                        news.teaser_image_thumbnail_path AS newsThumbImg,
-                                                        news.typeid             AS typeid,
-                                                        news.allow_comments     AS commentactive,
-                                                        locale.text,
-                                                        locale.title            AS title,
-                                                        locale.teaser_text
-                                                  FROM  '.DBPREFIX.'module_news AS news
-                                            INNER JOIN  '.DBPREFIX.'module_news_locale AS locale ON news.id = locale.news_id
-                                                WHERE   ' . $whereStatus . '
-                                                        news.id = '.$newsid.' AND
-                                                        locale.is_active=1 AND
-                                                        locale.lang_id ='.FRONTEND_LANG_ID
-                                                        // ignore time for previews
-                                                        .((!$newsPreview) ? ' AND (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
-                                                        (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")' : '')
-                                                       .($this->arrSettings['news_message_protection'] == '1' && !\Permission::hasAllAccess() ? (
-                                                            ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
-                                                                " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
-                                                                :   " AND frontend_access_id=0 ")
-                                                            :   '')
-                                                , 1);
+        $query = '
+            SELECT
+                news.id                 AS id,
+                news.userid             AS userid,
+                news.redirect           AS redirect,
+                news.source             AS source,
+                news.changelog          AS changelog,
+                news.url1               AS url1,
+                news.url2               AS url2,
+                news.date               AS date,
+                news.publisher          AS publisher,
+                news.publisher_id       AS publisherid,
+                news.enddate            AS enddate,
+                news.author             AS author,
+                news.author_id          AS authorid,
+                news.changelog          AS changelog,
+                news.teaser_image_path  AS newsimage,
+                news.enable_related_news AS enableRelatedNews,
+                news.enable_tags        AS enableTags,
+                news.teaser_image_thumbnail_path AS newsThumbImg,
+                news.typeid             AS typeid,
+                news.allow_comments     AS commentactive,
+                news.frontend_access_id,
+                locale.text,
+                locale.title            AS title,
+                locale.teaser_text
+            FROM
+                ' . DBPREFIX . 'module_news AS news
+            INNER JOIN
+                ' . DBPREFIX . 'module_news_locale AS locale
+            ON
+                news.id = locale.news_id
+            WHERE
+                ' . $whereStatus . '
+                news.id = ' . $newsid . ' AND
+                locale.is_active = 1 AND
+                locale.lang_id = ' . FRONTEND_LANG_ID . '
+        ';
+        // ignore time for previews
+        if (!$newsPreview) {
+            $query .= ' AND
+                (
+                    news.startdate <= \'' . date('Y-m-d H:i:s') . '\' OR
+                    news.startdate="0000-00-00 00:00:00"
+                ) AND
+                (
+                    news.enddate >= \'' . date('Y-m-d H:i:s') . '\' OR
+                    news.enddate="0000-00-00 00:00:00"
+                )
+            ';
+        }
 
+        $objResult = $objDatabase->SelectLimit($query, 1);
 
         if (!$objResult || $objResult->EOF) {
             header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
             exit;
+        }
+
+        if (
+            $this->arrSettings['news_message_protection'] == '1' &&
+            !\Permission::hasAllAccess()
+        ) {
+            $validAccessIds = array(0);
+            if (
+                ($objFWUser = \FWUser::getFWUserObject()) &&
+                $objFWUser->objUser->login()
+            ) {
+                $validAccessIds = array_merge(
+                    array(0),
+                    $objFWUser->objUser->getDynamicPermissionIds()
+                );
+            }
+            if (
+                !in_array(
+                    $objResult->fields['frontend_access_id'],
+                    $validAccessIds
+                )
+            ) {
+                if ($this->arrSettings['login_redirect'] == '1') {
+                    \Permission::noAccess($base64Redirect);
+                }
+                header(
+                    'Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News')
+                );
+                exit;
+            }
         }
 
         $newsCommentActive  = $objResult->fields['commentactive'];
@@ -242,24 +286,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
         $url1               = $objResult->fields['url1'];
         $url2               = $objResult->fields['url2'];
-        $newsUrl            = '';
-        $newsSource         = '';
         $newsLastUpdate     = !empty($lastUpdate)
                                ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT, $lastUpdate)
                                : '';
 
         if ($objResult->fields['enddate'] != '0000-00-00 00:00:00') {
             $expirationDate = new \DateTime($objResult->fields['enddate']);
-        }
-
-        if (!empty($url1)) {
-            $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
-        }
-        if (!empty($url2)) {
-            $newsUrl .= $this->getNewsLink($url2).'<br />';
-        }
-        if (!empty($source)) {
-            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
         }
 
         $this->newsTitle = $objResult->fields['title'];
@@ -290,15 +322,80 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_TITLE'          => $newstitle,
            'NEWS_TEASER_TEXT'    => $newsTeaser,
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
-           'NEWS_SOURCE'         => $newsSource,
-           'NEWS_URL'            => $newsUrl,
-           'NEWS_LINK1_SRC'      => contrexx_raw2encodedUrl($url1),
-           'NEWS_LINK2_SRC'      => contrexx_raw2encodedUrl($url2),
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
+           'NEWS_TYPE_ID'        => $objResult->fields['typeid'],
            'NEWS_TYPE_NAME'      => contrexx_raw2xhtml($this->getTypeNameById($objResult->fields['typeid'])),
         ));
 
-        if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
+        // parse 'combined' external link
+        $newsUrl = '';
+        if (!empty($url1)) {
+            $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
+        }
+        if (!empty($url2)) {
+            $newsUrl .= $this->getNewsLink($url2).'<br />';
+        }
+        $objTpl->setVariable(
+            'NEWS_URL',
+            $newsUrl
+        );
+
+        // parse external source
+        $newsSourceLink = '';
+        $newsSource = '';
+        if (!empty($source)) {
+            $newsSourceLink = $this->getNewsLink($source);
+            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $newsSourceLink . '<br />';
+        }
+        $objTpl->setVariable(array(
+            'TXT_NEWS_SOURCE' => $_ARRAYLANG['TXT_NEWS_SOURCE'],
+            'NEWS_SOURCE'     => $newsSource,
+            'NEWS_SOURCE_LINK'=> $newsSourceLink,
+            'NEWS_SOURCE_SRC' => $source,
+        ));
+        if ($objTpl->blockExists('news_source')) {
+            if (empty($source)) {
+                $objTpl->hideBlock('news_source');
+            } else {
+                $objTpl->touchBlock('news_source');
+            }
+        }
+
+        // parse external link 1
+        $objTpl->setVariable(array(
+            'TXT_NEWS_LINK1' =>
+                $_ARRAYLANG['TXT_NEWS_LINK1'],
+            'NEWS_LINK1_SRC' =>
+                contrexx_raw2encodedUrl($url1),
+        ));
+        if ($objTpl->blockExists('news_link1')) {
+            if (empty($url1)) {
+                $objTpl->hideBlock('news_link1');
+            } else {
+                $objTpl->touchBlock('news_link1');
+            }
+        }
+
+        // parse external link 2
+        $objTpl->setVariable(array(
+            'TXT_NEWS_LINK2' =>
+                $_ARRAYLANG['TXT_NEWS_LINK2'],
+            'NEWS_LINK2_SRC' =>
+                contrexx_raw2encodedUrl($url2)
+        ));
+        if ($objTpl->blockExists('news_link2')) {
+            if (empty($url2)) {
+                $objTpl->hideBlock('news_link2');
+            } else {
+                $objTpl->touchBlock('news_link2');
+            }
+        }
+
+        // hide teaser container if the use of teasers has been deactivated
+        if (
+            $this->arrSettings['news_use_teaser_text'] != '1' &&
+            $this->_objTpl->blockExists('news_use_teaser_text')
+        ) {
             $this->_objTpl->hideBlock('news_use_teaser_text');
         }
 
@@ -363,8 +460,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
 
-        self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'image_thumbnail');
-        self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'image_detail');
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, '', 'image_thumbnail');
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, '', 'image_detail');
         //previous next newslink
         if (    !empty($this->arrSettings['use_previous_next_news_link']) 
             &&  $this->_objTpl->blockExists('news_details_previous_next_links')

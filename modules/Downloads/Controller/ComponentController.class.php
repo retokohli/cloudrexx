@@ -62,7 +62,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getControllerClasses()
     {
-        return array('EsiWidget');
+        return array('EsiWidget', 'JsonDownloads');
     }
 
     /**
@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getControllersAccessableByJson()
     {
-        return array('EsiWidgetController');
+        return array('EsiWidgetController', 'JsonDownloadsController');
     }
 
     /**
@@ -209,9 +209,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getDownloadsForSearchComponent($searchTerm) {
         $result = array();
-        $download = new Download();
         $downloadLibrary = new DownloadsLibrary();
         $config = $downloadLibrary->getSettings();
+        $download = new Download($config);
 
         // abort in case downloads shall not be included into the global
         // fulltext search component
