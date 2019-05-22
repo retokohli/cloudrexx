@@ -1617,22 +1617,6 @@ JSaccessValidatePrimaryGroupAssociation
             uploaderField.find('.uploader_rel_field_remove_icon').show();
         }
     }
-    cx.ready(function() {
-      cx.jQuery(
-        '#access_profile_attribute_picture_0 img.image_uploader_source_image'
-      ).bind('uploadingImage', uploadingImage);
-      /**
-       * Update the thumbnail on uploading a new image
-       * @param {Event} event
-       * @param {String} src
-       * @returns {undefined}
-       */
-      function uploadingImage(event, src) {
-        cx.jQuery(
-          '#access_profile_attribute_picture_0 img.image_uploader_source_image'
-        ).attr('src', src);
-      }
-    });
 // ]]>
 </script>
 JSimageUploaderCode
@@ -2274,6 +2258,7 @@ JS
      */
     public function getImageUploader()
     {
+        $arrSettings = \User_Setting::getSettings();
         // init uploader to upload images
         $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $uploader->setCallback('accessImageUploaderCallback');
@@ -2282,6 +2267,11 @@ JS
             'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
             'style'              => 'display:none',
             'data-upload-limit'  => 1,
+            'data-thumb-selector' => 'img.image_uploader_source_image',
+            'data-thumb-max-width' =>
+                $arrSettings['max_profile_pic_width']['value'],
+            'data-thumb-max-height' =>
+                $arrSettings['max_profile_pic_height']['value'],
         ));
         $this->attachJavaScriptFunction('imageUploaderCode');
 

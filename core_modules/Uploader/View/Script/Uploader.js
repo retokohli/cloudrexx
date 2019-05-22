@@ -52,7 +52,15 @@
             if (iAttrs.uploaderType == 'Inline'){
                 jQuery('.close-upload-modal').hide();
             }
-
+            if (!iAttrs.thumbSelector) {
+                jQuery(this).data('thumbSelector', '');
+            }
+            if (!iAttrs.thumbMaxWidth) {
+                jQuery(this).data('thumbMaxWidth', 120);
+            }
+            if (!iAttrs.thumbMaxHeight) {
+                jQuery(this).data('thumbMaxHeight', 120);
+            }
             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drop-target').attr('id', 'drop-target-' + iAttrs.id);
             $J('#uploader-modal-' + iAttrs.uploaderId).find('.upload-limit-tooltip .btn').attr('id', 'drop-target-btn-' + iAttrs.id);
 
@@ -279,12 +287,17 @@
 
                     var image = $J(new Image()).appendTo('.file-' + file.id + ' .previewImage');
                     var preloader = new mOxie.Image();
-                    preloader.onload = function () {
-                        preloader.downsize(120, 120);
+                    preloader.onload = function() {
+                        preloader.downsize(
+                            iAttrs.thumbMaxWidth, iAttrs.thumbMaxHeight
+                        );
                         let src = preloader.getAsDataURL();
                         image.attr('src', src);
-                        cx.jQuery('img.image_uploader_source_image')
-                          .trigger('uploadingImage', [src]);
+                        if (iAttrs.thumbSelector
+                            && up.settings.max_file_count === 1
+                        ) {
+                            cx.jQuery(iAttrs.thumbSelector).attr('src', src);
+                        }
                     };
                     preloader.load(file.getSource());
 
