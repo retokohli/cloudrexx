@@ -433,7 +433,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
     /**
      * Returns a list of all elements data of this DataSet as an array
      *
-     * If there is but one entry in this DataSet, the entry is returned directly
+     * If there is only one entry in this DataSet, the entry is returned directly
      * instead of returning a list with just one element. If
      * $allowToReturnElement is set to false a list with just one element is
      * returned.
