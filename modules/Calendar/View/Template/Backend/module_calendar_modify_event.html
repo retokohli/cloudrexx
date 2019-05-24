@@ -224,7 +224,7 @@
         });
 
         calendarXhr = cx.ajax(
-            "calendar",
+            "Calendar",
             "getRecipientCount",
             {
                 data: {
@@ -322,21 +322,7 @@
             $J( "#seriesExeptionsList input[type='hidden']" ).each(function(){
                 selectedDates.push($J(this).val());
             });
-            exceptionDates = generateExecptionDates();
-            appendTheExecptionDate(exceptionDates, selectedDates, $J( ".exceptionDateContainer .exceptionDateHolder" ));
-
-            // initialize paging
-            // count entries inside the hidden content
-            var num_entries = $J( '.exceptionDateHolder li' ).length;
-            $J( ".paginationHolder" ).pagination(num_entries,{
-                callback: paginationCallback,
-                items_per_page:10,
-                link_to: "javascript:void(0);",
-                prev_text: "{TXT_CALENDAR_PREV}",
-                next_text: "{TXT_CALENDAR_NEXT}",
-            });
-
-            exceptionDialog.open();
+            generateExecptionDates(selectedDates, exceptionDialog);
         });
         var selectedRecurrence = false;
         $J(".add_additional_recurrences").click(function() {
@@ -397,12 +383,7 @@
         });
 
         $J( "#seriesExeptionsList" ).html( "" );
-        exceptionDates = generateExecptionDates();
-        $J.each(exceptionDates, function(key, v) {
-            if ($J.inArray(key, selectedDates) != -1) {
-                addExeptionList(key, v);
-            }
-        });
+        generateExecptionDates(selectedDates);
         updateRecipientsCount();
         $J("#calendar_event_invite_crm_memberships").change(updateRecipientsCount);
         $J("#calendar_event_excluded_crm_memberships").change(updateRecipientsCount);
@@ -448,32 +429,63 @@
         }
     }
 
-    function generateExecptionDates() {
-        var exDates = {};
+    function generateExecptionDates(selectedDates, exceptionDialog) {
+        var data = $J( "div#series input, div#series select" ).serializeArray();
+        data.push({
+            'name': 'startDate',
+            'value': $J( "#startDate" ).val()
+        });
+        data.push({
+            'name': 'endDate',
+            'value': $J( "#endDate" ).val()
+        });
+        cx.ajax(
+            "Calendar",
+            "getExeceptionDates",
+            {
+                data: data,
+                beforeSend: function() {
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">Loading...</div>");
+                },
+                complete: function() {
+                    cx.tools.StatusMessage.removeAllDialogs();
+                },
+                success: function(response) {
+                    if (response.status == 'success') {
+                        exceptionDates = response.data;
+                        if (typeof(exceptionDialog) != 'undefined') {
+                            appendTheExecptionDate(
+                                exceptionDates,
+                                selectedDates,
+                                $J( ".exceptionDateContainer .exceptionDateHolder" )
+                            );
 
-        $J.ajax({
-           url      : cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=calendar&act=getExeceptionDates&recursive=true",
-           type     : "post",
-           data     : "startDate="+$J( "#startDate" ).val()+"&endDate="+$J( "#endDate" ).val()+"&"+$J( "div#series input, div#series select" ).serialize(),
-           dataType : "json",
-           async    : false,
-           beforeSend: function() {
-               cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
-           },
-           complete: function() {
-               cx.tools.StatusMessage.removeAllDialogs();
-           },
-           success  : function(response) {
-                if (response.status == 'success') {
-                    exDates = response.data;
-                } else {
-                    cx.tools.StatusMessage.showMessage(response.message, "error", 1000);
+                            // initialize paging
+                            // count entries inside the hidden content
+                            var num_entries = $J( '.exceptionDateHolder li' ).length;
+                            $J( ".paginationHolder" ).pagination(num_entries,{
+                                callback: paginationCallback,
+                                items_per_page:10,
+                                link_to: "javascript:void(0);",
+                                prev_text: "{TXT_CALENDAR_PREV}",
+                                next_text: "{TXT_CALENDAR_NEXT}",
+                            });
+
+                            exceptionDialog.open();
+                            return;
+                        }
+
+                        jQuery.each(exceptionDates, function(key, v) {
+                            if (jQuery.inArray(key, selectedDates) != -1) {
+                                addExeptionList(key, v);
+                            }
+                        });
+                    } else {
+                        cx.tools.StatusMessage.showMessage(response.message, "error", 1000);
+                    }
                 }
             }
-        });
-
-        return exDates;
-
+        );
     }
 
     function paginationCallback( page_index ) {
