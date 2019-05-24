@@ -1816,7 +1816,7 @@ class CalendarEvent extends CalendarLibrary
         return $eventFields;
     }
 
-    function loadEventFromPost($data)
+    function loadEventFromData($data)
     {
         list($startDate, $strStartTime) = explode(' ', $data['startDate']);
         list($startHour, $startMin)     = explode(':', $strStartTime);

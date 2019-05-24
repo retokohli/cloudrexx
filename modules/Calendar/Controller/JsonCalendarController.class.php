@@ -79,7 +79,13 @@ class JsonCalendarController extends \Cx\Core\Core\Model\Entity\Controller imple
      * @return Object
      */
     public function getDefaultPermissions() {
-        return null;
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            null, // no specific protocol forced
+            array('get'), // only GET required
+            true, // requires login
+            array(), // no specific user group
+            array(180) // event management
+        );
     }
 
     /**
@@ -88,12 +94,6 @@ class JsonCalendarController extends \Cx\Core\Core\Model\Entity\Controller imple
      * @return array Array of dates
      */
     public function getExeceptionDates() {
-        global $objInit, $_CORELANG;
-
-        if (!\FWUser::getFWUserObject()->objUser->login() || $objInit->mode != 'backend') {
-            throw new \Exception($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
-        }
-
         $calendarLib = new \Cx\Modules\Calendar\Controller\CalendarLibrary();
         return $calendarLib->getExeceptionDates();
     }
