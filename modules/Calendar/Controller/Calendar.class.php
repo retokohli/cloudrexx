@@ -1044,7 +1044,6 @@ UPLOADER;
 
         if (!isset($this->objEventManager->eventList[0])) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
-            exit;
         }
 
         $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
