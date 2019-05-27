@@ -120,11 +120,11 @@
             return true;
         },
         _moveToNextTab: function() {
-            current = cx.jQuery("ul#tabmenu > li").has("a.active");
+            current = cx.jQuery("ul#tabmenu.iterate > li").has("a.active");
             if (current.next().length) {
                 target = current.next();
             } else {
-                target = cx.jQuery("ul#tabmenu > li:first"); // This will not happen
+                target = cx.jQuery("ul#tabmenu.iterate > li:first"); // This will not happen
             }
             target.find("a").trigger("click");
         }
@@ -147,7 +147,7 @@
                 cx.jQuery(this).val('1');
             }
         });
-        cx.jQuery("ul#tabmenu > li").click(function() {
+        cx.jQuery("ul#tabmenu.iterate > li").click(function() {
             if (cx.jQuery(this).next().length) {
                 cx.jQuery(".tab-next").show();
             } else {
@@ -889,7 +889,7 @@
         </tr>
     </table>
     <br/>
-    <ul id="tabmenu">
+    <ul id="tabmenu" class="iterate">
         <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');" title="{TXT_CALENDAR_BASIC_DATA}">{TXT_CALENDAR_BASIC_DATA}</a></li>
         <li><a id="eventTab_location" href="javascript:{}" onclick="selectTab('location');" title="{TXT_CALENDAR_EVENT_LOCATION}">{TXT_CALENDAR_EVENT_LOCATION}</a></li>
         <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');" title="{TXT_CALENDAR_ADDITIONAL_OPTIONS}" >{TXT_CALENDAR_ADDITIONAL_OPTIONS}</a></li>
