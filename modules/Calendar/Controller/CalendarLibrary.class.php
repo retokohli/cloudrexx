@@ -689,11 +689,11 @@ EOF;
         $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($objEvent->startDate);
         $objEventManager->_setNextSeriesElement($objEvent);
         
-        $lang = \Env::get('init')->getComponentSpecificLanguageData(
+        $_CORELANG = \Env::get('init')->getComponentSpecificLanguageData(
             'Core',
             false
         );
-        $dayArray = explode(',', $lang['TXT_CORE_DAY_ABBREV2_ARRAY']);
+        $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         foreach ($objEventManager->eventList as $event) {
             $startDate = $event->startDate;
             $endDate   = $event->endDate;
