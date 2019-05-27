@@ -1035,8 +1035,8 @@ EOF;
      * @return  array               Return parsed datetime as array having the
      *                              following format:
      *                              <pre>array(
-     *                                  d,
-     *                                  H,
+     *                                  d.m.Y,
+     *                                  G,
      *                                  m
      *                             )</pre>
      */
@@ -1072,7 +1072,8 @@ EOF;
                 PREG_SPLIT_DELIM_CAPTURE
             );
             if (isset($timeData[0])) {
-                $hour = $timeData[0];
+                // remove leading zero
+                $hour = intval($timeData[0]);
             }
             if (isset($timeData[1])) {
                 $min = $timeData[1];

@@ -1093,7 +1093,7 @@ class CalendarEvent extends CalendarLibrary
         // fetch event's start and end
         list($startDate, $startHour, $startMin) = $this->parseDateTimeString(
             $data['startDate'],
-             !empty($data['all_day'])
+            !empty($data['all_day'])
         );
         list($endDate, $endHour, $endMin) = $this->parseDateTimeString(
             $data['endDate'],
