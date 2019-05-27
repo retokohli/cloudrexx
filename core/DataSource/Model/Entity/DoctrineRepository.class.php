@@ -221,8 +221,9 @@ class DoctrineRepository extends DataSource {
                 'skipVirtual' => true,
             )
         );
+
         if (count($fieldList)) {
-            $dataFlipped = $dataSet->flip()->toArray();
+            $dataFlipped = $dataSet->flip()->toArray(false);
             foreach ($dataFlipped as $key=>$value) {
                 if (!in_array($key, $fieldList)) {
                     unset($dataFlipped[$key]);
@@ -234,7 +235,7 @@ class DoctrineRepository extends DataSource {
             $dataSet = $dataSetFlipped->flip();
         }
 
-        return $dataSet->toArray();
+        return $dataSet->toArray(false);
     }
 
     /**
