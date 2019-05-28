@@ -420,6 +420,48 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (!isset($_GET['order'])) {
                     $_GET['order'] = 'id';
                 }
+
+                $showAddButton = $allowModification;
+                if (
+                    $allowModification &&
+                    \Cx\Core\Setting\Controller\Setting::getValue(
+                        'useVirtualLanguageDirectories',
+                        'Config'
+                    ) === 'off'
+                ) {
+                    $showAddButton = false;
+                    $languageData  = \Env::get('init')->getComponentSpecificLanguageData(
+                        'Config',
+                        false
+                    );
+                    $textElement   = $_ARRAYLANG['TXT_ADMINISTRATION'] . ' > '
+                        . $languageData['TXT_SYSTEM_SETTINGS'] . ' > '
+                        . $languageData['TXT_SETTINGS_MENU_SYSTEM'] . ' > '
+                        . $languageData['TXT_CORE_CONFIG_SITE'];
+                    // Set anchor tag to the text
+                    $link = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                    $link->setAttribute(
+                        'href',
+                        \Cx\Core\Routing\Url::fromBackend('Config')
+                    );
+                    $link->addChild(new \Cx\Core\Html\Model\Entity\TextElement($textElement));
+
+                    // Set strong tag to the text
+                    $strongText = new \Cx\Core\Html\Model\Entity\HtmlElement('strong');
+                    $strongText->addChild(
+                        new \Cx\Core\Html\Model\Entity\TextElement(
+                            $languageData['TXT_CORE_CONFIG_USEVIRTUALLANGUAGEDIRECTORIES']
+                        )
+                    );
+                    \Message::information(sprintf(
+                        $_ARRAYLANG['TXT_CORE_LOCALE_ADD_NEW_INFORMATION'],
+                        // %1$s
+                        $strongText,
+                        // %2$s
+                        $link
+                    ));
+                }
+
                 return array(
                     'entityName' => $_ARRAYLANG['TXT_CORE_LOCALE_LOCALE_NAME'],
                     'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'],
@@ -553,7 +595,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                     ),
                     'functions' => array(
-                        'add' => $allowModification,
+                        'add' => $showAddButton,
                         'edit' => $allowModification,
                         'delete' => $allowModification,
                         'actions' => !$allowModification ? null : function($rowData) {
@@ -1085,7 +1127,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'DataSource',
                 'DateTime',
                 'Error',
-                'FileBrowser',
                 'GeoIp',
                 'Home',
                 'Html',
@@ -1125,7 +1166,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'SystemLog',
                 'TemplateEditor',
                 'Test',
-                'Upload',
                 'User',
                 'View',
                 'ViewManager',
@@ -1167,7 +1207,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'Sync',
                 'SysLog',
                 'Test',
-                'Upload',
                 'User',
                 'View',
                 'Widget',

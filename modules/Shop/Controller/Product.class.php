@@ -1002,8 +1002,6 @@ class Product
         }
         \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
 
-        $objDatabase->Execute("
-            OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
         return true;
     }
 

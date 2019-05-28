@@ -62,6 +62,13 @@ class UrlException extends \Exception {};
  * @package     cloudrexx
  * @subpackage  core_routing
  * @todo        Edit PHP DocBlocks!
+ * @todo        This class does not properly handle question marks in
+ *              query strings. According to the RFC (
+ *              https://tools.ietf.org/html/rfc3986#section-3.4), question
+ *              marks are valid characters within the query string. Therefore,
+ *              all operations on the question mark '?' character in this
+ *              class must be reviewed and where applicable being fixed.
+ *              See CLX-1780 for associated issue in LinkSanitizer.
  */
 class Url {
 
@@ -374,8 +381,18 @@ class Url {
             $params = explode('?', $this->path);
             $params = $params[1];
         }
-
         $path = implode('/', $path);
+
+        // cleanup possible duplicate '?'
+        if (strpos($path, '?') !== false) {
+            $pathParams = explode('?', $path, 2);
+            if (!empty($params)) {
+                $params .= '&';
+            }
+            $params .= $pathParams[1];
+            $path = $pathParams[0];
+        }
+
         $this->path = $path;
         $this->path .= !empty($params) ? '?'.$params : '';
         $this->suggest();
@@ -813,11 +830,7 @@ class Url {
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
         $getParams = '';
         if (count($parameters)) {
-            $paramArray = array();
-            foreach ($parameters as $key=>$value) {
-                $paramArray[] = $key . '=' . $value;
-            }
-            $getParams = '?' . implode('&', $paramArray);
+            $getParams = '?' . static::array2params($parameters);
         }
         $url = new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
         if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {

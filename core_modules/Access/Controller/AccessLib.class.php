@@ -143,7 +143,7 @@ class AccessLib
      * use this method to specify the template block prefix to be used when parsing
      * a user's profile attribute.
      * For instance when setting the prefix to 'shop_customer_profile_attribute',
-     * then the method {@link AccessLib::parseAttribute()) will try to parse the
+     * then the method {@link AccessLib::parseAttribute()} will try to parse the
      * \Cx\Core\Html\Sigma template block shop_customer_profile_attribute_firstname
      * in the case of the profile attribute firstname.
      * Defaults to 'access_profile_attribute'
@@ -161,7 +161,7 @@ class AccessLib
      * use this method to specify the template block prefix to be used when parsing
      * a user's account attributes (username, email, password, etc.).
      * For instance when setting the prefix to 'shop_customer_attribute',
-     * then the method {@link AccessLib::parseAccountAttribute()) will try to parse the
+     * then the method {@link AccessLib::parseAccountAttribute()} will try to parse the
      * \Cx\Core\Html\Sigma template block shop_customer_attribute_email
      * in the case of the account attribute email.
      * Defaults to 'access_user'
@@ -179,7 +179,7 @@ class AccessLib
      * use this method to specify the template placeholder prefix to be used when
      * parsing a user's profile attribute.
      * For instance when setting the prefix to 'SHOP_', then the method
-     * {@link AccessLib::parseAttribute()) will parse the \Cx\Core\Html\Sigma
+     * {@link AccessLib::parseAttribute()} will parse the \Cx\Core\Html\Sigma
      * variable SHOP_PROFILE_ATTRIBUTE_FIRSTNAME in the case of the profile
      * attribute firstname.
      * Defaults to 'ACCESS_'
@@ -203,15 +203,44 @@ class AccessLib
         global $_CORELANG;
 
         \JS::activate('jqueryui');
-        \JS::registerCode("
+        \JS::registerCode('
             cx.ready(function() {
-                cx.jQuery('.access_date').datepicker({dateFormat: 'dd.mm.yy'});
+                cx.jQuery(".access_date").datepicker({dateFormat: "dd.mm.yy"});
+
+                nonAutofillPasswordEvent = function(el) {
+                    if (el.setAttribute == undefined) {
+                        el = this;
+                    }
+                    if (el.value == "") {
+                        el.setAttribute("type", "text");
+                    } else {
+                        el.setAttribute("type", "password");
+                    }
+                };
+                cx.jQuery("body").delegate(
+                    ".access-pw-noauto",
+                    "keyup",
+                    nonAutofillPasswordEvent
+                );
+                cx.jQuery("body").delegate(
+                    ".access-pw-noauto",
+                    "paste drop",
+                    function() {
+                        var el = this;
+                        setTimeout(
+                            function() {
+                                nonAutofillPasswordEvent(el);
+                            },
+                            100
+                        );
+                    }
+                );
             });
-        ");
+        ');
         $this->arrAttributeTypeTemplates = array(
             'textarea'        => '<textarea name="[NAME]" rows="1" cols="1">[VALUE]</textarea>',
             'text'            => '<input type="text" name="[NAME]" value="[VALUE]" autocomplete="foobar" />',
-            'password'        => '<input type="text" name="[NAME]" value="" onkeyup="if (this.value == \'\') { this.setAttribute(\'type\', \'text\'); } else { this.setAttribute(\'type\', \'password\'); }" style="text-security: disc; -webkit-text-security: disc;" />',
+            'password'        => '<input type="text" name="[NAME]" value="" class="access-pw-noauto" style="text-security: disc; -webkit-text-security: disc;" />',
             'checkbox'        => '<input type="hidden" name="[NAME]" /><input type="checkbox" name="[NAME]" value="1" [CHECKED] />',
             'menu'            => '<select name="[NAME]"[STYLE]>[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED][STYLE]>[VALUE_TXT]</option>',

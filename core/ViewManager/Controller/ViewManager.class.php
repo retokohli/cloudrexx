@@ -238,7 +238,7 @@ class ViewManager
 
     function __construct()
     {
-        global  $_ARRAYLANG, $objDatabase;
+        global  $_ARRAYLANG;
 
         $this->cx         = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->fileSystem = $this->cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem();
@@ -268,7 +268,6 @@ class ViewManager
             $this->webPath = $this->webPath . '/';
         }
 
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
 
         $this->themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
@@ -1649,7 +1648,7 @@ CODE;
     function getDropdownNotInDb()
     {
         
-        $filesList     = $this->fileSystem->getFileList('/');
+        $filesList     = $this->fileSystem->getFullFileList('/');
 
         ksort($filesList);
         $result = '';
@@ -1697,7 +1696,7 @@ CODE;
         $pageContent = contrexx_input2raw($_POST['content']);
 
         // Change the replacement variables from [[TITLE]] into {TITLE}
-        $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
+        $pageContent = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{\\1}' ,$pageContent);
 
         try {
             if (self::isFileTypeComponent($themesPage)) {
@@ -2248,7 +2247,7 @@ CODE;
             $content = $this->fileSystem->readFile($file);
 
             // replace placeholder format
-            $content = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $content);
+            $content = preg_replace('/\{([A-Z0-9_]+)\}/', '[[\\1]]', $content);
 
             // escape special characters
             $contenthtml = htmlspecialchars($content);

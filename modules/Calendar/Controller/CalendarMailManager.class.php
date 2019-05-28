@@ -104,6 +104,12 @@ class CalendarMailManager extends CalendarLibrary {
     const MAIL_INVITATION_TO_INACTIVE = 'inactive';
 
     /**
+     * Send the invitation mail only to new contacts that have not yet
+     * received an invitation
+     */
+    const MAIL_INVITATION_TO_NEW = 'new';
+
+    /**
      * Notification mail types
      *
      * @var array
@@ -645,7 +651,8 @@ class CalendarMailManager extends CalendarLibrary {
      * @param object  $objRegistration  Registration object
      * @param string  $sendInvitationTo The filter to which contacts the
      *
-     * @throws \Cx\Modules\Calendar\Controller\CalendarException if type is invalid
+     * @throws \Cx\Modules\Calendar\Controller\CalendarException if type is
+     * invalid or processing fails
      *
      * @return array returns the array recipients
      */
@@ -659,6 +666,7 @@ class CalendarMailManager extends CalendarLibrary {
         global $_CONFIG, $_LANGID;
 
         $recipients = array();
+        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
 
         switch ($actionId) {
             case static::MAIL_INVITATION:
@@ -677,7 +685,6 @@ class CalendarMailManager extends CalendarLibrary {
                 }
 
                 // fetch users from Crm groups
-                $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
                 $excludeQuery = '';
 
                 if ($objEvent->excludedCrmGroups) {
@@ -811,7 +818,22 @@ class CalendarMailManager extends CalendarLibrary {
                 ) {
                     $participant = end($recipients);
                     $objRegistration->getInvite()->setEmail($participant->getAddress());
-                    $this->em->flush();
+                    // TODO: this is a workaround
+                    // Due to the existance of both, the legacy and doctrine
+                    // model, we have to make the following change through
+                    // legacy SQL. As otherwise ($this->em->flush()) would throw
+                    // an exception, as the associated Event entity has been
+                    // detachted by the legacy event system in Calendar.
+                    // As soon as the legacy model has been dropped, the
+                    // following code can be removed as well: 
+                    $inviteId = $objRegistration->getInvite()->getId();
+                    if ($inviteId) {
+                        $db->Execute('UPDATE '.DBPREFIX.'module_calendar_invite SET `email` = \'' . contrexx_raw2db($participant->getAddress()) . '\' WHERE id = '. $inviteId);
+                        $this->em->getConfiguration()->getResultCacheImpl()->deleteAll();
+                    }
+                    // This would be the proper statement, once the legacy
+                    // model has been removed:
+                    // $this->em->flush();
                 }
                 break;
 
@@ -858,12 +880,15 @@ class CalendarMailManager extends CalendarLibrary {
                 case self::MAIL_INVITATION_TO_INACTIVE:
                     // exclude all guests which are already registered on any list
                     $result = $db->Execute($query);
-                    if ($result !== false) {
-                        while (!$result->EOF) {
-                            // delete all registered guests out of the recipients
-                            unset($recipients[$result->fields['mail']]);
-                            $result->MoveNext();
-                        }
+                    if ($result === false) {
+                        throw new CalendarException(
+                            'Unable to process invitation type ' . $sendInvitationTo
+                        );
+                    }
+                    while (!$result->EOF) {
+                        // delete all registered guests out of the recipients
+                        unset($recipients[$result->fields['mail']]);
+                        $result->MoveNext();
                     }
                     break;
 
@@ -872,16 +897,37 @@ class CalendarMailManager extends CalendarLibrary {
                     $query .= ' AND `r`.`type` = 1';
                     $signedinRecipients = array();
                     $result = $db->Execute($query);
-                    if ($result !== false) {
-                        while (!$result->EOF) {
-                            $signedinRecipients[$result->fields['mail']] = '';
-                            $result->MoveNext();
-                        }
+                    if ($result === false) {
+                        throw new CalendarException(
+                            'Unable to process invitation type ' . $sendInvitationTo
+                        );
+                    }
+                    while (!$result->EOF) {
+                        $signedinRecipients[$result->fields['mail']] = '';
+                        $result->MoveNext();
                     }
                     $recipients = array_intersect_key(
                         $recipients,
                         $signedinRecipients
                     );
+                    break;
+
+                case self::MAIL_INVITATION_TO_NEW:
+                    // exclude all guests that are already registered as invitees
+                    $query = 'SELECT `email`
+                        FROM `'.DBPREFIX.'module_calendar_invite`
+                        WHERE `event_id` = ' . $objEvent->getId();
+                    $result = $db->Execute($query);
+                    if ($result === false) {
+                        throw new CalendarException(
+                            'Unable to process invitation type ' . $sendInvitationTo
+                        );
+                    }
+                    while (!$result->EOF) {
+                        // delete all registered guests out of the recipients
+                        unset($recipients[$result->fields['email']]);
+                        $result->MoveNext();
+                    }
                     break;
 
                 case self::MAIL_INVITATION_TO_REGISTERED:

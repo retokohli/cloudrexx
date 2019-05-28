@@ -143,6 +143,30 @@ class Shop extends ShopLibrary
     protected static $hasSession = false;
 
     /**
+     * List of field names with failed validation
+     *
+     * @var array List of field names
+     */
+    protected static $errorFields = array();
+    
+    /**
+     * List of mandatory fields of account page
+     *
+     * "email" and "password" are not in list in order to allow the user to
+     * order without registration.
+     * @var array List of field names
+     */
+    protected static $mandatoryAccountFields = array(
+        'gender',
+        'lastname',
+        'firstname',
+        'address',
+        'zip',
+        'city',
+        'phone',
+    );
+
+    /**
      * Initialize
      * @access public
      */
@@ -1318,7 +1342,10 @@ die("Failed to update the Cart!");
 
 //\DBG::activate(DBG_ERROR_FIREPHP);
         // Use Sorting class for the Product order
-        $uri = \Html::getRelativeUri_entities();
+        $uri =
+// TODO: Use the alias, if any
+            '&amp;section=Shop'. MODULE_INDEX . $pagingCmd .
+            $pagingCatId.$pagingManId.$pagingTerm;
         $arrOrder = array(
             // Must be disambiguated from Category::ord using the table alias!
             'product.ord' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'],
@@ -1349,11 +1376,15 @@ die("Failed to update the Cart!");
         } elseif ($product_id) {
             $arrProduct = self::getValidProducts(array($product_id));
         } else {
+            $sortOrder = $objSorting->getOrder();
+            if ($term != '') {
+                $sortOrder = 'score1 DESC, score2 DESC, score3 DESC';
+            }
             $arrProduct = Products::getByShopParams(
                 $count, \Paging::getPosition(),
                 $product_id, $category_id, $manufacturer_id, $term,
                 $flagSpecialoffer, $flagLastFive,
-                $objSorting->getOrder(),
+                $sortOrder,
                 self::$objCustomer && self::$objCustomer->is_reseller()
             );
         }
@@ -2760,6 +2791,15 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),
             'SHOP_ACCOUNT_BIRTHDAY' => $birthdayDaySelect . $birthdayMonthSelect . $birthdayYearSelect,
         ));
+        if (count(static::$errorFields)) {
+            $errorClassPlaceholders = array();
+            foreach (static::$errorFields as $field) {
+                $errorClassPlaceholders[
+                    'SHOP_ACCOUNT_' . strtoupper($field) . '_CLASS'
+                ] = 'error-validation ';
+            }
+            self::$objTemplate->setVariable($errorClassPlaceholders);
+        }
         $register = \Cx\Core\Setting\Controller\Setting::getValue('register','Shop');
 
 /**
@@ -4758,32 +4798,24 @@ die("Shop::processRedirect(): This method is obsolete!");
      */
     static function verifySessionAddress()
     {
+        static::$errorFields = array();
         // Note that the Country IDs are either set already, or chosen in a
         // dropdown menu, so if everything else is set, so are they.
         // They may thus be disabled entirely without affecting this.
-        if (   empty($_SESSION['shop']['gender'])
-            || empty($_SESSION['shop']['lastname'])
-            || empty($_SESSION['shop']['firstname'])
-            || empty($_SESSION['shop']['address'])
-            || empty($_SESSION['shop']['zip'])
-            || empty($_SESSION['shop']['city'])
-            || empty($_SESSION['shop']['phone'])
-// Must not check this here, would collide with Customers not willing
-// to register!
-//            || (empty($_SESSION['shop']['email']) && !self::$objCustomer)
-//            || (empty($_SESSION['shop']['password']) && !self::$objCustomer)
-            || (Cart::needs_shipment()
-            && (   empty($_SESSION['shop']['gender2'])
-                || empty($_SESSION['shop']['lastname2'])
-                || empty($_SESSION['shop']['firstname2'])
-                || empty($_SESSION['shop']['address2'])
-                || empty($_SESSION['shop']['zip2'])
-                || empty($_SESSION['shop']['city2'])
-                || empty($_SESSION['shop']['phone2'])))
-        ) return false;
+        foreach (static::$mandatoryAccountFields as $field) {
+            if (empty($_SESSION['shop'][$field])) {
+                static::$errorFields[] = $field;
+            }
+            if (
+                Cart::needs_shipment() &&
+                empty($_SESSION['shop'][$field . '2'])
+            ) {
+                static::$errorFields[] = $field . '2';
+            }
+        }
 // TODO: I don't see why this would be done here:
 //        $_SESSION['shop']['equal_address'] = false;
-        return true;
+        return !count(static::$errorFields);
     }
 
 

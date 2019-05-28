@@ -4,7 +4,7 @@
 # vim: syn=sh
 
 # Wrapper for bash 3
-if [[ $BASH_VERSION != 4.* ]]; then
+if [ "${BASH_VERSION:0:1}" -lt 4 ]; then
     command="cd /root && ./cx --proxy-host-dir='$(pwd -P)' $@"
     # Special case: user wants to start interactive shell to wrapper container
     if [[ "$@" == "env shell --wrapper" ]]; then
@@ -30,6 +30,8 @@ declare -A DEFAULT_CONFIG
 declare -A CONFIG
 # list of commands which are handled completely within this script:
 INTERNAL_COMMANDS=("envs" "env" "debug")
+# proxy image
+PROXY_IMAGE="cloudrexx/web:proxy"
 # temp files:
 declare -A TEMP_FILES
 trap clean_temp_files EXIT
@@ -314,7 +316,8 @@ Synopsis
 
 Available options are:
     --root          Execute Bash as root
-    --sql           Execute SQL on database container instead of Bash on web container."
+    --sql           Execute SQL on database container instead of Bash on web container.
+    --sql-file      Execute SQL from a file on database container instead of Bash on web container."
                     ;;
                 component)
                     case "$3" in
@@ -465,7 +468,9 @@ Synopsis
 Available options are:
     --web               Shows the log of the web docker container (Apache)
     --request           Shows the log of the last request
+    --stack             Shows the stack trace of the last failed request
     --clear-usercache   Clears the user cache
+    --install-x-debug   Installs xDebug inside the web container
     --follow            Follows the log"
             ;;
         *)
@@ -536,9 +541,9 @@ function cmd_envs {
             fi
             dockerexec network create "<proxy-network>"
             if [[ "${ARGUMENTS["certs-dir"]}" != "" ]]; then
-                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -p "${ARGUMENTS["ssl-port"]}":443 -v "${ARGUMENTS["certs-dir"]}":/etc/nginx/certs:ro -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -p "${ARGUMENTS["ssl-port"]}":443 -v "${ARGUMENTS["certs-dir"]}":/etc/nginx/certs:ro -v /var/run/docker.sock:/tmp/docker.sock:ro "$PROXY_IMAGE"
             else
-                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+                dockerexec run --restart=always --name "<proxy-container>" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro "$PROXY_IMAGE"
             fi
             for env_dir in "${env_dirs[@]}"; do
                 (
@@ -653,6 +658,7 @@ function cmd_envs {
             echo "${BASH_REMATCH[1]}"
             ;;
         exec)
+            ARGUMENTS["real"]=true
             envs="$(cmd_envs list)"
             if [[ "$envs" == "" ]]; then
                 echo "No env up"
@@ -660,15 +666,22 @@ function cmd_envs {
             fi
             shift
             # TODO: Allow interactive decision whether to execute command on this env
-            for env in "${envs[@]}"; do
+            first=true
+            ORIG_ARGS=("${ORIG_ARGS[@]:2}")
+            while read env; do
+                if "$first"; then
+                    first=false
+                else
+                    echo ""
+                fi
                 prevPwd="$(pwd -P)"
                 cd "$(cmd_envs locate "$env")" || continue
                 if [[ ${ARGUMENTS["silent"]} != true ]]; then
                     echo "Execute env command for $env"
                 fi
-                ./cx env "$@"
+                ./cx env "${ORIG_ARGS[@]}"
                 cd "$prevPwd"
-            done
+            done <<< "$envs"
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -1011,10 +1024,14 @@ SET FOREIGN_KEY_CHECKS = 1;"
             set_config_array
             ;;
         shell)
-            if [[ ${ARGUMENTS["root"]} ]]; then
-                dockerexec exec -ti "<web-container>" bash
+            if [[ ${ARGUMENTS["db"]} ]]; then
+                dockerexec exec -ti "<db-container>" sh -c "cd /tmp/import; /bin/bash"
             else
-                dockerexec exec -ti --user www-data "<web-container>" bash
+                if [[ ${ARGUMENTS["root"]} ]]; then
+                    dockerexec exec -ti "<web-container>" bash
+                else
+                    dockerexec exec -ti --user www-data "<web-container>" bash
+                fi
             fi
             ;;
         exec)
@@ -1029,6 +1046,15 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     mysql_exec "$input"
                 else
                     mysql_exec "$@"
+                fi
+                mysql_drop_tempfile
+            elif [[ ${ARGUMENTS["sql-file"]} ]]; then
+                get_config_array
+                mysql_create_tempfile
+                if read -r -t 0; then
+                    mysql_load "$input"
+                else
+                    mysql_load "$@"
                 fi
                 mysql_drop_tempfile
             else
@@ -1617,7 +1643,7 @@ function mysql_exec {
     else
         echo "$1" > "./tmp/db/import.sql"
         shift
-        internal_dockerexec exec -i "<db-container>" bash -c "mysql --defaults-file=${TEMP_FILES["db-connection"]} -A $@ < /tmp/import/import.sql"
+        internal_dockerexec exec -i "<db-container>" bash -c "mysql --defaults-file=${TEMP_FILES["db-connection"]} -e $@ 'SOURCE /tmp/import/import.sql'"
         rm "./tmp/db/import.sql"
     fi
 }
@@ -1627,7 +1653,7 @@ function mysql_load {
         cat "$1" | mysql --defaults-file="${TEMP_FILES["db-connection"]}" -A
     else
         cp "$1" "./tmp/db/import.sql"
-        internal_dockerexec exec -i "<db-container>" bash -c "mysql --defaults-file=${TEMP_FILES["db-connection"]} -A < /tmp/import/import.sql"
+        internal_dockerexec exec -i "<db-container>" bash -c "mysql --defaults-file=${TEMP_FILES["db-connection"]} -e 'SOURCE /tmp/import/import.sql'"
         rm "./tmp/db/import.sql"
     fi
 }
@@ -1767,7 +1793,9 @@ if ! $found; then
     echo "cx not found, you may want to call \`cx env init\`";
     exit
 fi
-if [[ "$(pwd -P)" != "$result" ]]; then
+# get the directory this script lies in
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd -P )"
+if [[ "$(pwd -P)" != "$result" || "$DIR" != "$result" ]]; then
     prevPwd="$(pwd -P)"
     cd "$result" || exit
     ./cx "$@"
@@ -1775,6 +1803,7 @@ if [[ "$(pwd -P)" != "$result" ]]; then
     exit
 fi
 
+ORIG_ARGS=("$@")
 case "${COMMANDS[0]}" in
     envs)
         COMMANDS=("${COMMANDS[@]:1}")
@@ -1806,8 +1835,23 @@ case "${COMMANDS[0]}" in
         elif [[ ${ARGUMENTS["clear-usercache"]} ]]; then
             clearUsercache
             exit
+        elif [[ ${ARGUMENTS["install-x-debug"]} ]]; then
+            get_config_array
+            internal_dockerexec exec -i "<web-container>" bash -c "pecl install xdebug && docker-php-ext-enable xdebug && apachectl -k graceful"
+            exit
         fi
-        tac tmp/log/dbg.log | grep -m1 -B1 "initialization failed" | tac
+        lastError="$(tac tmp/log/dbg.log | grep -m1 -B1 "initialization failed" | tac)"
+        if [[ ${ARGUMENTS["stack"]} == true ]]; then
+            requestId="$(echo "$lastError" | grep '^[^ ].*"([a-z0-9]\+)" ' -m1 | grep -o ' "([0-9a-z]\+)" ' | grep -o '[0-9a-z]\+')"
+            if [ -t 0 ] ; then
+                echo "$lastError"$'\n'"$(grep -Pzo ".*${requestId}(.*\n)*" tmp/log/dbg.log | grep '^          [0-9]\+' -A6 | grep '^          ')" | less
+            else
+                echo "$lastError"
+                grep -Pzo ".*${requestId}(.*\n)*" tmp/log/dbg.log | grep '^          [0-9]\+' -A6 | grep '^          '
+            fi
+        else
+            echo "$lastError"
+        fi
         ;;
     *)
         if [[ "${COMMANDS[0]}" == "" || "${COMMANDS[0]}" == "help" ]]; then
