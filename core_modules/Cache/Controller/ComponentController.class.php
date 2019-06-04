@@ -540,7 +540,7 @@ Cache clear all';
      * Case D: $componentOrCallback is a callback, $additionalInfo is non-empty
      *
      * Case A will disable caching for all requests to a component.
-     * Case B will disable caching for all requests to a component that meed
+     * Case B will disable caching for all requests to a component that meet
      * the criteria defined in $additionalInfo.
      * Case C will execute the callback for each not yet cached request. The
      * current Cx instance will be passed to the callback as the first argument.
