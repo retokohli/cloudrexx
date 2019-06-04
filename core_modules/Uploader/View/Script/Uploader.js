@@ -171,12 +171,29 @@
                 uploader.start();
             });
 
+            const jButton = jQuery(this);
             $J(this).bind('click', function () {
                 $J('#uploader-modal-' + iAttrs.uploaderId).modal({
                     backdrop: 'static',
                     keyboard: false
                 });
                 $J('#uploader-modal-' + iAttrs.uploaderId).modal('show');
+                const selector = jQuery(this).data('thumbSelector');
+                let jElement = jButton;
+                let jImage = null;
+                while (true) {
+                    jElement = jElement.parent();
+                    if (!jElement.length) {
+                        break;
+                    }
+                    jImage = jElement.find(selector);
+                    if (jImage.length) {
+                        break;
+                    }
+                }
+                if (jImage.length) {
+                    jButton.data('imageThumbTarget', jImage);
+                }
             });
             $J(this).removeAttr('disabled');
 
@@ -293,10 +310,11 @@
                         );
                         let src = preloader.getAsDataURL();
                         image.attr('src', src);
-                        if (iAttrs.thumbSelector
+                        let jImage = jButton.data('imageThumbTarget');
+                        if (jImage && jImage.length === 1
                             && up.settings.max_file_count === 1
                         ) {
-                            cx.jQuery(iAttrs.thumbSelector).attr('src', src);
+                            jImage.attr('src', src);
                         }
                     };
                     preloader.load(file.getSource());

@@ -2268,7 +2268,7 @@ JS
             'style'              => 'display:none',
             'data-upload-limit'  => 1,
             'data-thumb-selector' =>
-                '#access_profile_attribute_picture_0 img.image_uploader_source_image',
+                'img.image_uploader_source_image',
             'data-thumb-max-width' =>
                 $arrSettings['max_profile_pic_width']['value'],
             'data-thumb-max-height' =>
