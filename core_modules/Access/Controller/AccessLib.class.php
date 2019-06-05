@@ -1608,7 +1608,12 @@ JSaccessValidatePrimaryGroupAssociation
     var lastAccessImageUploaderContainer = null;
     function getImageUploader(sourceElm) {
         lastAccessImageUploaderContainer = sourceElm;
-        cx.variables.get('jquery','mediabrowser')('#accessImageUploader').trigger('click');
+        // The uploader replaces the thumbnail using this selector
+        cx.variables.get('jquery','mediabrowser')('#accessImageUploader')
+            .data('thumbSelector',
+                jQuery(sourceElm).find('.image_uploader_source_image')
+            )
+            .trigger('click');
     }
     function accessImageUploaderCallback(callback) {
         if (typeof callback[0] !== 'undefined') {
@@ -2270,8 +2275,10 @@ JS
             'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
             'style'              => 'display:none',
             'data-upload-limit'  => 1,
-            'data-thumb-selector' =>
-                'img.image_uploader_source_image',
+            // Note: You can add a (string) selector here.
+            // However, Access requires the distinct target jQuery element
+            // to be set according to the button clicked.
+            //'data-thumb-selector' => '.image_uploader_source_image',
             'data-thumb-max-width' =>
                 $arrSettings['max_profile_pic_width']['value'],
             'data-thumb-max-height' =>
