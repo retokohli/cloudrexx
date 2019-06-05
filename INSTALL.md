@@ -1,95 +1,224 @@
 Cloudrexx Download Lizenzbestimmungen - EULA & AGPL
-Cloudrexx Download ist dual lizenziert. Die Endnutzer-Lizenzbestimmungen („EULA“) für die Business Standard-, Business Enterprise- und Non-Profit-Editionen finden Sie unter I., die GNU Affero General Public License („AGPLv3“) für die Community-Edition finden Sie unter II.
+
+Cloudrexx Download ist dual lizenziert. Die Endnutzer-Lizenzbestimmungen
+(„EULA“) für die Business Standard-, Business Enterprise- und Non-Profit-
+Editionen finden Sie unter I., die GNU Affero General Public License („AGPLv3“)
+für die Community-Edition finden Sie unter II.
 
 ### I.	Endnutzer-Lizenzbestimmungen („EULA“)
 
 #### 1.	Geltungsbereich
 
-Diese Endnutzer-Lizenzbestimmungen („EULA“) gelten für Verträge, durch die ein Unternehmer („Kunde“) Cloudrexx Download von der Cloudrexx AG als Business Standard-, Business Enterprise- oder  Non-Profit-Edition erwirbt. Die Verträge werden im Folgenden in Business Standard-, Business Enterprise- oder Non-Profit-Vertrag unterschieden.
+Diese Endnutzer-Lizenzbestimmungen („EULA“) gelten für Verträge, durch die ein
+Unternehmer („Kunde“) Cloudrexx Download von der Cloudrexx AG als Business
+Standard-, Business Enterprise- oder  Non-Profit-Edition erwirbt. Die Verträge
+werden im Folgenden in Business Standard-, Business Enterprise- oder Non-
+Profit-Vertrag unterschieden.
 
 #### 2.	Leistungsgegenstand
 
-- 2.1.	Gegenstand des Business Standard-, Business Enterprise- oder Non-Profit-Vertrags ist Cloudrexx Download („Basis-Produkt“). Cloudrexx Download ist eine Customer Experience Management Software (CXM). Sie ist ein Standard-CXM, das zum Betrieb einer Webseite konzipiert ist. Mit ihm kann der Kunde seinen eigenen Webauftritt umsetzen.
+2.1.	Gegenstand des Business Standard-, Business Enterprise- oder Non-
+Profit-Vertrags ist Cloudrexx Download („Basis-Produkt“). Cloudrexx Download
+ist eine Customer Experience Management Software (CXM). Sie ist ein Standard-
+CXM, das zum Betrieb einer Webseite konzipiert ist. Mit ihm kann der Kunde
+seinen eigenen Webauftritt umsetzen.
 
-- 2.2.	Das Basis-Produkt wird als Open Source Software in der Community-Edition sowie proprietär in den Editionen Business Standard, Business Enterprise und Non-Profit angeboten. Gegenstand dieser EULAs sind allein die proprietären Editionen Business Standard, Business Enterprise und Non-Profit. Die Lizenzbedingungen der Community-Edition finden sich unter II.
+2.2.	Das Basis-Produkt wird als Open Source Software in der Community-
+Edition sowie proprietär in den Editionen Business Standard, Business
+Enterprise und Non-Profit angeboten. Gegenstand dieser EULAs sind allein die
+proprietären Editionen Business Standard, Business Enterprise und Non-Profit.
+Die Lizenzbedingungen der Community-Edition finden sich unter II.
 
 ##### 2.3.	Business Standard-Vertrag
-Leistungsgegenstand des Business Standard-Vertrags sind das Basis-Produkt und die Erbringung von Support-Leistungen für eine Installation für dieses Produkt. Die Regelung der Supportleistungen finden Sie unter https://www.cloudrexx.com/Produktsupport.
+Leistungsgegenstand des Business Standard-Vertrags sind das Basis-Produkt und
+die Erbringung von Support-Leistungen für eine Installation für dieses Produkt.
+Die Regelung der Supportleistungen finden Sie unter
+https://www.cloudrexx.com/Produktsupport.
 
 ##### 2.4.	Business Enterprise-Vertrag
-Leistungsgegenstand des Business Enterprise-Vertrags sind das Basis-Produkt und die Erbringung von Support-Leistungen für fünf Installationen dieses Produkts. Die Regelung der Supportleistungen finden Sie unter https://www.cloudrexx.com/Produktsupport.
+Leistungsgegenstand des Business Enterprise-Vertrags sind das Basis-Produkt und
+die Erbringung von Support-Leistungen für fünf Installationen dieses Produkts.
+Die Regelung der Supportleistungen finden Sie unter
+https://www.cloudrexx.com/Produktsupport.
 
 ##### 2.5	Non-Profit-Vertrag
-Leistungsgegenstand des Non-Profit-Vertrags sind das Basis-Produkt und die Erbringung von Support-Leistungen für eine Installation für dieses Produkt. Die Regelung der Supportleistungen finden Sie unter https://www.cloudrexx.com/Produktsupport.
+Leistungsgegenstand des Non-Profit-Vertrags sind das Basis-Produkt und die
+Erbringung von Support-Leistungen für eine Installation für dieses Produkt. Die
+Regelung der Supportleistungen finden Sie unter
+https://www.cloudrexx.com/Produktsupport.
 
 #### 3.	Vergütung
 
-Es gelten die sich aus der Preisliste zum Zeitpunkt des Vertragsschlusses ergebenden Preise. Alle Preise verstehen sich als Netto-Preise. Die Preisliste ist unter https://www.cloudrexx.com/de/Preise/Download einsehbar.
+Es gelten die sich aus der Preisliste zum Zeitpunkt des Vertragsschlusses
+ergebenden Preise. Alle Preise verstehen sich als Netto-Preise. Die Preisliste
+ist unter https://www.cloudrexx.com/de/Preise/Download einsehbar.
 
 #### 4.	Nutzungsrecht zum Betrieb von Webseiten
 
-- 4.1.	Das Basis-Produkt inkl aller Plugins ist urheberrechtlich geschützt.
+4.1.	Das Basis-Produkt inkl aller Plugins ist urheberrechtlich geschützt.
 
-- 4.2.	Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche Recht, mit dem Basis-Produkt und – soweit vom Vertrag erfasst – den Cloudrexx-Plugins auf eine durch die Zahlung der Lizenzgebühr verlängerte Dauer eine dem jeweiligen Vertrag entsprechende Anzahl von Webseiten zu betreiben. 
+4.2.	Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche
+Recht, mit dem Basis-Produkt und – soweit vom Vertrag erfasst – den Cloudrexx-
+Plugins auf eine durch die Zahlung der Lizenzgebühr verlängerte Dauer eine dem
+jeweiligen Vertrag entsprechende Anzahl von Webseiten zu betreiben. 
 
 ##### 4.3.	Anzahl der Webseiten
 ###### 4.3.1.	Business Standard-Vertrag
-Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche Recht ein, mit dem Basis-Produkt und den Plugins auf Dauer eine Webseite zu betreiben und das Basis-Produkt und die Plugins im dazu erforderlichen Umfang auf einem Web- oder Datenbankserver zu installieren, es ablaufen zu lassen und zu diesen Zwecken zu vervielfältigen. Die Rechte werden pro Vertrag allein für die Nutzung auf einem Web- oder Datenbank-Server eingeräumt. Die Nutzung der Software zum Betrieb einer weiteren Webseite bedarf der erneuten und weiteren Einräumung von Nutzungsrechten durch die Cloudrexx AG („Erweiterung durch Cloudrexx Mandanten“ oder eine zusätzliche Lizenz).
+Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche Recht
+ein, mit dem Basis-Produkt und den Plugins auf Dauer eine Webseite zu betreiben
+und das Basis-Produkt und die Plugins im dazu erforderlichen Umfang auf einem
+Web- oder Datenbankserver zu installieren, es ablaufen zu lassen und zu diesen
+Zwecken zu vervielfältigen. Die Rechte werden pro Vertrag allein für die
+Nutzung auf einem Web- oder Datenbank-Server eingeräumt. Die Nutzung der
+Software zum Betrieb einer weiteren Webseite bedarf der erneuten und weiteren
+Einräumung von Nutzungsrechten durch die Cloudrexx AG („Erweiterung durch
+Cloudrexx Mandanten“ oder eine zusätzliche Lizenz).
 
 ###### 4.3.2.	Business Enterprise-Vertrag
-Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche Recht ein, mit dem Basis-Produkt und den Plugins auf Dauer 5 Webseiten zu betreiben und das Basis-Produkt und die Plugins im dazu erforderlichen Umfang auf jeweils einem Web- oder Datenbankserver zu installieren, sie ablaufen zu lassen und zu diesen Zwecken zu vervielfältigen. Die Rechte werden pro Vertrag für die Nutzung auf jeweils einem Web- oder Datenbank-Server eingeräumt. Die Nutzung der Software zum Betrieb einer weiteren Website bedarf der erneuten und weiteren Einräumung von Nutzungsrechten durch die Cloudrexx AG („Erweiterung durch Cloudrexx Mandanten“ oder eine zusätzliche Lizenz).
+Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche Recht
+ein, mit dem Basis-Produkt und den Plugins auf Dauer 5 Webseiten zu betreiben
+und das Basis-Produkt und die Plugins im dazu erforderlichen Umfang auf jeweils
+einem Web- oder Datenbankserver zu installieren, sie ablaufen zu lassen und zu
+diesen Zwecken zu vervielfältigen. Die Rechte werden pro Vertrag für die
+Nutzung auf jeweils einem Web- oder Datenbank-Server eingeräumt. Die Nutzung
+der Software zum Betrieb einer weiteren Website bedarf der erneuten und
+weiteren Einräumung von Nutzungsrechten durch die Cloudrexx AG („Erweiterung
+durch Cloudrexx Mandanten“ oder eine zusätzliche Lizenz).
 
 ###### 4.3.3.	Non-Profit-Vertrag
-Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche Recht ein, mit dem Basis-Produkt und den Plugins auf Dauer eine Webseite einer Non-Profit Organisation zu betreiben und das Basis-Produkt und die Plugins im dazu erforderlichen Umfang auf einem Web- oder Datenbankserver zu installieren, es ablaufen zu lassen und zu diesen Zwecken zu vervielfältigen. Die Rechte werden pro Vertrag allein für die Nutzung auf einem Web- oder Datenbank-Server eingeräumt. Die Nutzung der Software zum Betrieb einer weiteren Webseite bedarf der erneuten und weiteren Einräumung von Nutzungsrechten durch die Cloudrexx AG („Erweiterung durch Cloudrexx Mandanten“ oder eine zusätzliche Lizenz).
+Die Cloudrexx AG räumt dem Kunden das einfache, nicht ausschliessliche Recht
+ein, mit dem Basis-Produkt und den Plugins auf Dauer eine Webseite einer Non-
+Profit Organisation zu betreiben und das Basis-Produkt und die Plugins im dazu
+erforderlichen Umfang auf einem Web- oder Datenbankserver zu installieren, es
+ablaufen zu lassen und zu diesen Zwecken zu vervielfältigen. Die Rechte werden
+pro Vertrag allein für die Nutzung auf einem Web- oder Datenbank-Server
+eingeräumt. Die Nutzung der Software zum Betrieb einer weiteren Webseite bedarf
+der erneuten und weiteren Einräumung von Nutzungsrechten durch die Cloudrexx AG
+(„Erweiterung durch Cloudrexx Mandanten“ oder eine zusätzliche Lizenz).
 
-- 4.4.	Der Kunde kann das Basis-Produkt nutzen, sobald er es von der Webseite der Cloudrexx AG heruntergeladen, eine EULA erworben hat und die Cloudrexx AG die Vergütung erhalten hat. 
-- 4.5.	Das Basis-Produkt kann heruntergeladen werden unter https://www.cloudrexx.com/latest_release_full
+4.4.	Der Kunde kann das Basis-Produkt nutzen, sobald er es von der Webseite
+der Cloudrexx AG heruntergeladen, eine EULA erworben hat und die Cloudrexx AG
+die Vergütung erhalten hat. 
+4.5.	Das Basis-Produkt kann heruntergeladen werden unter
+https://www.cloudrexx.com/latest_release_full
 
 #### 5.	Bearbeitungsrecht
 
-Die Cloudrexx AG räumt dem Kunden das Recht ein, das Basis-Produkt inkl Plugins beliebig zu verändern, um sie den Bedürfnissen seiner Webseite anzupassen, insbesondere indem er im Frontend Anpassungen vornimmt. Die Weitergabe des bearbeiteten Basis-Produkts bzw. der bearbeiteten Cloudrexx-Plugins ist unzulässig.
+Die Cloudrexx AG räumt dem Kunden das Recht ein, das Basis-Produkt inkl Plugins
+beliebig zu verändern, um sie den Bedürfnissen seiner Webseite anzupassen,
+insbesondere indem er im Frontend Anpassungen vornimmt. Die Weitergabe des
+bearbeiteten Basis-Produkts bzw. der bearbeiteten Cloudrexx-Plugins ist
+unzulässig.
 
 #### 6.	Nutzungsverbote
 
-6.1.	Jede über die nach Ziffern 4 und 5 erlaubte Nutzung hinausgehende Nutzung des Basis-Produkts oder Cloudrexx-Plugins ist unzulässig. Insbesondere ist es unzulässig, die Produkte ohne ausdrückliche Zustimmung der Cloudrexx AG zu verbreiten, zu vervielfältigen, zu vermieten oder öffentlich zugänglich zu machen.
+6.1.	Jede über die nach Ziffern 4 und 5 erlaubte Nutzung hinausgehende
+Nutzung des Basis-Produkts oder Cloudrexx-Plugins ist unzulässig. Insbesondere
+ist es unzulässig, die Produkte ohne ausdrückliche Zustimmung der Cloudrexx AG
+zu verbreiten, zu vervielfältigen, zu vermieten oder öffentlich zugänglich zu
+machen.
 
-6.2.	Ziffer 6.1. schränkt nicht das Recht des Kunden ein, das Basis-Produkt oder – soweit sie Gegenstand des Vertrags sind – die Cloudrexx-Plugins nachträglich auf einem anderen Web- oder Datenbank-Server und einer anderen Domain zu nutzen („Umzug“). Der Kunde hat die Produkte auf dem Server, auf dem sie bisher genutzt wurden, zu löschen und diese Löschung gegenüber der Cloudrexx AG beispielsweise durch Abgabe einer Vernichtungserklärung nachzuweisen.
+6.2.	Ziffer 6.1. schränkt nicht das Recht des Kunden ein, das Basis-Produkt
+oder – soweit sie Gegenstand des Vertrags sind – die Cloudrexx-Plugins
+nachträglich auf einem anderen Web- oder Datenbank-Server und einer anderen
+Domain zu nutzen („Umzug“). Der Kunde hat die Produkte auf dem Server, auf dem
+sie bisher genutzt wurden, zu löschen und diese Löschung gegenüber der
+Cloudrexx AG beispielsweise durch Abgabe einer Vernichtungserklärung
+nachzuweisen.
 
-6.3. 	Alle sonstigen Eingriffe in die Produkte, wie z.B. Dekompilierung, Disassemblierung und Reverse Engineering sind unzulässig. Das gilt jedoch nicht für Veränderungen entsprechend Ziffer 5.
+6.3. 	Alle sonstigen Eingriffe in die Produkte, wie z.B. Dekompilierung,
+Disassemblierung und Reverse Engineering sind unzulässig. Das gilt jedoch nicht
+für Veränderungen entsprechend Ziffer 5.
 
-6.4.	Die Nutzungsverbote dieser Ziffer gelten dann nicht, wenn Nutzungshandlungen durch gesetzliche Schranken, fair-use-Grundsätze oder andere Regelungen des Landes gestattet sind, in dem sich der Web- oder Datenbankserver befindet, auf dem das Basis-Produkt bzw. die Cloudrexx Plugins genutzt werden.
+6.4.	Die Nutzungsverbote dieser Ziffer gelten dann nicht, wenn
+Nutzungshandlungen durch gesetzliche Schranken, fair-use-Grundsätze oder andere
+Regelungen des Landes gestattet sind, in dem sich der Web- oder Datenbankserver
+befindet, auf dem das Basis-Produkt bzw. die Cloudrexx Plugins genutzt werden.
 
 #### 7.	Weitergabe der Produkte
 
-7.1.	Das Basis-Produkt und – soweit vom Vertrag erfasst – die Cloudrexx Plugins sowie die nach den Ziffern 4 und 5 eingeräumten Rechte dürfen dauerhaft auf Dritte übertragen werden, wenn der Dritte diesen Nutzungsbedingungen zustimmt. Der Dritte ist zur Nutzung in demselben Umfang berechtigt, wie der Kunde es aufgrund des mit der Cloudrexx AG geschlossenen Business Standard-, Business Enterprise- oder Non-Profit-Vertrags war.
+7.1.	Das Basis-Produkt und – soweit vom Vertrag erfasst – die Cloudrexx
+Plugins sowie die nach den Ziffern 4 und 5 eingeräumten Rechte dürfen dauerhaft
+auf Dritte übertragen werden, wenn der Dritte diesen Nutzungsbedingungen
+zustimmt. Der Dritte ist zur Nutzung in demselben Umfang berechtigt, wie der
+Kunde es aufgrund des mit der Cloudrexx AG geschlossenen Business Standard-,
+Business Enterprise- oder Non-Profit-Vertrags war.
 
-7.2.	Im Fall der Übertragung ist der Kunde verpflichtet, sämtliche auf den Web- oder Datenbank-Servern vorhandenen Kopien der Produkte zu löschen und diese Löschung gegenüber der Cloudrexx AG beispielsweise durch Abgabe einer Vernichtungserklärung nachzuweisen.
+7.2.	Im Fall der Übertragung ist der Kunde verpflichtet, sämtliche auf den
+Web- oder Datenbank-Servern vorhandenen Kopien der Produkte zu löschen und
+diese Löschung gegenüber der Cloudrexx AG beispielsweise durch Abgabe einer
+Vernichtungserklärung nachzuweisen.
 
 #### 8.	GEWÄHRLEISTUNG
 
-8.1.	DIE CLOUDREXX AG ÜBERNIMMT NACH DEN GESETZLICHEN BESTIMMUNGEN DIE GEWÄHRLEISTUNG DAFÜR, DASS DAS DIE DEM KUNDEN ÜBERLASSENEN PRODUKTE BESTIMMUNGSGEMÄSS FUNKTIONIEREN. DIE CLOUDREXX AG ÜBERNIMMT JEDOCH KEINE GEWÄHRLEISTUNG FÜR DIE ERFOLGREICHE UMSETZUNG DER WEBSEITE DURCH DEN KUNDEN UND DEN ERFOLG DES MIT DEN PRODUKTEN UMGESETZTEN WEBSEITE. KEINE GEWÄHRLEISTUNG ÜBERNIMMT DIE CLOUDREXX AG FÜR STÖRUNGEN, DIE AUF DEM VON DEM KUNDEN EINGESETZTEN INTERNET-ZUGANG BZW. INTERNETPROVIDER, DEM WEB- ODER DATENBANK-SERVER SOWIE AUF HARD- ODER SOFTWARE BERUHEN, DIE NICHT GEGENSTAND DES BUSINESS STANDARD-, BUSINESS ENTERPRISE- ODER NON-PROFIT-VERTRAGS SIND.
+8.1.	DIE CLOUDREXX AG ÜBERNIMMT NACH DEN GESETZLICHEN BESTIMMUNGEN DIE
+GEWÄHRLEISTUNG DAFÜR, DASS DAS DIE DEM KUNDEN ÜBERLASSENEN PRODUKTE
+BESTIMMUNGSGEMÄSS FUNKTIONIEREN. DIE CLOUDREXX AG ÜBERNIMMT JEDOCH KEINE
+GEWÄHRLEISTUNG FÜR DIE ERFOLGREICHE UMSETZUNG DER WEBSEITE DURCH DEN KUNDEN
+UND DEN ERFOLG DES MIT DEN PRODUKTEN UMGESETZTEN WEBSEITE. KEINE GEWÄHRLEISTUNG
+ÜBERNIMMT DIE CLOUDREXX AG FÜR STÖRUNGEN, DIE AUF DEM VON DEM KUNDEN
+EINGESETZTEN INTERNET-ZUGANG BZW. INTERNETPROVIDER, DEM WEB- ODER DATENBANK-
+SERVER SOWIE AUF HARD- ODER SOFTWARE BERUHEN, DIE NICHT GEGENSTAND DES BUSINESS
+STANDARD-, BUSINESS ENTERPRISE- ODER NON-PROFIT-VERTRAGS SIND.
 
-8.2.	DIE CLOUDREXX AG HAT DIE PRODUKTE SORGFÄLTIG DARAUF GEPRÜFT, DASS SIE FREI VON RECHTEN DRITTER SIND BZW. KEINE RECHTSMÄNGEL AUFWEIST. SOLLTE EIN DRITTER ANSPRÜCHE WEGEN ANGEBLICHER RECHTE AN DER SOFTWARE ODER WEGEN UNZULÄSSIGKEIT DES VERTRAGSGEMÄSSEN EINSATZES DER SOFTWARE ERHEBEN, WIRD DER JEWEILS IN ANSPRUCH GENOMMENE VERTRAGSTEIL DIE ANDERE PARTEI HIERÜBER UNVERZÜGLICH INFORMIEREN. UNBESCHADET DER GESETZLICHEN GEWÄHRLEISTUNGSRECHTE IST DER KUNDE IN DIESEN FÄLLEN GEHALTEN, AUF AUFFORDERUNG DER CLOUDREXX AG UNVERZÜGLICH DIE NUTZUNG DER PRODUKTE EINZUSTELLEN UND/ODER SIE VON DEN WEB- ODER DATENBANK-SERVERN ZU LÖSCHEN.
+8.2.	DIE CLOUDREXX AG HAT DIE PRODUKTE SORGFÄLTIG DARAUF GEPRÜFT, DASS SIE
+FREI VON RECHTEN DRITTER SIND BZW. KEINE RECHTSMÄNGEL AUFWEIST. SOLLTE EIN
+DRITTER ANSPRÜCHE WEGEN ANGEBLICHER RECHTE AN DER SOFTWARE ODER WEGEN
+UNZULÄSSIGKEIT DES VERTRAGSGEMÄSSEN EINSATZES DER SOFTWARE ERHEBEN, WIRD DER
+JEWEILS IN ANSPRUCH GENOMMENE VERTRAGSTEIL DIE ANDERE PARTEI HIERÜBER
+UNVERZÜGLICH INFORMIEREN. UNBESCHADET DER GESETZLICHEN GEWÄHRLEISTUNGSRECHTE
+IST DER KUNDE IN DIESEN FÄLLEN GEHALTEN, AUF AUFFORDERUNG DER CLOUDREXX AG
+UNVERZÜGLICH DIE NUTZUNG DER PRODUKTE EINZUSTELLEN UND/ODER SIE VON DEN WEB-
+ODER DATENBANK-SERVERN ZU LÖSCHEN.
 
 #### 9.	HAFTUNG
 
-9.1.	DIE CLOUDREXX AG HAFTET NACH DEN GESETZLICHEN BESTIMMUNGEN FÜR SCHÄDEN DES KUNDEN, DIE VORSÄTZLICH ODER GROB FAHRLÄSSIG VERURSACHT WURDEN ODER DIE AUF EINER SCHULDHAFTEN VERLETZUNG WESENTLICHER VERTRAGSPFLICHTEN (SO GENANNTER KARDINALSPFLICHTEN) BERUHEN, DAS HEISST SOLCHER VERTRAGLICHER PFLICHTEN, DEREN ERFÜLLUNG DIE ORDNUNGSGEMÄSSE DURCHFÜHRUNG DES VERTRAGES ÜBERHAUPT ERST ERMÖGLICHT UND AUF DEREN EINHALTUNG DER VERTRAGSPARTNER REGELMÄSSIG VERTRAUEN DARF, UND DEREN VERLETZUNG AUF DER ANDEREN SEITE DIE ERREICHUNG DES VERTRAGSZWECKS GEFÄHRDET. DIE CLOUDREXX AG HAFTET AUSSERDEM NACH DEN GESETZLICHEN BESTIMMUNGEN FÜR SCHÄDEN, DIE AUF DEM FEHLEN EINER ZUGESICHERTEN EIGENSCHAFT BERUHEN, DIE FOLGE EINER VON DER CLOUDREXX AG ZU VERTRETENDEN VERLETZUNG DER GESUNDHEIT, DES KÖRPERS ODER DES LEBENS SIND, ODER FÜR DIE EINE HAFTUNG NACH DEM PRODUKTHAFTUNGSGESETZ VORGESEHEN IST.
+9.1.	DIE CLOUDREXX AG HAFTET NACH DEN GESETZLICHEN BESTIMMUNGEN FÜR SCHÄDEN
+DES KUNDEN, DIE VORSÄTZLICH ODER GROB FAHRLÄSSIG VERURSACHT WURDEN ODER DIE AUF
+EINER SCHULDHAFTEN VERLETZUNG WESENTLICHER VERTRAGSPFLICHTEN (SO GENANNTER
+KARDINALSPFLICHTEN) BERUHEN, DAS HEISST SOLCHER VERTRAGLICHER PFLICHTEN, DEREN
+ERFÜLLUNG DIE ORDNUNGSGEMÄSSE DURCHFÜHRUNG DES VERTRAGES ÜBERHAUPT ERST
+ERMÖGLICHT UND AUF DEREN EINHALTUNG DER VERTRAGSPARTNER REGELMÄSSIG VERTRAUEN
+DARF, UND DEREN VERLETZUNG AUF DER ANDEREN SEITE DIE ERREICHUNG DES
+VERTRAGSZWECKS GEFÄHRDET. DIE CLOUDREXX AG HAFTET AUSSERDEM NACH DEN
+GESETZLICHEN BESTIMMUNGEN FÜR SCHÄDEN, DIE AUF DEM FEHLEN EINER ZUGESICHERTEN
+EIGENSCHAFT BERUHEN, DIE FOLGE EINER VON DER CLOUDREXX AG ZU VERTRETENDEN
+VERLETZUNG DER GESUNDHEIT, DES KÖRPERS ODER DES LEBENS SIND, ODER FÜR DIE EINE
+HAFTUNG NACH DEM PRODUKTHAFTUNGSGESETZ VORGESEHEN IST.
 
-9.2 .	BEI VERLETZUNG EINER KARDINALPFLICHT IST DIE HAFTUNG – SOWEIT DER SCHADEN LEDIGLICH AUF LEICHTER FAHRLÄSSIGKEIT BERUHT UND NICHT LEIB, LEBEN ODER GESUNDHEIT BETRIFFT – BESCHRÄNKT AUF SOLCHE SCHÄDEN, MIT DEREN ENTSTEHUNG IM RAHMEN DER ERBRINGUNG VON LEISTUNGEN WIE DER VERTRAGSGEGENSTÄNDLICHEN LEISTUNGEN TYPISCHERWEISE UND VORSEHBARERWEISE GERECHNET WERDEN MUSS.
+9.2 .	BEI VERLETZUNG EINER KARDINALPFLICHT IST DIE HAFTUNG – SOWEIT DER
+SCHADEN LEDIGLICH AUF LEICHTER FAHRLÄSSIGKEIT BERUHT UND NICHT LEIB, LEBEN ODER
+GESUNDHEIT BETRIFFT – BESCHRÄNKT AUF SOLCHE SCHÄDEN, MIT DEREN ENTSTEHUNG IM
+RAHMEN DER ERBRINGUNG VON LEISTUNGEN WIE DER VERTRAGSGEGENSTÄNDLICHEN
+LEISTUNGEN TYPISCHERWEISE UND VORSEHBARERWEISE GERECHNET WERDEN MUSS.
 
-9.3.	ABGESEHEN VON DEN IN DEN VORSTEHENDEN ZIFFERN GENANNTEN FÄLLEN IST DIE HAFTUNG DER CLOUDREXX AG – GLEICH AUS WELCHEM RECHTSGRUND – AUSGESCHLOSSEN. DIE CLOUDREXX AG HAFTET INSBESONDERE NICHT FÜR SCHÄDEN IM ZUSAMMENHANG MIT DEM VERLUST VON DATEN, SOWEIT DIE SCHÄDEN DURCH EINE REGELMÄSSIGE UND VOLLSTÄNDIGE SICHERUNG ALLER RELEVANTEN DATEN DURCH DEN KUNDEN VERMIEDEN WORDEN WÄREN. DIE CLOUDREXX AG HAFTET AUSSERDEM NICHT FÜR SCHÄDEN, DIE ALLEIN DARAUS RESULTIEREN, DASS DER KUNDE VERTRAGSWIDRIG ÄNDERUNGEN AN DEN PRODUKTEN VORGENOMMEN HAT.
+9.3.	ABGESEHEN VON DEN IN DEN VORSTEHENDEN ZIFFERN GENANNTEN FÄLLEN IST DIE
+HAFTUNG DER CLOUDREXX AG – GLEICH AUS WELCHEM RECHTSGRUND – AUSGESCHLOSSEN. DIE
+CLOUDREXX AG HAFTET INSBESONDERE NICHT FÜR SCHÄDEN IM ZUSAMMENHANG MIT DEM
+VERLUST VON DATEN, SOWEIT DIE SCHÄDEN DURCH EINE REGELMÄSSIGE UND VOLLSTÄNDIGE
+SICHERUNG ALLER RELEVANTEN DATEN DURCH DEN KUNDEN VERMIEDEN WORDEN WÄREN. DIE
+CLOUDREXX AG HAFTET AUSSERDEM NICHT FÜR SCHÄDEN, DIE ALLEIN DARAUS RESULTIEREN,
+DASS DER KUNDE VERTRAGSWIDRIG ÄNDERUNGEN AN DEN PRODUKTEN VORGENOMMEN HAT.
 
 #### 10.	Datenverarbeitung
 
-Die Cloudrexx AG legt hohen Wert auf die Einhaltung datenschutzrechtlicher Bestimmungen. Sie verwendet die vom Kunden mitgeteilten personenbezogenen Daten ausschliesslich zur Durchführung der vertraglichen Verpflichtungen. Daten werden nicht an Dritte weitergegeben. Nähere Informationen finden Sie in der Datenschutzerklärung.
+Die Cloudrexx AG legt hohen Wert auf die Einhaltung datenschutzrechtlicher
+Bestimmungen. Sie verwendet die vom Kunden mitgeteilten personenbezogenen
+Daten ausschliesslich zur Durchführung der vertraglichen Verpflichtungen.Daten
+werden nicht an Dritte weitergegeben. Nähere Informationen finden Sie in der
+Datenschutzerklärung.
 
 #### 11.	Schlussbestimmungen
 
-11.1.	Sollten einzelne Regelungen dieser EULA unwirksam sein oder werden, wird dadurch die Wirksamkeit der übrigen Regelungen nicht berührt.
+11.1.	Sollten einzelne Regelungen dieser EULA unwirksam sein oder werden,
+wird dadurch die Wirksamkeit der übrigen Regelungen nicht berührt.
 
-11.2.	Auf den Business Standard-, Business Enterprise- oder Non-Profit-Verträgen findet ausschliesslich das Recht der Schweiz Anwendung.
+11.2.	Auf den Business Standard-, Business Enterprise- oder Non-Profit-
+Verträgen findet ausschliesslich das Recht der Schweiz Anwendung.
 
-11.3. 	Gerichtsstand für den Lizenznehmer und die Cloudrexx AG ist der Sitz der Cloudrexx AG. Letztere jedoch ist berechtigt, den Lizenznehmer an dessen Sitz zu belangen. Das Rechtsverhältnis untersteht dem schweizerischen Recht.
+11.3. 	Gerichtsstand für den Lizenznehmer und die Cloudrexx AG ist der Sitz
+der Cloudrexx AG. Letztere jedoch ist berechtigt, den Lizenznehmer an dessen
+Sitz zu belangen. Das Rechtsverhältnis untersteht dem schweizerischen Recht.
 
 
 ### II. GNU AFFERO GENERAL PUBLIC LICENSE
