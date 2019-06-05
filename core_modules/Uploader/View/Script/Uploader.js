@@ -52,9 +52,6 @@
             if (iAttrs.uploaderType == 'Inline'){
                 jQuery('.close-upload-modal').hide();
             }
-            if (!iAttrs.thumbSelector) {
-                jQuery(this).data('thumbSelector', '');
-            }
             if (!iAttrs.thumbMaxWidth) {
                 jQuery(this).data('thumbMaxWidth', 120);
             }
@@ -178,21 +175,12 @@
                     keyboard: false
                 });
                 $J('#uploader-modal-' + iAttrs.uploaderId).modal('show');
-                const selector = jQuery(this).data('thumbSelector');
-                let jElement = jButton;
-                let jImage = null;
-                while (true) {
-                    jElement = jElement.parent();
-                    if (!jElement.length) {
-                        break;
-                    }
-                    jImage = jElement.find(selector);
+                const selector = jButton.data('thumbSelector');
+                if (selector) {
+                    const jImage = jQuery(selector);
                     if (jImage.length) {
-                        break;
+                        jButton.data('imageThumbTarget', jImage);
                     }
-                }
-                if (jImage.length) {
-                    jButton.data('imageThumbTarget', jImage);
                 }
             });
             $J(this).removeAttr('disabled');
