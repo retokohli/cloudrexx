@@ -995,6 +995,9 @@ class AccessLib
                 onClick="var imageContainer = $J(this).closest(\'.access_image_uploader_container\');
                          imageContainer.find(\'.uploader_rel_field\').val(\'\');
                          imageContainer.find(\'.uploader_rel_field_source\').val(\'\');
+                         imageContainer.find(\'.image_uploader_source_image\')
+                            .attr(\'src\', \''.$imageRepoWeb.'/'.$arrNoImage['src'].'\')
+                            .css({width : \''.$arrNoImage['width'].'px\', height: \''.$arrNoImage['height'].'px\'});
                          $J(this).hide()"
                 title="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'">
                 <img
