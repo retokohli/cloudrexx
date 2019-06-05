@@ -302,7 +302,8 @@
                         if (jImage && jImage.length === 1
                             && up.settings.max_file_count === 1
                         ) {
-                            jImage.attr('src', src);
+                            jImage.attr('src', src)
+                              .css({width: null, height: null});
                         }
                     };
                     preloader.load(file.getSource());
