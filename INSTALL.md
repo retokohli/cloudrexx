@@ -99,6 +99,7 @@ der erneuten und weiteren Einräumung von Nutzungsrechten durch die Cloudrexx AG
 4.4.	Der Kunde kann das Basis-Produkt nutzen, sobald er es von der Webseite
 der Cloudrexx AG heruntergeladen, eine EULA erworben hat und die Cloudrexx AG
 die Vergütung erhalten hat. 
+
 4.5.	Das Basis-Produkt kann heruntergeladen werden unter
 https://www.cloudrexx.com/latest_release_full
 
