@@ -556,7 +556,7 @@ cx.ready(function() {
                     } else {
                         formElement = cx.jQuery("[form=" + formId + "][name=" + attribute[0] + "]");
                     }
-                    formElement.val(matches[3]);
+                    formElement.val(decodeURIComponent(matches[3]));
                 });
             }
         });
