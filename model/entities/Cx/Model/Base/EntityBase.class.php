@@ -86,7 +86,7 @@ class EntityBase {
      * )
      * @var array
      */
-    protected $validators = null;
+    protected $validators = array();
 
     /**
      * Defines if an entity is virtual and therefore not persistable.
