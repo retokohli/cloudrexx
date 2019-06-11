@@ -151,21 +151,23 @@ class EntityBase {
      * @prePersist
      */
     public function validate() {
-        if(!$this->validators)
+        if (!count($this->validators)) {
             return;
+        }
 
         $errors = array();
-        foreach($this->validators as $field => $validator) {
+        foreach ($this->validators as $field => $validator) {
             $methodName = 'get'.ucfirst($field);
             $val = $this->$methodName();
-            if($val) {
-                if(!$validator->isValid($val)) {
+            if ($val) {
+                if (!$validator->isValid($val)) {
                      $errors[$field] = $validator->getMessages();
                 }
             }
         }
-        if(count($errors) > 0)
+        if (count($errors) > 0) {
             throw new ValidationException($errors);
+        }
     }
 
     /**
