@@ -147,10 +147,20 @@ class EntityBase {
     }
 
     /**
+     * Set $this->validators
+     *
+     * Validators can be found in lib/FRAMEWORK/Validator.class.php
+     * These will be executed if validate() is called
+     */
+    public function initializeValidators() { }
+
+    /**
      * @throws ValidationException
      * @prePersist
      */
     public function validate() {
+        $this->initializeValidators();
+
         if (!count($this->validators)) {
             return;
         }
