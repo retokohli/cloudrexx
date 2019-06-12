@@ -215,7 +215,7 @@ class DownloadsLibrary
                 // language
                 $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
                 $locale = $localeRepo->findOneByCode($iso1Code);
-            } catch (DownloadsLibraryException $e) {}
+            } catch (\Doctrine\ORM\NoResultException $e) {}
         }
 
         if (!$locale) {
