@@ -86,6 +86,7 @@ class DownloadsLibrary
         'integrate_into_search_component'=> 1,
         'auto_file_naming'     => 'off',
         'pretty_regex_pattern' => '',
+        'global_search_linking'         => 'detail',
     );
 
     /**
