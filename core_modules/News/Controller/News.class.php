@@ -366,7 +366,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_LINK1' =>
                 $_ARRAYLANG['TXT_NEWS_LINK1'],
             'NEWS_LINK1_SRC' =>
-                contrexx_raw2encodedUrl($url1),
+                $url1,
         ));
         if ($this->_objTpl->blockExists('news_link1')) {
             if (empty($url1)) {
@@ -381,7 +381,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_LINK2' =>
                 $_ARRAYLANG['TXT_NEWS_LINK2'],
             'NEWS_LINK2_SRC' =>
-                contrexx_raw2encodedUrl($url2)
+                $url2,
         ));
         if ($this->_objTpl->blockExists('news_link2')) {
             if (empty($url2)) {
