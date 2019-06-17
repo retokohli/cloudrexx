@@ -212,7 +212,7 @@ class NewsLibrary
      */
     public function getNewsCategories($template = null, $langId = null, $categoryId = 0)
     {
-        $categoriesLang = $this->getCategoriesLangData();
+        $categoriesLang = $this->getCategoriesData();
         return $this->_buildNewsCategories($template, $this->nestedSetRootId, $categoriesLang, $langId, $categoryId);
     }
 
@@ -252,7 +252,7 @@ class NewsLibrary
             $newsUrl->setParam('category', $catId);
             $category['url'] = $newsUrl;
             $category['title'] = contrexx_raw2xhtml(
-                $categoriesLang[$catId][$langId]
+                $categoriesLang[$catId]['lang'][$langId]
             );
 
             $this->parseNewsCategoryWidgetBlock(
@@ -415,7 +415,7 @@ class NewsLibrary
         }
         $level = min($levels);
 
-        $categoriesLang = $this->getCategoriesLangData();
+        $categoriesLang = $this->getCategoriesData();
         $options = '';
 
         foreach ($nestedSetCategories as $category) {
@@ -425,9 +425,11 @@ class NewsLibrary
             $selected = in_array($category['id'], $selectedCategory) ? 'selected="selected"' : '';
             $options .= '<option value="'.$category['id'].'" '.$selected.'>'
                     .($showLevel ? str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)) : '')
-                    .contrexx_raw2xhtml($categoriesLang[$category['id']][
-                        FRONTEND_LANG_ID
-                    ])
+                    .contrexx_raw2xhtml(
+                        $categoriesLang[$category['id']]['lang'][
+                            FRONTEND_LANG_ID
+                        ]
+                    )
                     .'</option>';
         }
 
@@ -1036,10 +1038,10 @@ class NewsLibrary
 
 
     /**
-     * Get categories language data
+     * Get categories data
      * @return Array
      */
-    function getCategoriesLangData()
+    protected function getCategoriesData()
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $db = $cx->getDb()->getAdoDb();
@@ -1053,9 +1055,11 @@ class NewsLibrary
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 if (!isset($arrLangData[$objResult->fields['category_id']])) {
-                    $arrLangData[$objResult->fields['category_id']] = array();
+                    $arrLangData[$objResult->fields['category_id']] = array(
+                        'lang' => array(),
+                    );
                 }
-                $arrLangData[$objResult->fields['category_id']][
+                $arrLangData[$objResult->fields['category_id']]['lang'][
                     $objResult->fields['lang_id']
                 ] = $objResult->fields['name'];
                 $objResult->MoveNext();
@@ -1200,22 +1204,22 @@ class NewsLibrary
     {
         global $objDatabase;
 
-        $oldLangData = $this->getCategoriesLangData();
+        $oldLangData = $this->getCategoriesData();
         if (count($oldLangData) == 0) {
             return false;
         }
         $status = true;
         $arrNewLocales = array_diff(
             array_keys($newLangData[key($newLangData)]),
-            array_keys($oldLangData[key($oldLangData)])
+            array_keys($oldLangData[key($oldLangData)]['lang'])
         );
         $arrRemovedLocales = array_diff(
-            array_keys($oldLangData[key($oldLangData)]),
+            array_keys($oldLangData[key($oldLangData)]['lang']),
             array_keys($newLangData[key($newLangData)])
         );
         $arrUpdatedLocales = array_intersect(
             array_keys($newLangData[key($newLangData)]),
-            array_keys($oldLangData[key($oldLangData)])
+            array_keys($oldLangData[key($oldLangData)]['lang'])
         );
         foreach (array_keys($newLangData) as $catId) {
             foreach ($arrNewLocales as $langId) {
@@ -1230,7 +1234,7 @@ class NewsLibrary
             foreach ($arrUpdatedLocales as $langId) {
                 if (
                     $newLangData[$catId][$langId]
-                    != $oldLangData[$catId][$langId]
+                    != $oldLangData[$catId]['lang'][$langId]
                 ) {
                     if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_news_categories_locale` SET
                             `name` = '" . contrexx_input2db($newLangData[$catId][$langId]). "'

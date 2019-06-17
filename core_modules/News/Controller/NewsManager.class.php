@@ -2949,7 +2949,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // List all categories
-        $arrCatLangData   = $this->getCategoriesLangData();
+        $arrCatLangData   = $this->getCategoriesData();
         $firstLevel       = 2;
         $levelSpacingLeft = 20;
 
@@ -2968,7 +2968,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 }
 
                 $name = contrexx_raw2xhtml(
-                    $arrCatLangData[$node['id']][
+                    $arrCatLangData[$node['id']]['lang'][
                         \FWLanguage::getDefaultLangId()
                     ]
                 );
@@ -3037,8 +3037,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // get language data from categories
-        $categories = $this->getCategoriesLangData();
-        $categoryLangData = $categories[$id];
+        $categories = $this->getCategoriesData();
+        $categoryLangData = $categories[$id]['lang'];
 
         // get languages which are active
         $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
