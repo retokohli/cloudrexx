@@ -2967,11 +2967,16 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $this->_objTpl->hideBlock('categoryHasParent');
                 }
 
+                $name = contrexx_raw2xhtml(
+                    $arrCatLangData[$node['id']][
+                        \FWLanguage::getDefaultLangId()
+                    ]
+                );
                 $this->_objTpl->setVariable(array(
                     'NEWS_ROWCLASS'       => $cssStyle,
                     'NEWS_CAT_ID'         => $node['id'],
                     'NEWS_LEVEL_SPACING'  => $level*$levelSpacingLeft,
-                    'NEWS_CAT_NAME'       => contrexx_raw2xhtml($arrCatLangData[$node['id']][\FWLanguage::getDefaultLangId()]),
+                    'NEWS_CAT_NAME'       => $name,
                     'NEWS_CAT_SORT'       => $sort,
                 ));
                 $this->_objTpl->parse('newsRow');

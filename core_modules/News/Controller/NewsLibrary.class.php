@@ -1050,7 +1050,9 @@ class NewsLibrary
                 if (!isset($arrLangData[$objResult->fields['category_id']])) {
                     $arrLangData[$objResult->fields['category_id']] = array();
                 }
-                $arrLangData[$objResult->fields['category_id']][$objResult->fields['lang_id']] = $objResult->fields['name'];
+                $arrLangData[$objResult->fields['category_id']][
+                    $objResult->fields['lang_id']
+                ] = $objResult->fields['name'];
                 $objResult->MoveNext();
             }
         }
@@ -1198,9 +1200,18 @@ class NewsLibrary
             return false;
         }
         $status = true;
-        $arrNewLocales = array_diff(array_keys($newLangData[key($newLangData)]), array_keys($oldLangData[key($oldLangData)]));
-        $arrRemovedLocales = array_diff(array_keys($oldLangData[key($oldLangData)]), array_keys($newLangData[key($newLangData)]));
-        $arrUpdatedLocales = array_intersect(array_keys($newLangData[key($newLangData)]), array_keys($oldLangData[key($oldLangData)]));
+        $arrNewLocales = array_diff(
+            array_keys($newLangData[key($newLangData)]),
+            array_keys($oldLangData[key($oldLangData)])
+        );
+        $arrRemovedLocales = array_diff(
+            array_keys($oldLangData[key($oldLangData)]),
+            array_keys($newLangData[key($newLangData)])
+        );
+        $arrUpdatedLocales = array_intersect(
+            array_keys($newLangData[key($newLangData)]),
+            array_keys($oldLangData[key($oldLangData)])
+        );
         foreach (array_keys($newLangData) as $catId) {
             foreach ($arrNewLocales as $langId) {
                 if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_categories_locale` (`lang_id`, `category_id`, `name`)
@@ -1212,7 +1223,10 @@ class NewsLibrary
                 }
             }
             foreach ($arrUpdatedLocales as $langId) {
-                if ($newLangData[$catId][$langId] != $oldLangData[$catId][$langId] ) {
+                if (
+                    $newLangData[$catId][$langId]
+                    != $oldLangData[$catId][$langId]
+                ) {
                     if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_news_categories_locale` SET
                             `name` = '" . contrexx_input2db($newLangData[$catId][$langId]). "'
                             WHERE `category_id` = " . $catId . " AND `lang_id` = " . $langId) === false) {
@@ -1772,8 +1786,9 @@ class NewsLibrary
      *
      * @return null
      */
-    public function parseNextAndPreviousLinks(\Cx\Core\Html\Sigma $objTpl)
-    {
+    public function parseNextAndPreviousLinks(
+        \Cx\Core\Html\Sigma $objTpl
+    ) {
         global $objDatabase, $_ARRAYLANG;
 
         $parentBlock    = 'news_details_previous_next_links';
@@ -1862,7 +1877,9 @@ class NewsLibrary
         //previous news
         if (!empty($previousNewsId)) {
             $preNewsDetails = self::getNewsDetailsById($previousNewsId);
-            $arrNewsCategories = $this->getCategoriesByNewsId($previousNewsId);
+            $arrNewsCategories = $this->getCategoriesByNewsId(
+                $previousNewsId
+            );
             if ($objTpl->blockExists($previousLink) && !empty($preNewsDetails)) {
                 $newsTitle    = contrexx_raw2xhtml($preNewsDetails['newsTitle']);
                 $newsSrc      = \Cx\Core\Routing\Url::fromModuleAndCmd(
@@ -1884,7 +1901,9 @@ class NewsLibrary
         //next news
         if (!empty($nextNewsId)) {
             $nextNewsDetails = self::getNewsDetailsById($nextNewsId);
-            $arrNewsCategories = $this->getCategoriesByNewsId($nextNewsId);
+            $arrNewsCategories = $this->getCategoriesByNewsId(
+                $nextNewsId
+            );
             if ($objTpl->blockExists($nextLink) && !empty($nextNewsDetails)) {
                 $newsTitle    = contrexx_raw2xhtml($nextNewsDetails['newsTitle']);
                 $newsSrc      = \Cx\Core\Routing\Url::fromModuleAndCmd(
@@ -2175,7 +2194,9 @@ class NewsLibrary
         // parse related news articles
         $i = 0;
         while (!$relatedNews->EOF) {
-            $arrNewsCategories = $this->getCategoriesByNewsId($relatedNews->fields['newsid']);
+            $arrNewsCategories = $this->getCategoriesByNewsId(
+                $relatedNews->fields['newsid']
+            );
             $newsUrl = '';
             if (!empty($relatedNews->fields['redirect'])) {
                 $newsUrl = $relatedNews->fields['redirect'];
@@ -2192,7 +2213,12 @@ class NewsLibrary
             }
 
             // Parse all the news placeholders
-            $this->parseNewsPlaceholders($objTpl, $relatedNews, $newsUrl, 'news_related_');
+            $this->parseNewsPlaceholders(
+                $objTpl,
+                $relatedNews,
+                $newsUrl,
+                'news_related_'
+            );
 
             $objTpl->setVariable(array(
                'NEWS_RELATED_NEWS_CSS'            => 'row'.($i % 2 + 1),
@@ -3029,8 +3055,12 @@ EOF;
      * @param string $newsUrl      News Url
      * @return string
      */
-    public function parseNewsPlaceholders($objTpl, $objResult, $newsUrl, $templatePrefix = '')
-    {
+    public function parseNewsPlaceholders(
+        $objTpl,
+        $objResult,
+        $newsUrl,
+        $templatePrefix = ''
+    ) {
         global $_ARRAYLANG;
 
         $newsid = $objResult->fields['newsid'];
@@ -3053,7 +3083,9 @@ EOF;
                                     ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />' . date(ASCMS_DATE_FORMAT, $objResult->fields['changelog'])
                                     : '';
         $newsTeaser           = '';
-        $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
+        $arrNewsCategories = $this->getCategoriesByNewsId(
+            $newsid
+        );
 
         if ($this->arrSettings['news_use_teaser_text']) {
             $newsTeaser = nl2br($objResult->fields['teaser_text']);
