@@ -428,7 +428,9 @@ class NewsLibrary
             // hide hidden categories
             if (
                 !$includeHidden &&
-                !$categoriesLang[$category['id']]['display']
+                !$categoriesLang[$category['id']]['display'] &&
+                // exception: selected categories shall always get listed
+                !in_array($category['id'], $selectedCategory)
             ) {
                 continue;
             }
@@ -656,12 +658,13 @@ class NewsLibrary
      * Get the categories by News ID
      *
      * @param integer $newsId
+     * @param   array   IDs of categories to fetch even if they're hidden
      *
      * @global object $objDatabase
      *
      * @return mixed boolean|array
      */
-    public function getCategoriesByNewsId($newsId)
+    public function getCategoriesByNewsId($newsId, $selectHidden = array())
     {
         global $objDatabase;
 
@@ -684,7 +687,10 @@ class NewsLibrary
             while(!$objResult->EOF) {
                 // skip hidden categories, except for hidden categories
                 // mentioned in $selectHidden
-                if (!$objResult->fields['display']) {
+                if (
+                    !$objResult->fields['display'] &&
+                    !in_array($objResult->fields['catid'], $selectHidden)
+                ) {
                     $objResult->MoveNext();
                     continue;
                 }
@@ -1818,7 +1824,8 @@ class NewsLibrary
      * @return null
      */
     public function parseNextAndPreviousLinks(
-        \Cx\Core\Html\Sigma $objTpl
+        \Cx\Core\Html\Sigma $objTpl,
+        $selectedCategories = array()
     ) {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1909,7 +1916,8 @@ class NewsLibrary
         if (!empty($previousNewsId)) {
             $preNewsDetails = self::getNewsDetailsById($previousNewsId);
             $arrNewsCategories = $this->getCategoriesByNewsId(
-                $previousNewsId
+                $previousNewsId,
+                $selectedCategories
             );
             if ($objTpl->blockExists($previousLink) && !empty($preNewsDetails)) {
                 $newsTitle    = contrexx_raw2xhtml($preNewsDetails['newsTitle']);
@@ -1933,7 +1941,8 @@ class NewsLibrary
         if (!empty($nextNewsId)) {
             $nextNewsDetails = self::getNewsDetailsById($nextNewsId);
             $arrNewsCategories = $this->getCategoriesByNewsId(
-                $nextNewsId
+                $nextNewsId,
+                $selectedCategories
             );
             if ($objTpl->blockExists($nextLink) && !empty($nextNewsDetails)) {
                 $newsTitle    = contrexx_raw2xhtml($nextNewsDetails['newsTitle']);
@@ -2199,7 +2208,8 @@ class NewsLibrary
      */
     protected function parseRelatedNews(
         \Cx\Core\Html\Sigma $objTpl,
-        $newsId = null
+        $newsId = null,
+        $selectedCategories = array()
     ) {
         global $_ARRAYLANG;
 
@@ -2226,7 +2236,8 @@ class NewsLibrary
         $i = 0;
         while (!$relatedNews->EOF) {
             $arrNewsCategories = $this->getCategoriesByNewsId(
-                $relatedNews->fields['newsid']
+                $relatedNews->fields['newsid'],
+                $selectedCategories
             );
             $newsUrl = '';
             if (!empty($relatedNews->fields['redirect'])) {
@@ -2248,7 +2259,8 @@ class NewsLibrary
                 $objTpl,
                 $relatedNews,
                 $newsUrl,
-                'news_related_'
+                'news_related_',
+                $selectedCategories
             );
 
             $objTpl->setVariable(array(
@@ -3090,7 +3102,8 @@ EOF;
         $objTpl,
         $objResult,
         $newsUrl,
-        $templatePrefix = ''
+        $templatePrefix = '',
+        $selectedCategories = array()
     ) {
         global $_ARRAYLANG;
 
@@ -3115,7 +3128,8 @@ EOF;
                                     : '';
         $newsTeaser           = '';
         $arrNewsCategories = $this->getCategoriesByNewsId(
-            $newsid
+            $newsid,
+            $selectedCategories
         );
 
         if ($this->arrSettings['news_use_teaser_text']) {

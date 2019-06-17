@@ -201,7 +201,8 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 ) {
                     $newsid = $objResult->fields['newsid'];
                     $newsCategories = $this->getCategoriesByNewsId(
-                        $newsid
+                        $newsid,
+                        array($catId)
                     );
                     $newsUrl   = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
@@ -213,7 +214,9 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     $this->parseNewsPlaceholders(
                         $this->_objTemplate,
                         $objResult,
-                        $newsUrl
+                        $newsUrl,
+                        '',
+                        array($catId)
                     );
 
                     $this->_objTemplate->setVariable(array(

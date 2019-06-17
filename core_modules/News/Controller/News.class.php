@@ -310,7 +310,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         $newsCategories = $this->getCategoriesByNewsId(
-            $newsid
+            $newsid,
+            array($categoryId)
         );
         // Parse the Category list
         $this->parseCategoryList($this->_objTpl, $newsCategories);
@@ -417,22 +418,26 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $this->parseRelatedMessagesOfMessage(
             $newsid,
             'category',
-            array_keys($newsCategories)
+            array_keys($newsCategories),
+            array($categoryId)
         );
         $this->parseRelatedMessagesOfMessage(
             $newsid,
             'type',
-            $objResult->fields['typeid']
+            $objResult->fields['typeid'],
+            array($categoryId)
         );
         $this->parseRelatedMessagesOfMessage(
             $newsid,
             'publisher',
-            $objResult->fields['publisherid']
+            $objResult->fields['publisherid'],
+            array($categoryId)
         );
         $this->parseRelatedMessagesOfMessage(
             $newsid,
             'author',
-            $objResult->fields['authorid']
+            $objResult->fields['authorid'],
+            array($categoryId)
         );
 
         /*
@@ -454,7 +459,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         ) {
             $this->parseRelatedNews(
                 $this->_objTpl,
-                $newsid
+                $newsid,
+                array($categoryId)
             );
             \JS::registerCss('core_modules/News/View/Style/RelatedSearch.css');
         }
@@ -490,7 +496,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             //Register the RelatedLinks.css for styling the previous and next link
             \JS::registerCss('core_modules/News/View/Style/RelatedLinks.css');
             $this->parseNextAndPreviousLinks(
-                $this->_objTpl
+                $this->_objTpl,
+                array($categoryId)
             );
         }
 
@@ -567,7 +574,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     private function parseRelatedMessagesOfMessage(
         $messageId,
         $relatedByKind,
-         $relatedKindId
+         $relatedKindId,
+         $selectedCategories
     ) {
         global $objDatabase, $_ARRAYLANG;
 
@@ -644,7 +652,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         while (!$objResult->EOF) {
             $newsid         = $objResult->fields['newsid'];
             $newsCategories = $this->getCategoriesByNewsId(
-                $newsid
+                $newsid,
+                $selectedCategories
             );
             $newstitle      = $objResult->fields['newstitle'];
             $newsUrl        = empty($objResult->fields['redirect'])
@@ -972,7 +981,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             while (!$objResult->EOF) {
                 $newsid = $parameters['newsid'] = $objResult->fields['newsid'];
                 $arrNewsCategories = $this->getCategoriesByNewsId(
-                    $newsid
+                    $newsid,
+                    $categories
                 );
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
@@ -990,7 +1000,9 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->parseNewsPlaceholders(
                     $this->_objTpl,
                     $objResult,
-                    $newsUrl
+                    $newsUrl,
+                    '',
+                    $categories
                 );
 
                 $this->_objTpl->setVariable(array(
@@ -1932,6 +1944,7 @@ RSS2JSCODE;
         global $objDatabase, $_ARRAYLANG;
 
         $categories = '';
+        $selectedCategories = array();
         $i          = 0;
         if ($categories = substr($_REQUEST['cmd'], 7)) {
             $selectedCategories = contrexx_input2int(
@@ -1958,7 +1971,8 @@ RSS2JSCODE;
                     $newsid         = $news['id'];
                     $newstitle      = $news['newstitle'];
                     $newsCategories = $this->getCategoriesByNewsId(
-                        $newsid
+                        $newsid,
+                        $selectedCategories
                     );
                     $newsCommentActive = $news['commentactive'];
                     $newsUrl        = empty($news['newsredirect'])
