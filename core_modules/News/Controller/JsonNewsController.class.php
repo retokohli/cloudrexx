@@ -193,6 +193,16 @@ class JsonNewsController extends \Cx\Core\Core\Model\Entity\Controller implement
             throw new \Exception('Unkown category');
         }
 
+        $newsLibrary = new NewsLibrary();
+        $cx->getComponent('Cache')->deleteComponentFiles('News');
+        $cx->getEvents()->triggerEvent(
+            'clearEsiCache',
+            array(
+                'Widget',
+                $newsLibrary->getNewsGlobalPlaceholderNames()
+            )
+        );
+
         return $result->fields['display'];
     }
 }
