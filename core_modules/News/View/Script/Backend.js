@@ -8,7 +8,11 @@ cx.ready(function() {
                     id: jQuery(this).data('id')
                 },
                 element: this,
+                beforeSend: function() {
+                    cx.ui.messages.showLoad();
+                },
                 success: function(data) {
+                    cx.ui.messages.removeAll();
                     if (data.status != 'success') {
                         return;
                     }
