@@ -385,6 +385,8 @@ class NewsLibrary
      * @param   array               $selectedCategory             selected category
      * @param   array               $hiddenCategories             the categories which shouldn't be shown as option
      * @param   boolean             $onlyCategoriesWithEntries    only categories which have entries
+     * @param   boolean             $showLevel  Whether or not to visualy
+     *                              show the hierarchy as indent
      * @return  string              $options                      html options
      */
     protected function getCategoryMenu(
@@ -415,6 +417,7 @@ class NewsLibrary
 
         $categoriesLang = $this->getCategoriesLangData();
         $options = '';
+
         foreach ($nestedSetCategories as $category) {
             if(in_array($category['id'], $hiddenCategories)) {
                 continue;
@@ -1034,17 +1037,19 @@ class NewsLibrary
 
     /**
      * Get categories language data
-     * @global ADONewConnection
      * @return Array
      */
     function getCategoriesLangData()
     {
-        global $objDatabase;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
 
-        $objResult = $objDatabase->Execute("SELECT lang_id,
+        $objResult = $db->Execute("SELECT lang_id,
             category_id,
             name
-            FROM ".DBPREFIX."module_news_categories_locale");
+            FROM ".DBPREFIX."module_news_categories_locale
+        ");
+        $arrLangData = array();
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 if (!isset($arrLangData[$objResult->fields['category_id']])) {
