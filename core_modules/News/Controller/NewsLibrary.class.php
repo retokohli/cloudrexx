@@ -387,6 +387,7 @@ class NewsLibrary
      * @param   boolean             $onlyCategoriesWithEntries    only categories which have entries
      * @param   boolean             $showLevel  Whether or not to visualy
      *                              show the hierarchy as indent
+     * @param   boolean             Whether or not to list hidden categories
      * @return  string              $options                      html options
      */
     protected function getCategoryMenu(
@@ -394,7 +395,8 @@ class NewsLibrary
             $selectedCategory = array(),
             $hiddenCategories = array(),
             $onlyCategoriesWithEntries = false,
-            $showLevel = true
+            $showLevel = true,
+            $includeHidden = true
     )
     {
         if (empty($categories)) {
@@ -422,6 +424,15 @@ class NewsLibrary
             if(in_array($category['id'], $hiddenCategories)) {
                 continue;
             }
+
+            // hide hidden categories
+            if (
+                !$includeHidden &&
+                !$categoriesLang[$category['id']]['display']
+            ) {
+                continue;
+            }
+
             $selected = in_array($category['id'], $selectedCategory) ? 'selected="selected"' : '';
             $options .= '<option value="'.$category['id'].'" '.$selected.'>'
                     .($showLevel ? str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)) : '')
@@ -658,7 +669,7 @@ class NewsLibrary
             return false;
         }
 
-        $query = 'SELECT `tnc`.`catid`, `tncl`.`name` '
+        $query = 'SELECT `tnc`.`catid`, `tncl`.`name`, `tnc`.`display` '
                         . 'FROM `'. DBPREFIX . 'module_news_categories` as tnc '
                         . 'LEFT JOIN `' . DBPREFIX . 'module_news_categories_locale` as tncl '
                         . 'ON (`tnc`.`catid` = `tncl`.`category_id`) '
@@ -671,6 +682,13 @@ class NewsLibrary
         $arrCategories = array();
         if ($objResult && $objResult->RecordCount() > 0) {
             while(!$objResult->EOF) {
+                // skip hidden categories, except for hidden categories
+                // mentioned in $selectHidden
+                if (!$objResult->fields['display']) {
+                    $objResult->MoveNext();
+                    continue;
+                }
+
                 $arrCategories[$objResult->fields['catid']] = $objResult->fields['name'];
                 $objResult->MoveNext();
             }
@@ -1048,8 +1066,11 @@ class NewsLibrary
 
         $objResult = $db->Execute("SELECT lang_id,
             category_id,
-            name
-            FROM ".DBPREFIX."module_news_categories_locale
+            name,
+            display
+            FROM ".DBPREFIX."module_news_categories AS c
+            INNER JOIN ".DBPREFIX."module_news_categories_locale AS l
+            ON l.category_id = c.catid
         ");
         $arrLangData = array();
         if ($objResult !== false) {
@@ -1057,6 +1078,7 @@ class NewsLibrary
                 if (!isset($arrLangData[$objResult->fields['category_id']])) {
                     $arrLangData[$objResult->fields['category_id']] = array(
                         'lang' => array(),
+                        'display' => $objResult->fields['display'],
                     );
                 }
                 $arrLangData[$objResult->fields['category_id']]['lang'][

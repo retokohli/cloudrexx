@@ -785,7 +785,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $catMenu .= '<option value="">'.$_ARRAYLANG['TXT_CATEGORY'].'</option>'."\n";
             $catMenu .= $this->getCategoryMenu(
                 (!empty($menuCategories) ? $menuCategories : array()),
-                array($selectedCat)
+                array($selectedCat),
+                array(),
+                false,
+                true,
+                false
             )."\n";
             $catMenu .= '</select>'."\n";
             $this->_objTpl->setVariable('NEWS_CAT_DROPDOWNMENU', $catMenu);
@@ -1619,7 +1623,11 @@ EOF;
             'NEWS_TEXT'                 => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $data['newsText'], 'bbcode'),
             'NEWS_CAT_MENU'             => $this->getCategoryMenu(
                 $this->nestedSetRootId,
-                array($data['newsCat'])
+                array($data['newsCat']),
+                array(),
+                false,
+                true,
+                false
             ),
             'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($data['newsType']) : ''),
             'NEWS_TITLE'                => contrexx_raw2xhtml($data['newsTitle']),
