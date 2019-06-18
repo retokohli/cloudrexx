@@ -219,12 +219,15 @@ class BackendTable extends HTML_Table {
                         ) {
                             $vgId = $options['functions']['vg_increment_number'];
                         }
-                        $data = $this->viewGenerator->callValueCallback(
+                        $data = $this->viewGenerator->callCallbackByInfo(
                             $valueCallback,
-                            $data,
-                            $origHeader,
-                            $rows,
-                            $options['fields'][$origHeader]
+                            array(
+                                'fieldvalue' => $data,
+                                'fieldname' => $origHeader,
+                                'rowData' => $rows,
+                                'fieldoption' => $options['fields'][$origHeader],
+                                'vgId' => $this->viewGenerator->getViewId(),
+                            )
                         );
                     }
 

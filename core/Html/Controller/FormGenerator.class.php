@@ -408,14 +408,21 @@ class FormGenerator {
     public function getDataElement($name, $title, $type, $length, $value, &$options, $entityId) {
         global $_ARRAYLANG, $_CORELANG;
 
-        if (isset($options['valueCallback'])) {
-            $value = $this->viewGenerator->callValueCallback(
-                $options['valueCallback'],
-                $value,
-                $name,
-                array(),
-                $options
-            );
+        try {
+            if (isset($options['valueCallback'])) {
+                $value = $this->viewGenerator->callCallbackByInfo(
+                    $options['valueCallback'],
+                    array(
+                        'fieldvalue' => $value,
+                        'fieldname' => $name,
+                        'rowData' => array(),
+                        'fieldoption' => $options,
+                        'vgId' => $this->viewGenerator->getViewId(),
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
         }
 
         if (isset($options['formfield'])) {
