@@ -219,16 +219,20 @@ class BackendTable extends HTML_Table {
                         ) {
                             $vgId = $options['functions']['vg_increment_number'];
                         }
-                        $data = $this->viewGenerator->callCallbackByInfo(
-                            $valueCallback,
-                            array(
-                                'fieldvalue' => $data,
-                                'fieldname' => $origHeader,
-                                'rowData' => $rows,
-                                'fieldoption' => $options['fields'][$origHeader],
-                                'vgId' => $this->viewGenerator->getViewId(),
-                            )
-                        );
+                        try {
+                            $data = \Cx\Core\Html\Controller\ViewGenerator::callCallbackByInfo(
+                                $valueCallback,
+                                array(
+                                    'fieldvalue' => $data,
+                                    'fieldname' => $origHeader,
+                                    'rowData' => $rows,
+                                    'fieldoption' => $options['fields'][$origHeader],
+                                    'vgId' => $this->viewGenerator->getViewId(),
+                                )
+                            );
+                        } catch (\Exception $e) {
+                            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+                        }
                     }
 
                     if (
@@ -266,7 +270,7 @@ class BackendTable extends HTML_Table {
                         }
 
                         try {
-                            $data = $this->viewGenerator->callCallbackByInfo(
+                            $data = \Cx\Core\Html\Controller\ViewGenerator::callCallbackByInfo(
                                 $callback,
                                 array(
                                     'data' => $data,
@@ -435,7 +439,7 @@ class BackendTable extends HTML_Table {
                     $originalAttributes = $this->getRowAttributes($row);
                     $data = $originalAttributes;
                     try {
-                        $data = $this->viewGenerator->callCallbackByInfo(
+                        $data = \Cx\Core\Html\Controller\ViewGenerator::callCallbackByInfo(
                             $callback,
                             array(
                                 'data' => $rows,
@@ -610,7 +614,7 @@ class BackendTable extends HTML_Table {
          * directly without using json. This is not recommended and not working over session */
         try {
             if (isset($functions['actions']) ) {
-                $code .= $this->viewGenerator->callCallbackByInfo(
+                $code .= \Cx\Core\Html\Controller\ViewGenerator::callCallbackByInfo(
                     $functions['actions'],
                     array(
                         'rowData' => $rowData,

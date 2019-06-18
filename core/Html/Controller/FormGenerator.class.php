@@ -410,7 +410,7 @@ class FormGenerator {
 
         try {
             if (isset($options['valueCallback'])) {
-                $value = $this->viewGenerator->callCallbackByInfo(
+                $value = \Cx\Core\Html\Controller\ViewGenerator::callCallbackByInfo(
                     $options['valueCallback'],
                     array(
                         'fieldvalue' => $value,
@@ -428,7 +428,7 @@ class FormGenerator {
             if (isset($options['formfield'])) {
                 $formFieldGenerator = $options['formfield'];
 
-                $formField = $this->viewGenerator->callCallbackByInfo(
+                $formField = \Cx\Core\Html\Controller\ViewGenerator::callCallbackByInfo(
                     $formFieldGenerator,
                     array(
                         'name' => $title,
