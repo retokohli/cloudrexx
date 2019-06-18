@@ -213,7 +213,24 @@ class ViewGenerator {
             }
         } catch (\Exception $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);
-            return;
+            if (
+                $this->cx->getRequest()->hasParam('editid', false)
+            ) {
+                $editUrl = \Cx\Core\Html\Controller\ViewGenerator::getVgEditUrl(
+                    $this->options['functions']['vg_increment_number'],
+                    $this->getEntryId(),
+                    $this->cx->getRequest()->getUrl()
+                );
+                \Cx\Core\Csrf\Controller\Csrf::redirect($editUrl);
+            } else if ($this->cx->getRequest()->hasParam('add')) {
+                $addUrl = $this->cx->getRequest()->getUrl();
+                $addUrl->setParam(
+                    'csrf',
+                    $this->cx->getRequest()->getParam('csrf', false)
+                );
+
+                \Cx\Core\Csrf\Controller\Csrf::redirect($addUrl);
+            }
         }
     }
 
