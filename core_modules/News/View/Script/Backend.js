@@ -1,11 +1,11 @@
 cx.ready(function() {
-    jQuery('.news_category_switch').bind('click', function() {
+    cx.jQuery('.news_category_switch').bind('click', function() {
         cx.ajax(
             'News',
             'switchCategoryVisibility',
             {
                 data: {
-                    id: jQuery(this).data('id')
+                    id: cx.jQuery(this).data('id')
                 },
                 element: this,
                 beforeSend: function() {
@@ -16,10 +16,10 @@ cx.ready(function() {
                     if (data.status != 'success') {
                         return;
                     }
-                    if (data.data == "1") {
-                        jQuery(this.element).removeClass('hidden');
+                    if (data.data == '1') {
+                        cx.jQuery(this.element).removeClass('hidden');
                     } else {
-                        jQuery(this.element).addClass('hidden');
+                        cx.jQuery(this.element).addClass('hidden');
                     }
                 }
             }
