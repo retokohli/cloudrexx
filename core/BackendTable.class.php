@@ -434,25 +434,16 @@ class BackendTable extends HTML_Table {
                 foreach ($attrs as $rowname=>$rows) {
                     $originalAttributes = $this->getRowAttributes($row);
                     $data = $originalAttributes;
-                    if (
-                        is_array($callback) &&
-                        isset($callback['adapter']) &&
-                        isset($callback['method'])
-                    ) {
-                        $json = new \Cx\Core\Json\JsonData();
-                        $jsonResult = $json->data(
-                            $callback['adapter'],
-                            $callback['method'],
+                    try {
+                        $data = $this->viewGenerator->callCallbackByInfo(
+                            $callback,
                             array(
                                 'data' => $rows,
                                 'attributes' => $originalAttributes,
                             )
                         );
-                        if ($jsonResult['status'] == 'success') {
-                            $data = $jsonResult['data'];
-                        }
-                    } else if(is_callable($callback)){
-                        $data = $callback($data, $originalAttributes);
+                    } catch (\Exception $e) {
+                        \Message::add($e->getMessage(), \Message::CLASS_ERROR);
                     }
                     $this->updateRowAttributes($row, $data, true);
                     $row++;
