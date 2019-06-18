@@ -264,15 +264,10 @@ class BackendTable extends HTML_Table {
                         ) {
                             $vgId = $options['functions']['vg_increment_number'];
                         }
-                        if (
-                            is_array($callback) &&
-                            isset($callback['adapter']) &&
-                            isset($callback['method'])
-                        ) {
-                            $json = new \Cx\Core\Json\JsonData();
-                            $jsonResult = $json->data(
-                                $callback['adapter'],
-                                $callback['method'],
+
+                        try {
+                            $data = $this->viewGenerator->callCallbackByInfo(
+                                $callback,
                                 array(
                                     'data' => $data,
                                     'rows' => $rows,
@@ -280,17 +275,10 @@ class BackendTable extends HTML_Table {
                                     'vgId' => $vgId,
                                 )
                             );
-                            if ($jsonResult['status'] == 'success') {
-                                $data = $jsonResult["data"];
-                            }
-                        } else if(is_callable($callback)){
-                            $data = $callback(
-                                $data,
-                                $rows,
-                                $options['fields'][$origHeader],
-                                $vgId
-                            );
+                        } catch (\Exception $e) {
+                            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
                         }
+
                         $encode = false; // todo: this should be set by callback
                     } else if (in_array($origHeader, $status)) {
                         $statusField = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
