@@ -608,26 +608,18 @@ class BackendTable extends HTML_Table {
         /* We use json to do the action callback. So all callbacks are functions in the json controller of the
          * corresponding component. The 'else if' is for backwards compatibility so you can declare the function
          * directly without using json. This is not recommended and not working over session */
-        if (
-            isset($functions['actions']) &&
-            is_array($functions['actions']) &&
-            isset($functions['actions']['adapter']) &&
-            isset($functions['actions']['method'])
-        ){
-            $json = new \Cx\Core\Json\JsonData();
-            $jsonResult = $json->data(
-                $functions['actions']['adapter'],
-                $functions['actions']['method'],
-                array(
-                    'rowData' => $rowData,
-                    'editId' => $editId,
-                )
-            );
-            if ($jsonResult['status'] == 'success') {
-                $code .= $jsonResult["data"];
+        try {
+            if (isset($functions['actions']) ) {
+                $code .= $this->viewGenerator->callCallbackByInfo(
+                    $functions['actions'],
+                    array(
+                        'rowData' => $rowData,
+                        'editId' => $editId,
+                    )
+                );
             }
-        } else if (isset($functions['actions']) && is_callable($functions['actions'])) {
-            $code .= $functions['actions']($rowData, $editId);
+        } catch (\Exception $e) {
+            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
         }
 
         if(!$virtual){
