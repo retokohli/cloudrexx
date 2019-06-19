@@ -11,11 +11,8 @@ cx.ready(function() {
                 beforeSend: function() {
                     cx.ui.messages.showLoad();
                 },
-                success: function(data) {
+                postSuccess: function(data) {
                     cx.ui.messages.removeAll();
-                    if (data.status != 'success') {
-                        return;
-                    }
                     if (data.data == '1') {
                         cx.jQuery(this.element).removeClass('hidden');
                     } else {
