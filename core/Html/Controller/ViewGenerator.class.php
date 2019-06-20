@@ -156,6 +156,25 @@ class ViewGenerator {
 
             }
 
+            // execute copy if entry is a doctrine entity (or execute callback if specified in configuration)
+            // post edit
+            if (
+                !empty($_GET['copy']) && (
+                    !empty($this->options['functions']['copy']) &&
+                    $this->options['functions']['copy'] != false
+                )
+            ) {
+                unset($_GET['copy']);
+                $showSuccessMessage = $this->saveEntry($entityWithNS);
+                if ($showSuccessMessage) {
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);
+                }
+                $param = 'copy';
+                $actionUrl = clone $this->cx->getRequest()->getUrl();
+                $actionUrl->setParam($param, null);
+                \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+            }
+
             // execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
             // post edit
             $editId = $this->getEntryId();
@@ -201,15 +220,6 @@ class ViewGenerator {
             if ($this->cx->getRequest()->hasParam('deleteids')) {
                 $deleteIds = $this->cx->getRequest()->getParam('deleteids');
                 $this->removeEntries($entityWithNS, $deleteIds);
-            }
-
-            // execute copy if entry is a doctrine entity (or execute callback if specified in configuration)
-            // post edit
-            if (
-                !empty($this->options['functions']['copy']) &&
-                $this->options['functions']['copy'] != false
-            ) {
-                $this->saveEntry($entityWithNS);
             }
         } catch (\Exception $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);
