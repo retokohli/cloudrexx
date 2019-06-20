@@ -443,14 +443,17 @@ class ViewGenerator {
                 array(
                     'postedValue' => $postedValue,
                     'fieldName' => $name,
-                    'entity' => $entity
+                    'entity' => $entity,
+                    'entityData' => $entityData
                 )
             );
             if ($jsonResult['status'] == 'success') {
                 $entityData[$name] = $jsonResult["data"];
             }
         } else if (is_callable($storecallback)) {
-            $entityData[$name] = $storecallback($postedValue, $name, $entity);
+            $entityData[$name] = $storecallback(
+                $postedValue, $name, $entity, $entityData
+            );
         }
         return $entityData[$name];
     }
