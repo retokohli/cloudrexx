@@ -564,6 +564,12 @@ abstract class CxValidate {
     protected $constraints;
     protected $passesValidation;
     protected $messages;
+
+    /**
+     * If empty values are allowed in the validation check
+     *
+     * @var bool
+     */
     protected $allowEmpty;
 
     // TODO: Possibly throw an Exception if an unknown/typoed constraint was provided
