@@ -567,16 +567,18 @@ abstract class CxValidate {
     protected $allowEmpty;
 
     // TODO: Possibly throw an Exception if an unknown/typoed constraint was provided
-    public function __construct($constraints, $allowEmpty = false) {
-    $this->messages = array();
-    $this->constraints = $constraints;
-    $this->allowEmpty = $allowEmpty;
+    public function __construct($constraints, $allowEmpty = false)
+    {
+        $this->messages = array();
+        $this->constraints = $constraints;
+        $this->allowEmpty = $allowEmpty;
     }
 
     public abstract function isValid($value);
 
-    public function getMessages() {
-    return $this->messages;
+    public function getMessages()
+    {
+        return $this->messages;
     }
 
 }
@@ -590,31 +592,36 @@ abstract class CxValidate {
  * @subpackage  lib_framework
  */
 class CxValidateString extends CxValidate {
-    public function __construct($constraints, $allowEmpty = false) {
-    parent::__construct($constraints, $allowEmpty);
+    public function __construct($constraints, $allowEmpty = false)
+    {
+        parent::__construct($constraints, $allowEmpty);
     }
 
-    public function isValid($value) {
-    $this->passesValidation = true;
-    if (!$this->allowEmpty && !$value) {
+    public function isValid($value)
+    {
+        $this->passesValidation = true;
+        if (!$this->allowEmpty && !$value) {
+            return $this->passesValidation;
+        }
+
+        if (isset($this->constraints['maxlength'])) {
+            if (strlen($value) > $this->constraints['maxlength']) {
+            // TODO: Translate messages
+            $this->messages[] = 'is too long.';
+            $this->passesValidation = false;
+            }
+        }
+
+        if (
+            isset($this->constraints['alphanumeric']) &&
+            $this->constraints['alphanumeric']
+        ) {
+            if (!ctype_alnum($value)) {
+            $this->passesValidation = false;
+            }
+        }
+
         return $this->passesValidation;
-    }
-
-    if (isset($this->constraints['maxlength'])) {
-        if (strlen($value) > $this->constraints['maxlength']) {
-        // TODO: Translate messages
-        $this->messages[] = 'is too long.';
-        $this->passesValidation = false;
-        }
-    }
-
-    if (isset($this->constraints['alphanumeric']) && $this->constraints['alphanumeric']) {
-        if (!ctype_alnum($value)) {
-        $this->passesValidation = false;
-        }
-    }
-
-    return $this->passesValidation;
     }
 }
 
@@ -627,27 +634,28 @@ class CxValidateString extends CxValidate {
  * @subpackage  lib_framework
  */
 class CxValidateRegexp extends CxValidate {
-    public function __construct($constraints, $allowEmpty = false) {
-    parent::__construct($constraints, $allowEmpty);
+    public function __construct($constraints, $allowEmpty = false)
+    {
+        parent::__construct($constraints, $allowEmpty);
     }
 
-    public function isValid($value) {
-    $this->passesValidation = true;
-    if (!$this->allowEmpty && !$value) {
-        return $this->passesValidation;
-    }
-    $this->passesValidation = false;
-
-    if (isset($this->constraints['pattern']) &&
-        preg_match($this->constraints['pattern'], $value)) {
+    public function isValid($value)
+    {
         $this->passesValidation = true;
-    }
-    else {
-        // TODO: Translate messages
-        $this->messages[] = 'doesn\'t match required pattern.';
-    }
+        if (!$this->allowEmpty && !$value) {
+            return $this->passesValidation;
+        }
+        $this->passesValidation = false;
 
-    return $this->passesValidation;
+        if (isset($this->constraints['pattern']) &&
+            preg_match($this->constraints['pattern'], $value)) {
+            $this->passesValidation = true;
+        } else {
+            // TODO: Translate messages
+            $this->messages[] = 'doesn\'t match required pattern.';
+        }
+
+        return $this->passesValidation;
     }
 }
 
@@ -660,25 +668,26 @@ class CxValidateRegexp extends CxValidate {
  * @subpackage  lib_framework
  */
 class CxValidateInteger extends CxValidate {
-    public function __construct($constraints = array(), $allowEmpty = false) {
-    parent::__construct($constraints, $allowEmpty);
+    public function __construct($constraints = array(), $allowEmpty = false)
+    {
+        parent::__construct($constraints, $allowEmpty);
     }
 
-    public function isValid($value) {
-    $this->passesValidation = true;
-    if (!$this->allowEmpty && !$value) {
-        return $this->passesValidation;
-    }
-    $this->passesValidation = false;
-
-    if(is_numeric($value) || is_int($value)) {
+    public function isValid($value)
+    {
         $this->passesValidation = true;
-    }
-    else {
-        // TODO: Translate messages
-        $this->messages[] = 'is not a number.';
-    }
+        if (!$this->allowEmpty && !$value) {
+            return $this->passesValidation;
+        }
+        $this->passesValidation = false;
 
-    return $this->passesValidation;
+        if (is_numeric($value) || is_int($value)) {
+            $this->passesValidation = true;
+        } else {
+            // TODO: Translate messages
+            $this->messages[] = 'is not a number.';
+        }
+
+        return $this->passesValidation;
     }
 }
