@@ -179,7 +179,7 @@
                 if (selector) {
                     var jImage = jQuery(selector);
                     if (jImage.length) {
-                        jButton.data('imageThumbTarget', jImage);
+                        modal.data('imageThumbTarget', jImage);
                     }
                 }
             });
@@ -298,7 +298,8 @@
                         );
                         var src = preloader.getAsDataURL();
                         image.attr('src', src);
-                        var jImage = jButton.data('imageThumbTarget');
+                        var jImage = $J('#uploader-modal-' + iAttrs.uploaderId)
+                            .data('imageThumbTarget');
                         if (jImage && jImage.length === 1
                             && up.settings.max_file_count === 1
                         ) {
