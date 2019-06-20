@@ -1726,6 +1726,15 @@ function runs_as_proxy {
     fi
 }
 
+function is_wrapper {
+    if [[ "$PROXY_HOST_DIR" != "" ]]; then
+        return 0
+    elif [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+        return 0
+    fi
+    return 1
+}
+
 function get_real_pwd {
     local working_directory
     working_directory="$PWD"
@@ -1782,6 +1791,10 @@ if ! $found; then
 
     # command is envs
     elif [[ "$1" == "envs" ]]; then
+        if is_wrapper; then
+            echo "envs command is not available through wrapper!"
+            exit 1
+        fi
         COMMANDS=("${COMMANDS[@]:1}")
         cmd_envs "${COMMANDS[@]/#/}"
         exit
@@ -1806,6 +1819,10 @@ fi
 ORIG_ARGS=("$@")
 case "${COMMANDS[0]}" in
     envs)
+        if is_wrapper; then
+            echo "envs command is not available through wrapper!"
+            exit 1
+        fi
         COMMANDS=("${COMMANDS[@]:1}")
         cmd_envs "${COMMANDS[@]/#/}"
         ;;
