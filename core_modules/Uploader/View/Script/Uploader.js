@@ -175,9 +175,9 @@
                     keyboard: false
                 });
                 $J('#uploader-modal-' + iAttrs.uploaderId).modal('show');
-                const selector = jButton.data('thumbSelector');
+                var selector = jButton.data('thumbSelector');
                 if (selector) {
-                    const jImage = jQuery(selector);
+                    var jImage = jQuery(selector);
                     if (jImage.length) {
                         jButton.data('imageThumbTarget', jImage);
                     }
@@ -296,9 +296,9 @@
                         preloader.downsize(
                             iAttrs.thumbMaxWidth, iAttrs.thumbMaxHeight
                         );
-                        let src = preloader.getAsDataURL();
+                        var src = preloader.getAsDataURL();
                         image.attr('src', src);
-                        let jImage = jButton.data('imageThumbTarget');
+                        var jImage = jButton.data('imageThumbTarget');
                         if (jImage && jImage.length === 1
                             && up.settings.max_file_count === 1
                         ) {
