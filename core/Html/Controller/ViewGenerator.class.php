@@ -451,7 +451,7 @@ class ViewGenerator {
         $arguments = array(
             'postedValue' => $postedValue,
         );
-        return self::callCallbackByInfo(
+        return static::callCallbackByInfo(
             $storecallback,
             $arguments
         );
@@ -1261,7 +1261,7 @@ class ViewGenerator {
         $additionalContent = '';
         try {
             if (isset($this->options['preRenderDetail'])) {
-                $additionalContent = self::callCallbackByInfo(
+                $additionalContent = static::callCallbackByInfo(
                     $this->options['preRenderDetail'],
                     array(
                         'viewGenerator' => $this,
