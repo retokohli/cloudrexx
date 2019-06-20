@@ -764,7 +764,7 @@ function cmd_env {
                     exit 1
                 fi
             fi
-            ARGUMENTS["dir"]="$(pwd -P)"
+            ARGUMENTS["dir"]="$(get_real_pwd)"
             envname="$(cmd_envs list)"
             if [[ "$?" == "0" ]]; then
                 echo "There's already an environment up and running (\"$envname\") for this directory."
@@ -794,7 +794,7 @@ function cmd_env {
                 if ! which cx > /dev/null; then
                     echo ""
                     echo "cx could not be found in your path. Run the following command to add it:"
-                    echo "sudo cp $(pwd -P)/cx /usr/local/bin"
+                    echo "sudo cp $(get_real_pwd)/cx /usr/local/bin"
                 fi
             fi
             exit 0
