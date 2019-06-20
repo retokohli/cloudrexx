@@ -170,11 +170,11 @@
 
             const jButton = jQuery(this);
             $J(this).bind('click', function () {
-                $J('#uploader-modal-' + iAttrs.uploaderId).modal({
+                var modal = $J('#uploader-modal-' + iAttrs.uploaderId).modal({
                     backdrop: 'static',
                     keyboard: false
                 });
-                $J('#uploader-modal-' + iAttrs.uploaderId).modal('show');
+                modal.show();
                 var selector = jButton.data('thumbSelector');
                 if (selector) {
                     var jImage = jQuery(selector);
