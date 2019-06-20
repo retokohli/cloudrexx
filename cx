@@ -12,7 +12,7 @@ if [ "${BASH_VERSION:0:1}" -lt 4 ]; then
     fi
 
     # Pass everything through our wrapper
-    docker run --rm -ti --name clx-win-wrapper -v "$(pwd -P)/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "$command"
+    docker run --rm -ti --name clx-win-wrapper --user=$(id -u):$(stat -c '%g' /var/run/docker.sock) -v "$(pwd -P)/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "$command"
     exit 0
 fi
 
