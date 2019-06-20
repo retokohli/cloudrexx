@@ -564,11 +564,13 @@ abstract class CxValidate {
     protected $constraints;
     protected $passesValidation;
     protected $messages;
+    protected $allowEmpty;
 
     // TODO: Possibly throw an Exception if an unknown/typoed constraint was provided
-    public function __construct($constraints) {
+    public function __construct($constraints, $allowEmpty = false) {
     $this->messages = array();
     $this->constraints = $constraints;
+    $this->allowEmpty = $allowEmpty;
     }
 
     public abstract function isValid($value);
@@ -588,12 +590,15 @@ abstract class CxValidate {
  * @subpackage  lib_framework
  */
 class CxValidateString extends CxValidate {
-    public function __construct($constraints) {
-    parent::__construct($constraints);
+    public function __construct($constraints, $allowEmpty = false) {
+    parent::__construct($constraints, $allowEmpty);
     }
 
     public function isValid($value) {
     $this->passesValidation = true;
+    if (!$this->allowEmpty && !$value) {
+        return $this->passesValidation;
+    }
 
     if (isset($this->constraints['maxlength'])) {
         if (strlen($value) > $this->constraints['maxlength']) {
@@ -622,11 +627,15 @@ class CxValidateString extends CxValidate {
  * @subpackage  lib_framework
  */
 class CxValidateRegexp extends CxValidate {
-    public function __construct($constraints) {
-    parent::__construct($constraints);
+    public function __construct($constraints, $allowEmpty = false) {
+    parent::__construct($constraints, $allowEmpty);
     }
 
     public function isValid($value) {
+    $this->passesValidation = true;
+    if (!$this->allowEmpty && !$value) {
+        return $this->passesValidation;
+    }
     $this->passesValidation = false;
 
     if (isset($this->constraints['pattern']) &&
@@ -651,11 +660,15 @@ class CxValidateRegexp extends CxValidate {
  * @subpackage  lib_framework
  */
 class CxValidateInteger extends CxValidate {
-    public function __construct($constraints = array()) {
-    parent::__construct($constraints);
+    public function __construct($constraints = array(), $allowEmpty = false) {
+    parent::__construct($constraints, $allowEmpty);
     }
 
     public function isValid($value) {
+    $this->passesValidation = true;
+    if (!$this->allowEmpty && !$value) {
+        return $this->passesValidation;
+    }
     $this->passesValidation = false;
 
     if(is_numeric($value) || is_int($value)) {
