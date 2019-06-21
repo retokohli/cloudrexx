@@ -622,7 +622,12 @@ class BackendTable extends HTML_Table {
             $rowname,
             clone $baseUrl
         );
-        $showUrl = clone $baseUrl;
+
+        $showUrl = \Cx\Core\Html\Controller\ViewGenerator::getVgShowUrl(
+            $functions['vg_increment_number'],
+            $rowname,
+            clone $baseUrl
+        );
         $params = $editUrl->getParamArray();
         if (isset($functions['sortBy']) && isset($functions['sortBy']['field'])) {
             $editUrl->setParam($functions['sortBy']['field'] . 'Pos', null);
