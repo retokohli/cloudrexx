@@ -128,9 +128,13 @@ class TableGenerator extends \BackendTable
             $rows[$rowname] = $data;
         }
 
-        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
-            array('key' => array_keys($rows), 'value' => array_values($rows))
-        );
+        if (!empty($rows)) {
+            $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
+                array('key' => array_keys($rows), 'value' => array_values($rows))
+            );
+        } else {
+            $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
+        }
 
         $options['fields']['key']['sorting'] = false;
         $options['fields']['value']['sorting'] = false;
