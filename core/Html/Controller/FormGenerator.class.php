@@ -157,8 +157,13 @@ class FormGenerator {
 
         $tabs = isset($options['tabs']) ? $options['tabs'] : array();
 
+        $classNameParts = explode('\\', $entityClass);
+        $entityClassName = strtolower(end($classNameParts));
+
         $this->form->setAttribute('id', 'form-' . $this->formId);
-        $this->form->setAttribute('class', 'cx-ui');
+        $this->form->setAttribute(
+            'class', 'cx-ui ' . $entityClassName
+        );
         $titleElement = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
         $titleElement->addChild(new \Cx\Core\Html\Model\Entity\TextElement($title));
 
