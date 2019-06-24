@@ -1047,11 +1047,17 @@ class ViewGenerator {
                     // find options: Default is a text field, for more we need doctrine
                     $optionsField = '';
                     if (isset($this->options['fields'][$field]['filterOptionsField'])) {
-                        $optionsField = $this->options['fields'][$field]['filterOptionsField'](
-                            $renderObject,
-                            $field,
-                            $fieldId,
-                            'vg-' . $this->viewId . '-searchForm'
+                        $optionsField = $this->callCallbackByInfo(
+                            $optionsField = $this->options['fields'][$field][
+                                'filterOptionsField'
+                            ],
+                            array(
+                                'parseObject' => $renderObject,
+                                'fieldName' => $field,
+                                'elementName' => $fieldId,
+                                'formName' => 'vg-' . $this->viewId
+                                    . '-searchForm'
+                            )
                         );
                     } else {
                         // parse options
