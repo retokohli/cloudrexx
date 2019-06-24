@@ -896,8 +896,19 @@ class ViewGenerator {
             return $this->renderFormForEntry($eId);
         }
 
-        $template = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
-        $template->loadTemplateFile('TableView.html');
+        $template = new \Cx\Core\Html\Sigma(
+            \Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic'
+        );
+        if (
+            !isset($this->options['template']['tableView']) || 
+            !file_exists($this->options['template']['tableView'])
+        ) {
+            $templateFile = $this->cx->getCodeBaseCorePath().
+                '/Html/View/Template/Generic/TableView.html';
+        } else {
+            $templateFile = $this->options['template']['tableView'];
+        }
+        $template->loadTemplateFile($templateFile);
         $template->setGlobalVariable($_ARRAYLANG);
         $template->setGlobalVariable('VG_ID', $this->viewId);
         $renderObject = $this->object;
