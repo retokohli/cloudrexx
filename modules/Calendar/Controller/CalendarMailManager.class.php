@@ -340,6 +340,12 @@ class CalendarMailManager extends CalendarLibrary {
         $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
 
         switch ($actionId) {
+            case self::MAIL_ALERT_REG:
+                if (empty($regMail)) {
+                    break;
+                }
+                $objMail->addReplyTo($regMail);
+                break;
 
             // In case we're about to send out event invitations,
             // do check if any have been sent already and do load
