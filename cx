@@ -451,6 +451,7 @@ Available subcommands are:
     shell       Interactive shell of the current environment's web container
     component   Manages additional components
     remote      Manages remote installations
+    exec        Executes code (Bash/SQL) for the current environment
 
 For more info about a subcommand type ./cx help env <subcommand>";
                     ;;
