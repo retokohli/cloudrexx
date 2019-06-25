@@ -455,19 +455,18 @@ class ViewGenerator {
 
 
     /**
-     * Call a callback after the entity has already been saved.
+     * Call a callback after the entity has already been saved. If entityData is
+     * not set, we use $_POST as default, because the data are normally
+     * submitted over post
      *
      * @param $name       string                    name of field
      * @param $entityData array                     data for entity
      * @param $entity     \Cx\Model\Base\EntityBase object of the class to be
      *                                              saved
-     * @return \Cx\Model\Base\EntityBase object of the class to be saved
      * @throws ViewGeneratorException
      */
     protected function callPostCallback($name, $entity, $entityData = array())
     {
-        // if entityData is not set, we use $_POST as default, because the data
-        // are normally submitted over post
         if (empty($entityData)) {
             $entityData = $this->cx->getRequest()->getParams(false);
         }
