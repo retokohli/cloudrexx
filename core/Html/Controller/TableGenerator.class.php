@@ -100,30 +100,7 @@ class TableGenerator extends \BackendTable
                 $data = $row;
             }
             if (!empty($options['fields'][$rowname]['show']['encode'])) {
-                // 1->n & n->n relations
-                $displayedRelationsLimit = 3;
-                if (
-                    is_object($data) &&
-                    $data instanceof \Doctrine\ORM\PersistentCollection
-                ) {
-                    // EXTRA_LAZY fetched can be sliced (results in a LIMIT)
-                    $data = $data->slice(0, $displayedRelationsLimit + 1);
-                }
-                if (is_array($data)) {
-                    if (count($data) > $displayedRelationsLimit) {
-                        $data = array_slice($data, 0, $displayedRelationsLimit);
-                        $data[] = '...';
-                    }
-                    $data = implode(', ', $data);
-                }
-                //replaces curly brackets, so they get not parsed with the sigma
-                // engine
-                $data = preg_replace(
-                    array("/{/","/}/"),
-                    array("&#123;","&#125;"),
-                    contrexx_raw2xhtml($data),
-                    -1
-                );
+                $data = $this->encodeCellContent($data);
             }
             $rows[$rowname] = $data;
         }

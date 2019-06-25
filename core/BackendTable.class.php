@@ -332,7 +332,10 @@ class BackendTable extends HTML_Table {
                     }
 
                     if (!empty($readOnly)) {
-                        // defined in TableGenerator
+                        // The content is already encoded in the TableGenerator
+                        // if the field option is set to this. So the variable
+                        // "encode" in the read-only view must always be false,
+                        // so that the content isn't encoded again.
                         $encode = false;
                     }
 
@@ -564,21 +567,7 @@ class BackendTable extends HTML_Table {
     function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = false)
     {
         if ($encode) {
-            // 1->n & n->n relations
-            $displayedRelationsLimit = 3;
-            if (is_object($contents) && $contents instanceof \Doctrine\ORM\PersistentCollection) {
-                // EXTRA_LAZY fetched can be sliced (results in a LIMIT)
-                $contents = $contents->slice(0, $displayedRelationsLimit + 1);
-            }
-            if (is_array($contents)) {
-                if (count($contents) > $displayedRelationsLimit) {
-                    $contents = array_slice($contents, 0, $displayedRelationsLimit);
-                    $contents[] = '...';
-                }
-                $contents = implode(', ', $contents);
-            }
-            //replaces curly brackets, so they get not parsed with the sigma engine
-            $contents = preg_replace(array("/{/","/}/"), array("&#123;","&#125;"), contrexx_raw2xhtml($contents), -1);
+            $contents = $this->encodeCellContent($contents);
         }
         $ret = $this->_adjustTbodyCount($body, 'setCellContents');
         if (PEAR::isError($ret)) {
@@ -588,6 +577,31 @@ class BackendTable extends HTML_Table {
         if (PEAR::isError($ret)) {
             return $ret;
         }
+    }
+
+    /**
+     * Encode the cell content
+     *
+     * @param $contents mixed content for the cell
+     * @return mixed encoded cell content
+     */
+    protected function encodeCellContent($contents)
+    {
+        // 1->n & n->n relations
+        $displayedRelationsLimit = 3;
+        if (is_object($contents) && $contents instanceof \Doctrine\ORM\PersistentCollection) {
+            // EXTRA_LAZY fetched can be sliced (results in a LIMIT)
+            $contents = $contents->slice(0, $displayedRelationsLimit + 1);
+        }
+        if (is_array($contents)) {
+            if (count($contents) > $displayedRelationsLimit) {
+                $contents = array_slice($contents, 0, $displayedRelationsLimit);
+                $contents[] = '...';
+            }
+            $contents = implode(', ', $contents);
+        }
+        //replaces curly brackets, so they get not parsed with the sigma engine
+        return preg_replace(array("/{/","/}/"), array("&#123;","&#125;"), contrexx_raw2xhtml($contents), -1);
     }
 
     protected function hasRowFunctions($functions, $virtual = false) {
