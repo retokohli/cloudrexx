@@ -55,6 +55,8 @@ class TableGenerator extends \BackendTable
     {
         // Rename Key Fields
         foreach ($attrs as $rowname=>$row) {
+            // Skip fields that have been deactivated so that they are not
+            // displayed
             if (empty($options['fields'][$rowname]['show']['show'])) {
                 continue;
             }
@@ -100,6 +102,7 @@ class TableGenerator extends \BackendTable
             $rows[$rowname] = $data;
         }
 
+        // Check if lines exist to avoid unwanted errors
         if (!empty($rows)) {
             $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
                 array('key' => array_keys($rows), 'value' => array_values($rows))
