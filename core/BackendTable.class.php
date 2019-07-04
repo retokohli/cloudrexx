@@ -331,7 +331,7 @@ class BackendTable extends HTML_Table {
                         $cellAttrs = $options['fields'][$origHeader]['table']['attributes'];
                     }
 
-                    if (!empty($readOnly)) {
+                    if ($readOnly) {
                         // The content is already encoded in the TableGenerator
                         // if the field option is set to this. So the variable
                         // "encode" in the read-only view must always be false,
