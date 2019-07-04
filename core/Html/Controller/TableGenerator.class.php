@@ -50,18 +50,23 @@ class TableGenerator extends \BackendTable
      *
      * @param $attrs   array attributes and values
      * @param $options array options for view generator
+     * @param boolean $readOnly if view is only readable
      */
-    public function __construct($attrs = array(), $options = array())
+    public function __construct($attrs = array(), $options = array(), $readOnly = false)
     {
         // Rename Key Fields
         foreach ($attrs as $rowname=>$row) {
             // Skip fields that have been deactivated so that they are not
             // displayed
-            if (empty($options['fields'][$rowname]['show']['show'])) {
+            if (
+                isset($options['fields'][$rowname]['show']['show']) &&
+                !$options['fields'][$rowname]['show']['show']
+            ) {
                 continue;
             }
 
             if (
+                $readOnly &&
                 isset($options['fields']) &&
                 isset($options['fields'][$rowname]) &&
                 isset($options['fields'][$rowname]['show']) &&
@@ -134,6 +139,6 @@ class TableGenerator extends \BackendTable
         unset($options['tabs']);
 
         $data = $data->flip();
-        parent::__construct($data, $options, true, null, true);
+        parent::__construct($data, $options, true, null, $readOnly);
     }
 }
