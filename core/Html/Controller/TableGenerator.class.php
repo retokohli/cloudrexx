@@ -56,8 +56,8 @@ class TableGenerator extends \BackendTable
     {
         // Rename Key Fields
         foreach ($attrs as $rowname=>$row) {
-            // Skip fields that have been deactivated so that they are not
-            // displayed
+            // If the variable is not set, the field should be
+            // displayed by default.
             if (
                 isset($options['fields'][$rowname]['show']['show']) &&
                 !$options['fields'][$rowname]['show']['show']
