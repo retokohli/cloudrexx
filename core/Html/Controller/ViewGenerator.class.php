@@ -1218,21 +1218,15 @@ class ViewGenerator {
 
         //sets the order of the fields
         if(!empty($this->options['order']['form']) && !$readOnly) {
-            $sortedData = array();
-            foreach ($this->options['order']['form'] as $orderVal) {
-                if(array_key_exists($orderVal, $renderArray)){
-                    $sortedData[$orderVal] = $renderArray[$orderVal];
-                }
-            }
-            $renderArray = array_merge($sortedData,$renderArray);
-        } else if (!empty($this->options['order']['show'])) {
-            $sortedData = array();
-            foreach ($this->options['order']['show'] as $orderVal) {
-                if(array_key_exists($orderVal, $renderArray)){
-                    $sortedData[$orderVal] = $renderArray[$orderVal];
-                }
-            }
-            $renderArray = array_merge($sortedData,$renderArray);
+            $renderArray = $this->orderData(
+                $this->options['order']['form'],
+                $renderArray
+            );
+        } else if (!empty($this->options['order']['show']) && $readOnly) {
+            $renderArray = $this->orderData(
+                $this->options['order']['show'],
+                $renderArray
+            );
         }
         if ($readOnly) {
             unset($renderArray['vg_increment_number']);
@@ -1272,6 +1266,24 @@ class ViewGenerator {
             }
         }
         return $this->formGenerator . $additionalContent;
+    }
+
+    /**
+     * Order an array by a given list
+     *
+     * @param $orderList   array order list
+     * @param $renderArray array to order
+     * @return array ordered data
+     */
+    protected function orderData($orderList, $renderArray)
+    {
+        $sortedData = array();
+        foreach ($orderList as $orderVal) {
+            if(array_key_exists($orderVal, $renderArray)){
+                $sortedData[$orderVal] = $renderArray[$orderVal];
+            }
+        }
+        return array_merge($sortedData,$renderArray);
     }
 
     /**
