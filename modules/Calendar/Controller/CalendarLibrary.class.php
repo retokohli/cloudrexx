@@ -699,10 +699,14 @@ EOF;
             $endDate   = $event->endDate;
             if ($this->format2userDate($startDate) != $this->format2userDate($endDate)) {
                 $exceptionDates[$this->format2userDate($startDate)] =
-                    $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate) .' - ' . $dayArray[$this->formatDateTime2user($endDate, "w")] .", ". $this->format2userDate($endDate);
+                    $dayArray[$this->formatDateTime2user($startDate, "w")] .
+                    ", " . $this->format2userDate($startDate) .
+                    ' - ' . $dayArray[$this->formatDateTime2user($endDate, "w")] .
+                    ", ". $this->format2userDate($endDate);
             } else {
                 $exceptionDates[$this->format2userDate($startDate)] =
-                    $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate);
+                    $dayArray[$this->formatDateTime2user($startDate, "w")] .
+                    ", " . $this->format2userDate($startDate);
             }
         }
 
