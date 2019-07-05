@@ -1747,6 +1747,11 @@ die("Failed to update the Cart!");
                     '" target="_blank">'.
                     $_ARRAYLANG['TXT_SHOP_EXTERNAL_LINK'].'</a>',
                 ));
+                if (self::$objTemplate->blockExists('shopProductExternalLink')) {
+                    self::$objTemplate->parse('shopProductExternalLink');
+                }
+            } elseif (self::$objTemplate->blockExists('shopProductExternalLink')) {
+                self::$objTemplate->hideBlock('shopProductExternalLink');
             }
 
             if ($price) {
