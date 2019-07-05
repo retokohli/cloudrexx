@@ -708,7 +708,10 @@ EOF;
                     ", ". $endDate;
             }
 
-            $exceptionDates[$startDate] = $label;
+            $exceptionDates[] = array(
+                'date'  => $startDate,
+                'label' => $label,
+            );
         }
 
         return $exceptionDates;
