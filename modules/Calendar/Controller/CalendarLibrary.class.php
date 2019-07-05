@@ -697,12 +697,12 @@ EOF;
         foreach ($objEventManager->eventList as $event) {
             $startDate = $event->startDate;
             $endDate   = $event->endDate;
-            $label = $dayArray[$this->formatDateTime2user($startDate, "w")] .
+            $label = $dayArray[$this->formatDateTime2user($event->startDate, "w")] .
                 ", " . $this->format2userDate($startDate);
             if ($this->format2userDate($startDate) != $this->format2userDate($endDate)) {
                 $label .= ' - ' .
                     $dayArray[
-                        $this->formatDateTime2user($endDate, "w")
+                        $this->formatDateTime2user($event->endDate, "w")
                     ] .
                     ", ". $this->format2userDate($endDate);
             }
