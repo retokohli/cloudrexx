@@ -4,7 +4,7 @@
  * Cloudrexx
  *
  * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
+ * @copyright Cloudrexx AG 2007-2019
  *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
@@ -34,6 +34,14 @@
  * @version     5.0.3
  */
 
+/**
+ * Exception while using interface to Saferpay JSON API
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
+ * @subpackage  module_shop
+ * @version     5.0.3
+ */
 class SaferpayJsonException extends \Exception {}
 
 /**
@@ -54,24 +62,46 @@ class SaferpayJson
     protected static $arrError = array();
 
     /**
-     * Error messages
+     * Warning messages
      * @var     array
      */
     protected static $arrWarning = array();
-    protected static $liveUrl = '';
 
     /**
-     * Empty unless payment is confirmed
+     * Contains the ID of the current transaction. Empty unless payment is confirmed.
      * @var string
      */
     protected static $transactionId = '';
+
+    /**
+     * Base API URL for live system
+     * @var string
+     */
+    protected static $liveUrl = '';
+
+    /**
+     * Base API URL for test system
+     * @var string
+     */
     protected static $testUrl = 'https://test.saferpay.com/api/Payment/v1/';
+
+    /**
+     * API endpoint offsets for the different payment steps
+     * @var array <paymentStep>=><EnpointOffset>
+     */
     protected static $urls = array(
         'payInit' => 'PaymentPage/Initialize',
         'payConfirm' => 'PaymentPage/Assert',
         'payComplete' => 'Transaction/Capture',
     );
 
+    /**
+     * Perform a request to the Saferpay JSON API
+     *
+     * @param string $step One of the strings defined as a key in $urls
+     * @param array $data Associative array with the request payload
+     * @return stdClass|boolean Decoded JSON on success, false otherwise
+     */
     protected static function doRequest($step, $data) {
         $test = (bool) \Cx\Core\Setting\Controller\Setting::getValue(
             'saferpay_json_use_test_account',
@@ -118,8 +148,6 @@ class SaferpayJson
 
     /**
      * Returns the URI for initializing the payment with Saferpay
-     * @access  public
-     * @static
      * @param   array   $arrOrder   The attributes array
      * @return  string              The URI for the payment initialisation
      *                              on success, the empty string otherwise
@@ -155,8 +183,6 @@ class SaferpayJson
 
     /**
      * Confirms the payment transaction
-     * @access  public
-     * @static
      * @return  boolean     The transaction ID on success, NULL otherwise
      */
     static function payConfirm() {
@@ -185,8 +211,6 @@ class SaferpayJson
 
     /**
      * Completes the payment transaction
-     * @access  public
-     * @static
      * @param   array       $arrOrder   The attributes array
      * @return  boolean                 True on success, false otherwise
      */
@@ -204,8 +228,6 @@ class SaferpayJson
 
     /**
      * Returns the order ID of the current transaction
-     * @access  public
-     * @static
      * @return  integer         The Order ID
      */
     static function getOrderId() {
