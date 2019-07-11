@@ -295,6 +295,9 @@ class PaymentProcessing
             case 'saferpay_visa_multipay_car':  // Obsolete
                 $return = self::_SaferpayProcessor();
                 break;
+            case 'saferpay_json':
+                $return = self::_SaferpayJsonProcessor();
+                break;
             case 'yellowpay': // was: 'PostFinance_DebitDirect'
                 $return = self::_YellowpayProcessor();
                 break;
@@ -452,6 +455,54 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             "' />\n</form>\n";
     }
 
+    /**
+     * Returns the HTML code for the Saferpay payment form.
+     * @param   array   $arrCards     The optional accepted card types
+     * @return  string                The HTML code
+     * @static
+     */
+    static function _SaferpayJsonProcessor()
+    {
+        global $_ARRAYLANG;
+
+        $arrShopOrder = array(
+            'AMOUNT'        => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
+            'CURRENCY'      => Currency::getActiveCurrencyCode(),
+            'ORDERID'       => $_SESSION['shop']['order_id'],
+            'ACCOUNTID'     => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
+            'SUCCESSLINK'   => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => 1, 'handler' => 'saferpay_json'))->toString(),
+            'FAILLINK'      => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => 0, 'handler' => 'saferpay_json'))->toString(),
+            'BACKLINK'      => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => 2, 'handler' => 'saferpay_json'))->toString(),
+            'DESCRIPTION'   => '"'.$_ARRAYLANG['TXT_ORDER_NR'].
+                                ' '.$_SESSION['shop']['order_id'].'"',
+            'LANGID'        => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+            'NOTIFYURL'     => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => '-1', 'handler' => 'saferpay_json'))->toString(),
+            'ALLOWCOLLECT'  => 'no',
+            'DELIVERY'      => 'no',
+        );
+        $payInitUrl = \SaferpayJson::payInit($arrShopOrder);
+//DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
+        // Fixed: Added check for empty return string,
+        // i.e. on connection problems
+        if (!$payInitUrl) {
+            return
+                "<font color='red'><b>".
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_SAFERPAY'].
+                "<br />$payInitUrl</b></font>".
+                "<br />".\Saferpay::getErrors();
+        }
+        $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
+        return
+            $return.
+            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
+            "<form method='post' action='$payInitUrl'>\n<input type='submit' value='".
+            $_ARRAYLANG['TXT_ORDER_NOW'].
+            "' />\n</form>\n";
+    }
 
     /**
      * Returns the HTML code for the Paymill payment method.
@@ -657,6 +708,8 @@ if (empty ($return)) {
                 }
 //DBG::log("Transaction: ".var_export($transaction, true));
                 return (boolean)$id;
+            case 'saferpay_json':
+                return \SaferpayJson::payConfirm() && \SaferpayJson::payComplete();
             case 'paypal':
                 if (empty ($_POST['custom'])) {
 //DBG::log("PaymentProcessing::checkIn(): No custom parameter, returning NULL");
@@ -756,6 +809,8 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
         switch ($_REQUEST['handler']) {
             case 'saferpay':
                 return \Saferpay::getOrderId();
+            case 'saferpay_json':
+                return \SaferpayJson::getOrderId();
             case 'paypal':
                 return \PayPal::getOrderId();
             case 'yellowpay':
