@@ -152,7 +152,7 @@ class SaferpayJson
      * @return  string              The URI for the payment initialisation
      *                              on success, the empty string otherwise
      */
-    static function payInit($arrOrder) {
+    public static function payInit($arrOrder) {
         $terminalId = \Cx\Core\Setting\Controller\Setting::getValue(
             'saferpay_json_terminal_id',
             'Shop'
@@ -185,7 +185,7 @@ class SaferpayJson
      * Confirms the payment transaction
      * @return  boolean     The transaction ID on success, NULL otherwise
      */
-    static function payConfirm() {
+    public static function payConfirm() {
         $result = (array) static::doRequest(
             'payConfirm',
             array(
@@ -214,7 +214,7 @@ class SaferpayJson
      * @param   array       $arrOrder   The attributes array
      * @return  boolean                 True on success, false otherwise
      */
-    static function payComplete() {
+    public static function payComplete() {
         $result = (array) static::doRequest(
             'payComplete',
             array(
@@ -230,7 +230,7 @@ class SaferpayJson
      * Returns the order ID of the current transaction
      * @return  integer         The Order ID
      */
-    static function getOrderId() {
+    public static function getOrderId() {
         // Advise Shop to take Order ID from Session
         return false;
     }
@@ -239,7 +239,7 @@ class SaferpayJson
      * Returns accumulated warnings as a HTML string
      * @return  string          The warnings, if any, or the empty string
      */
-    static function getWarnings()
+    public static function getWarnings()
     {
         return join('<br />', static::$arrWarning);
     }
@@ -249,7 +249,7 @@ class SaferpayJson
      * Returns accumulated warnings as a HTML string
      * @return  string          The warnings, if any, or the empty string
      */
-    static function getErrors()
+    public static function getErrors()
     {
         return join('<br />', static::$arrError);
     }
