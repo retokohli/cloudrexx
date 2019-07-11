@@ -552,6 +552,13 @@ class Payment
                 ? \Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' => \Saferpay::getWindowMenuoptions(
                 \Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option','Shop')),
+            // JSON Saferpay
+            'SHOP_SAFERPAY_JSON_ID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_id','Shop'),
+            'SHOP_SAFERPAY_JSON_TERMINAL_ID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_terminal_id','Shop'),
+            'SHOP_SAFERPAY_JSON_USER' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_user','Shop'),
+            'SHOP_SAFERPAY_JSON_PASS' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_pass','Shop'),
+            'SHOP_SAFERPAY_JSON_STATUS' => (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_active','Shop') ? \Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_SAFERPAY_JSON_TEST_STATUS' => (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_use_test_account','Shop') ? \Html::ATTRIBUTE_CHECKED : ''),
             // Payrexx
             'SHOP_PAYREXX_INSTANCE_NAME' => \Cx\Core\Setting\Controller\Setting::getValue('payrexx_instance_name','Shop'),
             'SHOP_PAYREXX_API_SECRET' => \Cx\Core\Setting\Controller\Setting::getValue('payrexx_api_secret','Shop'),

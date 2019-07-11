@@ -354,6 +354,19 @@ class ShopSettings
             !empty($_POST['saferpay_use_test_account']));
         \Cx\Core\Setting\Controller\Setting::set('saferpay_window_option',
             intval($_POST['saferpay_window_option']));
+        // JSON Saferpay
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_json_id',
+            trim(strip_tags(contrexx_input2raw($_POST['saferpay_json_id']))));
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_json_terminal_id',
+            trim(strip_tags(contrexx_input2raw($_POST['saferpay_json_terminal_id']))));
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_json_user',
+            trim(strip_tags(contrexx_input2raw($_POST['saferpay_json_user']))));
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_json_pass',
+            trim(strip_tags(contrexx_input2raw($_POST['saferpay_json_pass']))));
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_json_active',
+            !empty($_POST['saferpay_json_active']));
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_json_use_test_account',
+            !empty($_POST['saferpay_json_use_test_account']));
         // Paypal
         \Cx\Core\Setting\Controller\Setting::set('paypal_account_email',
             trim(strip_tags(contrexx_input2raw($_POST['paypal_account_email']))));
@@ -819,6 +832,19 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::add('saferpay_finalize_payment', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('saferpay_window_option', 2, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        // JSON Saferpay
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_id', '1234', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_terminal_id', '1234', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_user', '1234', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_pass', '1234', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_active', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_use_test_account', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // Paypal
         \Cx\Core\Setting\Controller\Setting::add('paypal_active', 1, ++$i,
