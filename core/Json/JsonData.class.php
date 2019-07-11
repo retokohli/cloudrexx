@@ -432,6 +432,7 @@ class JsonData {
             );
             \DBG::msg('URL: '.$url);
             \DBG::dump($data);
+            \DBG::dump($response->getBody());
             return false;
         }
 
