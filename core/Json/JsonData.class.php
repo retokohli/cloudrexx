@@ -352,7 +352,7 @@ class JsonData {
      * @param array $data (optional) HTTP post data
      * @param boolean $secure (optional) Wheter to verify peer using SSL or not, default false
      * @param string $certificateFile (optional) Local certificate file for non public SSL certificates
-     * @param array Set an optional HTTP Authentication method and supply its login credentials.
+     * @param array $httpAuth Set an optional HTTP Authentication method and supply its login credentials.
      *              The supplied array must comply with the following structure:
      * <pre class="brush: php">
      *              $httpAuth = array(
@@ -361,7 +361,8 @@ class JsonData {
      *                  'httpAuthPassword' => '<password>',
      *              );
      * </pre>
-     * @return mixed Decoded JSON on success, false otherwise
+     * @param array $files Key is the POST field name, value is the file path
+     * @return stdClass|boolean Decoded JSON on success, false otherwise
      */
     public function getJson(
         $url, $data = array(),
