@@ -308,13 +308,14 @@ class ShopSettings
         Payment::reset();
         if (empty ($_POST['bpayment'])) return;
 // NOTE: All the following could be handled by Payment::settings()
+        // Payrexx
         \Cx\Core\Setting\Controller\Setting::set('payrexx_instance_name',
             trim(strip_tags(contrexx_input2raw($_POST['payrexx_instance_name']))));
         \Cx\Core\Setting\Controller\Setting::set('payrexx_api_secret',
             trim(strip_tags(contrexx_input2raw($_POST['payrexx_api_secret']))));
         \Cx\Core\Setting\Controller\Setting::set('payrexx_active',
             !empty($_POST['payrexx_active']));
-
+        // PostFinance
         \Cx\Core\Setting\Controller\Setting::set('postfinance_shop_id',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_shop_id']))));
         \Cx\Core\Setting\Controller\Setting::set('postfinance_active',
@@ -342,7 +343,7 @@ class ShopSettings
             !empty($_POST['postfinance_mobile_ijustwanttotest']));
         \Cx\Core\Setting\Controller\Setting::set('postfinance_mobile_status',
             !empty($_POST['postfinance_mobile_status']));
-        // Saferpay
+        // Legacy Saferpay
         \Cx\Core\Setting\Controller\Setting::set('saferpay_id',
             trim(strip_tags(contrexx_input2raw($_POST['saferpay_id']))));
         \Cx\Core\Setting\Controller\Setting::set('saferpay_active',
@@ -808,6 +809,7 @@ class ShopSettings
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('thumbnail_quality', 90, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        // Legacy Saferpay
         \Cx\Core\Setting\Controller\Setting::add('saferpay_id', '1234', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('saferpay_active', 1, ++$i,
@@ -818,6 +820,7 @@ class ShopSettings
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('saferpay_window_option', 2, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        // Paypal
         \Cx\Core\Setting\Controller\Setting::add('paypal_active', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('paypal_account_email', 'no-reply@comvation.com', ++$i,
@@ -825,12 +828,14 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::add('paypal_default_currency', 'CHF', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // Also see Yellowpay.class
+        // Payrexx
         \Cx\Core\Setting\Controller\Setting::add('payrexx_instance_name', 'Instanz Name', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
         \Cx\Core\Setting\Controller\Setting::add('payrexx_api_secret', 'API Secret', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
         \Cx\Core\Setting\Controller\Setting::add('payrexx_active', '0', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1');
+        // PostFinance
         \Cx\Core\Setting\Controller\Setting::add('postfinance_shop_id', 'Ihr Kontoname', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
         \Cx\Core\Setting\Controller\Setting::add('postfinance_active', '0', ++$i,
@@ -865,12 +870,14 @@ class ShopSettings
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('datatrans_merchant_id', '1234', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        // DataTrans
         \Cx\Core\Setting\Controller\Setting::add('datatrans_active', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('datatrans_request_type', 'CAA', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('datatrans_use_testserver', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        // LSV
         \Cx\Core\Setting\Controller\Setting::add('payment_lsv_active', 0, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // New for V3.0
