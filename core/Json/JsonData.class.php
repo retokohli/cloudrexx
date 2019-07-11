@@ -363,16 +363,30 @@ class JsonData {
      * </pre>
      * @return mixed Decoded JSON on success, false otherwise
      */
-    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array(), $files = array()) {
+    public function getJson(
+        $url, $data = array(),
+        $secure = false,
+        $certificateFile = '',
+        $httpAuth=array(),
+        $files = array()
+    ) {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
 
         if (!empty($httpAuth)) {
             switch($httpAuth['httpAuthMethod']) {
                 case 'basic':
-                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_BASIC);
+                    $request->setAuth(
+                        $httpAuth['httpAuthUsername'],
+                        $httpAuth['httpAuthPassword'],
+                        \HTTP_Request2::AUTH_BASIC
+                    );
                     break;
                 case 'disgest':
-                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_DIGEST);
+                    $request->setAuth(
+                        $httpAuth['httpAuthUsername'],
+                        $httpAuth['httpAuthPassword'],
+                        \HTTP_Request2::AUTH_DIGEST
+                    );
                     break;
                 case 'none':
                 default:
@@ -412,7 +426,9 @@ class JsonData {
             }
         }
         if ($response->getStatus() != 200) {
-            \DBG::msg(__METHOD__.' Request failed! Status: '.$response->getStatus());
+            \DBG::msg(
+                __METHOD__.' Request failed! Status: '.$response->getStatus()
+            );
             \DBG::msg('URL: '.$url);
             \DBG::dump($data);
             return false;
