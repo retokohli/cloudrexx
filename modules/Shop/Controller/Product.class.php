@@ -1425,13 +1425,23 @@ class Product
         $groupCountId = $this->group_id();
         $groupArticleId = $this->article_id();
         $price = $normalPrice;
+
+        // check if customer is a reseller
+        if (
+            $objCustomer &&
+            $objCustomer->is_reseller()
+        ) {
+            $isReseller = true;
+        } else {
+            $isReseller = false;
+        }
+
         if (   !$ignore_special_offer
             && $discount_active == 1
             && $discountPrice != 0) {
             $price = $discountPrice;
         } else {
-            if (   $objCustomer
-                && $objCustomer->is_reseller()
+            if (   $isReseller
                 && $resellerPrice != 0) {
                 $price = $resellerPrice;
             }
