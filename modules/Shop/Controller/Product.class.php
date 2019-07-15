@@ -1436,19 +1436,28 @@ class Product
             $isReseller = false;
         }
 
+        // check if product has discount price
+        // note: discount price is used bor both,
+        // end customers and resellers
         if (
             !$ignore_special_offer &&
             $discount_active == 1 &&
             $discountPrice != 0
         ) {
             $price = $discountPrice;
-        } elseif (
+        } else
+        // if no discount price is set, check if a specific
+        // reseller-price is set
+        if (
             $isReseller &&
             $resellerPrice != 0
         ) {
             $price = $resellerPrice;
         }
+
+        // add any selected product options
         $price += $price_options;
+
         $rateCustomer = 0;
         if ($objCustomer) {
             $groupCustomerId = $objCustomer->group_id();
