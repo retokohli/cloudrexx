@@ -1436,15 +1436,17 @@ class Product
             $isReseller = false;
         }
 
-        if (   !$ignore_special_offer
-            && $discount_active == 1
-            && $discountPrice != 0) {
+        if (
+            !$ignore_special_offer &&
+            $discount_active == 1 &&
+            $discountPrice != 0
+        ) {
             $price = $discountPrice;
-        } else {
-            if (   $isReseller
-                && $resellerPrice != 0) {
-                $price = $resellerPrice;
-            }
+        } elseif (
+            $isReseller &&
+            $resellerPrice != 0
+        ) {
+            $price = $resellerPrice;
         }
         $price += $price_options;
         $rateCustomer = 0;
