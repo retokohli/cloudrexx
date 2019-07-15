@@ -1458,6 +1458,18 @@ class Product
         // add any selected product options
         $price += $price_options;
 
+        // if customer is a reseller and no reseller specific-price has been
+        // set, then we have to deduct the VAT from retail-price, in case
+        // the retail-price is VAT-inclusiv, but reseller-prices shall not be
+        if (
+            $isReseller &&
+            !$resellerPrice &&
+            Vat::isIncludedInRetailButNotInReseller()
+        ) {
+            $vatRate = Vat::getRate($this->vat_id());
+            $price -= $price - 100*$price / (100+$vatRate);
+        }
+
         $rateCustomer = 0;
         if ($objCustomer) {
             $groupCustomerId = $objCustomer->group_id();
