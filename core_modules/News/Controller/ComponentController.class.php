@@ -273,7 +273,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $refUrl = new \Cx\Lib\Net\Model\Entity\Url($response->getRequest()->getUrl()->toString());
         }
 
+        $newsId = 0;
         if ($refUrl->hasParam('newsid')) {
+            $newsId = $refUrl->getParam('newsid');
             $canonicalUrlArguments = array('newsid');
         } else {
             $canonicalUrlArguments = array('category', 'tag', 'pos');
@@ -304,7 +306,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         $news = new News('');
-        $news->getNewsPage();
+        $news->getDetails($newsId);
 
         //Set title's, if news title is not empty
         if (!empty($news->newsTitle)) {
