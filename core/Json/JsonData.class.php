@@ -374,6 +374,11 @@ class JsonData {
         $sendJson = false
     ) {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
+        $headers = $request->getHeaders();
+        if (isset($headers['user-agent'])) {
+            $userAgent = $headers['user-agent'] . ' ' . \DBG::getLogHash();
+            $request->setHeader('user-agent', $userAgent);
+        }
 
         if (!empty($httpAuth)) {
             switch($httpAuth['httpAuthMethod']) {
