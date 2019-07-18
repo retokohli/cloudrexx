@@ -296,9 +296,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         );
 
         if (
-             !$page ||
-             $page->getModule() !== $this->getName() ||
-             !$page->getCmd() === 'details'
+            !$page ||
+            $page->getModule() !== $this->getName() ||
+            substr($page->getCmd(), 0, 7) != 'details'
         ) {
             return;
         }
@@ -318,16 +318,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!empty($news->getTeaser())) {
             $metaDesc = $news->getTeaser();
         }
-        $page->setMetadesc(contrexx_raw2xhtml(
+        $page->setMetadesc(
             contrexx_strip_tags(
                 html_entity_decode($metaDesc, ENT_QUOTES, CONTREXX_CHARSET)
             )
-        ));
+        );
 
         //Set meta image, if news thumbnail is not empty
         if (!empty($news->newsThumbnail)) {
             $page->setMetaimage($news->newsThumbnail);
         }
+
+        $page->setMetakeys($news->newsMetaKeys);
     }
 
     /**
