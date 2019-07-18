@@ -337,7 +337,7 @@ class DoctrineRepository extends DataSource {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $this->getRepository();
 
-        $entity = $repo->findBy($elementId);
+        $entity = $repo->findOneBy($elementId);
 
         if (!$entity) {
             throw new \Exception('Entry not found!');
@@ -359,7 +359,7 @@ class DoctrineRepository extends DataSource {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $this->getRepository();
 
-        $entity = $repo->findBy($elementId);
+        $entity = $repo->findOneBy($elementId);
 
         if (!$entity) {
             throw new \Exception('Entry not found!');
