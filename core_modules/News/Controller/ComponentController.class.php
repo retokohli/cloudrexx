@@ -110,28 +110,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $newsObj = new News($page->getContent());
                 $page->setContent($newsObj->getNewsPage());
-                $newsObj->getPageTitle($page->getTitle());
-
-                if (substr($page->getCmd(), 0, 7) == 'details') {
-                    $page->setTitle($newsObj->newsTitle);
-                    $page->setContentTitle($newsObj->newsTitle);
-                    $page->setMetaTitle($newsObj->newsTitle);
-                    $page->setMetakeys($newsObj->newsMetaKeys);
-
-                    // Set the meta page description to the teaser text if displaying news details
-                    $teaser = $newsObj->getTeaser();
-                    if ($teaser) {
-                        $page->setMetadesc(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
-                    } else {
-                        $page->setMetadesc(contrexx_strip_tags(html_entity_decode($newsObj->newsText, ENT_QUOTES, CONTREXX_CHARSET)));
-                    }
-
-                    // Set the meta page image to the thumbnail if displaying news details
-                    $image = $newsObj->newsThumbnail;
-                    if ($image) {
-                        $page->setMetaimage($image);
-                    }
-                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
