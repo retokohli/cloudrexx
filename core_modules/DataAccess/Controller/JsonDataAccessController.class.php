@@ -145,7 +145,7 @@ class JsonDataAccessController
             ->getControllerClasses();
 
         foreach ($controllerClasses as $controller) {
-            if (preg_match('/\w+'. $delimiter .'[[:>:]]/', $controller)) {
+            if (strpos($controller, $delimiter)) {
                 $outputMethods[] = strtolower(explode($delimiter, $controller)[0]);
             }
         }
