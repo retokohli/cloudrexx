@@ -53,6 +53,15 @@ $_ARRAYLANG['fieldList'] = 'Allowed attributes';
 $_ARRAYLANG['accessCondition'] = 'Conditions';
 $_ARRAYLANG['allowedOutputMethods'] = 'Allowed output methods';
 
+$_ARRAYLANG['protocols'] = 'Allowed Protocols';
+$_ARRAYLANG['methods'] = 'Allowed methods';
+$_ARRAYLANG['userGroups'] = 'User groups';
+$_ARRAYLANG['accessIds'] = 'Access IDs';
+$_ARRAYLANG['callbacks'] = 'Callback methods';
+$_ARRAYLANG['readPermission'] = 'Read permission';
+$_ARRAYLANG['writePermission'] = 'Write permission';
+$_ARRAYLANG['requiresLogin'] = 'Requires login';
+
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_REQUIRES_LOGIN'] = 'If a user is logged in in the admin area or in a protected web page area, this condition is fulfilled.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ACCESS_IDS'] = 'If no Access IDs are selected, all are allowed.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_OUTPUT_METHODS'] = 'How the data should be output, Cli offers a tabular output. ';
@@ -66,3 +75,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'] = 'Generate API-Key';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_YES'] = 'Yes';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_NO'] = 'No';
+
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_API_KEY_ALREADY_EXISTS'] = 'An entry with this API key already exists';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_COULD_NOT_STORE_APIKEY'] = 'The API key could not be saved';
