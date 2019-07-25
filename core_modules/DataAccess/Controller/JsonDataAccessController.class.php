@@ -370,6 +370,14 @@ class JsonDataAccessController
         return $this->serializeArray($newValue);
     }
 
+    /**
+     * To be able to edit the permission, you get an HTML element with other
+     * elements, which split the attributes of the permission into HTML
+     * elements
+     *
+     * @param $args array arguments from formfield callback
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement permission edit element
+     */
     public function getDataAccessPermission($args)
     {
         global $_ARRAYLANG;
@@ -577,6 +585,14 @@ class JsonDataAccessController
         return $this->getGroupWrapper($name, $content, 'accessIds');
     }
 
+    /**
+     * Get dropdown to select a callback for the permission
+     *
+     * @param string $name name of the field
+     * @param \Cx\Core_Modules\Access\Model\Entity\Callback $selectedCallback
+     *                                                  selected callback method
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement
+     */
     protected function getPermissionCallbacks($name, $selectedCallback)
     {
         $default = array('' => '-');
