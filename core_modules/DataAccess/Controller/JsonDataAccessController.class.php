@@ -107,10 +107,10 @@ class JsonDataAccessController
     {
         $permission = new \Cx\Core_Modules\Access\Model\Entity\Permission(
             array('http', 'https'),
-            array('get', 'post'),
-            true,
+            array('get', 'post', 'cli'),
+            false,
             array(),
-            array(113)
+            array() // 113
         );
 
         return $permission;

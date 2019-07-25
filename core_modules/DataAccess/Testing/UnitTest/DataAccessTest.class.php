@@ -47,20 +47,28 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     /**
      * Get a DataAccess entity with test data.
      *
-     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess DataAccess entity
+     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess DataAccess
+     *                                                             entity
+     * @throws \Cx\Core_Modules\Access\Model\Entity\PermissionException
      */
     protected function getTestDataAccess()
     {
         $entity = new \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess();
-        $permissionEntity = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        $permissionRead = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        $permissionWrite = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        $permissionRead->setVirtual(false);
+        $permissionWrite->setVirtual(false);
 
         $entity->setName('test');
         $entity->setAccessCondition(array());
         $entity->setFieldList(array());
         $entity->setAllowedOutputMethods(array());
-        $entity->setDataSource(1);
-        $entity->setReadPermission($permissionEntity);
-        $entity->setWritePermission($permissionEntity);
+        $entity->setDataSource($this->getDataSource());
+        $entity->setReadPermission($permissionRead);
+        $entity->setWritePermission($permissionWrite);
+
+        parent::$em->persist($permissionRead);
+        parent::$em->persist($permissionWrite);
 
         return $entity;
     }
@@ -68,13 +76,13 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     /**
      * Get a DataAccessApiKey entity with test data.
      *
-     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey DataAccessApiKey entity
+     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey Data
+     *                                                      AccessApiKey entity
      */
-    protected function getTestDataAccessApiKey()
+    protected function getTestDataAccessApiKey($dataAccesEntity)
     {
         $entity = new \Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey();
         $apiKeyEntity = new \Cx\Core_Modules\DataAccess\Model\Entity\ApiKey();
-        $dataAccesEntity = $this->getTestDataAccess();
 
         $apiKeyEntity->setApiKey('test');
 
@@ -82,18 +90,38 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $entity->setDataAccess($dataAccesEntity);
         $entity->setReadOnly(true);
 
+        parent::$em->persist($entity);
+        parent::$em->persist($apiKeyEntity);
+        parent::$em->persist($dataAccesEntity);
+
         return $entity;
+    }
+
+    /**
+     * Get a DataSource
+     *
+     * @return \Cx\Core\DataSource\Model\Entity\DataSource
+     */
+    protected function getDataSource()
+    {
+        $dataSource = parent::$em->getRepository(
+            'Cx\Core\DataSource\Model\Entity\DataSource'
+        )->find(1);
+
+        return $dataSource;
     }
 
     /**
      * Store the given DataAccess entity in the database.
      *
-     * @param $entity \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess DataAccess to save
+     * @param $entity \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     *                                                        DataAccess to save
+     * @throws \Doctrine\ORM\OptimisticLockException handle orm interactions
      */
     protected function saveDataAccess($entity)
     {
-        $this::$em->persist($entity);
-        $this::$em->flush();
+        parent::$em->persist($entity);
+        parent::$em->flush();
     }
 
     /**
@@ -104,11 +132,26 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function findDataAccess($id)
     {
-        $repo = $this::$em->getRepository(
+        $repo = parent::$em->getRepository(
             'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
         );
 
         return $repo->find($id);
+    }
+
+    /**
+     * Find the DataAccess entity by given name.
+     *
+     * @param $name string name to identify entity
+     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess found entity
+     */
+    protected function findDataAccessByName($name)
+    {
+        $repo = parent::$em->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
+        );
+
+        return $repo->findOneBy(array('name' => $name));
     }
 
     /**
@@ -118,14 +161,14 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function getJsonController()
     {
-        $componentRepo = $this::$cx->getDb()
-            ->getEntityManager()
-            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $componentContoller = $componentRepo->findOneBy(array('name' => 'DataAccess'));
-        if (!$componentContoller) {
-            return;
-        }
-        return $componentContoller->getController('JsonBlock');
+        $componentRepo = parent::$em->getRepository(
+            'Cx\Core\Core\Model\Entity\SystemComponent'
+        );
+        $componentContoller = $componentRepo->findOneBy(
+            array('name' => 'DataAccess')
+        );
+
+        return $componentContoller->getController('JsonDataAccess');
     }
 
     /**
@@ -149,7 +192,7 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     public function testGetMessageAsString()
     {
         $jsonDataAccess = $this->getJsonController();
-        $message = $jsonDataAccess->getMessageAsString();
+        $message = $jsonDataAccess->getMessagesAsString();
 
         $this->assertIsString('string', $message);
     }
@@ -162,32 +205,49 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     public function testGetDefaultPermissions()
     {
-        $default = new \Cx\Core_Modules\Access\Model\Entity\Permission();
-        $default->setValidAccessIds(113);
+        $default = new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            array('http', 'https'),
+            array('get', 'post', 'cli'),
+            false,
+            array(),
+            array()
+        );
 
         $jsonDataAccess = $this->getJsonController();
         $permission = $jsonDataAccess->getDefaultPermissions();
 
-        $this->assertSame($default, $permission);
+        $this->assertEquals($default, $permission);
     }
 
     /**
      * Test if all necessary method names are in the array.
      *
-     * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::accessableMethods
+     * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getAccessableMethods
      */
     public function testGetAccessableMethods()
     {
+        $jsonDataAccess = $this->getJsonController();
+        $methodNames = $jsonDataAccess->getAccessableMethods();
+
+        $this->assertIsArray($methodNames);
+    }
+
+    /**
+     * Test if an HTML-Element is returned so that it can be displayed
+     * automatically by the ViewGenerator.
+     *
+     * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getAccessCondition
+     */
+    public function testGetAccessCondition()
+    {
         $args = array(
             'name' => 'test_element',
-            'value' => array(
-                'test1', 'test2', 'test3'
-            ),
+            'id' => 1,
         );
 
         $jsonDataAccess = $this->getJsonController();
-        $htmlElement = $jsonDataAccess->getAccessableMethods(
-            array('get' => $args)
+        $htmlElement = $jsonDataAccess->getAccessCondition(
+            $args
         );
 
         $this->assertInstanceOf(
@@ -200,46 +260,18 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      * Test if an HTML-Element is returned so that it can be displayed
      * automatically by the ViewGenerator.
      *
-     * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getAccessConditions
+     * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getDataAccessPermission
      */
-    public function testGetAccessConditions()
+    public function testGetDataAccessPermission()
     {
         $args = array(
             'name' => 'test_element',
-            'value' => array(
-                'test1' => array(
-                    'eq' => 0,
-                )
-            ),
+            'value' => new \Cx\Core_Modules\Access\Model\Entity\Permission(),
         );
 
         $jsonDataAccess = $this->getJsonController();
-        $htmlElement = $jsonDataAccess->getAccessConditions(
-            array('get' => $args)
-        );
-
-        $this->assertInstanceOf(
-            'Cx\Core\Html\Model\Entity\HtmlElement',
-            $htmlElement
-        );
-    }
-
-    /**
-     * Test if an HTML-Element is returned so that it can be displayed
-     * automatically by the ViewGenerator.
-     *
-     * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getTitleRow
-     */
-    public function testGetTitleRow()
-    {
-        $args = array(
-            'name' => 'test_element',
-            'value' => 'Test',
-        );
-
-        $jsonDataAccess = $this->getJsonController();
-        $htmlElement = $jsonDataAccess->getTitleRow(
-            array('get' => $args)
+        $htmlElement = $jsonDataAccess->getDataAccessPermission(
+            $args
         );
 
         $this->assertInstanceOf(
@@ -258,35 +290,16 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     {
         $args = array(
             'name' => 'test_element',
-            'value' => array(
-                'test1', 'test2', 'test3'
-            ),
+            'id' => 1
         );
 
         $jsonDataAccess = $this->getJsonController();
         $htmlElement = $jsonDataAccess->getFieldListSearch(
-            array('get' => $args)
+            $args
         );
 
         $this->assertInstanceOf(
-            'Cx\Core\Html\Model\Entity\HtmlElement',
-            $htmlElement
-        );
-    }
-
-    /**
-     * Test if a permission object is returned so that it can be saved
-     * automatically by the ViewGenerator.
-     *
-     * @covers \Cx\Core_Modules\DataAccess\Controller\JsonDataAccessController::getDataAccessPermission
-     */
-    public function testGetDataAccessPermission()
-    {
-        $jsonDataAccess = $this->getJsonController();
-        $htmlElement = $jsonDataAccess->getDataAccessPermission();
-
-        $this->assertInstanceOf(
-            'Cx\Core_Module\Access\Model\Entity\Permission',
+            'Cx\Core\Html\Model\Entity\DataElement',
             $htmlElement
         );
     }
@@ -308,10 +321,7 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
         $editedEntity = $this->findDataAccess($entity->getId());
 
-        $this->assertInstanceOf(
-            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess',
-            $editedEntity
-        );
+        $this->assertEquals($newName, $editedEntity->getName());
     }
 
     /**
@@ -323,7 +333,7 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     {
         $entity = $this->getTestDataAccess();
 
-        $dataAccessApiKey = $this->getTestDataAccessApiKey();
+        $dataAccessApiKey = $this->getTestDataAccessApiKey($entity);
         $entity->addDataAccessApiKey($dataAccessApiKey);
         $this->saveDataAccess($entity);
 
@@ -344,21 +354,19 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     public function testRemoveApiKey()
     {
         $entity = $this->getTestDataAccess();
-        $id = $entity->getId();
+        $name = $entity->getName();
 
-        $dataAccessApiKey = $this->getTestDataAccessApiKey();
+        $dataAccessApiKey = $this->getTestDataAccessApiKey($entity);
         $entity->addDataAccessApiKey($dataAccessApiKey);
         $this->saveDataAccess($entity);
 
-        $storedEntity = $this->findDataAccess($id);
+        $storedEntity = $this->findDataAccessByName($name);
         $firstDataAccess = $storedEntity->getDataAccessApiKeys()->current();
         $storedEntity->removeDataAccessApiKey($firstDataAccess);
         $this->saveDataAccess($storedEntity);
+        $count = $storedEntity->getDataAccessApiKeys()->count();
 
-        $this->assertNull(
-            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey',
-            $firstDataAccess
-        );
+        $this->assertEquals(0, $count);
     }
 
 }

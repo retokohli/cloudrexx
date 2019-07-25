@@ -62,27 +62,50 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey DataAccessApiKey entity
      */
-    protected function getTestDataAccessApiKey()
+    protected function getTestDataAccessApiKey($apiKeyEntity)
     {
         $entity = new \Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey();
         $dataAccesEntity = new \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess();
-        $apiKeyEntity = $this->getTestApiKey();
 
-        $permission = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        $permissionRead = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        $permissionWrite = new \Cx\Core_Modules\Access\Model\Entity\Permission();
+        $permissionRead->setVirtual(false);
+        $permissionWrite->setVirtual(false);
 
         $dataAccesEntity->setName('test');
         $dataAccesEntity->setAccessCondition(array());
         $dataAccesEntity->setFieldList(array());
         $dataAccesEntity->setAllowedOutputMethods(array());
-        $dataAccesEntity->setDataSource(1);
-        $dataAccesEntity->setReadPermission($permission);
-        $dataAccesEntity->setWritePermission($permission);
+        $dataAccesEntity->setDataSource($this->getDataSource());
+        $dataAccesEntity->setReadPermission($permissionRead);
+        $dataAccesEntity->setWritePermission($permissionWrite);
+
+        parent::$em->persist($apiKeyEntity);
+        parent::$em->persist($dataAccesEntity);
+        parent::$em->persist($permissionRead);
+        parent::$em->persist($permissionWrite);
 
         $entity->setApiKey($apiKeyEntity);
         $entity->setDataAccess($dataAccesEntity);
         $entity->setReadOnly(true);
 
+        parent::$em->persist($entity);
+
         return $entity;
+    }
+
+    /**
+     * Get a DataSource
+     *
+     * @return \Cx\Core\DataSource\Model\Entity\DataSource
+     */
+    protected function getDataSource()
+    {
+        $dataSource = parent::$em->getRepository(
+            'Cx\Core\DataSource\Model\Entity\DataSource'
+        )->find(1);
+
+        return $dataSource;
     }
 
     /**
@@ -92,8 +115,8 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function saveApiKey($entity)
     {
-        $this::$em->persist($entity);
-        $this::$em->flush();
+        parent::$em->persist($entity);
+        parent::$em->flush();
     }
 
     /**
@@ -103,8 +126,8 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function deleteApiKey($entity)
     {
-        $this::$em->remove($entity);
-        $this::$em->flush();
+        parent::$em->remove($entity);
+        parent::$em->flush();
     }
 
     /**
@@ -115,11 +138,10 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function findApiKey($apiKey)
     {
-        $repo = $this::$em->getRepository(
+        $repo = parent::$em->getRepository(
             'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey'
         );
-
-        return $repo->findOneBy(array('apiKey', $apiKey));
+        return $repo->findOneBy(array('apiKey' => $apiKey));
     }
 
     /**
@@ -182,12 +204,12 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     public function testToSaveDuplicatedApiKey()
     {
         $entity = $this->getTestApiKey();
+        $entityWithSameKey = $this->getTestApiKey();
         $this->saveApiKey($entity);
-
         $this->expectException(
             \Cx\Core\Error\Model\Entity\ShinyException::class
         );
-        $this->saveApiKey($entity);
+        $this->saveApiKey($entityWithSameKey);
     }
 
     /**
@@ -200,7 +222,7 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $entity = $this->getTestApiKey();
         $apiKey = $entity->getApiKey();
 
-        $dataAccessApiKey = $this->getTestDataAccessApiKey();
+        $dataAccessApiKey = $this->getTestDataAccessApiKey($entity);
         $entity->addDataAccessApiKey($dataAccessApiKey);
         $this->saveApiKey($entity);
 
@@ -223,7 +245,7 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $entity = $this->getTestApiKey();
         $apiKey = $entity->getApiKey();
 
-        $dataAccessApiKey = $this->getTestDataAccessApiKey();
+        $dataAccessApiKey = $this->getTestDataAccessApiKey($entity);
         $entity->addDataAccessApiKey($dataAccessApiKey);
         $this->saveApiKey($entity);
 
@@ -231,11 +253,8 @@ class ApiKeyTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $firstDataAccess = $storedEntity->getDataAccessApiKeys()->current();
         $storedEntity->removeDataAccessApiKey($firstDataAccess);
         $this->saveApiKey($storedEntity);
+        $count = $storedEntity->getDataAccessApiKeys()->count();
 
-        $this->assertNull(
-            'Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey',
-            $firstDataAccess
-        );
+        $this->assertEquals(0, $count);
     }
-
 }
