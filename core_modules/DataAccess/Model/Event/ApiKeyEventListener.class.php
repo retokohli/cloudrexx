@@ -50,6 +50,7 @@ class ApiKeyEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListen
      * To be able to store the selected DataAccess entities when we create a
      * new ApiKey, the ApiKey entity must be persisted to the last.
      *
+     * @global array $_ARRAYLANG containing the language variables
      * @param \Doctrine\ORM\Event\LifecycleEventArgs $args contains the
      *                                                     persisted entity.
      * @throws \Cx\Core\Error\Model\Entity\ShinyException  if the json request
@@ -58,6 +59,8 @@ class ApiKeyEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListen
      */
     public function postPersist(\Doctrine\ORM\Event\LifecycleEventArgs $args)
     {
+        global $_ARRAYLANG;
+
         $dataAccessApiKeys = array();
         if ($this->cx->getRequest()->hasParam('dataAccessApiKeys', false)) {
             $dataAccessApiKeys = $this->cx->getRequest()->getParam(
@@ -86,7 +89,11 @@ class ApiKeyEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListen
         );
 
         if ($jsonResult['status'] != 'success') {
-            throw new \Cx\Core\Error\Model\Entity\ShinyException('Fail');
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG[
+                    'TXT_CORE_MODULE_DATA_ACCESS_COULD_NOT_STORE_APIKEY'
+                ]
+            );
         }
     }
 
