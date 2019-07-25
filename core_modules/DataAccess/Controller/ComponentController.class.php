@@ -79,6 +79,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $this->getNamespace() . '\Model\Entity\ApiKey',
             $apiListener
         );
+
+        $this->cx->getEvents()->addModelListener(
+            \Doctrine\ORM\Events::prePersist,
+            $this->getNamespace() .'\Model\Entity\ApiKey',
+            $apiListener
+        );
+
+        $this->cx->getEvents()->addModelListener(
+            \Doctrine\ORM\Events::preUpdate,
+            $this->getNamespace() .'\Model\Entity\ApiKey',
+            $apiListener
+        );
     }
 
     /**

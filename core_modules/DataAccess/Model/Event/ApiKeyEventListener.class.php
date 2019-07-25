@@ -90,4 +90,61 @@ class ApiKeyEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListen
         }
     }
 
+    /**
+     * Prevent duplicate API keys from being stored
+     *
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args contains the entity
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException api key already exists
+     */
+    public function prePersist(\Doctrine\ORM\Event\LifecycleEventArgs $args)
+    {
+        global $_ARRAYLANG;
+
+        if (
+            $this->isAlreadyAnEntryWithThisKey($args->getEntity()->getApiKey())
+        ) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG[
+                'TXT_CORE_MODULE_DATA_ACCESS_API_KEY_ALREADY_EXISTS'
+                ]
+            );
+        }
+    }
+
+    /**
+     * Prevent duplicate API keys from being stored
+     *
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args contains the entity
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException api key already exists
+     */
+    public function preUpdate(\Doctrine\ORM\Event\LifecycleEventArgs $args)
+    {
+        global $_ARRAYLANG;
+
+        if (
+            $this->isAlreadyAnEntryWithThisKey($args->getEntity()->getApiKey())
+        ) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                $_ARRAYLANG[
+                    'TXT_CORE_MODULE_DATA_ACCESS_API_KEY_ALREADY_EXISTS'
+                ]
+            );
+        }
+    }
+
+    /**
+     * Check if an API key already exists with the given key
+     *
+     * @param string $apiKey check if entity with this API key already exists
+     * @return bool if an API key exists
+     */
+    protected function isAlreadyAnEntryWithThisKey($apiKey)
+    {
+        $em = $this->cx->getDb()->getEntityManager();
+        $apiKeyEntry = $em->getRepository(
+            'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey'
+        )->findOneBy(array('apiKey' => $apiKey));
+
+        return !empty($apiKeyEntry);
+    }
 }
