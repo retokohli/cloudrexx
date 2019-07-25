@@ -1750,9 +1750,6 @@ class ViewGenerator {
                 }
             }
             if ($storeAgain) {
-                if (!$entityRepository->isManaged($entity)) {
-                    $entityRepository->add($entity);
-                }
                 $entityRepository->flush();
             }
             $showSuccessMessage = true;
