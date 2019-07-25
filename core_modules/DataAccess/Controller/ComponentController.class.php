@@ -58,28 +58,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Returns a list of JsonAdapter class names
-     *
-     * The array values might be a class name without namespace. In that case
-     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
-     * If the array value starts with a backslash, no namespace is added.
-     *
-     * Avoid calculation of anything, just return an array!
-     * @return array List of ComponentController classes
+     * Get json controllers of DataAccess
+     * @inheritDoc
      */
     public function getControllersAccessableByJson() {
         return array('JsonDataAccessController');
     }
 
     /**
-     * Register your event listeners here
-     *
-     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
-     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
-     * Keep in mind, that you can also register your events later.
-     * Do not do anything else here than initializing your event listeners and
-     * list statements like
-     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     * Register event listeners for DataAccess
+     * @inheritDoc
      */
     public function registerEventListeners()
     {
