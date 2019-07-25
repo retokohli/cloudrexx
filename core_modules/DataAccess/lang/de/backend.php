@@ -31,7 +31,7 @@
  * values for backend ACT template by SystemComponentBackendController
  *
  * @copyright   Cloudrexx AG
- * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @author Sam Hawkes <info@cloudrexx.com>
  * @package cloudrexx
  * @subpackage core_modules_dataaccess
  */
