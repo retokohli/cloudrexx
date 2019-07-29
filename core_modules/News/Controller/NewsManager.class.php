@@ -558,7 +558,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
 
             if ($count>intval($_CONFIG['corePagingLimit'])) {
-                $paging = getPaging($count, $pos, '&cmd=News&show=archive&monthFilter=' . contrexx_input2xhtml($_GET['monthFilter']), $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
+                $baseUrl = '&cmd=News&show=archive&monthFilter=' . contrexx_input2xhtml($_GET['monthFilter']);
+                if (!empty($_GET['categoryFilter'])) {
+                    $baseUrl .= '&categoryFilter=' . contrexx_input2xhtml($_GET['categoryFilter']);
+                }
+                $paging = getPaging($count, $pos, $baseUrl, $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
             }
             $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
@@ -2868,6 +2872,18 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     {
         global $objDatabase, $_ARRAYLANG;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \JS::registerJS(substr(
+            $cx->getCodeBaseCoreModuleWebPath() .
+                '/News/View/Script/Backend.js',
+            1
+        ));
+        \JS::registerCSS(substr(
+            $cx->getCodeBaseCoreModuleWebPath() .
+                '/News/View/Style/Backend.css',
+            1
+        ));
+
         $this->_objTpl->loadTemplateFile('module_news_category.html', true, true);
         $this->pageTitle = $_ARRAYLANG['TXT_CATEGORY_MANAGER'];
 
@@ -2891,6 +2907,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_EDIT'          => $_ARRAYLANG['TXT_EDIT'],
             'TXT_DELETE'        => $_ARRAYLANG['TXT_DELETE'],
             'TXT_NEWS_EXTENDED' => $_ARRAYLANG['TXT_NEWS_EXTENDED'],
+            'TXT_NEWS_SWITCH_VISIBILITY' =>
+                $_ARRAYLANG['TXT_NEWS_SWITCH_VISIBILITY'],
         ));
 
         // Add a new category
@@ -2945,7 +2963,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // List all categories
-        $arrCatLangData   = $this->getCategoriesLangData();
+        $arrCatLangData   = $this->getCategoriesData();
         $firstLevel       = 2;
         $levelSpacingLeft = 20;
 
@@ -2963,12 +2981,22 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $this->_objTpl->hideBlock('categoryHasParent');
                 }
 
+                $name = contrexx_raw2xhtml(
+                    $arrCatLangData[$node['id']]['lang'][
+                        \FWLanguage::getDefaultLangId()
+                    ]
+                );
+                $iconClass = '';
+                if (!$arrCatLangData[$node['id']]['display']) {
+                    $iconClass = 'hidden';
+                }
                 $this->_objTpl->setVariable(array(
                     'NEWS_ROWCLASS'       => $cssStyle,
                     'NEWS_CAT_ID'         => $node['id'],
                     'NEWS_LEVEL_SPACING'  => $level*$levelSpacingLeft,
-                    'NEWS_CAT_NAME'       => contrexx_raw2xhtml($arrCatLangData[$node['id']][\FWLanguage::getDefaultLangId()]),
+                    'NEWS_CAT_NAME'       => $name,
                     'NEWS_CAT_SORT'       => $sort,
+                    'NEWS_CAT_ICON_CLASS' => $iconClass,
                 ));
                 $this->_objTpl->parse('newsRow');
             };
@@ -3028,8 +3056,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         // get language data from categories
-        $categories = $this->getCategoriesLangData();
-        $categoryLangData = $categories[$id];
+        $categories = $this->getCategoriesData();
+        $categoryLangData = $categories[$id]['lang'];
 
         // get languages which are active
         $arrLanguages = \FWLanguage::getActiveFrontendLanguages();

@@ -1364,6 +1364,7 @@ JS_CODE;
             'DOWNLOADS_'.$variablePrefix.'FILE_THUMBNAIL'          => $thumbnail,
             'DOWNLOADS_'.$variablePrefix.'FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
             'DOWNLOADS_'.$variablePrefix.'FILE_ICON'               => $this->getHtmlImageTag($objDownload->getIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'FILE_MIME_TYPE'          => $objDownload->getMimeType(),
             'DOWNLOADS_'.$variablePrefix.'FILE_FILE_TYPE_ICON'     => $this->getHtmlImageTag($objDownload->getFileIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'FILE_DELETE_ICON'        => $deleteIcon,
             'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;download=' . $objDownload->getId(),
@@ -1382,11 +1383,19 @@ JS_CODE;
                 'TXT_DOWNLOADS_'.$variablePrefix.'SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
                 'DOWNLOADS_'.$variablePrefix.'FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
             ));
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'size_information');
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'size_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'size_information')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'size_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'size_list')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'size_list');
+            }
         } else {
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'size_information');
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'size_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'size_information')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'size_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'size_list')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'size_list');
+            }
         }
 
         // parse license
@@ -1395,11 +1404,19 @@ JS_CODE;
                 'TXT_DOWNLOADS_'.$variablePrefix.'LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
                 'DOWNLOADS_'.$variablePrefix.'FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'license_information');
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'license_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'license_information')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'license_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'license_list')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'license_list');
+            }
         } else {
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'license_information');
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'license_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'license_information')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'license_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'license_list')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'license_list');
+            }
         }
 
         // parse version
@@ -1408,11 +1425,19 @@ JS_CODE;
                 'TXT_DOWNLOADS_'.$variablePrefix.'VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
                 'DOWNLOADS_'.$variablePrefix.'FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'version_information');
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'version_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'version_information')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'version_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'version_list')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'version_list');
+            }
         } else {
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'version_information');
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'version_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'version_information')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'version_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'version_list')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'version_list');
+            }
         }
 
         // parse author
@@ -1421,11 +1446,19 @@ JS_CODE;
                 'TXT_DOWNLOADS_'.$variablePrefix.'AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
                 'DOWNLOADS_'.$variablePrefix.'FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'author_information');
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'author_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'author_information')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'author_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'author_list')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'author_list');
+            }
         } else {
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'author_information');
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'author_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'author_information')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'author_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'author_list')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'author_list');
+            }
         }
 
         // parse website
@@ -1435,11 +1468,19 @@ JS_CODE;
                 'DOWNLOADS_'.$variablePrefix.'FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_'.$variablePrefix.'FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'website_information');
-            $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'website_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'website_information')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'website_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'website_list')) {
+                $this->objTemplate->touchBlock('download_' . strtolower($variablePrefix) . 'website_list');
+            }
         } else {
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'website_information');
-            $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'website_list');
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'website_information')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'website_information');
+            }
+            if ($this->objTemplate->blockExists('download_' . strtolower($variablePrefix) . 'website_list')) {
+                $this->objTemplate->hideBlock('download_' . strtolower($variablePrefix) . 'website_list');
+            }
         }
     }
 

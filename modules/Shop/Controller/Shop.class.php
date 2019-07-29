@@ -1131,6 +1131,13 @@ die("Failed to update the Cart!");
                     $arrSize = getimagesize($cx->getWebsitePath() . $thumbnailPath);
                     self::scaleImageSizeToThumbnail($arrSize);
                 }
+            } else {
+                // Fallback if no picture for category was found.
+                // This is intentionally in the else statement and not as
+                // assignement before this if-statement, as it would otherwise
+                // brake the regular thumbnail $thumbnailPath (which would be
+                // overwritten above )
+                $imageName = ShopLibrary::noPictureName;
             }
             if ($imageName) {
                 self::$objTemplate->setVariable(
@@ -1398,6 +1405,10 @@ die("Failed to update the Cart!");
             //if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
             if (self::$objTemplate->blockExists('no_product')) {
                 self::$objTemplate->touchBlock('no_product');
+            }
+            // hide products template block if no products have been loaded
+            if (self::$objTemplate->blockExists('products')) {
+                self::$objTemplate->hideBlock('products');
             }
             return true;
         }
@@ -1682,14 +1693,22 @@ die("Failed to update the Cart!");
             }
             $shopProductFormName = "shopProductForm$formId";
             $row = $formId % 2 + 1;
+            $detailDescription = '';
+            if ($longDescription) {
+                $detailDescription = $longDescription;
+            } elseif (!self::$objTemplate->placeholderExists(
+                'SHOP_PRODUCT_DESCRIPTION'
+            )) {
+                // show short description as detail-description if the
+                // short-description placeholder is not being used
+                $detailDescription = $short;
+            }
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.$row,
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
                 'SHOP_PRODUCT_TITLE' => contrexx_raw2xhtml($objProduct->name()),
                 'SHOP_PRODUCT_DESCRIPTION' => $short,
-// TODO: Test whether this produces double descriptions in some views
-                'SHOP_PRODUCT_DETAILDESCRIPTION' => ($longDescription
-                    ? $longDescription : $short),
+                'SHOP_PRODUCT_DETAILDESCRIPTION' => $detailDescription,
                 'SHOP_PRODUCT_FORM_NAME' => $shopProductFormName,
                 'SHOP_PRODUCT_SUBMIT_NAME' => $productSubmitName,
                 'SHOP_PRODUCT_SUBMIT_FUNCTION' => $productSubmitFunction,
@@ -1732,6 +1751,11 @@ die("Failed to update the Cart!");
                     'SHOP_MANUFACTURER_LINK' => $manufacturer_link,
                     'TXT_SHOP_MANUFACTURER_LINK' => $_ARRAYLANG['TXT_SHOP_MANUFACTURER_LINK'],
                 ));
+                if (self::$objTemplate->blockExists('shopProductManufacturer')) {
+                    self::$objTemplate->parse('shopProductManufacturer');
+                }
+            } elseif (self::$objTemplate->blockExists('shopProductManufacturer')) {
+                self::$objTemplate->hideBlock('shopProductManufacturer');
             }
 
             // This is the old Product field for the Manufacturer URI.
@@ -1747,6 +1771,11 @@ die("Failed to update the Cart!");
                     '" target="_blank">'.
                     $_ARRAYLANG['TXT_SHOP_EXTERNAL_LINK'].'</a>',
                 ));
+                if (self::$objTemplate->blockExists('shopProductExternalLink')) {
+                    self::$objTemplate->parse('shopProductExternalLink');
+                }
+            } elseif (self::$objTemplate->blockExists('shopProductExternalLink')) {
+                self::$objTemplate->hideBlock('shopProductExternalLink');
             }
 
             if ($price) {

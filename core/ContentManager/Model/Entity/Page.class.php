@@ -347,7 +347,12 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
         $this->backendAccessId = 0;
 
         $this->setUpdatedAtToNow();
+    }
 
+    /**
+     * @inheritDoc
+     */
+    public function initializeValidators() {
         $this->validators = array(
             'lang' => new \CxValidateInteger(),
             'type' => new \CxValidateString(array('alphanumeric' => true, 'maxlength' => 255)),
@@ -365,7 +370,11 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             //active is boolean, not checked
             'target' => new \CxValidateString(array('maxlength' => 255)),
             'module' => new \CxValidateString(array('alphanumeric' => true)),
-            'cmd' => new \CxValidateRegexp(array('pattern' => '/^[-A-Za-z0-9_]+$/')),
+            'cmd' => new \CxValidateRegexp(array(
+                'pattern' => '/^([-a-z0-9_]+|\[\[' .
+                    \Cx\Core\Routing\NodePlaceholder::NODE_URL_PCRE .
+                    '\]\])$/ix'
+            )),
         );
     }
 
@@ -2193,7 +2202,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
         // load application template in case page is an application
         if (
             $page->getType() == static::TYPE_APPLICATION &&
-            $template->blockExists('APPLICATION_DATA')
+            $template->placeholderExists('APPLICATION_DATA')
         ) {
             $contentTemplate =
                 \Cx\Core\Core\Controller\Cx::getContentTemplateOfPageWithoutWidget(
