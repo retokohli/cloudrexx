@@ -380,6 +380,25 @@ class CalendarLibrary
             return;
         }
 
+        // TODO: we have to manually load the language-data here, as it
+        // would not be available in the adjustResponse hook.
+        // AS a result, the date format specific options (which depend on the
+        // language-data) won't work properly.
+        // As soon as CLX-1045 has been fixed and completed, the manual
+        // loading of the language-data can be removed from here.
+        $frontend = false;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            $frontend = true;
+        }
+        $_ARRAYLANG = array_merge(
+            $_ARRAYLANG,
+            \Env::get('init')->getComponentSpecificLanguageData(
+                'Calendar',
+                $frontend
+            )
+        );
+
     	$arrSettings = array();
         $arrDateSettings =  array(
                             'separatorDateList','separatorDateTimeList', 'separatorSeveralDaysList', 'separatorTimeList',
@@ -687,7 +706,7 @@ EOF;
         $objEvent->loadEventFromData($_GET);
 
         $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($objEvent->startDate);
-        $objEventManager->_setNextSeriesElement($objEvent);
+        $objEventManager->generateRecurrencesOfEvent($objEvent);
         
         $_CORELANG = \Env::get('init')->getComponentSpecificLanguageData(
             'Core',
@@ -695,11 +714,23 @@ EOF;
         );
         $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         foreach ($objEventManager->eventList as $event) {
-            $startDate = $event->startDate;
-            $endDate   = $event->endDate;
-            $exceptionDates[$this->format2userDate($startDate)] = $this->format2userDate($startDate) != $this->format2userDate($endDate)
-                                                                    ? $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate) .' - ' . $dayArray[$this->formatDateTime2user($endDate, "w")] .", ". $this->format2userDate($endDate)
-                                                                    : $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate);
+            $startDate = $this->format2userDate($event->startDate);
+            $endDate   = $this->format2userDate($event->endDate);
+
+            $label = $dayArray[$this->formatDateTime2user($event->startDate, "w")] .
+                ", " . $startDate;
+            if ($startDate != $endDate) {
+                $label .= ' - ' .
+                    $dayArray[
+                        $this->formatDateTime2user($event->endDate, "w")
+                    ] .
+                    ", ". $endDate;
+            }
+
+            $exceptionDates[] = array(
+                'date'  => $startDate,
+                'label' => $label,
+            );
         }
 
         return $exceptionDates;

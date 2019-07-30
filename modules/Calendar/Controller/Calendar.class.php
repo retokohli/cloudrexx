@@ -1211,6 +1211,17 @@ UPLOADER;
             }
         }
 
+        // parse url to detail section of associated event
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail');
+        $url->setParams(array(
+            'id' => $objEvent->id,
+            'date' => $objEvent->startDate->getTimestamp()
+        ));
+        $this->_objTpl->setVariable(
+            $this->moduleLangVar.'_EVENT_DETAIL_LINK',
+            $url
+        );
+
         // Only show registration form if event lies in the future
         if(time() > $objEvent->startDate->getTimestamp()) {
             $this->_objTpl->setVariable(array(
