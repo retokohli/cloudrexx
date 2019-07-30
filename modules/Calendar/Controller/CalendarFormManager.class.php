@@ -264,12 +264,12 @@ class CalendarFormManager extends CalendarLibrary
                             'id'                   => $arrInputfield['id'],
                             'row'                  => $i%2 == 0 ? 'row2' : 'row1',
                             'order'                => $arrInputfield['order'],
-                            'name_master'          => $fieldValue[$defaultLangId],
-                            'default_value_master' => $defaultFieldValue[$defaultLangId],
+                            'name_master'          => contrexx_raw2xhtml($fieldValue[$defaultLangId]),
+                            'default_value_master' => contrexx_raw2xhtml($defaultFieldValue[$defaultLangId]),
                             'required'             => $arrInputfield['required'],
                             'affiliation'          => $arrInputfield['affiliation'],
-                            'field_value'          => json_encode($fieldValue),
-                            'default_field_value'  => json_encode($defaultFieldValue)
+                            'field_value'          => json_encode(contrexx_raw2xhtml($fieldValue)),
+                            'default_field_value'  => json_encode(contrexx_raw2xhtml($defaultFieldValue))
                         );
                     }
                 }

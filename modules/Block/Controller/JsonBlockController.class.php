@@ -102,7 +102,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      */
     public function getDefaultPermissions()
     {
-        return new \Cx\Core_Modules\Access\Model\Entity\Permission(null, array('get', 'post'), true);
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission();
     }
 
     /**
@@ -115,11 +115,11 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
             'getCountries',
             'getBlocks',
             'getBlockContent' => new \Cx\Core_Modules\Access\Model\Entity\Permission(
-                null,
+                array(),
                 array('get', 'cli', 'post'),
                 false
             ),
-            'saveBlockContent' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, array('post'), true)
+            'saveBlockContent' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array(), array('post'))
         );
     }
 
@@ -204,6 +204,16 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
     public function getBlockContent($params) {
         global $_CORELANG, $objDatabase;
 
+        // whether or not widgets within the block
+        // shall get parsed
+        $parsing = true;
+        if (
+            isset($params['get']['parsing']) &&
+            $params['get']['parsing'] == 'false'
+        ) {
+            $parsing = false;
+        }
+
         // check for necessary arguments
         if (
             empty($params['get']) ||
@@ -260,14 +270,21 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
             $id
         );
         $content = $template->get();
+
+        // abort for returning raw data
+        if (!$parsing) {
+            return $content;
+        }
+
         $page = null;
         if (isset($params['get']['page'])) {
             $em = $cx->getDb()->getEntityManager();
             $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $page = $pageRepo->find($params['get']['page']);
         }
-        
+
         \Cx\Modules\Block\Controller\Block::setBlocks($content, $page);
+
         \LinkGenerator::parseTemplate($content);
         $ls = new \LinkSanitizer(
             $cx,
