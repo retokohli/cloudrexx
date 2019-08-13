@@ -892,6 +892,12 @@ class CalendarEventManager extends CalendarLibrary
                 ));
                 $objTpl->parse('calendarDateDetail');
             } else {
+                // check if event starts and ends on same day
+                // if so, do only show either the start or end date
+                if ($this->format2userDate($startDate) == $this->format2userDate($endDate)) {
+                    $showEndDateDetail &= $showStartDateDetail ^ $showEndDateDetail;
+                }
+
                 // get date for single day format
                 $this->getSingleDateBlock($objEvent, $showStartDateDetail, $showEndDateDetail, $this->arrSettings['separatorDateDetail'], $showTimeTypeDetail, $showStartTimeDetail, $showEndTimeDetail, $this->arrSettings['separatorDateTimeDetail'], $this->arrSettings['separatorTimeDetail'], ($this->arrSettings['showClockDetail'] == 1));
 
@@ -1705,6 +1711,12 @@ class CalendarEventManager extends CalendarLibrary
                     ));
                     $objTpl->parse('calendarDateList');
                 } else {
+                    // check if event starts and ends on same day
+                    // if so, do only show either the start or end date
+                    if ($this->format2userDate($startDate) == $this->format2userDate($endDate)) {
+                        $showEndDateList &= $showStartDateList ^ $showEndDateList;
+                    }
+
                     // get date for single day format
                    $this->getSingleDateBlock($objEvent, $showStartDateList, $showEndDateList, $this->arrSettings['separatorDateList'], $showTimeTypeList, $showStartTimeList, $showEndTimeList, $this->arrSettings['separatorDateTimeList'], $this->arrSettings['separatorTimeList'], ($this->arrSettings['showClockList'] == 1));
 
