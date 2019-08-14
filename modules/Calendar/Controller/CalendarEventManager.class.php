@@ -894,8 +894,14 @@ class CalendarEventManager extends CalendarLibrary
             } else {
                 // check if event starts and ends on same day
                 // if so, do only show either the start or end date
-                if ($this->format2userDate($startDate) == $this->format2userDate($endDate)) {
-                    $showEndDateDetail &= $showStartDateDetail ^ $showEndDateDetail;
+                if (
+                    $this->format2userDate($startDate) == $this->format2userDate($endDate) &&
+                    $showEndDateDetail
+                ) {
+                    $showEndDateDetail = (
+                        $showStartDateDetail xor
+                        $showEndDateDetail
+                    );
                 }
 
                 // get date for single day format
@@ -1713,8 +1719,14 @@ class CalendarEventManager extends CalendarLibrary
                 } else {
                     // check if event starts and ends on same day
                     // if so, do only show either the start or end date
-                    if ($this->format2userDate($startDate) == $this->format2userDate($endDate)) {
-                        $showEndDateList &= $showStartDateList ^ $showEndDateList;
+                    if (
+                        $this->format2userDate($startDate) == $this->format2userDate($endDate) &&
+                        $showEndDateList
+                    ) {
+                        $showEndDateList = (
+                            $showStartDateList xor
+                            $showEndDateList
+                        );
                     }
 
                     // get date for single day format
