@@ -834,15 +834,15 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::add('saferpay_window_option', 2, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // JSON Saferpay
-        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_id', '1234', ++$i,
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_id', '', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
-        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_terminal_id', '1234', ++$i,
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_terminal_id', '', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
-        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_user', '1234', ++$i,
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_user', '', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
-        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_pass', '1234', ++$i,
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_pass', '', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
-        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_active', 1, ++$i,
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_json_active', 0, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('saferpay_json_use_test_account', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
