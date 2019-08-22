@@ -1929,7 +1929,9 @@ class CalendarEventManager extends CalendarLibrary
 
                 // recurrence shall end after a specific date
                 case 3:
-                    if ($nextEvent->startDate > $objCloneEvent->seriesData['seriesPatternEndDate']) {
+                    $dayOfStartDate = clone $nextEvent->startDate;
+                    $dayOfStartDate->setTime(0,0);
+                    if ($dayOfStartDate > $objCloneEvent->seriesData['seriesPatternEndDate']) {
                         // recurrence is out of date boundary -> skip
                         return null;
                     }
