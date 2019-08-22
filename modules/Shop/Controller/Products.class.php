@@ -413,10 +413,14 @@ class Products
                             " AGAINST ('%" . $patternHtmlEscaped ."%')" .
                         ') AS `score3`';
                 } else {
-                    $querySelectParts[] = 'MATCH ('.$arrSqlPattern['alias']['short'].')' .
-                        " AGAINST ('%$pattern%') AS `score2`";
-                    $querySelectParts[] = 'MATCH ('.$arrSqlPattern['alias']['long'].')' .
-                        " AGAINST ('%$pattern%') AS `score3`";
+                    $querySelectParts[] =
+                        'MATCH ('.$arrSqlPattern['alias']['short'].')' .
+                            " AGAINST ('%$pattern%')" .
+                        ' AS `score2`';
+                    $querySelectParts[] =
+                        'MATCH ('.$arrSqlPattern['alias']['long'].')' .
+                            " AGAINST ('%$pattern%')" .
+                        ' AS `score3`';
                 }
                 $querySelect .= ', ' . join(', ', $querySelectParts);
 
