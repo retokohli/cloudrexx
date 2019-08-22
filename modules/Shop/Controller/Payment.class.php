@@ -597,7 +597,7 @@ class Payment
             'SHOP_PAYREXX_STATUS' =>
                 (\Cx\Core\Setting\Controller\Setting::getValue('payrexx_active','Shop')
                     ? \Html::ATTRIBUTE_CHECKED : ''),
-            // Yellowpay
+            // PostFinance
             'SHOP_YELLOWPAY_SHOP_ID' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_shop_id','Shop'),
             'SHOP_YELLOWPAY_STATUS' =>
                 (\Cx\Core\Setting\Controller\Setting::getValue('postfinance_active','Shop')
@@ -616,7 +616,7 @@ class Payment
             'SHOP_YELLOWPAY_USE_TESTSERVER_CHECKED' =>
                 (\Cx\Core\Setting\Controller\Setting::getValue('postfinance_use_testserver','Shop')
                     ? \Html::ATTRIBUTE_CHECKED : ''),
-            // PostFinance
+            // PostFinance Mobile
             'SHOP_POSTFINANCE_MOBILE_WEBUSER' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_webuser','Shop')),
             'SHOP_POSTFINANCE_MOBILE_SIGN' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_sign','Shop')),
             'SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST_CHECKED' =>
