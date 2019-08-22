@@ -67,7 +67,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
      * call the flush operation (on clearCachePageForDomainAndPort()) once.
      */
     public function clearCachePage($urlPattern, $domainsAndPorts) {
-        $this->clearCachePageForDomainAndPort($urlPattern, null, null);
+        $this->clearCachePageForDomainAndPort($urlPattern, '', 0);
     }
     
     /**
