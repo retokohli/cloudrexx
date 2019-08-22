@@ -1900,7 +1900,7 @@ class CalendarEventManager extends CalendarLibrary
             // verify that we have not yet reached the end of the recurrence
             if (
                 $nextEvent->isAdditionalRecurrence &&
-                !$this->arrSettings['constrainAdditionalRecurrences']
+                $this->arrSettings['constrainAdditionalRecurrences'] == 2
             ) {
                 return $nextEvent;
             }
@@ -1933,9 +1933,9 @@ class CalendarEventManager extends CalendarLibrary
                         // do not abort processing in case there are unprocessed
                         // additional recurrences that shall be added
                         if (
-                            !$this->arrSettings[
+                            $this->arrSettings[
                                 'constrainAdditionalRecurrences'
-                            ] &&
+                            ] == 2 &&
                             count($additionalRecurrences)
                         ) {
                             continue 2;
@@ -1954,9 +1954,9 @@ class CalendarEventManager extends CalendarLibrary
                         // do not abort processing in case there are unprocessed
                         // additional recurrences that shall be added
                         if (
-                            !$this->arrSettings[
+                            $this->arrSettings[
                                 'constrainAdditionalRecurrences'
-                            ] &&
+                            ] == 2 &&
                             count($additionalRecurrences)
                         ) {
                             continue 2;
