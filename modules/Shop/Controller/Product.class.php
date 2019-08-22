@@ -1445,10 +1445,10 @@ class Product
             $discountPrice != 0
         ) {
             $price = $discountPrice;
-        } else
+
         // if no discount price is set, check if a specific
         // reseller-price is set
-        if (
+        } elseif (
             $isReseller &&
             $resellerPrice != 0
         ) {
@@ -1460,14 +1460,14 @@ class Product
 
         // if customer is a reseller and no reseller specific-price has been
         // set, then we have to deduct the VAT from retail-price, in case
-        // the retail-price is VAT-inclusiv, but reseller-prices shall not be
+        // the retail-price is VAT-inclusive, but reseller-prices shall not be
         if (
             $isReseller &&
             !$resellerPrice &&
             Vat::isIncludedInRetailButNotInReseller()
         ) {
             $vatRate = Vat::getRate($this->vat_id());
-            $price -= $price - 100*$price / (100+$vatRate);
+            $price -= $price - 100 * $price / (100 + $vatRate);
         }
 
         $rateCustomer = 0;

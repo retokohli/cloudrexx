@@ -327,7 +327,9 @@ class Vat
     }
 
     /**
-     * Check if retail-prices are VAT-inclusive, but not reseller-prices
+     * Check if retail-prices are VAT-inclusive, but not reseller-prices.
+     * If this method returns TRUE, then that indicates that the VAT must
+     * be subtracted from the retail price.
      *
      * @return  boolean TRUE if retail-prices are VAT-inclusive, but not
      *                  reseller-prices. Any other setup VAT configuration
