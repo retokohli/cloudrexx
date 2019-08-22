@@ -972,10 +972,10 @@ class CalendarEvent extends CalendarLibrary
                                     // recurrence dates that have been stored
                                     // without a time-information are correct
                                     $recurrenceDate->setTime(0, 0);
-                                } else
-                                    // check if non-all-day recurrence event
-                                    // contains time information
-                                if (strpos($recurrence, ' ') === false) {
+
+                                // check if non-all-day recurrence event
+                                // contains time information
+                                } elseif (strpos($recurrence, ' ') === false) {
                                     // recurrence is lacking time information,
                                     // so let's set the event's start time as
                                     // recurrence time
