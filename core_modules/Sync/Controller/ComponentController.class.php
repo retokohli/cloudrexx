@@ -207,7 +207,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // Most exceptions should be catched inside the API!
             http_response_code(400); // BAD REQUEST
             echo 'Exception of type "' . get_class($e) . '" with message "' . $e->getMessage() . '"';
-            echo $e->getTraceAsString();
+            \DBG::log($e->getTraceAsString());
         }
     }
     
