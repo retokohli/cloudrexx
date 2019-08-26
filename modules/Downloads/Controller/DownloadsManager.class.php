@@ -207,6 +207,12 @@ class DownloadsManager extends DownloadsLibrary
                     $this->parseDownloadNavigation();
                 }
                 break;
+            case 'categories_delete_download':
+                $this->loadCategoryNavigation();
+                $this->deleteDownload();
+                $this->categories();
+                $this->parseCategoryNavigation();
+                break;
             case 'unlink_download':
                 $this->unlinkDownloadFromCategory();
                 $this->loadCategoryNavigation();
@@ -2600,11 +2606,23 @@ class DownloadsManager extends DownloadsLibrary
                 || $objDownload->getOwnerId() == $objFWUser->objUser->getId()
             ) {
                 $this->objTemplate->setVariable(array(
+                    'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG[
+                        'TXT_DOWNLOADS_DELETE'
+                    ],
+                    'DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT' => preg_replace(
+                        '#\n#',
+                        '\\n',
+                        addslashes(
+                            $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD']
+                        )
+                    ),
                     'TXT_DOWNLOADS_UNLINK'                  => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK'],
                     'DOWNLOADS_DOWNLOAD_NAME_JS'            => htmlspecialchars($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 ));
 
                 // parse delete icon
+                $this->objTemplate->parse('downloads_download_function_delete_link');
+                // parse unlink icon
                 $this->objTemplate->parse('downloads_download_function_unlink_link');
                 $this->objTemplate->hideBlock('downloads_download_function_no_unlink_link');
             } else {
