@@ -141,7 +141,7 @@ class BackendTable extends HTML_Table {
                 $virtual = $rows['virtual'];
                 unset($rows['virtual']);
                 if (isset($options['multiActions'])) {
-                    $this->setCellContents($row, $col, '<input name="select-' . $rowname . '" value="' . $rowname . '" type="checkbox" />', 'TD', '0', false);
+                    $this->setCellContents($row, $col, '<input class="multi-action-checkbox" name="select-' . $rowname . '" value="' . $rowname . '" type="checkbox" />', 'TD', '0', false);
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
@@ -388,8 +388,8 @@ class BackendTable extends HTML_Table {
             if (isset($options['multiActions'])) {
                 $multiActionsCode = '
                     <img src="'.$cx->getCodeBaseCoreWebPath().'/Html/View/Media/arrow.gif" width="38" height="22" alt="^" title="^">
-                    <a href="#" onclick="jQuery(\'input[type=checkbox]\').prop(\'checked\', true);return false;">' . $_ARRAYLANG['TXT_SELECT_ALL'] . '</a> /
-                    <a href="#" onclick="jQuery(\'input[type=checkbox]\').prop(\'checked\', false);return false;">' . $_ARRAYLANG['TXT_DESELECT_ALL'] . '</a>
+                    <a href="#" onclick="jQuery(\'input[type=checkbox].multi-action-checkbox\').prop(\'checked\', true);return false;">' . $_ARRAYLANG['TXT_SELECT_ALL'] . '</a> /
+                    <a href="#" onclick="jQuery(\'input[type=checkbox].multi-action-checkbox\').prop(\'checked\', false);return false;">' . $_ARRAYLANG['TXT_DESELECT_ALL'] . '</a>
                     <img alt="-" title="-" src="'.$cx->getCodeBaseCoreWebPath().'/Html/View/Media/strike.gif">
                 ';
                 $multiActions = array(''=>$_ARRAYLANG['TXT_SUBMIT_SELECT']);
@@ -423,7 +423,7 @@ class BackendTable extends HTML_Table {
                         if (!matches) {
                             return false;
                         }
-                        var checkboxes = jQuery(this).closest("table").find("input[type=checkbox]");
+                        var checkboxes = jQuery(this).closest("table").find("input[type=checkbox].multi-action-checkbox");
                         var activeRows = [];
                         checkboxes.filter(":checked").each(function(el) {
                             activeRows.push(jQuery(this).val());
@@ -508,6 +508,8 @@ class BackendTable extends HTML_Table {
                     'sortField' => $sortField,
                 )
             );
+        } else if ($readOnly) {
+            $className .= ' view-show';
         }
 
         if (!empty($status)) {
