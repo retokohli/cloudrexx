@@ -368,6 +368,7 @@ class FormGenerator {
 
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
+        $group->setAttribute('id', 'group-' . $this->formId . '-' . $field);
         $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
         $label->setAttribute('for', 'form-' . $this->formId . '-' . $field);
         $fieldHeader = $field;
