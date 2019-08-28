@@ -3062,6 +3062,9 @@ if ($test === NULL) {
                 date(ASCMS_DATE_FORMAT_DATE, $birthday)
             );
         }
+        \JS::registerCode(
+            'cx.ready(function(){cx.jQuery(".datepicker-field").datepicker({dateFormat: "dd.mm.yy"});});'
+        );
         return true;
     }
 
