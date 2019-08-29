@@ -584,6 +584,7 @@ class Payment
                 ? \Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' => \Saferpay::getWindowMenuoptions(
                 \Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option','Shop')),
+            'SAFERPAY_EXPERIMENTAL' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('View')->flagExperimental(),
             // JSON Saferpay
             'SHOP_SAFERPAY_JSON_ID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_id','Shop'),
             'SHOP_SAFERPAY_JSON_TERMINAL_ID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_json_terminal_id','Shop'),
