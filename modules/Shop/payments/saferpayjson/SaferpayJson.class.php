@@ -214,6 +214,25 @@ class SaferpayJson
         ) {
             return false;
         }
+
+        // check 3D secure as proposed by https://saferpay.github.io/sndbx/index.html#3ds
+        $result['Liability'] = (array) $result['Liability'];
+        if (
+            empty($result['Liability']) ||
+            empty($result['Liability']['LiabilityShift']) ||
+            !$result['Liability']['LiabilityShift'] ||
+            empty($result['Liability']['LiableEntity']) ||
+            $result['Liability']['LiableEntity'] != 'ThreeDs' ||
+            empty($result['Liability']['ThreeDs']) ||
+            !($result['Liability']['ThreeDs'] = (array) $result['Liability']['ThreeDs']) ||
+            empty($result['Liability']['ThreeDs']['Authenticated']) ||
+            empty($result['Liability']['ThreeDs']['LiabilityShift']) ||
+            !$result['Liability']['ThreeDs']['Authenticated'] ||
+            !$result['Liability']['ThreeDs']['LiabilityShift']
+        ) {
+            return false;
+        }
+
         static::$transactionId = $result['Transaction']['Id'];
         return true;
     }
