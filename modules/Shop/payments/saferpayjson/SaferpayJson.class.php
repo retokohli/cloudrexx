@@ -172,7 +172,7 @@ class SaferpayJson
                     'CurrencyCode' => $arrOrder['CURRENCY'],
                 ),
                 'OrderId' => $arrOrder['ORDERID'],
-                'Description' => 'Lorem ipsum', // TODO
+                'Description' => $arrOrder['DESCRIPTION'],
             ),
             'ReturnUrls' => array(
                 'Success' => $arrOrder['SUCCESSLINK'],
