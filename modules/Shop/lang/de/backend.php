@@ -324,7 +324,7 @@ $_ARRAYLANG['TXT_RESELLER'] = "Reseller";
 $_ARRAYLANG['TXT_RESELLER_PRICE'] = "Preis für Reseller";
 $_ARRAYLANG['TXT_RESET'] = "Zurücksetzen";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Passwort neu setzen";
-$_ARRAYLANG['TXT_SAFERPAY'] = "Saferpay (überholt)";
+$_ARRAYLANG['TXT_SAFERPAY'] = "Saferpay (alte Schnittstelle)";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_JSON'] = "Saferpay JSON API";
 $_ARRAYLANG['TXT_SAVE_CHANGES'] = "Änderungen speichern";
 $_ARRAYLANG['TXT_SEARCH'] = "Suchen";
@@ -995,7 +995,7 @@ $_ARRAYLANG['TXT_SHOP_ORDER_ERROR_MISSING_CUSTOMER'] = "Der dieser Bestellung zu
 
 $_ARRAYLANG['TXT_SHOP_PSP_PAYREXX'] = "Payrexx";
 $_ARRAYLANG['TXT_SHOP_PSP_PAYPAL'] = "PayPal";
-$_ARRAYLANG['TXT_SHOP_PSP_SAFERPAY'] = "Saferpay";
+$_ARRAYLANG['TXT_SHOP_PSP_SAFERPAY'] = "Saferpay (alte Schnittstelle)";
 $_ARRAYLANG['TXT_SHOP_PSP_SAFERPAY_JSON'] = "Saferpay JSON API";
 $_ARRAYLANG['TXT_SHOP_PSP_YELLOWPAY'] = "PostFinance";
 $_ARRAYLANG['TXT_SHOP_PSP_INTERNAL'] = "Intern";
