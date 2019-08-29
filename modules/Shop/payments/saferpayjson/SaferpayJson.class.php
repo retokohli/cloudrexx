@@ -62,12 +62,6 @@ class SaferpayJson
     protected static $arrError = array();
 
     /**
-     * Warning messages
-     * @var     array
-     */
-    protected static $arrWarning = array();
-
-    /**
      * Contains the ID of the current transaction. Empty unless payment is confirmed.
      * @var string
      */
@@ -249,16 +243,6 @@ class SaferpayJson
         // Advise Shop to take Order ID from Session
         return false;
     }
-
-    /**
-     * Returns accumulated warnings as a HTML string
-     * @return  string          The warnings, if any, or the empty string
-     */
-    public static function getWarnings()
-    {
-        return join('<br />', static::$arrWarning);
-    }
-
 
     /**
      * Returns accumulated warnings as a HTML string
