@@ -485,23 +485,16 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             'DELIVERY'      => 'no',
         );
         $payInitUrl = \SaferpayJson::payInit($arrShopOrder);
-//DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
-        // Fixed: Added check for empty return string,
-        // i.e. on connection problems
         if (!$payInitUrl) {
-            return
-                "<font color='red'><b>".
-                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_SAFERPAY'].
-                "<br />$payInitUrl</b></font>".
-                "<br />".\Saferpay::getErrors();
+            return '<font color="red"><b>' .
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALIZE_SAFERPAY_JSON'].
+                '<br />' . $payInitUrl . '</b></font>' .
+                '<br />' . \SaferpayJson::getErrors();
         }
-        $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-        return
-            $return.
-            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
-            "<form method='post' action='$payInitUrl'>\n<input type='submit' value='".
-            $_ARRAYLANG['TXT_ORDER_NOW'].
-            "' />\n</form>\n";
+        return $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] . '<br/><br/>' . PHP_EOL .
+            '<form method="post" action="' . $payInitUrl . '">' . PHP_EOL.
+            '<input type="submit" value="' .  $_ARRAYLANG['TXT_ORDER_NOW'] .
+            '" />' . PHP_EOL . '</form>' . PHP_EOL;
     }
 
     /**
