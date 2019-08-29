@@ -899,6 +899,9 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
             array(11, 'external', 'mobilesolutions',
                 'PostFinance Mobile',
                 'https://postfinance.mobilesolutions.ch/', 1, 'logo_postfinance_mobile.gif'),
+            array(16, 'external', 'saferpay_json',
+                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
+                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
         );
         $query_template = "
             REPLACE INTO `$table_name_new` (
