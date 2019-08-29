@@ -230,8 +230,8 @@ class SaferpayJson
             // ThreeDs needs LiabilityShift to be true, "Authenticated" can be
             // false. This would mean that the bank granted permission instead
             // of real ThreeDs validation.
+            !isset($result['Liability']['ThreeDs']['Authenticated']) ||
             empty($result['Liability']['ThreeDs']['LiabilityShift']) ||
-            !$result['Liability']['ThreeDs']['Authenticated'] ||
             !$result['Liability']['ThreeDs']['LiabilityShift']
         ) {
             return false;
