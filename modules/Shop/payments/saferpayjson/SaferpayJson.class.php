@@ -218,7 +218,6 @@ class SaferpayJson
         // check 3D secure as proposed by https://saferpay.github.io/sndbx/index.html#3ds
         $result['Liability'] = (array) $result['Liability'];
         if (
-            empty($result['Liability']) ||
             // LiabilityShift needs to be true
             empty($result['Liability']['LiabilityShift']) ||
             !$result['Liability']['LiabilityShift'] ||
@@ -228,7 +227,6 @@ class SaferpayJson
             empty($result['Liability']['ThreeDs']) ||
             // Convert ThreeDs to array
             !($result['Liability']['ThreeDs'] = (array) $result['Liability']['ThreeDs']) ||
-            empty($result['Liability']['ThreeDs']['Authenticated']) ||
             // ThreeDs needs LiabilityShift to be true, "Authenticated" can be
             // false. This would mean that the bank granted permission instead
             // of real ThreeDs validation.
