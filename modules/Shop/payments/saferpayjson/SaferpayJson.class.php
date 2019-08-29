@@ -219,13 +219,19 @@ class SaferpayJson
         $result['Liability'] = (array) $result['Liability'];
         if (
             empty($result['Liability']) ||
+            // LiabilityShift needs to be true
             empty($result['Liability']['LiabilityShift']) ||
             !$result['Liability']['LiabilityShift'] ||
+            // LiableEntity is always TreeDs
             empty($result['Liability']['LiableEntity']) ||
             $result['Liability']['LiableEntity'] != 'ThreeDs' ||
             empty($result['Liability']['ThreeDs']) ||
+            // Convert ThreeDs to array
             !($result['Liability']['ThreeDs'] = (array) $result['Liability']['ThreeDs']) ||
             empty($result['Liability']['ThreeDs']['Authenticated']) ||
+            // ThreeDs needs LiabilityShift to be true, "Authenticated" can be
+            // false. This would mean that the bank granted permission instead
+            // of real ThreeDs validation.
             empty($result['Liability']['ThreeDs']['LiabilityShift']) ||
             !$result['Liability']['ThreeDs']['Authenticated'] ||
             !$result['Liability']['ThreeDs']['LiabilityShift']
