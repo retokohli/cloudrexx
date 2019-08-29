@@ -71,7 +71,7 @@ class SaferpayJson
      * Base API URL for live system
      * @var string
      */
-    protected static $liveUrl = '';
+    protected static $liveUrl = 'https://www.saferpay.com/api/Payment/v1/';
 
     /**
      * Base API URL for test system
