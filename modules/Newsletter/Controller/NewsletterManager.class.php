@@ -994,7 +994,7 @@ class NewsletterManager extends NewsletterLib
             $this->_objTpl->touchBlock('crmMembershipAssociatedToolTipAfterSend');
             $this->_objTpl->hideBlock('crmMembershipAssociatedToolTipBeforeSend');
 
-            $this->_objTpl->setVariable(array(
+            $this->_objTpl->setGlobalVariable(array(
                 'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'],
                 'NEWSLETTER_LIST_DISABLED'                   => 'disabled="disabled"'
             ));
@@ -1019,22 +1019,46 @@ class NewsletterManager extends NewsletterLib
         $this->emailEditParseLists($arrAssociatedLists);
 
         // parse user group selection
-        $this->emailEditParseGroups($arrAssociatedGroups);
+        if (!empty($arrSettings['deliver_user_recipients']['setvalue'])) {
+            $this->emailEditParseGroups($arrAssociatedGroups);
+            $this->_objTpl->touchBlock('deliver_user_recipients');
+        } else {
+            $this->_objTpl->hideBlock('deliver_user_recipients');
+        }
 
         // parse Crm membership filter
-        $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-        $crmMemberships = array_keys($objCrmLibrary->getMemberships());
-        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembership', $crmMembershipFilter['associate']);
-        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembershipFilterInclude', $crmMembershipFilter['include']);
-        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembershipFilterExclude', $crmMembershipFilter['exclude']);
-        $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'          => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'],
-            'TXT_NEWSLETTER_CRM_MEMBERSHIP'                 => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP'],
-            'TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'         => $_ARRAYLANG['TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'],
-            'TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'     => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'],
-            'TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'     => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'],
-        ));
-        \JS::activate('chosen');
+        if (
+            !empty($arrSettings['deliver_crm_recipients']['setvalue']) ||
+            !empty($arrSettings['use_crm_filter']['setvalue'])
+        ) {
+            $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+            $crmMemberships = array_keys($objCrmLibrary->getMemberships());
+
+            if (!empty($arrSettings['deliver_crm_recipients']['setvalue'])) {
+                $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembership', $crmMembershipFilter['associate']);
+                $this->_objTpl->touchBlock('deliver_crm_recipients');
+            } else {
+                $this->_objTpl->hideBlock('deliver_crm_recipients');
+            }
+            if (!empty($arrSettings['use_crm_filter']['setvalue'])) {
+                $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembershipFilterInclude', $crmMembershipFilter['include']);
+                $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembershipFilterExclude', $crmMembershipFilter['exclude']);
+                $this->_objTpl->touchBlock('use_crm_filter');
+            } else {
+                $this->_objTpl->hideBlock('use_crm_filter');
+            }
+            $this->_objTpl->setVariable(array(
+                'TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'          => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'],
+                'TXT_NEWSLETTER_CRM_MEMBERSHIP'                 => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP'],
+                'TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'         => $_ARRAYLANG['TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'],
+                'TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'     => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'],
+                'TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'     => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'],
+            ));
+            \JS::activate('chosen');
+        } else {
+            $this->_objTpl->hideBlock('deliver_crm_recipients');
+            $this->_objTpl->hideBlock('use_crm_filter');
+        }
 
         if (count($arrAttachment) > 0) {
             foreach ($arrAttachment as $attachment) {
