@@ -52,12 +52,12 @@
     <td width="80%"><input type="text" name="sender_email" size="40" maxlength="255" value="{SENDERMAIL_VALUE}" /></td>
   </tr>
   <tr class="row1">
-    <td width="20%">{TXT_SENDER} {TXT_LASTNAME}</td>
-    <td width="80%"><input type="text" name="sender_name" size="40" maxlength="255" value="{SENDERNAME_VALUE}" /></td>
+    <td>{TXT_SENDER} {TXT_LASTNAME}</td>
+    <td><input type="text" name="sender_name" size="40" maxlength="255" value="{SENDERNAME_VALUE}" /></td>
   </tr>
   <tr class="row2">
-    <td width="20%">{TXT_NEWSLETTER_REPLY_EMAIL} (Return-Path)</td>
-    <td width="80%"><input type="text" name="return_path" size="40" maxlength="255" value="{RETURNPATH_VALUE}" /></td>
+    <td>{TXT_NEWSLETTER_REPLY_EMAIL} (Return-Path)</td>
+    <td><input type="text" name="return_path" size="40" maxlength="255" value="{RETURNPATH_VALUE}" /></td>
   </tr>
 </table>
 <br />
@@ -66,8 +66,8 @@
     <th colspan="2">{TXT_NEWSLETTER_RECIPIENTS}</th>
   </tr>
   <tr class="row1">
-    <td valign="top">{TXT_NEWSLETTER_SEND_BY_SUBSCRIBE}</td>
-    <td>
+    <td width="20%" valign="top">{TXT_NEWSLETTER_SEND_BY_SUBSCRIBE}</td>
+    <td width="80%">
         <label>
             <input type="radio" name="mailSendSubscribe" value="1" {NEWSLETTER_SEND_BY_SUBSCRIBE_ON} />{TXT_NEWSLETTER_NOTIFICATION_ACTIVATE}
         </label>
@@ -99,8 +99,8 @@
     </td>
   </tr>
   <tr class="row2">
-    <td width="20%">{TXT_NEWSLETTER_CONFIRM_LINK_HOUR}</td>
-    <td width="80%"><input type="text" name="confirmLinkHour" size="40" maxlength="255" value="{NEWSLETTER_CONFIRM_LINK_HOUR_VALUE}" /></td>
+    <td>{TXT_NEWSLETTER_CONFIRM_LINK_HOUR}</td>
+    <td><input type="text" name="confirmLinkHour" size="40" maxlength="255" value="{NEWSLETTER_CONFIRM_LINK_HOUR_VALUE}" /></td>
   </tr>
 </table>
 <br />
@@ -113,8 +113,8 @@
     <td width="80%"><input type="text" name="mails_per_run" size="40" maxlength="255" value="{MAILSPERRUN_VALUE}" /></td>
   </tr>
   <tr class="row1">
-    <td width="20%">{TXT_TEST_MAIL} (E-Mail)</td>
-    <td width="80%"><input type="text" name="test_mail" size="40" maxlength="255" value="{TEST_MAIL_VALUE}" /></td>
+    <td>{TXT_TEST_MAIL} (E-Mail)</td>
+    <td><input type="text" name="test_mail" size="40" maxlength="255" value="{TEST_MAIL_VALUE}" /></td>
   </tr>
   <tr class="row1">
     <td style="vertical-align:top;">{TXT_NEWSLETTER_TASK_REJECTED_EMAIL}</td>
