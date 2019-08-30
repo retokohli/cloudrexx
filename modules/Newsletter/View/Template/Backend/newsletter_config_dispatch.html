@@ -65,30 +65,6 @@
   <tr>
     <th colspan="2">{TXT_NEWSLETTER_RECIPIENTS}</th>
   </tr>
-</table>
-<br />
-<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
-  <tr>
-    <th colspan="2">{TXT_DISPATCH_SETINGS}</th>
-  </tr>
-  <tr class="row1">
-    <td width="20%">{TXT_SEND_LIMIT}</td>
-    <td width="80%"><input type="text" name="mails_per_run" size="40" maxlength="255" value="{MAILSPERRUN_VALUE}" /></td>
-  </tr>
-  <tr class="row1">
-    <td width="20%">{TXT_TEST_MAIL} (E-Mail)</td>
-    <td width="80%"><input type="text" name="test_mail" size="40" maxlength="255" value="{TEST_MAIL_VALUE}" /></td>
-  </tr>
-  <tr class="row1">
-    <td style="vertical-align:top;">{TXT_NEWSLETTER_TASK_REJECTED_EMAIL}</td>
-    <td>
-      <input type="radio" name="newsletter_rejected_mail_task" value="ignore" id="newsletter_rejected_mail_task_ignore" {NEWSLETTER_REJECTED_MAIL_IGNORE} /><label for="newsletter_rejected_mail_task_ignore">{TXT_NEWSLETTER_DO_NOTING}</label><br />
-      <input type="radio" name="newsletter_rejected_mail_task" value="deactivate" id="newsletter_rejected_mail_task_deactivate" {NEWSLETTER_REJECTED_MAIL_DEACTIVATE} /><label for="newsletter_rejected_mail_task_deactivate">{TXT_NEWSLETTER_DEACTIVATE_EMAIL}</label><br />
-      <input type="radio" name="newsletter_rejected_mail_task" value="delete" id="newsletter_rejected_mail_task_delete" {NEWSLETTER_REJECTED_MAIL_DELETE} /><label for="newsletter_rejected_mail_task_delete">{TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS}</label><br />
-      <input type="radio" name="newsletter_rejected_mail_task" value="inform" id="newsletter_rejected_mail_task_inform" {NEWSLETTER_REJECTED_MAIL_INFORM} /><label for="newsletter_rejected_mail_task_inform">{TXT_NEWSLETTER_INFORM_ADMIN}</label>
-      <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM}</span>
-    </td>
-  </tr>
   <tr class="row1">
     <td valign="top">{TXT_NEWSLETTER_SEND_BY_SUBSCRIBE}</td>
     <td>
@@ -120,6 +96,30 @@
         <label>
             <input type="radio" name="def_unsubscribe" value="0" {NEWSLETTER_UNSUBSCRIBE_DEACTIVATE_ON} />{TXT_NEWSLETTER_UNSUBSCRIBE_DEACTIVATE}
         </label>
+    </td>
+  </tr>
+</table>
+<br />
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+  <tr>
+    <th colspan="2">{TXT_DISPATCH_SETINGS}</th>
+  </tr>
+  <tr class="row1">
+    <td width="20%">{TXT_SEND_LIMIT}</td>
+    <td width="80%"><input type="text" name="mails_per_run" size="40" maxlength="255" value="{MAILSPERRUN_VALUE}" /></td>
+  </tr>
+  <tr class="row1">
+    <td width="20%">{TXT_TEST_MAIL} (E-Mail)</td>
+    <td width="80%"><input type="text" name="test_mail" size="40" maxlength="255" value="{TEST_MAIL_VALUE}" /></td>
+  </tr>
+  <tr class="row1">
+    <td style="vertical-align:top;">{TXT_NEWSLETTER_TASK_REJECTED_EMAIL}</td>
+    <td>
+      <input type="radio" name="newsletter_rejected_mail_task" value="ignore" id="newsletter_rejected_mail_task_ignore" {NEWSLETTER_REJECTED_MAIL_IGNORE} /><label for="newsletter_rejected_mail_task_ignore">{TXT_NEWSLETTER_DO_NOTING}</label><br />
+      <input type="radio" name="newsletter_rejected_mail_task" value="deactivate" id="newsletter_rejected_mail_task_deactivate" {NEWSLETTER_REJECTED_MAIL_DEACTIVATE} /><label for="newsletter_rejected_mail_task_deactivate">{TXT_NEWSLETTER_DEACTIVATE_EMAIL}</label><br />
+      <input type="radio" name="newsletter_rejected_mail_task" value="delete" id="newsletter_rejected_mail_task_delete" {NEWSLETTER_REJECTED_MAIL_DELETE} /><label for="newsletter_rejected_mail_task_delete">{TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS}</label><br />
+      <input type="radio" name="newsletter_rejected_mail_task" value="inform" id="newsletter_rejected_mail_task_inform" {NEWSLETTER_REJECTED_MAIL_INFORM} /><label for="newsletter_rejected_mail_task_inform">{TXT_NEWSLETTER_INFORM_ADMIN}</label>
+      <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM}</span>
     </td>
   </tr>
   <tr class="row1">
