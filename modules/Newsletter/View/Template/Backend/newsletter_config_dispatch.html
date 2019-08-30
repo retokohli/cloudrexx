@@ -31,13 +31,13 @@
     });
 // ]]>
 </script>
+<form name="adduser" action="index.php?cmd=Newsletter&amp;act=Settings" method="post" onsubmit="return newsletterUpdate()">
+<input type="hidden" name="update" value="1" />
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
   <tr>
     <th>{TXT_TITLE}</th>
   </tr>
 </table>
-<form name="adduser" action="index.php?cmd=Newsletter&amp;act=Settings" method="post" onsubmit="return newsletterUpdate()">
-<input type="hidden" name="update" value="1" />
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
   <tr class="row2">
     <td width="20%">{TXT_SENDER} E-Mail</td>
