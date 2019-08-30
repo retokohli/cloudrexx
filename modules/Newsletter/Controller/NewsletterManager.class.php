@@ -984,6 +984,37 @@ class NewsletterManager extends NewsletterLib
         $this->_objTpl->setVariable('TXT_NEWSLETTER_HTML_UC', $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC']);
         $this->_objTpl->touchBlock('newsletter_mail_html_content');
 
+        // campaign has been sent already, disable recipient selection
+        if (!$copy && $mailId > 0 && $mailSendDate > 0) {
+            $this->_objTpl->touchBlock('associatedListToolTip');
+            $this->_objTpl->touchBlock('associatedGroupToolTipAfterSent');
+            $this->_objTpl->hideBlock('associatedGroupToolTipBeforeSend');
+            $this->_objTpl->touchBlock('crmMembershipFilterToolTipAfterSent');
+            $this->_objTpl->hideBlock('crmMembershipFilterToolTipBeforeSend');
+            $this->_objTpl->touchBlock('crmMembershipAssociatedToolTipAfterSend');
+            $this->_objTpl->hideBlock('crmMembershipAssociatedToolTipBeforeSend');
+
+            $this->_objTpl->setVariable(array(
+                'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'],
+                'NEWSLETTER_LIST_DISABLED'                   => 'disabled="disabled"'
+            ));
+        } else {
+            // allow recipient selection as long as the campaign has not yet
+            // been sent
+            $this->_objTpl->setVariable(array(
+                'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'],
+                'TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'    => sprintf($_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'], '<em>'.$_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'].'</em>', '<em>'.$_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'].'</em>'),
+            ));
+
+            $this->_objTpl->hideBlock('associatedListToolTip');
+            $this->_objTpl->hideBlock('associatedGroupToolTipAfterSent');
+            $this->_objTpl->touchBlock('associatedGroupToolTipBeforeSend');
+            $this->_objTpl->hideBlock('crmMembershipFilterToolTipAfterSent');
+            $this->_objTpl->touchBlock('crmMembershipFilterToolTipBeforeSend');
+            $this->_objTpl->hideBlock('crmMembershipAssociatedToolTipAfterSend');
+            $this->_objTpl->touchBlock('crmMembershipAssociatedToolTipBeforeSend');
+        }
+
         // parse newsletter list selection
         $this->emailEditParseLists($arrAssociatedLists);
 
@@ -1023,34 +1054,6 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_MAIL_ATTACHMENT_NR' => $attachmentNr,
             'NEWSLETTER_MAIL_ATTACHMENT_BOX' => $attachmentNr > 0 ? 'block' : 'none',
         ));
-
-        if (!$copy && $mailId > 0 && $mailSendDate > 0) {
-            $this->_objTpl->touchBlock('associatedListToolTip');
-            $this->_objTpl->touchBlock('associatedGroupToolTipAfterSent');
-            $this->_objTpl->hideBlock('associatedGroupToolTipBeforeSend');
-            $this->_objTpl->touchBlock('crmMembershipFilterToolTipAfterSent');
-            $this->_objTpl->hideBlock('crmMembershipFilterToolTipBeforeSend');
-            $this->_objTpl->touchBlock('crmMembershipAssociatedToolTipAfterSend');
-            $this->_objTpl->hideBlock('crmMembershipAssociatedToolTipBeforeSend');
-
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'],
-                'NEWSLETTER_LIST_DISABLED'                   => 'disabled="disabled"'
-            ));
-        } else {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'],
-                'TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'    => sprintf($_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'], '<em>'.$_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'].'</em>', '<em>'.$_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'].'</em>'),
-            ));
-
-            $this->_objTpl->hideBlock('associatedListToolTip');
-            $this->_objTpl->hideBlock('associatedGroupToolTipAfterSent');
-            $this->_objTpl->touchBlock('associatedGroupToolTipBeforeSend');
-            $this->_objTpl->hideBlock('crmMembershipFilterToolTipAfterSent');
-            $this->_objTpl->touchBlock('crmMembershipFilterToolTipBeforeSend');
-            $this->_objTpl->hideBlock('crmMembershipAssociatedToolTipAfterSend');
-            $this->_objTpl->touchBlock('crmMembershipAssociatedToolTipBeforeSend');
-        }
 
         // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
