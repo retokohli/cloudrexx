@@ -47,16 +47,19 @@
   <tr>
     <th colspan="2">{TXT_NEWSLETTER_EMAIL_CAMPAIGNS}</th>
   </tr>
+  <tr class="row3">
+    <td colspan="2">{TXT_NEWSLETTER_DEFAULTS_FOR_EMAIL_CAMPAIGNS}</td>
+  </tr>
   <tr class="row2">
-    <td width="20%">{TXT_SENDER} E-Mail</td>
+    <td width="20%">{TXT_NEWSLETTER_SENDER} ({TXT_NEWSLETTER_EMAIL})</td>
     <td width="80%"><input type="text" name="sender_email" size="40" maxlength="255" value="{SENDERMAIL_VALUE}" /></td>
   </tr>
   <tr class="row1">
-    <td>{TXT_SENDER} {TXT_LASTNAME}</td>
+    <td>{TXT_NEWSLETTER_SENDER} ({TXT_NEWSLETTER_NAME})</td>
     <td><input type="text" name="sender_name" size="40" maxlength="255" value="{SENDERNAME_VALUE}" /></td>
   </tr>
   <tr class="row2">
-    <td>{TXT_NEWSLETTER_REPLY_EMAIL} (Return-Path)</td>
+    <td>{TXT_NEWSLETTER_REPLY_ADDRESS} (Reply)</td>
     <td><input type="text" name="return_path" size="40" maxlength="255" value="{RETURNPATH_VALUE}" /></td>
   </tr>
 </table>
