@@ -1989,8 +1989,11 @@ class NewsletterManager extends NewsletterLib
                                  WHEN "notificationUnsubscribe" THEN "'. contrexx_input2int($_POST["mailSendUnsubscribe"]) .'"
                                  WHEN "statistics" THEN "'. contrexx_input2int($_POST["statistics"]) .'"
                                  WHEN "confirmLinkHour" THEN "'. contrexx_input2int($_POST["confirmLinkHour"]) .'"
+                                 WHEN "deliver_user_recipients" THEN "'. contrexx_input2int($_POST['deliver-user-recipients']) .'"
+                                 WHEN "deliver_crm_recipients" THEN "'. contrexx_input2int($_POST['deliver-crm-recipients']) .'"
+                                 WHEN "use_crm_filter" THEN "'. contrexx_input2int($_POST['use-crm-filter']) .'"
                                  END
-                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe", "statistics", "confirmLinkHour")';
+                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe", "statistics", "confirmLinkHour", "deliver_user_recipients", "deliver_crm_recipients", "use_crm_filter")';
             $objDatabase->Execute($queryUpdateSetting);
             if (
                 isset($_POST['statistics_drop']) &&
@@ -2068,6 +2071,10 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_EMAIL_CAMPAIGNS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS'],
             'TXT_NEWSLETTER_DEFAULTS_FOR_EMAIL_CAMPAIGNS' => $_ARRAYLANG['TXT_NEWSLETTER_DEFAULTS_FOR_EMAIL_CAMPAIGNS'],
             'TXT_NEWSLETTER_RECIPIENTS' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS'],
+            'TXT_NEWSLETTER_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_LISTS'],
+            'TXT_NEWSLETTER_DELIVER_USER_RECIPIENTS' => $_ARRAYLANG['TXT_NEWSLETTER_DELIVER_USER_RECIPIENTS'],
+            'TXT_NEWSLETTER_DELIVER_CRM_RECIPIENTS' => $_ARRAYLANG['TXT_NEWSLETTER_DELIVER_CRM_RECIPIENTS'],
+            'TXT_NEWSLETTER_USE_CRM_FILTER' => $_ARRAYLANG['TXT_NEWSLETTER_USE_CRM_FILTER'],
 
             'SENDERMAIL_VALUE' => htmlentities(
                 $arrSettings['sender_mail'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -2114,6 +2121,24 @@ class NewsletterManager extends NewsletterLib
                     ? 'checked="checked"' : ''),
             'NEWSLETTER_STATISTICS_OFF' =>
                 ($arrSettings['statistics'] == 0
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_DELIVER_USER_RECIPIENTS_ON' =>
+                ($arrSettings['deliver_user_recipients'] != 0
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_DELIVER_USER_RECIPIENTS_OFF' =>
+                ($arrSettings['deliver_user_recipients'] == 0
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_DELIVER_CRM_RECIPIENTS_ON' =>
+                ($arrSettings['deliver_crm_recipients'] != 0
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_DELIVER_CRM_RECIPIENTS_OFF' =>
+                ($arrSettings['deliver_crm_recipients'] == 0
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_USE_CRM_FILTER_ON' =>
+                ($arrSettings['use_crm_filter'] != 0
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_USE_CRM_FILTER_OFF' =>
+                ($arrSettings['use_crm_filter'] == 0
                     ? 'checked="checked"' : ''),
             'TXT_NEWSLETTER_CONFIRM_LINK_HOUR'   => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_LINK_VALIDITY_HOUR'],
             'NEWSLETTER_CONFIRM_LINK_HOUR_VALUE' => contrexx_raw2xhtml($arrSettings['confirmLinkHour']),

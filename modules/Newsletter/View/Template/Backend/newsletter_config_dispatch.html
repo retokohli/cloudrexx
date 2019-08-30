@@ -62,6 +62,45 @@
     <td>{TXT_NEWSLETTER_REPLY_ADDRESS} (Reply)</td>
     <td><input type="text" name="return_path" size="40" maxlength="255" value="{RETURNPATH_VALUE}" /></td>
   </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr class="row3">
+    <td colspan="2">{TXT_NEWSLETTER_LISTS}</td>
+  </tr>
+  <tr class="row1">
+    <td width="20%" valign="top">{TXT_NEWSLETTER_DELIVER_USER_RECIPIENTS}</td>
+    <td width="80%">
+        <label>
+            <input type="radio" name="deliver-user-recipients" value="1" {NEWSLETTER_DELIVER_USER_RECIPIENTS_ON} />{TXT_NEWSLETTER_NOTIFICATION_ACTIVATE}
+        </label>
+        <label>
+            <input type="radio" name="deliver-user-recipients" value="0" {NEWSLETTER_DELIVER_USER_RECIPIENTS_OFF} />{TXT_NEWSLETTER_NOTIFICATION_DEACTIVATE}
+        </label>
+    </td>
+  </tr>
+  <tr class="row1">
+    <td width="20%" valign="top">{TXT_NEWSLETTER_DELIVER_CRM_RECIPIENTS}</td>
+    <td width="80%">
+        <label>
+            <input type="radio" name="deliver-crm-recipients" value="1" {NEWSLETTER_DELIVER_CRM_RECIPIENTS_ON} />{TXT_NEWSLETTER_NOTIFICATION_ACTIVATE}
+        </label>
+        <label>
+            <input type="radio" name="deliver-crm-recipients" value="0" {NEWSLETTER_DELIVER_CRM_RECIPIENTS_OFF} />{TXT_NEWSLETTER_NOTIFICATION_DEACTIVATE}
+        </label>
+    </td>
+  </tr>
+  <tr class="row1">
+    <td width="20%" valign="top">{TXT_NEWSLETTER_USE_CRM_FILTER}</td>
+    <td width="80%">
+        <label>
+            <input type="radio" name="use-crm-filter" value="1" {NEWSLETTER_USE_CRM_FILTER_ON} />{TXT_NEWSLETTER_NOTIFICATION_ACTIVATE}
+        </label>
+        <label>
+            <input type="radio" name="use-crm-filter" value="0" {NEWSLETTER_USE_CRM_FILTER_OFF} />{TXT_NEWSLETTER_NOTIFICATION_DEACTIVATE}
+        </label>
+    </td>
+  </tr>
 </table>
 <br />
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
