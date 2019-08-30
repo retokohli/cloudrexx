@@ -182,10 +182,6 @@ class NewsletterManager extends NewsletterLib
                 \Permission::checkAccess(174, 'static');
                 $this->_users();
                 break;
-            case "config":
-                \Permission::checkAccess(176, 'static');
-                $this->configOverview();
-                break;
             case "editusersort":
                 \Permission::checkAccess(174, 'static');
                 $this->edituserSort();
@@ -2048,7 +2044,6 @@ class NewsletterManager extends NewsletterLib
             'TXT_TEST_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_TEST_RECIPIENT'],
             'TXT_FAILED' => $_ARRAYLANG['TXT_NEWSLETTER_FAILED'],
             'TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM'],
-//            'TXT_BCC' => $_ARRAYLANG['TXT_NEWSLETTER_BCC'],
             'TXT_NEWSLETTER_OVERVIEW_ENTRIES' => $_ARRAYLANG['TXT_NEWSLETTER_OVERVIEW_ENTRIES'],
             'TXT_NEWSLETTER_REPLY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_EMAIL'],
             'TXT_SYSTEM_SETINGS' => "System",
@@ -2077,8 +2072,6 @@ class NewsletterManager extends NewsletterLib
             'RETURNPATH_VALUE' => htmlentities(
                 $arrSettings['reply_mail'], ENT_QUOTES, CONTREXX_CHARSET),
             'MAILSPERRUN_VALUE' => $arrSettings['mails_per_run'],
-            //'BCC_VALUE' => htmlentities(
-//                $arrSettings['bcc_mail'],
             'OVERVIEW_ENTRIES_VALUE' => $arrSettings['overview_entries_limit'],
             'TEST_MAIL_VALUE' => htmlentities(
                 $arrSettings['test_mail'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -4952,22 +4945,6 @@ $WhereStatement = '';
                 $this->_userList();
                 break;
         }
-    }
-
-
-    function configOverview()
-    {
-        global $_ARRAYLANG;
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_configuration.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_SETTINGS']);
-        $this->_objTpl->setVariable(array(
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_CONFIRM_MAIL' => "Aktivierungs E-Mail",
-            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-        ));
     }
 
 
