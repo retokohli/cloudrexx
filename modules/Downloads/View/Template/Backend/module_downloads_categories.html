@@ -64,7 +64,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 
 function downloadsDeleteDownload(id, name)
 {
-    strMsg = '{DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT}';
+    const strMsg = cx.variables.get('DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT', 'downloads');
     if (confirm(strMsg.replace('%s', name)+'\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
         window.location.href = 'index.php?cmd=Downloads&act=categories_delete_download&parent_id=' +
             '{DOWNLOADS_CATEGORY_ID}&id='+id+'&csrf={CSRF_KEY}';

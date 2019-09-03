@@ -2609,16 +2609,21 @@ class DownloadsManager extends DownloadsLibrary
                     'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG[
                         'TXT_DOWNLOADS_DELETE'
                     ],
-                    'DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT' => preg_replace(
+                    'TXT_DOWNLOADS_UNLINK'                  => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK'],
+                    'DOWNLOADS_DOWNLOAD_NAME_JS'            => htmlspecialchars($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+                ));
+
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT',
+                    preg_replace(
                         '#\n#',
                         '\\n',
                         addslashes(
                             $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD']
                         )
                     ),
-                    'TXT_DOWNLOADS_UNLINK'                  => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK'],
-                    'DOWNLOADS_DOWNLOAD_NAME_JS'            => htmlspecialchars($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
-                ));
+                    'downloads'
+                );
 
                 // parse delete icon
                 $this->objTemplate->parse('downloads_download_function_delete_link');
