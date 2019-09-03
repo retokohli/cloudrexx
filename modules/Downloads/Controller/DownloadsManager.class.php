@@ -208,8 +208,8 @@ class DownloadsManager extends DownloadsLibrary
                 }
                 break;
             case 'categories_delete_download':
-                $this->loadCategoryNavigation();
                 $this->deleteDownload();
+                $this->loadCategoryNavigation();
                 $this->categories();
                 $this->parseCategoryNavigation();
                 break;
