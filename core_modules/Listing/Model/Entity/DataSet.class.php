@@ -181,7 +181,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      */
     protected function convertObject(
         $object,
-        &$key,
+        &$key = '',
         $forbiddenClasses = array('Doctrine\ORM\PersistentCollection'),
         $prefix = 'x.'
     ) {
