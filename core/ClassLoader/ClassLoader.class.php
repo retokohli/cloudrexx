@@ -350,7 +350,12 @@ class ClassLoader {
         // re-called while already performing an other autoload call.
         // Such case indicates that the system got into an infinite recursive
         // autoload loop. To prevent a memory overflow, we must abort the
-        // execution in such a case
+        // execution in such a case.
+        // Note: as the threshold is just 1, one might consider of just using
+        // a boolean instead. The latter might just be alright at this point
+        // in time. However, as we are not yet sure if there might actually
+        // be a legitimate case where a greater count of 1 is valid, we shell
+        // keep this variable as an integer as of for now.
         static $resolveCount = 0;
         if ($resolveCount > 1) {
             throw new \Exception('ClassLoader: Recursive loading aborted');
