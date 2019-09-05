@@ -345,8 +345,28 @@ class ClassLoader {
      *                  could not be located.
      */
     public function loadFile($path, $name = '') {
+        // Try to identify recursive autoloading.
+        // If $resolveCount is greater than 1, then the autoloader has been
+        // re-called while already performing an other autoload call.
+        // Such case indicates that the system got into an infinite recursive
+        // autoload loop. To prevent a memory overflow, we must abort the
+        // execution in such a case
+        static $resolveCount = 0;
+        if ($resolveCount > 1) {
+            throw new \Exception('ClassLoader: Recursive loading aborted');
+        }
+
+        // before trying to resolve the path, we do increase the resolveCount
+        $resolveCount++;
 
         $path = $this->getFilePath($path);
+
+        // If this point is reached, then the resolving has been completed
+        // without calling a recursive call. Therefore, we can reduce the
+        // resolveCount by one again.
+        $resolveCount--;
+
+        // abort in case the path does not exist
         if (!$path) {
             return false;
         }
