@@ -527,3 +527,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_SOURCE_OPT_IN'] = 'Opt-In at %s';
 $_ARRAYLANG['TXT_NEWSLETTER_CONSENT_TOOLTIP'] = 'Tells whether the recipient gave his consent. <ul><li><img src="/core/Core/View/Media/icons/led_green.gif" alt="Green" /> means that the recipient gave consent by double-opt-in.</li><li><img src="/core/Core/View/Media/icons/led_orange.gif" alt="Orange" /> means that the recipient has either been added manually using the back-end console or that he has been imported via API.</li></ul><br />
 If the recipients are filtered by list, the second icon shows the consent for this list.<br /><br />
 Hover over an icon to see detailed information.';
+$_ARRAYLANG['TXT_NEWSLETTER_DELIVER_USER_RECIPIENTS'] = 'Deliver to User Groups';
+$_ARRAYLANG['TXT_NEWSLETTER_DELIVER_CRM_RECIPIENTS'] = 'Deliver to CRM Customer groups';
+$_ARRAYLANG['TXT_NEWSLETTER_USE_CRM_FILTER'] = 'Filter by CRM Customer groups';
