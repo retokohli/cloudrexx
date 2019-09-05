@@ -182,10 +182,6 @@ class NewsletterManager extends NewsletterLib
                 \Permission::checkAccess(174, 'static');
                 $this->_users();
                 break;
-            case "config":
-                \Permission::checkAccess(176, 'static');
-                $this->configOverview();
-                break;
             case "editusersort":
                 \Permission::checkAccess(174, 'static');
                 $this->edituserSort();
@@ -280,7 +276,7 @@ class NewsletterManager extends NewsletterLib
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_DISPATCH_SETINGS'           => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_NEWSLETTER_GENERAL'           => $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'],
             'TXT_GENERATE_HTML'              => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_NEWSLETTER_TEMPLATES'       => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE'       => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
@@ -1796,7 +1792,6 @@ class NewsletterManager extends NewsletterLib
             'HTML_CODE' => htmlentities($this->_getHTML(), ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_TITLE' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
@@ -1924,7 +1919,6 @@ class NewsletterManager extends NewsletterLib
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_DISPATCH_SETINGS'          => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE'      => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_GENERATE_HTML'             => $_ARRAYLANG['TXT_GENERATE_HTML'],
@@ -1974,7 +1968,6 @@ class NewsletterManager extends NewsletterLib
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->addBlockfile('NEWSLETTER_SETTINGS_FILE', 'settings_block', 'newsletter_config_dispatch.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
 
         if (isset($_POST["update"])) {
             $queryUpdateSetting = '
@@ -2017,8 +2010,8 @@ class NewsletterManager extends NewsletterLib
         }
         $this->_objTpl->setVariable(array(
             'TXT_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_SENDER' => $_ARRAYLANG['TXT_SENDER'],
-            'TXT_LASTNAME' => $_ARRAYLANG['TXT_LASTNAME'],
+            'TXT_NEWSLETTER_SENDER' => $_ARRAYLANG['TXT_NEWSLETTER_SENDER'],
+            'TXT_NEWSLETTER_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_NAME'],
             'TXT_RETURN_PATH' => $_ARRAYLANG['TXT_RETURN_PATH'],
             'TXT_SEND_LIMIT' => $_ARRAYLANG['TXT_SEND_LIMIT'],
             'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
@@ -2026,7 +2019,6 @@ class NewsletterManager extends NewsletterLib
             'TXT_WILDCART_INFOS' => $_ARRAYLANG['TXT_WILDCART_INFOS'],
             'TXT_USER_DATA' => $_ARRAYLANG["TXT_USER_DATA"],
             'TXT_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
-            'TXT_LASTNAME' => $_ARRAYLANG['TXT_LASTNAME'],
             'TXT_FIRSTNAME' => $_ARRAYLANG['TXT_FIRSTNAME'],
             'TXT_NEWSLETTER_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_ADDRESS'],
             'TXT_ZIP' => $_ARRAYLANG['TXT_ZIP'],
@@ -2048,9 +2040,8 @@ class NewsletterManager extends NewsletterLib
             'TXT_TEST_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_TEST_RECIPIENT'],
             'TXT_FAILED' => $_ARRAYLANG['TXT_NEWSLETTER_FAILED'],
             'TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM'],
-//            'TXT_BCC' => $_ARRAYLANG['TXT_NEWSLETTER_BCC'],
             'TXT_NEWSLETTER_OVERVIEW_ENTRIES' => $_ARRAYLANG['TXT_NEWSLETTER_OVERVIEW_ENTRIES'],
-            'TXT_NEWSLETTER_REPLY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_EMAIL'],
+            'TXT_NEWSLETTER_REPLY_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_ADDRESS'],
             'TXT_SYSTEM_SETINGS' => "System",
             'TXT_NEWSLETTER_DO_NOTING' => $_ARRAYLANG['TXT_NEWSLETTER_DO_NOTING'],
             'TXT_NEWSLETTER_TASK_REJECTED_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_TASK_REJECTED_EMAIL'],
@@ -2069,6 +2060,11 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_STATISTICS' => $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS'],
             'TXT_NEWSLETTER_STATISTICS_TOOLTIP' => $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_TOOLTIP'],
             'TXT_NEWSLETTER_STATISTICS_DROP' => $_ARRAYLANG['TXT_NEWSLETTER_STATISTICS_DROP'],
+            'TXT_NEWSLETTER_GENERAL' => $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'],
+            'TXT_NEWSLETTER_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL'],
+            'TXT_NEWSLETTER_EMAIL_CAMPAIGNS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS'],
+            'TXT_NEWSLETTER_DEFAULTS_FOR_EMAIL_CAMPAIGNS' => $_ARRAYLANG['TXT_NEWSLETTER_DEFAULTS_FOR_EMAIL_CAMPAIGNS'],
+            'TXT_NEWSLETTER_RECIPIENTS' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS'],
 
             'SENDERMAIL_VALUE' => htmlentities(
                 $arrSettings['sender_mail'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -2077,8 +2073,6 @@ class NewsletterManager extends NewsletterLib
             'RETURNPATH_VALUE' => htmlentities(
                 $arrSettings['reply_mail'], ENT_QUOTES, CONTREXX_CHARSET),
             'MAILSPERRUN_VALUE' => $arrSettings['mails_per_run'],
-            //'BCC_VALUE' => htmlentities(
-//                $arrSettings['bcc_mail'],
             'OVERVIEW_ENTRIES_VALUE' => $arrSettings['overview_entries_limit'],
             'TEST_MAIL_VALUE' => htmlentities(
                 $arrSettings['test_mail'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -2144,7 +2138,6 @@ class NewsletterManager extends NewsletterLib
             'TXT_TEMPLATE_ADD_NEW_TEMPLATE' => $_ARRAYLANG['TXT_TEMPLATE_ADD_NEW_TEMPLATE'],
             'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
             'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_SYSTEM_SETINGS' => "System",
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
@@ -2348,7 +2341,6 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_NEWS_CATEGORY_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_CATEGORY_NAME'],
             'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
             'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_SYSTEM_SETINGS' => "System",
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
@@ -4952,22 +4944,6 @@ $WhereStatement = '';
                 $this->_userList();
                 break;
         }
-    }
-
-
-    function configOverview()
-    {
-        global $_ARRAYLANG;
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_configuration.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_SETTINGS']);
-        $this->_objTpl->setVariable(array(
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_CONFIRM_MAIL' => "Aktivierungs E-Mail",
-            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-        ));
     }
 
 
