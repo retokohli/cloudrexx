@@ -236,7 +236,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $dataSource,
                 $method,
                 $apiKey,
-                $arguments
+                $arguments,
+                $arguments[1]
             );
             if (!$dataAccess) {
                 $response->setStatusCode(403);

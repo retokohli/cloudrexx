@@ -55,9 +55,10 @@ class DataAccessRepository extends EntityRepository {
      * @param string $method Request method (get, post, ...)
      * @param string $requestApiKey API key used in request
      * @param array $arguments List of arguments to the current request
+     * @param string $dataAccessName (optional) prefer the DataSource by this name
      * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess Matching DataAccess object or null
      */
-    public function getAccess($outputModule, $dataSource, $method, $requestApiKey, $arguments) {
+    public function getAccess($outputModule, $dataSource, $method, $requestApiKey, $arguments, $dataAccessName = '') {
         $requestReadonly = in_array($method, array('options', 'head', 'get'));
 
         // do we have a DataAccess for this DataSource?
