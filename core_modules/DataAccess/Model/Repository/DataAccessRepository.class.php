@@ -115,6 +115,9 @@ class DataAccessRepository extends EntityRepository {
             }
         }
         if (count($validDataAccesses)) {
+            if (!empty($dataAccessName) && isset($validDataAccesses[$dataAccessName])) {
+                return $validDataAccesses[$dataAccessName];
+            }
             return current($validDataAccesses);
         }
         \DBG::msg('Your API key does not allow access to this DataSource!');
