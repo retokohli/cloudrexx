@@ -111,6 +111,9 @@ class DataAccessRepository extends EntityRepository {
                 $permission = $dataAccess->getWritePermission();
             }
             if (!$permission || $permission->hasAccess($arguments)) {
+                if (empty($dataAccessName)) {
+                    return $dataAccess;
+                }
                 $validDataAccesses[$dataAccess->getName()] = $dataAccess;
             }
         }
