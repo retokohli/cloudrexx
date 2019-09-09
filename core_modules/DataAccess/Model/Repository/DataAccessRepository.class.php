@@ -100,6 +100,7 @@ class DataAccessRepository extends EntityRepository {
 
         // Now let's check if one of the remaining data access objects allow
         // access:
+        $validDataAccesses = array();
         foreach ($validApiKeys as $apiKey) {
             $dataAccess = $apiKey->getDataAccess();
 
@@ -110,8 +111,11 @@ class DataAccessRepository extends EntityRepository {
                 $permission = $dataAccess->getWritePermission();
             }
             if (!$permission || $permission->hasAccess($arguments)) {
-                return $dataAccess;
+                $validDataAccesses[$dataAccess->getName()] = $dataAccess;
             }
+        }
+        if (count($validDataAccesses)) {
+            return current($validDataAccesses);
         }
         \DBG::msg('Your API key does not allow access to this DataSource!');
         return null;
