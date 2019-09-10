@@ -50,15 +50,13 @@ class DataAccessRepository extends EntityRepository {
 
     /**
      * Tries to find a matching DataAccess entity for the given criteria
-     * @param \Cx\Core_Modules\DataAccess\Controller\OutputController $outputModule Output module to use for parsing
-     * @param \Cx\Core\DataSource\Model\Entity\DataSource $dataSource Requested data source
      * @param string $method Request method (get, post, ...)
      * @param string $requestApiKey API key used in request
      * @param array $arguments List of arguments to the current request
-     * @param string $dataAccessName (optional) prefer the DataSource by this name
+     * @param string $dataAccessName Name of the selected DataSource
      * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess Matching DataAccess object or null
      */
-    public function getAccess($outputModule, $dataSource, $method, $requestApiKey, $arguments, $dataAccessName = '') {
+    public function getAccess($method, $requestApiKey, $arguments, $dataAccessName) {
         $requestReadonly = in_array($method, array('options', 'head', 'get'));
 
         $dataAccess = $this->findOneBy(array('name' => $dataAccessName));

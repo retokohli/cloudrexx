@@ -232,8 +232,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $em = $this->cx->getDb()->getEntityManager();
             $dataAccessRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\DataAccess');
             $dataAccess = $dataAccessRepo->getAccess(
-                $outputModule,
-                $dataSource,
                 $method,
                 $apiKey,
                 $arguments,
