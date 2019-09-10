@@ -61,67 +61,52 @@ class DataAccessRepository extends EntityRepository {
     public function getAccess($outputModule, $dataSource, $method, $requestApiKey, $arguments, $dataAccessName = '') {
         $requestReadonly = in_array($method, array('options', 'head', 'get'));
 
+        $dataAccess = $this->findOneBy(array('name' => $dataAccessName));
+
         // do we have a DataAccess for this DataSource?
-        $dataAccesses = $dataSource->getDataAccesses();
-        if (!$dataAccesses->count()) {
-            \DBG::msg('This DataSource has no DataAccess!');
+        if (!$dataAccess) {
+            \DBG::msg('DataSource not found!');
             return null;
         }
 
         // does our apiKey match with one or more of the DataAccesses?
-        $validApiKeys = array();
-        foreach ($dataAccesses as $dataAccess) {
-            $apiKeys = $dataAccess->getDataAccessApiKeys();
-            foreach ($apiKeys as $apiKey) {
-                // if write access is needed (!$requestReadonly): does the api key allow write?
-                if (!$requestReadonly && $apiKey->getReadOnly()) {
-                    continue;
-                }
-
-                if (!$apiKey->getApiKey()) {
-                    continue;
-                }
-
-                if ($apiKey->getApiKey()->getApiKey() != $requestApiKey) {
-                    continue;
-                }
-
-                $validApiKeys[] = $apiKey;
+        $apiKeyValid = false;
+        foreach ($dataAccess->getDataAccessApiKeys() as $apiKey) {
+            // if write access is needed (!$requestReadonly): does the api key allow write?
+            if (!$requestReadonly && $apiKey->getReadOnly()) {
+                continue;
             }
+
+            if (!$apiKey->getApiKey()) {
+                continue;
+            }
+
+            if ($apiKey->getApiKey()->getApiKey() != $requestApiKey) {
+                continue;
+            }
+            $apiKeyValid = true;
+            break;
         }
 
         // $validApiKeys now contains all DataAccessApiKey entities that allow
         // this request. If there's at least one, this user has access to this
         // DataAccess object.
-        if (!count($validApiKeys)) {
+        if (!$apiKeyValid) {
             \DBG::msg('There\'s no DataAccess with a matching API key!');
             return null;
         }
 
-        // Now let's check if one of the remaining data access objects allow
-        // access:
-        $validDataAccesses = array();
-        foreach ($validApiKeys as $apiKey) {
-            $dataAccess = $apiKey->getDataAccess();
-
-            $permission = null;
-            if ($requestReadonly) {
-                $permission = $dataAccess->getReadPermission();
-            } else {
-                $permission = $dataAccess->getWritePermission();
-            }
-            if (!$permission || $permission->hasAccess($arguments)) {
-                if (empty($dataAccessName)) {
-                    return $dataAccess;
-                }
-                $validDataAccesses[$dataAccess->getName()] = $dataAccess;
-            }
+        // Fetch correct permission
+        $permission = null;
+        if ($requestReadonly) {
+            $permission = $dataAccess->getReadPermission();
+        } else {
+            $permission = $dataAccess->getWritePermission();
         }
-        if (count($validDataAccesses)) {
-            if (!empty($dataAccessName) && isset($validDataAccesses[$dataAccessName])) {
-                return $validDataAccesses[$dataAccessName];
-            }
-            return current($validDataAccesses);
+
+        // Check permission
+        if (!$permission || $permission->hasAccess($arguments)) {
+            return $dataAccess;
         }
         \DBG::msg('Your API key does not allow access to this DataSource!');
         return null;
