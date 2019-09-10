@@ -105,11 +105,11 @@ class DataAccessRepository extends EntityRepository {
         }
 
         // Check permission
-        if (!$permission || $permission->hasAccess($arguments)) {
-            return $dataAccess;
+        if ($permission && !$permission->hasAccess($arguments)) {
+            \DBG::msg('Your API key does not allow access to this DataSource!');
+            return null;
         }
-        \DBG::msg('Your API key does not allow access to this DataSource!');
-        return null;
+        return $dataAccess;
     }
 
     /**
