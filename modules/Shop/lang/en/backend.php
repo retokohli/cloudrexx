@@ -32,6 +32,7 @@ $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Bank name";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bank code number";
 $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Account holder";
 $_ARRAYLANG['TXT_ACCOUNT_ID'] = "Account ID";
+$_ARRAYLANG['TXT_SAFERPAY_JSON_ACCOUNT_ID'] = "Customer ID";
 $_ARRAYLANG['TXT_ACTION'] = "Functions";
 $_ARRAYLANG['TXT_ACTION_AFTER_SAVEING'] = "View after storing";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This operation can\'t be undone!";

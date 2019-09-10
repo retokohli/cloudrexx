@@ -42,6 +42,7 @@ $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Kreditinstitut";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bankleitzahl (BLZ)";
 $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Kontoinhaber";
 $_ARRAYLANG['TXT_ACCOUNT_ID'] = "Konto-ID";
+$_ARRAYLANG['TXT_SAFERPAY_JSON_ACCOUNT_ID'] = "Kundennummer";
 $_ARRAYLANG['TXT_ACTION'] = "Funktionen";
 $_ARRAYLANG['TXT_ACTION_AFTER_SAVEING'] = "Gewünschte Aktion nach Speicherung";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
