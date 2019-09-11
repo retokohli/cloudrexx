@@ -300,12 +300,12 @@ class CalendarLibrary
                 } else {
                     $eventId = intval($_GET['id']);
                 }                       
-                
                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
-                
-                if($objEvent->author != $intUserId) {
-                    $strStatus = 'no_access';
+                if ($objEvent->author == $intUserId) {
+                    return;
                 }
+
+                $strStatus = 'no_access';
                 break;
             
             case 'my_events':
