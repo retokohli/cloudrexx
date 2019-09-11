@@ -347,7 +347,10 @@ class CalendarEventManager extends CalendarLibrary
                     // cache userbased
                     $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                     $cx->getComponent('Cache')->forceUserbasedPageCache();
-                    if (!$objFWUser->objUser->login()) {
+                    if (
+                        $objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND &&
+                        !\Permission::checkAccess(145, 'static', true)
+                    ) {
                         $objResult->MoveNext();
                         continue;
                     }
@@ -748,7 +751,11 @@ class CalendarEventManager extends CalendarLibrary
         // Abort in case the associated event is protected and the requestee has
         // not sufficient access rights.
         // Note: access to invitees is always granted
-        if (!$invite && $objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()) {
+        if (
+            !$invite &&
+            $objEvent->access == 1 &&
+            !\Permission::checkAccess(145, 'static', true)
+        ) {
             $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
             \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             return;
@@ -2455,7 +2462,7 @@ class CalendarEventManager extends CalendarLibrary
             foreach ($this->eventList as $objEvent) {
                 if ($objEvent->access
                     && $objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND
-                    && !\Permission::checkAccess(116, 'static', true)) {
+                    && !\Permission::checkAccess(145, 'static', true)) {
                     continue;
                 }
                 $startdate     = $this->getUserDateTimeFromIntern($objEvent->startDate);
