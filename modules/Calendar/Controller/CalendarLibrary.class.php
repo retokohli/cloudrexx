@@ -279,7 +279,7 @@ class CalendarLibrary
         );
 
         switch($strAction) {
-            case 'add_event':  
+            case 'add_event':
                 // Frontend submission is enabled for any user
                 if ($this->arrSettings['addEventsFrontend'] == 1) {
                     return;
@@ -301,7 +301,7 @@ class CalendarLibrary
                 // intentionally no break as the user shall get redirected to
                 // the sign-in form
 
-            case 'edit_event':                
+            case 'edit_event':
                 if (!$bolUserLogin) {
                     // redirect the user to the sign-in form
                     \Cx\Core\Csrf\Controller\Csrf::redirect(
@@ -316,11 +316,11 @@ class CalendarLibrary
                     );
                 }
 
-                if(isset($_POST['submitFormModifyEvent'])) {
+                if (isset($_POST['submitFormModifyEvent'])) {
                     $eventId = intval($_POST['id']);
                 } else {
                     $eventId = intval($_GET['id']);
-                }                       
+                }
                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
                 if ($objEvent->author == $intUserId) {
                     return;
