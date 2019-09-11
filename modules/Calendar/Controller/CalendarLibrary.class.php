@@ -279,18 +279,14 @@ class CalendarLibrary
                     return;
                 }
 
-                if($this->arrSettings['addEventsFrontend'] == 2) {
-                    if($bolUserLogin) {
-                        $bolAdd = true;
-                    } else {
-                        $bolAdd = false;
-                    }
-                } 
-
-                if($bolAdd) {
-                } else {
-                    $strStatus = 'login';
+                // Frontend submission is only enabled for authenticated
+                // users ($this->arrSettings['addEventsFrontend'] == 2).
+                // Therefore, let's check if the user is authenticated
+                if ($bolUserLogin) {
+                    return;
                 }
+
+                $strStatus = 'login';
                 
                 break;
             case 'edit_event':                
