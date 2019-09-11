@@ -293,19 +293,9 @@ class CalendarLibrary
                     return;
                 }
 
-                // otherwise redirect the user to the sign-in form
-                \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd(
-                        'Login',
-                        '',
-                        '',
-                        array(
-                            'redirect' => $thisRequest,
-                        )
-                    )
-                );
+                // intentionally no break as the user shall get redirected to
+                // the sign-in form
 
-                break;
             case 'edit_event':                
                 if (!$bolUserLogin) {
                     // redirect the user to the sign-in form
