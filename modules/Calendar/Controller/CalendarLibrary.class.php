@@ -305,7 +305,12 @@ class CalendarLibrary
                     return;
                 }
 
-                $strStatus = 'no_access';
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Login',
+                        'noaccess'
+                    )
+                );
                 break;
             
             case 'my_events':
@@ -318,10 +323,6 @@ class CalendarLibrary
         }
 
         switch($strStatus) {
-            case 'no_access':
-                \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
-                exit();
-                break;
             case 'login':
                 $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
