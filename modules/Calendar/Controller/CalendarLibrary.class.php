@@ -272,6 +272,13 @@ class CalendarLibrary
             );
         }
 
+        // fetch this request
+        // will be used in case we have to redirect the user to the
+        // sign-in form
+        $thisRequest = base64_encode(
+            \Cx\Core\Routing\Url::fromRequest()
+        );
+
         switch($strAction) {
             case 'add_event':  
                 // Frontend submission is enabled for any user
@@ -286,13 +293,32 @@ class CalendarLibrary
                     return;
                 }
 
-                $strStatus = 'login';
-                
+                // otherwise redirect the user to the sign-in form
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Login',
+                        '',
+                        '',
+                        array(
+                            'redirect' => $thisRequest,
+                        )
+                    )
+                );
+
                 break;
             case 'edit_event':                
                 if (!$bolUserLogin) {
-                    $strStatus = 'login';
-                    break;
+                    // redirect the user to the sign-in form
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(
+                        \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            'Login',
+                            '',
+                            '',
+                            array(
+                                'redirect' => $thisRequest,
+                            )
+                        )
+                    );
                 }
 
                 if(isset($_POST['submitFormModifyEvent'])) {
@@ -318,15 +344,17 @@ class CalendarLibrary
                     return;
                 }
 
-                $strStatus = 'login';
-                break;
-        }
-
-        switch($strStatus) {
-            case 'login':
-                $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
-                exit();
+                // redirect the user to the sign-in form
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Login',
+                        '',
+                        '',
+                        array(
+                            'redirect' => $thisRequest,
+                        )
+                    )
+                );
                 break;
         }
     }
