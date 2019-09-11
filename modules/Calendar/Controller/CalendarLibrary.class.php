@@ -289,6 +289,12 @@ class CalendarLibrary
                 // Frontend submission is only enabled for authenticated
                 // users ($this->arrSettings['addEventsFrontend'] == 2).
                 // Therefore, let's check if the user is authenticated
+                // further down
+
+                // important: intentionally no break
+
+            case 'my_events':
+                // Check if the user is authenticated
                 if ($bolUserLogin) {
                     return;
                 }
@@ -325,24 +331,6 @@ class CalendarLibrary
                     \Cx\Core\Routing\Url::fromModuleAndCmd(
                         'Login',
                         'noaccess'
-                    )
-                );
-                break;
-            
-            case 'my_events':
-                if ($bolUserLogin) {
-                    return;
-                }
-
-                // redirect the user to the sign-in form
-                \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd(
-                        'Login',
-                        '',
-                        '',
-                        array(
-                            'redirect' => $thisRequest,
-                        )
                     )
                 );
                 break;
