@@ -249,108 +249,106 @@ class CalendarLibrary
     {
         global $objInit;
 
-        if($objInit->mode == 'backend') {
-            //backend access
-        } else {
-            //frontend access
+        if ($objInit->mode == 'backend') {
+            return;
+        }
 
-            $strStatus = '';
-            $objFWUser  = \FWUser::getFWUserObject();
+        $strStatus = '';
+        $objFWUser  = \FWUser::getFWUserObject();
 
-            //get user attributes
-            $objUser         = $objFWUser->objUser;
-            $intUserId      = intval($objUser->getId());
-            $intUserName    = $objUser->getUsername();
-            $bolUserLogin   = $objUser->login();
-            $intUserIsAdmin = $objUser->getAdminStatus();                                                                                 
+        //get user attributes
+        $objUser         = $objFWUser->objUser;
+        $intUserId      = intval($objUser->getId());
+        $intUserName    = $objUser->getUsername();
+        $bolUserLogin   = $objUser->login();
+        $intUserIsAdmin = $objUser->getAdminStatus();                                                                                 
 
-            $accessId = 0; //used to remember which access id the user needs to have. this is passed to Permission::checkAccess() later.
-            
-            $intUserIsAdmin = false;
+        $accessId = 0; //used to remember which access id the user needs to have. this is passed to Permission::checkAccess() later.
+        
+        $intUserIsAdmin = false;
 
-            if(!$intUserIsAdmin) {
-                self::getSettings();
+        if(!$intUserIsAdmin) {
+            self::getSettings();
 
-                switch($strAction) {
-                    case 'add_event':  
-                       if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
-                            if($this->arrSettings['addEventsFrontend'] == 2) {
-                                if($bolUserLogin) {
-                                    $bolAdd = true;
-                                } else {
-                                    $bolAdd = false;
-                                }
-                            } else {
+            switch($strAction) {
+                case 'add_event':  
+                   if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
+                        if($this->arrSettings['addEventsFrontend'] == 2) {
+                            if($bolUserLogin) {
                                 $bolAdd = true;
-                            } 
-
-                            if($bolAdd) {
-                                //get groups attributes
-                                $arrUserGroups  = array();
-                                $objGroup = $objFWUser->objGroup->getGroups($filter = array('is_active' => true, 'type' => 'frontend'));
-
-                                while (!$objGroup->EOF) {
-                                    if(in_array($objGroup->getId(), $objUser->getAssociatedGroupIds())) {
-                                        $arrUserGroups[] = $objGroup->getId();
-                                    }
-                                    $objGroup->next();
-                                }                  
                             } else {
-                                $strStatus = 'login';
+                                $bolAdd = false;
                             }
                         } else {
-                            $strStatus = 'redirect';
-                        }
-                        
-                        break;
-                    case 'edit_event':                
-                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
-                            if($bolUserLogin) {         
-                                if(isset($_POST['submitFormModifyEvent'])) {
-                                    $eventId = intval($_POST['id']);
-                                } else {
-                                    $eventId = intval($_GET['id']);
-                                }                       
-                                
-                                $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
-                                
-                                if($objEvent->author != $intUserId) {
-                                    $strStatus = 'no_access';
-                                }
-                            } else {
-                                $strStatus = 'login';
-                            }   
-                        } else {  
-                            $strStatus = 'redirect';
-                        }
-                        break;
-                    
-                    case 'my_events':
-                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
-                            if(!$bolUserLogin) {
-                                $strStatus = 'login';
-                            }
-                        } else {  
-                            $strStatus = 'redirect';
-                        }
-                        break;
-                }
+                            $bolAdd = true;
+                        } 
 
-                switch($strStatus) {
-                    case 'no_access':
-                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
-                        exit();
-                        break;
-                    case 'login':
-                        $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
-                        exit();
-                        break;
-                    case 'redirect':
-                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);   
-                        exit();
-                        break;
-                }
+                        if($bolAdd) {
+                            //get groups attributes
+                            $arrUserGroups  = array();
+                            $objGroup = $objFWUser->objGroup->getGroups($filter = array('is_active' => true, 'type' => 'frontend'));
+
+                            while (!$objGroup->EOF) {
+                                if(in_array($objGroup->getId(), $objUser->getAssociatedGroupIds())) {
+                                    $arrUserGroups[] = $objGroup->getId();
+                                }
+                                $objGroup->next();
+                            }                  
+                        } else {
+                            $strStatus = 'login';
+                        }
+                    } else {
+                        $strStatus = 'redirect';
+                    }
+                    
+                    break;
+                case 'edit_event':                
+                    if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
+                        if($bolUserLogin) {         
+                            if(isset($_POST['submitFormModifyEvent'])) {
+                                $eventId = intval($_POST['id']);
+                            } else {
+                                $eventId = intval($_GET['id']);
+                            }                       
+                            
+                            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
+                            
+                            if($objEvent->author != $intUserId) {
+                                $strStatus = 'no_access';
+                            }
+                        } else {
+                            $strStatus = 'login';
+                        }   
+                    } else {  
+                        $strStatus = 'redirect';
+                    }
+                    break;
+                
+                case 'my_events':
+                    if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
+                        if(!$bolUserLogin) {
+                            $strStatus = 'login';
+                        }
+                    } else {  
+                        $strStatus = 'redirect';
+                    }
+                    break;
+            }
+
+            switch($strStatus) {
+                case 'no_access':
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
+                    exit();
+                    break;
+                case 'login':
+                    $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+                    exit();
+                    break;
+                case 'redirect':
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);   
+                    exit();
+                    break;
             }
         }
     }
