@@ -274,14 +274,17 @@ class CalendarLibrary
 
         switch($strAction) {
             case 'add_event':  
+                // Frontend submission is enabled for any user
+                if ($this->arrSettings['addEventsFrontend'] == 1) {
+                    return;
+                }
+
                 if($this->arrSettings['addEventsFrontend'] == 2) {
                     if($bolUserLogin) {
                         $bolAdd = true;
                     } else {
                         $bolAdd = false;
                     }
-                } else {
-                    $bolAdd = true;
                 } 
 
                 if($bolAdd) {
