@@ -316,6 +316,9 @@ class CalendarLibrary
                     );
                 }
 
+                // check if user is owner of event, as only
+                // the owner is allowed to make any modification on
+                // an event in frontend
                 if (isset($_POST['submitFormModifyEvent'])) {
                     $eventId = intval($_POST['id']);
                 } else {
