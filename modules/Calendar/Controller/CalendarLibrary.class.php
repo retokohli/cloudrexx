@@ -253,7 +253,6 @@ class CalendarLibrary
             return;
         }
 
-        $strStatus = '';
         $objFWUser  = \FWUser::getFWUserObject();
 
         //get user attributes
