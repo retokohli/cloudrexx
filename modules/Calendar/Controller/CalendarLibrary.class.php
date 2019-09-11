@@ -285,16 +285,6 @@ class CalendarLibrary
                 } 
 
                 if($bolAdd) {
-                    //get groups attributes
-                    $arrUserGroups  = array();
-                    $objGroup = $objFWUser->objGroup->getGroups($filter = array('is_active' => true, 'type' => 'frontend'));
-
-                    while (!$objGroup->EOF) {
-                        if(in_array($objGroup->getId(), $objUser->getAssociatedGroupIds())) {
-                            $arrUserGroups[] = $objGroup->getId();
-                        }
-                        $objGroup->next();
-                    }                  
                 } else {
                     $strStatus = 'login';
                 }
