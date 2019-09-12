@@ -757,6 +757,18 @@ class CalendarEventManager extends CalendarLibrary
             $objEvent->access == 1 &&
             !\Permission::checkAccess(145, 'static', true)
         ) {
+            $objFWUser = \FWUser::getFWUserObject();
+            // if user is already authenticated, then he is not authorized
+            // and we must therefore redirect the user to the noaccess page
+            if ($objFWUser->objUser->login()) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Login',
+                        'noaccess'
+                    )
+                );
+            }
+
             // redirect the user to the sign-in form
             $thisRequest = base64_encode(
                 \Cx\Core\Routing\Url::fromRequest()
