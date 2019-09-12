@@ -691,6 +691,7 @@ class CalendarEventManager extends CalendarLibrary
 
         // in case the registration form was requested by an invitee
         // and the start-date of the event has changed meanwhile,
+        // or the event is no longer publicly available (access=1),
         // we shall try to load the event based on the invitation data
         if (empty($this->eventList[0])) {
             // abort in case the registration form has not been requested by an invitee
