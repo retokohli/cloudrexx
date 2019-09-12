@@ -32,11 +32,14 @@
  * @package     cloudrexx
  * @subpackage  module_jobs
  */
+$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Job offers";
+$_ARRAYLANG['TXT_MODULE_JOBS'] = 'Job offers';
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_CAT'] = "Categories";
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_LOC'] = "Regions";
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_ADD'] = "New";
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_DEFAULT'] = "Overview";
-$_ARRAYLANG['TXT_JOBS_MANAGER'] = "Job offers";
+$_ARRAYLANG['TXT_MODULE_JOBS_ACT_SETTINGS'] = 'Settings';
+
 $_ARRAYLANG['TXT_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_DATE'] = "Date";
 $_ARRAYLANG['TXT_EDIT_DOCUMENTS'] = "edit job offer";
