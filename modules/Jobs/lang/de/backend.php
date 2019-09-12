@@ -123,3 +123,4 @@ $_ARRAYLANG['TXT_JOBS_RECORD_UPDATE_FAILED'] = "Die Änderung konnte nicht gespe
 $_ARRAYLANG['TXT_JOBS_PAID'] = "Publikation";
 $_ARRAYLANG['TXT_JOBS_PAID_LABEL'] = "Bezahltes Angebot";
 $_ARRAYLANG['TXT_JOBS_NON_PAID_LABEL'] = "Normales Angebot";
+$_ARRAYLANG['TXT_JOBS_USE_FLAGS_OPTION'] = "Kennzeichnungen für Angebote verwenden";

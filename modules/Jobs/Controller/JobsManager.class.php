@@ -939,6 +939,7 @@ class JobsManager extends JobsLibrary
             'TXT_SUBMIT'            => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
             'TXT_URL_INFO'          => $_ARRAYLANG['TXT_JOBS_URL_INFO'],
             'TXT_SHOW_LOCATION_FE'  => $_ARRAYLANG['TXT_JOBS_SHOW_LOCATION_FE'],
+            'TXT_JOBS_USE_FLAGS_OPTION'                    => $_ARRAYLANG['TXT_JOBS_USE_FLAGS_OPTION'],
             'TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION'       => $_ARRAYLANG['TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION'],
             'TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION_LABEL' => $_ARRAYLANG['TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION_LABEL'],
             'TXT_JOBS_SETTINGS_SOURCE_OF_JOBS'             => $_ARRAYLANG['TXT_JOBS_SETTINGS_SOURCE_OF_JOBS'],
@@ -954,6 +955,7 @@ class JobsManager extends JobsLibrary
             'link'      => isset($postValues['link']) ? contrexx_input2raw($postValues['link']) : '',
             'url'       => isset($postValues['url']) ? contrexx_input2raw($postValues['url']) : '',
             'show_location_fe'    => isset($postValues['show_location_fe']) ? contrexx_input2int($postValues['show_location_fe']) : 0,
+            'use_flags' => isset($postValues['use_flags']) ? contrexx_input2int($postValues['use_flags']) : 0,
             'templateIntegration' => isset($postValues['templateIntegration']) ? contrexx_input2int($postValues['templateIntegration']) : 0,
             'sourceOfJobs' => isset($postValues['sourceOfJobs']) ? contrexx_input2raw($postValues['sourceOfJobs']) : '',
             'listingLimit' => isset($postValues['listingLimit']) ? contrexx_input2int($postValues['listingLimit']) : 0,
@@ -978,6 +980,7 @@ class JobsManager extends JobsLibrary
                                             WHEN `name` = "link"                THEN "' . contrexx_raw2db($settings['link']) . '" 
                                             WHEN `name` = "url"                 THEN "' . contrexx_raw2db($settings['url']) . '" 
                                             WHEN `name` = "show_location_fe"    THEN "' . contrexx_raw2db($settings['show_location_fe']) . '" 
+                                            WHEN `name` = "use_flags"           THEN "' . contrexx_raw2db($settings['use_flags']) . '" 
                                             WHEN `name` = "templateIntegration" THEN "' . contrexx_raw2db($settings['templateIntegration']) . '" 
                                             WHEN `name` = "sourceOfJobs"        THEN "' . contrexx_raw2db($settings['sourceOfJobs']) . '" 
                                             WHEN `name` = "listingLimit"        THEN "' . contrexx_raw2db($settings['listingLimit']) . '"
@@ -1006,6 +1009,11 @@ class JobsManager extends JobsLibrary
             'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_raw2xhtml($settings['listingLimit']),
             'JOBS_SETTINGS_DISPLAY_STATUS'       => $settings['templateIntegration'] ? '' : 'display: none'
         ));
+        if (!empty($settings['use_flags'])) {
+            $this->_objTpl->touchBlock('jobs_use_flags');
+        } else {
+            $this->_objTpl->hideBlock('jobs_use_flags');
+        }
     }
 
     /**
