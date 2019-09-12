@@ -52,12 +52,21 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands()
     {
-        return array(
+        $commands = array(
             'add',
             'cat',
             'loc',
-            'settings',
+            'settings'
         );
+        $settings = JobsLibrary::getConfig();
+        if ($settings['use_flags']) {
+            array_pop($commands);
+            $commands['settings'] = array(
+                'Flag',
+            );
+        }
+
+        return $commands;
     }
 
     /**
@@ -72,7 +81,63 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         \Permission::checkAccess(148, 'static');
+
+        if (
+            $cmd[0] == 'settings' &&
+            $cmd[1] == 'Flag'
+        ) {
+            $this->sectionFlag($template);
+            return;
+        }
+
         $objJobsManager = new JobsManager($template);
         $objJobsManager->getJobsPage();
+    }
+
+    protected function sectionFlag($template) {
+        global $_ARRAYLANG;
+        $view = new \Cx\Core\Html\Controller\ViewGenerator(
+            '\Cx\Modules\Jobs\Model\Entity\Flag',
+             array(
+                'Cx\Modules\Jobs\Model\Entity\Flag' => array(
+                    'entityName'    => $_ARRAYLANG['TXT_JOBS_FLAG'],
+                    'functions' => array(
+                        'edit' => true,
+                        'add' => true,
+                        'copy' => true,
+                        'delete' => true,
+                    ),
+                    'fields' => array(
+                        'id' => array(
+                            'showOverview' => false,
+                        ),
+                        'icon' => array(
+                            'type'  => 'image',
+                            'table' => array(
+                                'parse' => function(
+                                    $value, $rowData, $fieldOptions, $viewGeneratorId
+                                ) {
+                                    if (empty($value)) {
+                                        return;
+                                    }
+                                    $path = $this->cx->getClassLoader()->getWebFilePath($value);
+                                    if (!$path) {
+                                        return;
+                                    }
+                                    $img = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                                    $img->setAttributes(array(
+                                        'src' => $path,
+                                        'style' => 'max-width: 32px',
+                                    ));
+                                    return $img;
+                                },
+                            ),
+                        ),
+                    ),
+                 ),
+            )
+        );
+        $template->setVariable('TABLE', $view->render());
+        return;
     }
 }

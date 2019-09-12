@@ -57,7 +57,7 @@ class JobsLibrary
      * 
      * @var array 
      */
-    protected $arrSettings = array();
+    protected static $arrSettings = array();
 
     /**
     * Gets the categorie option menu string
@@ -215,8 +215,12 @@ class JobsLibrary
      */
     public function getSettings()
     {
-        if ($this->arrSettings) {
-            return $this->arrSettings;
+        return static::getConfig();
+    }
+
+    public static function getConfig() {
+        if (static::$arrSettings) {
+            return static::$arrSettings;
         }
 
         //Get the settings values from DB
@@ -228,12 +232,12 @@ class JobsLibrary
         
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
-                $this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
+                static::$arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
                 $objResult->MoveNext();
             }
         }
 
-        return $this->arrSettings;
+        return static::$arrSettings;
     }
 
     /**

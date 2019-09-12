@@ -33,13 +33,18 @@
  * @subpackage  module_jobs
  */
 $_ARRAYLANG['TXT_JOBS_MANAGER'] = "Stellenangebote";
-
 $_ARRAYLANG['TXT_MODULE_JOBS'] = 'Stellenangebote';
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_DEFAULT'] = 'Überblick';
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_ADD'] = 'Neu';
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_CAT'] = "Kategorien";
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_LOC'] = 'Regionen';
 $_ARRAYLANG['TXT_MODULE_JOBS_ACT_SETTINGS'] = 'Einstellungen';
+$_ARRAYLANG['TXT_MODULE_JOBS_ACT_SETTINGS_DEFAULT'] = 'Allgemein';
+$_ARRAYLANG['TXT_MODULE_JOBS_ACT_SETTINGS_FLAG'] = 'Kennzeichnungen';
+$_ARRAYLANG['TXT_JOBS_FLAG'] = 'Kennzeichnung';
+$_ARRAYLANG['name'] = 'Name';
+$_ARRAYLANG['icon'] = 'Symbol';
+$_ARRAYLANG['value'] = 'Wert';
 
 $_ARRAYLANG['TXT_AUTHOR'] = "Autor";
 $_ARRAYLANG['TXT_DATE'] = "Datum";

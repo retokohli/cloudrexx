@@ -2239,6 +2239,13 @@ CREATE TABLE `contrexx_module_jobs_categories` (
   `sort_style` enum('alpha','date','date_alpha') NOT NULL DEFAULT 'alpha',
   PRIMARY KEY (`catid`)
 ) ENGINE=InnoDB ;
+CREATE TABLE `contrexx_module_jobs_flag` (
+  `id` int NOT NULL AUTO_INCREMENT ,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `icon` text NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB;
 CREATE TABLE `contrexx_module_jobs_location` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL DEFAULT '',

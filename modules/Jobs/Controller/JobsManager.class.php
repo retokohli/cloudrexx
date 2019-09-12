@@ -952,6 +952,12 @@ class JobsManager extends JobsLibrary
             $this->clearCache();
             if ($objDatabase->Execute($query)) {
                 \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+                // force reload of backend section to ensure the option
+                // use_flags can be applied right away (causes an additional
+                // settings section to appear)
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromBackend('Jobs', 'settings')
+                );
             } else {
                 \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             }
