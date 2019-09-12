@@ -757,9 +757,20 @@ class CalendarEventManager extends CalendarLibrary
             $objEvent->access == 1 &&
             !\Permission::checkAccess(145, 'static', true)
         ) {
-            $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
-            return;
+            // redirect the user to the sign-in form
+            $thisRequest = base64_encode(
+                \Cx\Core\Routing\Url::fromRequest()
+            );
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Login',
+                    '',
+                    '',
+                    array(
+                        'redirect' => $thisRequest,
+                    )
+                )
+            );
         }
             $objCategory = CalendarCategory::getCurrentCategory(
                 $this->categoryId, $objEvent);
