@@ -2484,11 +2484,6 @@ class CalendarEventManager extends CalendarLibrary
 
             //load events
             foreach ($this->eventList as $objEvent) {
-                if ($objEvent->access
-                    && $objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND
-                    && !\Permission::checkAccess(145, 'static', true)) {
-                    continue;
-                }
                 $startdate     = $this->getUserDateTimeFromIntern($objEvent->startDate);
                 $enddate       = $this->getUserDateTimeFromIntern($objEvent->endDate);
 
