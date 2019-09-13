@@ -175,9 +175,10 @@ class JobsLibrary
         }
 
         while (!$objResult->EOF) {
-            $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', $locale->getId(), array('id' => $objResult->fields['docid']));
+            $id = $objResult->fields['docid'];
+            $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', $locale->getId(), array('id' => $id));
             $template->setVariable(array(
-                'JOBS_ID'	     => $objResult->fields['docid'],
+                'JOBS_ID'	     => $id,
                 'JOBS_LONG_DATE' => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                 'JOBS_DATE'      => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                 'JOBS_LINK'      => "<a href=\"" . $detailUrl->toString() . "\" title=\"".contrexx_raw2xhtml($objResult->fields['title'])."\">".contrexx_raw2xhtml($objResult->fields['title'])."</a>",

@@ -132,7 +132,6 @@ class Jobs extends JobsLibrary
 
         $id = intval($_GET['id']);
 
-
         /**
         *
         * First get Settings and build footnote
@@ -244,7 +243,7 @@ class Jobs extends JobsLibrary
 
 
         $this->_objTpl->setVariable(array(
-            'JOBS_ID'	=> $objResult->fields['id'],
+            'JOBS_ID'	=> $id,
             'JOBS_DATE' => date(ASCMS_DATE_FORMAT,$date),
             'JOBS_TITLE'=> stripslashes($title),
             'JOBS_AUTHOR'    => stripslashes($objResult->fields['author']),
@@ -254,7 +253,8 @@ class Jobs extends JobsLibrary
             'JOBS_FOOTNOTE_LINK_SRC' => $footnotelinkSrc,
             'JOBS_WORKLOC' => $workloc,
             'JOBS_WORKLOAD'=> $workload,
-            'JOBS_WORK_START' => $work_start));
+            'JOBS_WORK_START' => $work_start,
+        ));
 
         if ($this->_objTpl->blockExists('job_paid')) {
             if ($objResult->fields['paid']) {
@@ -291,7 +291,7 @@ class Jobs extends JobsLibrary
         $docFilter = "";
         $locationFilter = " WHERE ";
         $paging = "";
-        $pos = intval($_GET['pos']);
+        $pos = !empty($_GET['pos']) ? intval($_GET['pos']) : 0;
         $i = 1;
         $class  = 'row1';
         $jobscategoryform = "";
@@ -409,9 +409,10 @@ class Jobs extends JobsLibrary
 
         if($count>=1){
             while (!$objResult->EOF) {
+                $id = $objResult->fields['docid'];
                 ($i % 2) ? $class  = 'row1' : $class  = 'row2';
 
-                $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', FRONTEND_LANG_ID, array('id' => $objResult->fields['docid']));
+                $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', FRONTEND_LANG_ID, array('id' => $id));
 
                 $work_start = stripslashes($objResult->fields['work_start']);
                 if (empty($work_start) or time() >= $work_start) {
@@ -422,7 +423,7 @@ class Jobs extends JobsLibrary
 
                 $this->_objTpl->setVariable(array(
                     'JOBS_STYLE'      => $class,
-                    'JOBS_ID'            => $objResult->fields['docid'],
+                    'JOBS_ID'            => $id,
                     'JOBS_LONG_DATE'  => date($this->dateLongFormat,$objResult->fields['date']),
                     'JOBS_DATE'       => date($this->dateFormat,$objResult->fields['date']),
                     'JOBS_LINK'         => "<a href=\"" . $detailUrl->toString() . "\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
