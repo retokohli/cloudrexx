@@ -2251,6 +2251,13 @@ CREATE TABLE `contrexx_module_jobs_location` (
   `name` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
+CREATE TABLE `contrexx_module_jobs_rel_flag_job` (
+  `job` int(6) unsigned NOT NULL,
+  `flag` int NOT NULL,
+  PRIMARY KEY (`job`,`flag`),
+  CONSTRAINT `contrexx_module_jobs_rel_flag_job_ibfk_1` FOREIGN KEY (`job`) REFERENCES `contrexx_module_jobs` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_module_jobs_rel_flag_job_ibfk_2` FOREIGN KEY (`flag`) REFERENCES `contrexx_module_jobs_flag` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_jobs_rel_loc_jobs` (
   `job` int(10) unsigned NOT NULL DEFAULT '0',
   `location` int(10) unsigned NOT NULL DEFAULT '0',

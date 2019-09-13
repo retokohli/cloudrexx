@@ -428,7 +428,8 @@ class JobsManager extends JobsLibrary
             $id = $this->insert();
         }
 
-        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
 
         if ($add) {
             $sectionTitle = $_ARRAYLANG['TXT_ADD_DOCUMENT'];
@@ -462,7 +463,6 @@ class JobsManager extends JobsLibrary
             'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE'],
             'TXT_JOBS_PAID'       => $_ARRAYLANG['TXT_JOBS_PAID'],
             'TXT_JOBS_PAID_LABEL' => $_ARRAYLANG['TXT_JOBS_PAID_LABEL'],
-            'TXT_JOBS_FLAGS'      => $_ARRAYLANG['TXT_JOBS_FLAGS'],
             'TXT_JOBS_MODIFY_HOT_OFFER_LABEL' => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER_LABEL'],
             'TXT_JOBS_MODIFY_HOT_OFFER'       => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER'],
         ));
@@ -540,6 +540,39 @@ class JobsManager extends JobsLibrary
 
         if (!$isHotOfferAvailable) {
             $this->_objTpl->hideBlock('jobs_modify_show_hot_offer');
+        }
+
+        if (!empty($settings['use_flags'])) {
+            $this->_objTpl->setVariable(array(
+                'TXT_JOBS_FLAGS'      => $_ARRAYLANG['TXT_JOBS_FLAGS'],
+                'TXT_JOBS_FLAGS_INFO' => $_ARRAYLANG['TXT_JOBS_FLAGS_INFO'],
+            ));
+
+            $associatedFlagIds = $this->getFlagAssociations($id);
+            $flagRepo = $cx->getDb()->getEntityManager()->getRepository(
+                'Cx\Modules\Jobs\Model\Entity\Flag'
+            );
+            $flags = $flagRepo->findAll();
+            foreach ($flags as $flag) {
+                $this->_objTpl->setVariable(array(
+                    'JOBS_FLAG_ID'      => $flag->getId(),
+                    'JOBS_FLAG_ICON_SRC'=> $flag->getIcon(),
+                    'JOBS_FLAG_NAME'    => contrexx_raw2xhtml($flag->getName()),
+                ));
+                if (
+                    isset($associatedFlagIds[$id]) &&
+                    in_array($flag->getId(), $associatedFlagIds[$id])
+                ) {
+                    $this->_objTpl->touchBlock('jobs_flag_checked');
+                } else {
+                    $this->_objTpl->hideBlock('jobs_flag_checked');
+                }
+                $this->_objTpl->parse('jobs_flags_list');
+            }
+
+            $this->_objTpl->touchBlock('jobs_flags_section');
+        } else {
+            $this->_objTpl->hideBlock('jobs_flags_section');
         }
     }
 
@@ -685,6 +718,38 @@ class JobsManager extends JobsLibrary
                 $dberr = true;
             }
         }
+
+        $flags = array();
+        if (
+            !empty($_POST['jobs-flag']) &&
+            is_array($_POST['jobs-flag'])
+        ) {
+            foreach($_POST['jobs-flag'] as $flag) {
+                $flags[] = intval($flag);
+            }
+            $query = 'DELETE FROM `'.DBPREFIX.'module_jobs_rel_flag_job`
+                WHERE `job` = ' . $id . '
+                  AND `flag` NOT IN (' . join ($flags, ',') . ')';
+            if (!$objDatabase->Execute($query)) {
+                \Message::error($_ARRAYLANG['TXT_JOBS_FLAGS_NOT_ASSIGNED']);
+                $dberr = true;
+            }
+            $query = 'INSERT IGNORE INTO `'.DBPREFIX.'module_jobs_rel_flag_job`
+                (`job`,`flag`) VALUES
+                ('. $id . ',' . join($flags, '), (' . $id . ',') . ')';
+            if (!$objDatabase->Execute($query)) {
+                \Message::error($_ARRAYLANG['TXT_JOBS_FLAGS_NOT_ASSIGNED']);
+                $dberr = true;
+            }
+        } else {
+            $query = 'DELETE FROM `'.DBPREFIX.'module_jobs_rel_flag_job`
+                WHERE `job` = ' . $id;
+            if (!$objDatabase->Execute($query)) {
+                \Message::error($_ARRAYLANG['TXT_JOBS_FLAGS_NOT_ASSIGNED']);
+                $dberr = true;
+            }
+        }
+
         $query = \SQL::update('module_jobs', array(
             'date' => array('val' => $this->_checkDate($_POST['creation_date']), 'omitEmpty' => true),
             'title' => $title,
@@ -978,8 +1043,24 @@ class JobsManager extends JobsLibrary
             if (!$objDatabase->Execute($query)) {
                 \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
                 return $id;
+            }
         }
 
+        if (
+            !empty($_POST['jobs-flag']) &&
+            is_array($_POST['jobs-flag'])
+        ) {
+            $flags = array();
+            foreach($_POST['jobs-flag'] as $flag) {
+                $flags[] = intval($flag);
+            }
+            $query = 'INSERT INTO `'.DBPREFIX.'module_jobs_rel_flag_job`
+                (`job`,`flag`) VALUES
+                ('. $id . ',' . join($flags, '), (' . $id . ',') . ')';
+            if (!$objDatabase->Execute($query)) {
+                \Message::error($_ARRAYLANG['TXT_JOBS_FLAGS_NOT_ASSIGNED']);
+                return $id;
+            }
         }
 
         \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);

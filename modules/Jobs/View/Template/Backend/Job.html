@@ -280,6 +280,27 @@ function DeselectAllLocations(CONTROL)
     </tr>
   </table>
   <br />
+  <!-- BEGIN jobs_flags_section -->
+  <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+      <tr>
+          <th>
+              <div align="left">{TXT_JOBS_FLAGS}</div>
+          </th>
+      </tr>
+      <tr class="row3">
+          <td>{TXT_JOBS_FLAGS_INFO}</td>
+      </tr>
+      <tr class="row1">
+          <td>
+              <!-- BEGIN jobs_flags_list -->
+              <input type="checkbox" name="jobs-flag[]" value="{JOBS_FLAG_ID}" id="jobs-flag-{JOBS_FLAG_ID}" <!-- BEGIN jobs_flag_checked -->checked="checked"<!-- END jobs_flag_checked --> />
+              <label for="jobs-flag-{JOBS_FLAG_ID}" style="margin-right:20px;"><img src="{JOBS_FLAG_ICON_SRC}" style="max-width:16px;" />{JOBS_FLAG_NAME}</label>
+              <!-- END jobs_flags_list -->
+          </td>
+      </tr>
+  </table>
+  <br />
+  <!-- END jobs_flags_section -->
   <input type="submit" name="Submit" value="{TXT_STORE}"/>
   <br />
   <br />

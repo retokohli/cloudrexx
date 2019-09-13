@@ -254,4 +254,41 @@ class JobsLibrary
         );
         $cx->getComponent('Cache')->deleteComponentFiles('Jobs');
     }
+
+    /**
+     * Fetch IDs of associated flags on job offers
+     *
+     * @param   integer $jobId  If set, only the IDs associated to the job
+     *                          offer identified by $jobId are returned.
+     * @return  array   List of IDs of associated flags
+     */
+    protected function getFlagAssociations($jobId = 0) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+        $associations = array();
+
+        $query = 'SELECT `job`, `flag`
+            FROM `'.DBPREFIX.'module_jobs_rel_flag_job`';
+        if ($jobId) {
+            $query .= ' WHERE `job`=' . intval($jobId);
+        }
+
+        $result = $db->Execute($query);
+        if (
+            !$result ||
+            $result->EOF
+        ) {
+            return array();
+        }
+
+        while (!$result->EOF) {
+            if (!isset($associations[$result->fields['job']])) {
+                $associations[$result->fields['job']] = array();
+            }
+            $associations[$result->fields['job']][] = $result->fields['flag'];
+            $result->MoveNext();
+        }
+
+        return $associations;
+    }
 }
