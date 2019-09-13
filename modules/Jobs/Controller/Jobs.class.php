@@ -271,6 +271,50 @@ class Jobs extends JobsLibrary
             }
         }
 
+        // fetch ID-list of associated flags
+        $associatedFlagIds = array();
+        if (!empty($settings['use_flags'])) {
+            $associatedFlagIds = $this->getFlagAssociations($id);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $flagRepo = $cx->getDb()->getEntityManager()->getRepository(
+                'Cx\Modules\Jobs\Model\Entity\Flag'
+            );
+        }
+        $flagsParsed = false;
+        if (isset($associatedFlagIds[$id])) {
+            foreach ($associatedFlagIds[$id] as $flagId) {
+                $flag = $flagRepo->findOneById($flagId);
+                if (!$flag) {
+                    continue;
+                }
+                $img = null;
+                $icon = $flag->getIcon();
+                if (!empty($icon)) {
+                    $path = $cx->getClassLoader()->getWebFilePath($icon);
+                    if ($path) {
+                        $img = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                        $img->setAttributes(array(
+                            'src' => $path,
+                            'style' => 'max-width: 16px',
+                        ));
+                    }
+                }
+                $this->_objTpl->setVariable(array(
+                    'JOB_FLAG_ID'       => $flag->getId(),
+                    'JOB_FLAG_NAME'     => contrexx_raw2xhtml($flag->getName()),
+                    'JOB_FLAG_ICON'     => $img,
+                    'JOB_FLAG_ICON_SRC' => $icon,
+                    'JOB_FLAG_VALUE'    => contrexx_raw2xhtml($flag->getValue()),
+                ));
+                $this->_objTpl->parse('job_flag');
+                $flagsParsed = true;
+            }
+            $this->_objTpl->parse('job_flags');
+        }
+        if (!$flagsParsed) {
+            $this->_objTpl->hideBlock('job_flags');
+        }
+
         $this->jobsTitle = strip_tags(stripslashes($title));
         return $this->_objTpl->get();
     }
@@ -408,6 +452,17 @@ class Jobs extends JobsLibrary
         /*** end paging ***/
 
         if($count>=1){
+
+            // fetch ID-list of associated flags
+            $associatedFlagIds = array();
+            if (!empty($settings['use_flags'])) {
+                $associatedFlagIds = $this->getFlagAssociations();
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $flagRepo = $cx->getDb()->getEntityManager()->getRepository(
+                    'Cx\Modules\Jobs\Model\Entity\Flag'
+                );
+            }
+
             while (!$objResult->EOF) {
                 $id = $objResult->fields['docid'];
                 ($i % 2) ? $class  = 'row1' : $class  = 'row2';
@@ -448,6 +503,41 @@ class Jobs extends JobsLibrary
                     } else {
                         $this->_objTpl->touchBlock('job_not_paid');
                     }
+                }
+
+                $flagsParsed = false;
+                if (isset($associatedFlagIds[$id])) {
+                    foreach ($associatedFlagIds[$id] as $flagId) {
+                        $flag = $flagRepo->findOneById($flagId);
+                        if (!$flag) {
+                            continue;
+                        }
+                        $img = null;
+                        $icon = $flag->getIcon();
+                        if (!empty($icon)) {
+                            $path = $cx->getClassLoader()->getWebFilePath($icon);
+                            if ($path) {
+                                $img = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                                $img->setAttributes(array(
+                                    'src' => $path,
+                                    'style' => 'max-width: 16px',
+                                ));
+                            }
+                        }
+                        $this->_objTpl->setVariable(array(
+                            'JOB_FLAG_ID'       => $flag->getId(),
+                            'JOB_FLAG_NAME'     => contrexx_raw2xhtml($flag->getName()),
+                            'JOB_FLAG_ICON'     => $img,
+                            'JOB_FLAG_ICON_SRC' => $icon,
+                            'JOB_FLAG_VALUE'    => contrexx_raw2xhtml($flag->getValue()),
+                        ));
+                        $this->_objTpl->parse('job_flag');
+                        $flagsParsed = true;
+                    }
+                    $this->_objTpl->parse('job_flags');
+                }
+                if (!$flagsParsed) {
+                    $this->_objTpl->hideBlock('job_flags');
                 }
 
                 $this->_objTpl->parse("row");

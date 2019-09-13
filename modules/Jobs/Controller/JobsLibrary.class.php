@@ -174,6 +174,16 @@ class JobsLibrary
             $template->hideblock('jobs_list');
         }
 
+        // fetch ID-list of associated flags
+        $associatedFlagIds = array();
+        if (!empty($settings['use_flags'])) {
+            $associatedFlagIds = $this->getFlagAssociations();
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $flagRepo = $cx->getDb()->getEntityManager()->getRepository(
+                'Cx\Modules\Jobs\Model\Entity\Flag'
+            );
+        }
+
         while (!$objResult->EOF) {
             $id = $objResult->fields['docid'];
             $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', $locale->getId(), array('id' => $id));
@@ -202,6 +212,41 @@ class JobsLibrary
                 } else {
                     $template->touchBlock('job_not_paid');
                 }
+            }
+
+            $flagsParsed = false;
+            if (isset($associatedFlagIds[$id])) {
+                foreach ($associatedFlagIds[$id] as $flagId) {
+                    $flag = $flagRepo->findOneById($flagId);
+                    if (!$flag) {
+                        continue;
+                    }
+                    $img = null;
+                    $icon = $flag->getIcon();
+                    if (!empty($icon)) {
+                        $path = $cx->getClassLoader()->getWebFilePath($icon);
+                        if ($path) {
+                            $img = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                            $img->setAttributes(array(
+                                'src' => $path,
+                                'style' => 'max-width: 16px',
+                            ));
+                        }
+                    }
+                    $template->setVariable(array(
+                        'JOB_FLAG_ID'       => $flag->getId(),
+                        'JOB_FLAG_NAME'     => contrexx_raw2xhtml($flag->getName()),
+                        'JOB_FLAG_ICON'     => $img,
+                        'JOB_FLAG_ICON_SRC' => $icon,
+                        'JOB_FLAG_VALUE'    => contrexx_raw2xhtml($flag->getValue()),
+                    ));
+                    $template->parse('job_flag');
+                    $flagsParsed = true;
+                }
+                $template->parse('job_flags');
+            }
+            if (!$flagsParsed) {
+                $template->hideBlock('job_flags');
             }
 
             $template->parse('jobs_list');
