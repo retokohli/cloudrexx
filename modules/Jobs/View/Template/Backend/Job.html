@@ -294,7 +294,9 @@ function DeselectAllLocations(CONTROL)
           <td>
               <!-- BEGIN jobs_flags_list -->
               <input type="checkbox" name="jobs-flag[]" value="{JOBS_FLAG_ID}" id="jobs-flag-{JOBS_FLAG_ID}" <!-- BEGIN jobs_flag_checked -->checked="checked"<!-- END jobs_flag_checked --> />
-              <label for="jobs-flag-{JOBS_FLAG_ID}" style="margin-right:20px;"><img src="{JOBS_FLAG_ICON_SRC}" style="max-width:16px;" />{JOBS_FLAG_NAME}</label>
+              <label for="jobs-flag-{JOBS_FLAG_ID}" style="margin-right:20px;">
+                  <!-- BEGIN jobs_flag_icon --><img src="{JOBS_FLAG_ICON_SRC}" style="max-width:16px;" /><!-- END jobs_flag_icon -->
+                  {JOBS_FLAG_NAME}</label>
               <!-- END jobs_flags_list -->
           </td>
       </tr>

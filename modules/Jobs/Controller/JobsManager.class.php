@@ -317,6 +317,9 @@ class JobsManager extends JobsLibrary
                     if (!$flag) {
                         continue;
                     }
+                    if (!$flag->getIcon()) {
+                        continue;
+                    }
                     $this->_objTpl->setVariable(array(
                         'JOBS_FLAG_ICON_SRC'=> $flag->getIcon(),
                         'JOBS_FLAG_NAME'    => contrexx_raw2xhtml($flag->getName()),
@@ -589,9 +592,16 @@ class JobsManager extends JobsLibrary
             foreach ($flags as $flag) {
                 $this->_objTpl->setVariable(array(
                     'JOBS_FLAG_ID'      => $flag->getId(),
-                    'JOBS_FLAG_ICON_SRC'=> $flag->getIcon(),
                     'JOBS_FLAG_NAME'    => contrexx_raw2xhtml($flag->getName()),
                 ));
+                if ($flag->getIcon()) {
+                    $this->_objTpl->setVariable(array(
+                        'JOBS_FLAG_ICON_SRC'=> $flag->getIcon(),
+                    ));
+                    $this->_objTpl->touchBlock('jobs_flag_icon');
+                } else {
+                    $this->_objTpl->hideBlock('jobs_flag_icon');
+                }
                 if (
                     isset($associatedFlagIds[$id]) &&
                     in_array($flag->getId(), $associatedFlagIds[$id])
