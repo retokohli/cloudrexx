@@ -613,7 +613,7 @@ class JobsManager extends JobsLibrary
         $objFWUser = \FWUser::getFWUserObject();
         $id = intval($_POST['id']);
         $userId = $objFWUser->objUser->getId();
-        $changelog = mktime();
+        $changelog = time();
         $title = get_magic_quotes_gpc() ? strip_tags($_POST['jobsTitle']) : addslashes(strip_tags($_POST['jobsTitle']));
         $text = get_magic_quotes_gpc() ? $_POST['jobsText'] : addslashes($_POST['jobsText']);
         $title= str_replace("ß","ss",$title);
@@ -643,8 +643,13 @@ class JobsManager extends JobsLibrary
         $locset_indb = array();           //set of locations that is associated with this job in the db
         $rel_loc_jobs = '';     //used to generate INSERT Statement
 
-        foreach($_POST['associated_locations'] as $value) {
-            $locset[] = $value;
+        if (
+            !empty($_POST['associated_locations']) &&
+            is_array($_POST['associated_locations'])
+        ) {
+            foreach($_POST['associated_locations'] as $value) {
+                $locset[] = intval($value);
+            }
         }
 
         $query = "SELECT DISTINCT l.name as name,
@@ -692,12 +697,11 @@ class JobsManager extends JobsLibrary
             'workloc' => $workloc,
             'workload' => $workload,
             'work_start' => array('val' => $work_start, 'omitEmpty' => true),
-            'catid' => array('val' => $cat, 'omitEmpty' => true),
             'lang' => array('val' => $this->langId, 'omitEmpty' => true),
             'startdate' => array('val' => $startDate, 'omitEmpty' => true),
             'enddate' => array('val' => $endDate, 'omitEmpty' => true),
             'status' => array('val' => $status, 'omitEmpty' => true),
-            'userid' => array('val' => $userid, 'omitEmpty' => true),
+            'userid' => array('val' => $userId, 'omitEmpty' => true),
             'changelog' => array('val' => $date, 'omitEmpty' => true),
             'catId' => array('val' => $catId, 'omitEmpty' => true),
             'hot' => array('val' => $hotOffer, 'omitEmpty' => true),
@@ -960,6 +964,7 @@ class JobsManager extends JobsLibrary
             }
             if (isset($_POST['associated_locations'])) {
                 foreach($_POST['associated_locations'] as $value) {
+                    $value = intval($value);
                     $rel_loc_jobs .= " ($id,$value),";
                 }
                 $rel_loc_jobs = substr_replace($rel_loc_jobs ,"",-1);
