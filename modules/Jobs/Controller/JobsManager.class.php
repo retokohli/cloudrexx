@@ -338,7 +338,6 @@ class JobsManager extends JobsLibrary
         $AssociatedLocations = '';
         $notAssociatedLocations = '';
         $this->_objTpl->setVariable(array(
-            'TXT_GENERAL'    => $_ARRAYLANG['TXT_JOBS_GENERAL'],
             'TXT_LOCATION'    => $_ARRAYLANG['TXT_LOCATION'],
             'TXT_AVAILABLE_LOCATIONS'    => $_ARRAYLANG['TXT_JOBS_AVAILABLE_LOCATIONS'],
             'TXT_ASSOCIATED_LOCATIONS'    => $_ARRAYLANG['TXT_JOBS_ASSOCIATED_LOCATIONS'],
