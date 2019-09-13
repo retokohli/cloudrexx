@@ -127,7 +127,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     $img = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
                                     $img->setAttributes(array(
                                         'src' => $path,
-                                        'style' => 'max-width: 32px',
+                                        'style' => 'max-width: 16px',
                                     ));
                                     return $img;
                                 },
