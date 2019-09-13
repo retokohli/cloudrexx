@@ -82,9 +82,6 @@ class JobsManager extends JobsLibrary
             case 'delete':
                 $this->delete();
                 break;
-            case 'update':
-                $this->update();
-                break;
             case 'cat':
                 $this->manageCategories();
                 break;
@@ -402,7 +399,14 @@ class JobsManager extends JobsLibrary
         $paid = 0;
         $catId = '';
         $inputId = 0;
-        $action = 'Job';
+
+        // try to update a modified job
+        if (
+            empty($id) &&
+            !empty($_POST['id'])
+        ) {
+            $this->update();
+        }
 
         // load job in edit mode
         if (
@@ -434,7 +438,6 @@ class JobsManager extends JobsLibrary
             $_ARRAYLANG['TXT_MODULE_JOBS_ACT_JOB'] = $sectionTitle;
 
             $inputId = $id;
-            $action = 'update';
         }
 
         $this->_objTpl->setVariable(array(
@@ -475,7 +478,6 @@ class JobsManager extends JobsLibrary
         $objResult = $db->Execute($query);
         if (!$objResult || $objResult->EOF) {
             $id = 0;
-            $action = 'Job';
         } else {
             $catId = $objResult->fields['catid'];
             $jobsText = $objResult->fields['text'];
@@ -520,7 +522,6 @@ class JobsManager extends JobsLibrary
             'JOBS_DATE'                 => $date,
             'JOBS_MODIFY_HOT_OFFER'     => $hot ? 'checked=checked' : '',
             'JOBS_PAID'                 => $paid ? 'checked=checked' : '',
-            'JOBS_FORM_ACTION'          => $action,
             'JOBS_CAT_MENU'             => $this->getCategoryMenu(
                 $this->langId,
                 $catId
@@ -605,11 +606,6 @@ class JobsManager extends JobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if (empty($_POST['id'])) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromBackend('Jobs')
-            );
-        }
         $objFWUser = \FWUser::getFWUserObject();
         $id = intval($_POST['id']);
         $userId = $objFWUser->objUser->getId();
@@ -712,6 +708,7 @@ class JobsManager extends JobsLibrary
 
         if (!$objDatabase->Execute($query) or $dberr) {
             \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
+            return;
         } else {
             $this->createRSS();
             static::clearCache();
@@ -961,28 +958,28 @@ class JobsManager extends JobsLibrary
         $rel_loc_jobs = "";
 
         if (!isset($id)) {
-            \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
+            \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             \Cx\Core\Csrf\Controller\Csrf::redirect(
                 \Cx\Core\Routing\Url::fromBackend('Jobs')
             );
         }
 
-        if (!isset($_POST['associated_locations'])) {
-            \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);
-            \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromBackend('Jobs')
-            );
-        }
-        foreach($_POST['associated_locations'] as $value) {
-            $value = intval($value);
-            $rel_loc_jobs .= " ($id,$value),";
-        }
-        $rel_loc_jobs = substr_replace($rel_loc_jobs ,"",-1);
+        if (
+            !empty($_POST['associated_locations']) &&
+            is_array($_POST['associated_locations'])
+        ) {
+            foreach($_POST['associated_locations'] as $value) {
+                $value = intval($value);
+                $rel_loc_jobs .= " ($id,$value),";
+            }
+            $rel_loc_jobs = substr_replace($rel_loc_jobs ,"",-1);
 
-        $query = "INSERT INTO `".DBPREFIX."module_jobs_rel_loc_jobs` (job,location) VALUES $rel_loc_jobs ";
-        if (!$objDatabase->Execute($query)) {
-            \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
-            return $id;
+            $query = "INSERT INTO `".DBPREFIX."module_jobs_rel_loc_jobs` (job,location) VALUES $rel_loc_jobs ";
+            if (!$objDatabase->Execute($query)) {
+                \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
+                return $id;
+        }
+
         }
 
         \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);
