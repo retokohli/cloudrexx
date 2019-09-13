@@ -258,11 +258,24 @@ class JobsManager extends JobsLibrary
         }
         // get array containing the active locale ids
         $activeLangIds = \FWLanguage::getIdArray('frontend');
+
+        // fetch ID-list of associated flags
+        $associatedFlagIds = array();
+        if (!empty($settings['use_flags'])) {
+            $associatedFlagIds = $this->getFlagAssociations();
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $flagRepo = $cx->getDb()->getEntityManager()->getRepository(
+                'Cx\Modules\Jobs\Model\Entity\Flag'
+            );
+        }
+
         while ($objResult !== false && !$objResult->EOF) {
             // check if the job has assigned an existing language
             if (!in_array($objResult->fields['lang'], $activeLangIds)) {
                 $objResult->MoveNext();
+                continue;
             }
+            $id = $objResult->fields['jobsId'];
             $statusPicture = ($objResult->fields['status']==1) ? "status_green.gif" : "status_red.gif";
             $jobUser = \FWUser::getFWUserObject()->objUser->getUser($objResult->fields['userid']);
             $username = $_ARRAYLANG['TXT_ACCESS_UNKNOWN'];
@@ -270,7 +283,7 @@ class JobsManager extends JobsLibrary
                 $username = $jobUser->getUsername();
             }
             $this->_objTpl->setVariable(array(
-                'JOBS_ID'         => $objResult->fields['jobsId'],
+                'JOBS_ID'         => $id,
                 'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                 'JOBS_TITLE'      => stripslashes($objResult->fields['title']),
                 'JOBS_AUTHOR'      => stripslashes($objResult->fields['author']),
@@ -296,6 +309,26 @@ class JobsManager extends JobsLibrary
             } else {
                 $this->_objTpl->hideBlock('jobs_overview_paid');
             }
+
+            $flagsParsed = false;
+            if (isset($associatedFlagIds[$id])) {
+                foreach ($associatedFlagIds[$id] as $flagId) {
+                    $flag = $flagRepo->findOneById($flagId);
+                    if (!$flag) {
+                        continue;
+                    }
+                    $this->_objTpl->setVariable(array(
+                        'JOBS_FLAG_ICON_SRC'=> $flag->getIcon(),
+                        'JOBS_FLAG_NAME'    => contrexx_raw2xhtml($flag->getName()),
+                    ));
+                    $this->_objTpl->parse('jobs_flags_list');
+                    $flagsParsed = true;
+                }
+            }
+            if (!$flagsParsed) {
+                $this->_objTpl->hideBlock('jobs_flags_list');
+            }
+
             $this->_objTpl->parse('row');
             $objResult->MoveNext();
         }
