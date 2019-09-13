@@ -76,10 +76,7 @@ class JobsManager extends JobsLibrary
         }
 
         switch($_GET['act']) {
-            case 'add':
-                $this->modifyJob(0, true);
-                break;
-            case 'edit':
+            case 'Job':
                 $this->modifyJob();
                 break;
             case 'delete':
@@ -382,10 +379,15 @@ class JobsManager extends JobsLibrary
      *                          existing job offer. Copy functionality is done
      *                          through add-functionality.
      */
-    protected function modifyJob($id = 0, $add = false)
+    protected function modifyJob($id = 0)
     {
-        global $_ARRAYLANG, $subMenuTitle;
+        global $_ARRAYLANG;
 
+        if (!empty($_GET['copy'])) {
+            $id = intval($_GET['copy']);
+        }
+
+        $add = true;
         $status = 'checked="checked"';
         $title = '';
         $author = \FWUser::getFWUserObject()->objUser->getUsername();
@@ -399,25 +401,27 @@ class JobsManager extends JobsLibrary
         $hot = 0;
         $paid = 0;
         $catId = '';
-        $id = 0;
         $inputId = 0;
-        $action = 'add';
+        $action = 'Job';
 
+        // load job in edit mode
         if (
             empty($id) &&
             !empty($_REQUEST['id'])
         ) {
             $id = intval($_REQUEST['id']);
+            $add = false;
         }
 
+        // check for storing a new job
         if (
             empty($id) &&
             !empty($_POST['jobsTitle'])
         ) {
-            $this->insert();
-            $this->createRSS();
-            $this->clearCache();
-            return;
+            // in case the insertion of the new job offer fails,
+            // the insert() method will return the newly generated
+            // ID (if any)
+            $id = $this->insert();
         }
 
         $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
@@ -425,9 +429,10 @@ class JobsManager extends JobsLibrary
         if ($add) {
             $sectionTitle = $_ARRAYLANG['TXT_ADD_DOCUMENT'];
         } else {
-            $this->_objTpl->loadTemplateFile('add.html');
             $sectionTitle = $_ARRAYLANG['TXT_EDIT_DOCUMENTS'];
-            $subMenuTitle = $sectionTitle;
+            // this is a workaround as the navigation has a non-standard logic
+            $_ARRAYLANG['TXT_MODULE_JOBS_ACT_JOB'] = $sectionTitle;
+
             $inputId = $id;
             $action = 'update';
         }
@@ -470,7 +475,7 @@ class JobsManager extends JobsLibrary
         $objResult = $db->Execute($query);
         if (!$objResult || $objResult->EOF) {
             $id = 0;
-            $action = 'add';
+            $action = 'Job';
         } else {
             $catId = $objResult->fields['catid'];
             $jobsText = $objResult->fields['text'];
@@ -915,8 +920,7 @@ class JobsManager extends JobsLibrary
 
         if (empty($title) or empty($cat)) {
             \Message::error($_ARRAYLANG['TXT_JOBS_ERROR']);
-            $this->modifyJob();
-            return;
+            return 0;
         }
 
         if ($status == 0) {
@@ -971,13 +975,11 @@ class JobsManager extends JobsLibrary
                 \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);
             } else {
                 \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
-                $this->modifyJob($id);
-                return;
+                return $id;
             }
         } else {
             \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
-            $this->modifyJob($id);
-            return;
+            return 0;
         }
 
         \Cx\Core\Csrf\Controller\Csrf::redirect(

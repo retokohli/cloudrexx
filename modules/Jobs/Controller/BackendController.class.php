@@ -53,7 +53,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands()
     {
         $commands = array(
-            'add',
+            'Job',
             'cat',
             'loc',
             'settings'
