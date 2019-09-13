@@ -952,42 +952,40 @@ class JobsManager extends JobsLibrary
             'paid' => array('val' => $paid, 'omitEmpty' => true),
         ));
 
-        if ($objDatabase->Execute($query)) {
-            $id = $objDatabase->Insert_id();
-            $rel_loc_jobs = "";
-
-            if (!isset($id)) {
-                \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
-                \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromBackend('Jobs')
-                );
-            }
-            if (isset($_POST['associated_locations'])) {
-                foreach($_POST['associated_locations'] as $value) {
-                    $value = intval($value);
-                    $rel_loc_jobs .= " ($id,$value),";
-                }
-                $rel_loc_jobs = substr_replace($rel_loc_jobs ,"",-1);
-            } else {
-                \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);
-                \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromBackend('Jobs')
-                );
-            }
-
-            $query = "INSERT INTO `".DBPREFIX."module_jobs_rel_loc_jobs` (job,location) VALUES $rel_loc_jobs ";
-            if ($objDatabase->Execute($query))
-            {
-                \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);
-            } else {
-                \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
-                return $id;
-            }
-        } else {
+        if (!$objDatabase->Execute($query)) {
             \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             return 0;
         }
 
+        $id = $objDatabase->Insert_id();
+        $rel_loc_jobs = "";
+
+        if (!isset($id)) {
+            \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
+                \Cx\Core\Routing\Url::fromBackend('Jobs')
+            );
+        }
+
+        if (!isset($_POST['associated_locations'])) {
+            \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
+                \Cx\Core\Routing\Url::fromBackend('Jobs')
+            );
+        }
+        foreach($_POST['associated_locations'] as $value) {
+            $value = intval($value);
+            $rel_loc_jobs .= " ($id,$value),";
+        }
+        $rel_loc_jobs = substr_replace($rel_loc_jobs ,"",-1);
+
+        $query = "INSERT INTO `".DBPREFIX."module_jobs_rel_loc_jobs` (job,location) VALUES $rel_loc_jobs ";
+        if (!$objDatabase->Execute($query)) {
+            \Message::error($_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED']);
+            return $id;
+        }
+
+        \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']);
         \Cx\Core\Csrf\Controller\Csrf::redirect(
             \Cx\Core\Routing\Url::fromBackend('Jobs')
         );
