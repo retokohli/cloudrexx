@@ -243,7 +243,7 @@ class JobsLibrary
     /**
      * Clear page and esi cache of this component
      */
-    protected function clearCache() {
+    public static function clearCache() {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $cx->getEvents()->triggerEvent(
             'clearEsiCache',

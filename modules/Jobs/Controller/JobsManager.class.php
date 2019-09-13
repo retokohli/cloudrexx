@@ -568,7 +568,7 @@ class JobsManager extends JobsLibrary
                 \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             }
 
-            $this->clearCache();
+            static::clearCache();
         }
 
         if (is_array($_POST['selectedId'])) {
@@ -589,7 +589,7 @@ class JobsManager extends JobsLibrary
             }
         }
 
-        $this->clearCache();
+        static::clearCache();
 
         \Cx\Core\Csrf\Controller\Csrf::redirect(
             \Cx\Core\Routing\Url::fromBackend('Jobs')
@@ -704,12 +704,13 @@ class JobsManager extends JobsLibrary
             'paid' => array('val' => $paid, 'omitEmpty' => true),
         ))." WHERE id = $id;";
 
-        $this->clearCache();
+        static::clearCache();
 
         if (!$objDatabase->Execute($query) or $dberr) {
             \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
         } else {
             $this->createRSS();
+            static::clearCache();
             \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
         }
 
@@ -756,7 +757,7 @@ class JobsManager extends JobsLibrary
                     \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
                 }
 
-                $this->clearCache();
+                static::clearCache();
             }
         }
 
@@ -830,7 +831,7 @@ class JobsManager extends JobsLibrary
                                             WHEN `name` = "sourceOfJobs"        THEN "' . contrexx_raw2db($settings['sourceOfJobs']) . '" 
                                             WHEN `name` = "listingLimit"        THEN "' . contrexx_raw2db($settings['listingLimit']) . '"
                                        END)';
-            $this->clearCache();
+            static::clearCache();
             if ($objDatabase->Execute($query)) {
                 \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
                 // force reload of backend section to ensure the option
@@ -1024,7 +1025,7 @@ class JobsManager extends JobsLibrary
              } else {
                  \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
              }
-            $this->clearCache();
+            static::clearCache();
         }
 
         // Modify a new category
@@ -1050,7 +1051,7 @@ class JobsManager extends JobsLibrary
             } else {
                     \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             }
-            $this->clearCache();
+            static::clearCache();
         }
 
         $query = "SELECT `catid`,
@@ -1102,7 +1103,7 @@ class JobsManager extends JobsLibrary
                     \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
                 }
             }
-            $this->clearCache();
+            static::clearCache();
         }
 
         \Cx\Core\Csrf\Controller\Csrf::redirect(
@@ -1149,7 +1150,7 @@ class JobsManager extends JobsLibrary
              } else {
                  \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
              }
-            $this->clearCache();
+            static::clearCache();
         }
 
         // Modify a new category
@@ -1173,7 +1174,7 @@ class JobsManager extends JobsLibrary
             } else {
                 \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             }
-            $this->clearCache();
+            static::clearCache();
         }
 
         $query = "SELECT `id`,
@@ -1218,7 +1219,7 @@ class JobsManager extends JobsLibrary
             } else {
                 \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             }
-            $this->clearCache();
+            static::clearCache();
         }
         unset($locId);
         if (is_array($_POST['selectedId'])) {
@@ -1235,7 +1236,7 @@ class JobsManager extends JobsLibrary
             } else {
                 \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
             }
-            $this->clearCache();
+            static::clearCache();
         }
 
         \Cx\Core\Csrf\Controller\Csrf::redirect(
