@@ -384,43 +384,50 @@ class JobsManager extends JobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        \JS::activate('jqueryui');
+        $status = 'checked="checked"';
+        $title = '';
+        $author = \FWUser::getFWUserObject()->objUser->getUsername();
+        $jobsText = '';
+        $workloc = '';
+        $workload = '';
+        $work_start = '';
+        $startDate = '';
+        $endDate = '';
+        $date = date(ASCMS_DATE_FORMAT, time());
+        $hot = 0;
+        $paid = 0;
+        $catId = '';
+        $id = 0;
 
-        $objFWUser = \FWUser::getFWUserObject();
+        $this->_objTpl->setVariable(array(
+            'TXT_JOBS_MESSAGE'    => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
+            'TXT_TITLE'           => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_CATEGORY'        => $_ARRAYLANG['TXT_CATEGORY'],
+            'TXT_JOBS_CATEGORY_SELECT'=> $_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT'],
+            'TXT_JOBS_SETTINGS'   => $_ARRAYLANG['TXT_JOBS_SETTINGS'],
+            'TXT_WORKLOC'         => $_ARRAYLANG['TXT_WORKLOC'],
+            'TXT_WORKLOAD'        => $_ARRAYLANG['TXT_WORKLOAD'],
+            'TXT_WORK_START'      => $_ARRAYLANG['TXT_WORK_START'],
+            'TXT_JOBS_CONTENT'    => $_ARRAYLANG['TXT_CONTENT'],
+            'TXT_STORE'           => $_ARRAYLANG['TXT_STORE'],
+            'TXT_PUBLISHING'      => $_ARRAYLANG['TXT_PUBLISHING'],
+            'TXT_STARTDATE'       => $_ARRAYLANG['TXT_STARTDATE'],
+            'TXT_ENDDATE'         => $_ARRAYLANG['TXT_ENDDATE'],
+            'TXT_OPTIONAL'        => $_ARRAYLANG['TXT_OPTIONAL'],
+            'TXT_DATE'            => $_ARRAYLANG['TXT_DATE'],
+            'TXT_ACTIVE'          => $_ARRAYLANG['TXT_ACTIVE'],
+            'TXT_AUTHOR'          => $_ARRAYLANG['TXT_AUTHOR'],
+            'TXT_JOBS_NO_CATEGORY'=> $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'],
+            'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE'],
+            'TXT_JOBS_PAID'       => $_ARRAYLANG['TXT_JOBS_PAID'],
+            'TXT_JOBS_PAID_LABEL' => $_ARRAYLANG['TXT_JOBS_PAID_LABEL'],
+        ));
 
         /*
          * if $_REQUEST['id'] is not empty handle it as a copy. unset id and time
          */
         if (!empty($_REQUEST['id'])) {
             $id = intval($_REQUEST['id']);
-            $status = '';
-            $startDate = '';
-            $endDate = '';
-            $catId = '';
-            $this->_objTpl->setVariable(array(
-                'TXT_JOBS_MESSAGE'  => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
-                'TXT_TITLE'           => $_ARRAYLANG['TXT_TITLE'],
-                'TXT_CATEGORY'        => $_ARRAYLANG['TXT_CATEGORY'],
-                'TXT_JOBS_SETTINGS'      => $_ARRAYLANG['TXT_JOBS_SETTINGS'],
-                'TXT_LOCATION'        => $_ARRAYLANG['TXT_TXT_LOCATION'],
-                'TXT_WORKLOC'         => $_ARRAYLANG['TXT_WORKLOC'],
-                'TXT_WORKLOAD'        => $_ARRAYLANG['TXT_WORKLOAD'],
-                'TXT_WORK_START'      => $_ARRAYLANG['TXT_WORK_START'],
-                'TXT_JOBS_CONTENT'    => $_ARRAYLANG['TXT_CONTENT'],
-                'TXT_STORE'           => $_ARRAYLANG['TXT_STORE'],
-                'TXT_PUBLISHING'      => $_ARRAYLANG['TXT_PUBLISHING'],
-                'TXT_STARTDATE'       => $_ARRAYLANG['TXT_STARTDATE'],
-                'TXT_ENDDATE'         => $_ARRAYLANG['TXT_ENDDATE'],
-                'TXT_OPTIONAL'        => $_ARRAYLANG['TXT_OPTIONAL'],
-                'TXT_DATE'            => $_ARRAYLANG['TXT_DATE'],
-                'TXT_ACTIVE'          => $_ARRAYLANG['TXT_ACTIVE'],
-                'TXT_AUTHOR'          => $_ARRAYLANG['TXT_AUTHOR'],
-                'TXT_JOBS_NO_CATEGORY'=> $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'],
-                'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE'],
-                'TXT_JOBS_PAID'       => $_ARRAYLANG['TXT_JOBS_PAID'],
-                'TXT_JOBS_PAID_LABEL' => $_ARRAYLANG['TXT_JOBS_PAID_LABEL'],
-            ));
-            $this->getLocationTable($id);
             $query = "SELECT `catid`,
                                `lang`,
                                `date`,
@@ -441,10 +448,10 @@ class JobsManager extends JobsLibrary
                          LIMIT 1";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult->EOF) {
-                $jobsText = stripslashes($objResult->fields['text']);
+                $jobsText = $objResult->fields['text'];
                 $catId = $objResult->fields['catid'];
-                if ($objResult->fields['status']==1) {
-                    $status = "checked";
+                if (!$objResult->fields['status']) {
+                    $status = '';
                 }
                 if ($objResult->fields['startdate']!="0000-00-00 00:00:00") {
                     $startDate = $objResult->fields['startdate'];
@@ -452,77 +459,53 @@ class JobsManager extends JobsLibrary
                 if ($objResult->fields['enddate']!="0000-00-00 00:00:00") {
                     $endDate = $objResult->fields['enddate'];
                 }
-                $work_start = $objResult->fields['work_start'];
                 if (!empty($objResult->fields['work_start'])) {
                     $work_start = date("Y-m-d", $objResult->fields['work_start']);
                 }
-                $this->_objTpl->setVariable(array(
-                    'JOBS_ID'            => '',
-                    'JOBS_STORED_ID'    => '',
-                    'JOBS_TITLE'        => stripslashes(htmlspecialchars($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)),
-                    'JOBS_AUTHOR'        => stripslashes(htmlspecialchars($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET)),
-                    'JOBS_TEXT'        => new \Cx\Core\Wysiwyg\Wysiwyg('jobsText', contrexx_raw2xhtml($jobsText), 'full'),
-                    'JOBS_WORKLOC'        => $objResult->fields['workloc'],
-                    'JOBS_WORKLOAD'        => $objResult->fields['workload'],
-                    'JOBS_WORK_START'        => $work_start,
-                    'JOBS_STARTDATE'    => $startDate,
-                    'JOBS_ENDDATE'    => $endDate,
-                    'JOBS_STATUS'        => $status,
-                    'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                    'JOBS_MODIFY_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : '',
-                    'JOBS_PAID' => ($objResult->fields['paid'] == 1) ? 'checked=checked' : ''
-                ));
-            }
 
-            $this->_objTpl->setVariable("JOBS_CAT_MENU",$this->getCategoryMenu($this->langId, $catId));
-            $this->_objTpl->setVariable('TXT_JOBS_CATEGORY_SELECT',$_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT']);
-            $this->_objTpl->setVariable("JOBS_FORM_ACTION","add");
-            $this->_objTpl->setVariable("JOBS_STORED_FORM_ACTION","add");
-            $this->_objTpl->setVariable("JOBS_TOP_TITLE",$_ARRAYLANG['TXT_MODULE_JOBS_ACT_ADD']);
-        } else {
-            $this->_objTpl->setVariable(array(
-                'TXT_JOBS_MESSAGE'     => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
-                'TXT_TITLE'                => $_ARRAYLANG['TXT_TITLE'],
-                'TXT_LOCATION'       => $_ARRAYLANG['TXT_TXT_LOCATION'],
-                'TXT_CATEGORY'             => $_ARRAYLANG['TXT_CATEGORY'],
-                'TXT_JOBS_SETTINGS'           => $_ARRAYLANG['TXT_JOBS_SETTINGS'],
-                'TXT_WORKLOC'         => $_ARRAYLANG['TXT_WORKLOC'],
-                'TXT_WORKLOAD'        => $_ARRAYLANG['TXT_WORKLOAD'],
-                'TXT_WORK_START'      => $_ARRAYLANG['TXT_WORK_START'],
-                'TXT_JOBS_CONTENT'     => $_ARRAYLANG['TXT_CONTENT'],
-                'TXT_STORE'                => $_ARRAYLANG['TXT_STORE'],
-                'TXT_PUBLISHING'           => $_ARRAYLANG['TXT_PUBLISHING'],
-                'TXT_STARTDATE'            => $_ARRAYLANG['TXT_STARTDATE'],
-                'TXT_ENDDATE'              => $_ARRAYLANG['TXT_ENDDATE'],
-                'TXT_OPTIONAL'           => $_ARRAYLANG['TXT_OPTIONAL'],
-                'TXT_ACTIVE'             => $_ARRAYLANG['TXT_ACTIVE'],
-                'TXT_DATE'                 => $_ARRAYLANG['TXT_DATE'],
-                'JOBS_TEXT'            => new \Cx\Core\Wysiwyg\Wysiwyg('jobsText', null, 'full'),
-                'JOBS_FORM_ACTION'     => "add",
-                'JOBS_STORED_FORM_ACTION' => "add",
-                'JOBS_STATUS'          => ' checked="checked"',
-                'JOBS_ID'              => "",
-                'JOBS_TOP_TITLE'       => $_ARRAYLANG['TXT_MODULE_JOBS_ACT_ADD'],
-                'JOBS_CAT_MENU'        => $this->getCategoryMenu($this->langId),
-                'TXT_JOBS_CATEGORY_SELECT'=> $_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT'],
-                'TXT_JOBS_NO_CATEGORY'=> $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'],
-                'TXT_JOBS_NO_TITLE'   => $_ARRAYLANG['TXT_JOBS_NO_TITLE'],
-                'JOBS_STARTDATE'       => "",
-                'JOBS_ENDDATE' => "",
-                'JOBS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
-                'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
-                'JOBS_AUTHOR' => htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                'TXT_JOBS_PAID'       => $_ARRAYLANG['TXT_JOBS_PAID'],
-                'TXT_JOBS_PAID_LABEL' => $_ARRAYLANG['TXT_JOBS_PAID_LABEL'],
-            ));
-            $this->getLocationTable('');
-
-            if (!empty($_POST['jobsTitle'])) {
-                $this->insert();
-                $this->createRSS();
-                $this->clearCache();
+                $title = $objResult->fields['title'];
+                $author = $objResult->fields['author'];
+                $workloc = $objResult->fields['workloc'];
+                $workload = $objResult->fields['workload'];
+                $date = date(ASCMS_DATE_FORMAT, $objResult->fields['date']);
+                $hot = !empty($objResult->fields['hot']);
+                $paid = !empty($objResult->fields['paid']);
             }
+        } elseif (!empty($_POST['jobsTitle'])) {
+            $this->insert();
+            $this->createRSS();
+            $this->clearCache();
+            return;
         }
+
+        $this->getLocationTable($id);
+        $this->_objTpl->setVariable(array(
+            'JOBS_ID'                   => '',
+            'JOBS_STORED_ID'            => '',
+            'JOBS_TITLE'                => contrexx_raw2xhtml($title),
+            'JOBS_AUTHOR'               => contrexx_raw2xhtml($author),
+            'JOBS_TEXT'                 => new \Cx\Core\Wysiwyg\Wysiwyg(
+                'jobsText',
+                contrexx_raw2xhtml($jobsText),
+                'full'
+            ),
+            'JOBS_WORKLOC'              => contrexx_raw2xhtml($workloc),
+            'JOBS_WORKLOAD'             => contrexx_raw2xhtml($workload),
+            'JOBS_WORK_START'           => $work_start,
+            'JOBS_STARTDATE'            => $startDate,
+            'JOBS_ENDDATE'              => $endDate,
+            'JOBS_STATUS'               => $status,
+            'JOBS_DATE'                 => $date,
+            'JOBS_MODIFY_HOT_OFFER'     => $hot ? 'checked=checked' : '',
+            'JOBS_PAID'                 => $paid ? 'checked=checked' : '',
+            'JOBS_FORM_ACTION'          => 'add',
+            'JOBS_STORED_FORM_ACTION'   => 'add',
+            'JOBS_TOP_TITLE'            => $_ARRAYLANG['TXT_MODULE_JOBS_ACT_ADD'],
+            'JOBS_CAT_MENU'             => $this->getCategoryMenu(
+                $this->langId,
+                $catId
+            ),
+        ));
 
         //Get the settings value from DB
         $settings = $this->getSettings();
