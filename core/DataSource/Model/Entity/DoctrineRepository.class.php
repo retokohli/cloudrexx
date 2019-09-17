@@ -406,8 +406,26 @@ class DoctrineRepository extends DataSource {
             }
 
             $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
-            if ($fieldDefinition['type'] == 'datetime') {
-                $data[$name] = new \DateTime($data[$name]);
+            if ($fieldDefinition['type'] === 'datetime'
+                || $fieldDefinition['type'] === 'timestamp'
+                || $fieldDefinition['type'] === 'date'
+                || $fieldDefinition['type'] === 'time'
+            ) {
+                if (!$data[$name]) {
+                    // Empty values must be NULL, or Doctrine will fail
+                    $data[$name] = null;
+                }
+                if ($data[$name] && !is_a($data[$name], 'DateTime')) {
+                    // Throws on invalid input
+                    $datetime = new \DateTime($data[$name]);
+                    // Not necessary, as the database ignores unused parts anyway.
+                    //if ($fieldDefinition['type'] === 'date') {
+                    //    $datetime->setTime(0, 0);
+                    //} elseif ($fieldDefinition['type'] === 'time') {
+                    //    $datetime->setDate(0, 0, 0);
+                    //}
+                    $data[$name] = $datetime;
+                }
             } elseif ($fieldDefinition['type'] == 'array') {
                 // verify that the value is actually an array -> prevent to store other php data
                 if (!is_array($data[$name])) {
