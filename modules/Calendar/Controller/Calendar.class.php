@@ -306,7 +306,7 @@ class Calendar extends CalendarLibrary
             $this->startDate = null;
             $this->sortDirection = 'DESC';
         } else {
-            $this->startDate = new \DateTime();
+            $this->startDate = $this->getInternDateTimeFromUser();
 
             $startDay   = isset($_GET['day']) ? $_GET['day'] : $this->startDate->format('d');
             $startMonth = isset($_GET['month']) ? $_GET['month'] : $this->startDate->format('m');
@@ -329,13 +329,6 @@ class Calendar extends CalendarLibrary
                 case CalendarLibrary::SHOW_EVENTS_UNTIL_END:
                 default:
                     // set the start date to NOW
-
-                    // this is a very dirty hack and should not be necessary!
-                    // this re-substracts the timezone offset, since it will be added
-                    // twice below. This does not work for timezones with a negative
-                    // offset to UTC!
-                    $offsetSeconds = abs($this->getInternDateTimeFromUser()->getOffset());
-                    $this->startDate->sub(new \DateInterval('PT' . $offsetSeconds . 'S'));
                     break;
             }
         }
@@ -344,9 +337,9 @@ class Calendar extends CalendarLibrary
         if (!empty($till)) {
             $this->endDate = $till;
         } else if ($cmd == 'archive') {
-            $this->endDate = new \DateTime();
+            $this->endDate= $this->getInternDateTimeFromUser();
         } else {
-            $this->endDate = new \DateTime();
+            $this->endDate= $this->getInternDateTimeFromUser();
 
             $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $this->endDate->format('d');
             $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $this->endDate->format('m');
@@ -358,38 +351,35 @@ class Calendar extends CalendarLibrary
             $this->endDate->setTime(23, 59, 59);
         }
 
-
-        // get datepicker-time
-        if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
-
-            $this->startDate = new \DateTime();
-            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
-            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
-            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
-
-            $this->startDate->setDate($year, $month, $day);
-            $this->startDate->modify("first day of this month");
-            $this->startDate->setTime(0, 0, 0);
-
-            $this->endDate = clone $this->startDate;
-            // add months for the list view(month view)
-            if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
-                $this->endDate->modify("+{$this->boxCount} months");
-            }
-
-            $this->endDate->modify("last day of this month");
-            $this->endDate->setTime(23, 59, 59);
-        } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
-            $this->startDate = new \DateTime();
+        // Note: the URL arguments yearID, monthID and dayID are only set
+        // by the activeCalendar.
+        //
+        // Get selected date from boxes view. This can either be from
+        // - the application cmd 'boxes'
+        // - the any other listing cmd with the placeholder CALENDAR_BOX
+        // - or from the detail view of an event (CALENDAR_EVENT_MONTH_BOX)
+        if (
+            isset($_REQUEST["yearID"]) &&
+            isset($_REQUEST["monthID"])
+        ) {
+            $this->startDate = $this->getInternDateTimeFromUser();
 
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
-            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : 1;
+            $daySet   = isset($_REQUEST["dayID"]);
 
             $this->startDate->setDate($year, $month, $day);
             $this->startDate->setTime(0, 0, 0);
             $this->endDate   = clone $this->startDate;
             $this->endDate->setTime(23, 59, 59);
+            if (!$daySet) {
+                // shift to the last day of the next month twice
+                // as we need to load the events of three months
+                // in total
+                $this->endDate->modify("last day of next month");
+                $this->endDate->modify("last day of next month");
+            }
         }
 
         // In case $_GET['cmd'] is an integer, then we shall treat it as the
@@ -439,22 +429,6 @@ class Calendar extends CalendarLibrary
                 $this->endDate->format('H:i:s') == '00:00:00'
             ) {
                 $this->endDate->setTime('23', '59', '59');
-            }
-            $internDateTime = new \DateTime('now');
-            $dbDateTime = $this->getComponent('DateTime')->createDateTimeForDb('now');
-            $internDateTimeOffset = $internDateTime->getOffset();
-            $dbDateTimeOffset = $dbDateTime->getOffset();
-            if ($internDateTimeOffset > $dbDateTimeOffset) {
-                $timeOffset = $internDateTimeOffset - $dbDateTimeOffset;
-            } else {
-                $timeOffset = $dbDateTimeOffset - $internDateTimeOffset;
-            }
-            if ($timeOffset > 0) {
-                $this->startDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
-                $this->endDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
-            } else {
-                $this->startDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
-                $this->endDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
             }
         }
 
@@ -1048,8 +1022,6 @@ UPLOADER;
             \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
         }
 
-        $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
-
         // Set the meta page description to the teaser text if displaying calendar details
         $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
         if ($teaser) {
@@ -1213,8 +1185,16 @@ UPLOADER;
             }
         }
 
-        // set page title based on requested event
-        $dateForPageTitle = $objEvent->startDate;
+        // parse url to detail section of associated event
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail');
+        $url->setParams(array(
+            'id' => $objEvent->id,
+            'date' => $objEvent->startDate->getTimestamp()
+        ));
+        $this->_objTpl->setVariable(
+            $this->moduleLangVar.'_EVENT_DETAIL_LINK',
+            $url
+        );
 
         // Only show registration form if event lies in the future
         if(time() > $objEvent->startDate->getTimestamp()) {
