@@ -1971,8 +1971,15 @@ class CalendarEventManager extends CalendarLibrary
                 // no recurrence end set
                 case 1:
                     if ($this->startDate != null) {
-                        $lastDate = clone $this->startDate;
-                        $lastDate->setDate($lastDate->format('Y') + intval($this->arrSettings['maxSeriesEndsYear']) + 1, $lastDate->format('m'), $lastDate->format('d'));
+                        // end based on option 'List endless series previously'
+                        $lastDate = $this->getInternDateTimeFromUser();
+                        $lastDate->setDate(
+                            $lastDate->format('Y') + intval(
+                                $this->arrSettings['maxSeriesEndsYear']
+                            ) + 1,
+                            $lastDate->format('m'),
+                            $lastDate->format('d')
+                        );
                         if ($nextEvent->startDate > $lastDate) {
                             // recurrence is out of date boundary -> skip
                             return null;
