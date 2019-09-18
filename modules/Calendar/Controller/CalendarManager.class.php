@@ -364,9 +364,17 @@ class CalendarManager extends CalendarLibrary
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
         \JS::registerJS('modules/Calendar/View/Script/Backend.js');
 
+        // end of unix timestamp (= max signed 32bit int)
+        $maxDate = 0x7FFFFFFF;
+        // the day before
+        $maxDate -= 86400;
+        // convert into ms
+        $maxDate *= 1000;
+
         \ContrexxJavascript::getInstance()->setVariable(
             array(
-                'language_id' => \FWLanguage::getDefaultLangId()
+                'language_id' => \FWLanguage::getDefaultLangId(),
+                'maxDate'     => $maxDate,
             ),
             'calendar'
         );
