@@ -1962,6 +1962,11 @@ class CalendarEventManager extends CalendarLibrary
         // this is the day before the end of unix timestamp
         static $endOfUnixTimestamp;
         if (!isset($endOfUnixTimestamp)) {
+            // End of unix timestamp (= max signed 32bit int)
+            // Note: We should instead use \PHP_INT_MAX
+            // However, as MySQL and MariaDB currently do not yet support
+            // 64bit timestamps, we just can't
+            // See https://cloudrexx.atlassian.net/browse/CLX-3009
             $endOfUnixTimestamp = $this->getInternDateTimeFromUser('@' . 0x7FFFFFFF);
             $endOfUnixTimestamp->modify('-1 day');
         }
