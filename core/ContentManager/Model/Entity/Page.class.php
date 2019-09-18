@@ -837,9 +837,7 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
                 $fallback_page = $this->getNode()->getPage($fallback_lang);
                 if ($fallback_page && $fallback_page->isActive()) {
                     $fallback_status = $fallback_page->getStatus();
-                    if ($fallback_page->getDisplay()) {
-                        $fallback_status = str_replace('active', '', $fallback_status);
-                    }
+                    $fallback_status = preg_replace('/(in)?active/', '', $fallback_status);
                     if ($this->isFrontendProtected() && !preg_match('/protected/', $fallback_status)) {
                         $fallback_status .= 'protected ';
                     }
