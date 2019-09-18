@@ -1336,7 +1336,7 @@ class CalendarEventManager extends CalendarLibrary
             // note: 'this month' is relativ to the set month of $endDate
             $endDate->modify('last day of this month');
 
-            $eventManager = new static(null, $endDate);
+            $eventManager = new static($startDate, $endDate);
             $objEvent     = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($event->id));
             if ($eventManager->_addToEventList($objEvent)) {
                 $eventManager->eventList[] = $objEvent;
