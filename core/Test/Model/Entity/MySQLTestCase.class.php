@@ -68,7 +68,11 @@ class MySQLTestCase extends ContrexxTestCase {
         $objDbUser->setPassword($_DBCONFIG['password']);
 
         // Initialize database connection
-        $db = new \Cx\Core\Model\Db($objDb, $objDbUser);
+        $db = new \Cx\Core\Model\Db(
+            $objDb,
+            $objDbUser,
+            self::$cx->getComponent('Cache')->getCacheDriver()
+        );
         self::$database = $db->getAdoDb();
     }
 
