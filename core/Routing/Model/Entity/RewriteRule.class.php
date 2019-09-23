@@ -190,10 +190,13 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
             return $url;
         }
 
-        $continue = $this->getContinueOnMatch();
         $newUrl = \Cx\Core\Routing\Url::fromMagic(
             $this->getRegularExpression()->replace($url->toString())
         );
+
+        // set continue state only if regex application was successful
+        $continue = $this->getContinueOnMatch();
+
         \DBG::log('Redirecting to ' . $newUrl->toString());
         return $newUrl;
     }
