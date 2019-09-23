@@ -80,7 +80,7 @@ class MySQLTestCase extends ContrexxTestCase {
         self::$database->BeginTrans();
     }
 
-    public function tearDown() :void {
+    public function tearDown(): void {
         self::$database->RollbackTrans();
     }
 }
