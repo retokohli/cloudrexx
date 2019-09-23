@@ -78,6 +78,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
+        // detect infinite loops like /foo(/bar)+
+        $iterationPoint = strrpos(
+            $url->getPath(),
+            $originalUrl->getPath()
+        );
+        if ($iterationPoint !== false) {
+            $redundancy = substr($url->getPath(), 0, $iterationPoint);
+            if (substr_count($url->getPath(), $redundancy) > 2) {
+                \DBG::msg('Potential infinite loop detected');
+                \DBG::msg('Abort resolving');
+                throw new \Cx\Core\Core\Controller\InstanceException();
+            }
+        }
+
         // execute external (301/302) redirection (and cache it)
         if (
             $rewriteRule->getRewriteStatusCode() !=
