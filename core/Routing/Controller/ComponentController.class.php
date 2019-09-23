@@ -88,6 +88,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (substr_count($url->getPath(), $redundancy) > 2) {
                 \DBG::msg('Potential infinite loop detected');
                 \DBG::msg('Abort resolving');
+                \header($_SERVER['SERVER_PROTOCOL'] . ' 502 Bad Gateway');
+                // remove CSRF token
+                output_reset_rewrite_vars();
                 throw new \Cx\Core\Core\Controller\InstanceException();
             }
         }
@@ -127,6 +130,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'follow_redirects' => true,
             ));
             $response = $request->send();
+            http_response_code($response->getStatus());
             $content = $response->getBody();
             foreach ($response->getHeader() as $key=>$value) {
                 if (in_array($key, array(
