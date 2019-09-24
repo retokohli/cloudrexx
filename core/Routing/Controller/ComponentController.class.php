@@ -129,7 +129,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \DBG::log('Fetching content from ' . $url->toString());
             $request = new \HTTP_Request2($url->toString(), \HTTP_Request2::METHOD_GET);
             $request->setConfig(array(
+                // follow HTTP redirect
                 'follow_redirects' => true,
+                // resend original request to new location
+                'strict_redirects' => true,
             ));
             $response = $request->send();
             http_response_code($response->getStatus());
