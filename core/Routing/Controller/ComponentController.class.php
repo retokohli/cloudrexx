@@ -60,17 +60,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $em = $this->cx->getDb()->getEntityManager();
         $rewriteRuleRepo = $em->getRepository($this->getNamespace() . '\\Model\\Entity\\RewriteRule');
         $rewriteRules = $rewriteRuleRepo->findBy(array(), array('orderNo'=>'asc'));
-        $last = false;
+        $continue = true;
         $originalUrl = clone $url;
         foreach ($rewriteRules as $rewriteRule) {
             try {
-                $url = $rewriteRule->resolve($url, $last);
+                $url = $rewriteRule->resolve($url, $continue);
             } catch (\Exception $e) {
                 \DBG::msg('RewriteRule error: '. $rewriteRule->getRegularExpression());
                 \DBG::msg($e->getMessage());
                 // This is thrown if the regex of the rule is not valid
             }
-            if ($last) {
+            if (!$continue) {
                 break;
             }
         }
