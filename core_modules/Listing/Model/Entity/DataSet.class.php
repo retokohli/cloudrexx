@@ -87,12 +87,20 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         if (!count($data)) {
             return;
         }
-        $this->options = $options;
+        $this->initializeOptions($options);
         if (is_callable($converter)) {
             $this->data = $converter($data);
         } else {
             $this->data = $this->convert($data);
         }
+    }
+
+    /**
+     * Initializes the options, sets necessary defaults
+     * @param array $options Options to set
+     */
+    protected function initializeOptions($options) {
+        $this->options = $options;
     }
 
     /**
