@@ -197,8 +197,23 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
             foreach ($entityClassMetadata->getColumnNames() as $column) {
                 $field = $entityClassMetadata->getFieldName($column);
                 $value = $entityClassMetadata->getFieldValue($object, $field);
+                $fieldDefinition = $entityClassMetadata->getFieldMapping($field);
                 if ($value instanceof \DateTime) {
-                    $value = $value->format(ASCMS_DATE_FORMAT_DATETIME);
+                    switch ($fieldDefinition['type']) {
+                        case 'datetime':
+                        case 'timestamp':
+                            $value = $value->format(ASCMS_DATE_FORMAT_DATETIME);
+                            break;
+                        case 'date':
+                            $value = $value->format(ASCMS_DATE_FORMAT_DATE);
+                            break;
+                        case 'time':
+                            $value = $value->format(ASCMS_DATE_FORMAT_TIME);
+                            break;
+                        default:
+                            // Unknown types fall through!
+                            break;
+                    }
                 } elseif (is_array($value)) {
                     $value = serialize($value);
                 }
