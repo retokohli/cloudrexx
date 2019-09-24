@@ -60,17 +60,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $em = $this->cx->getDb()->getEntityManager();
         $rewriteRuleRepo = $em->getRepository($this->getNamespace() . '\\Model\\Entity\\RewriteRule');
         $rewriteRules = $rewriteRuleRepo->findBy(array(), array('orderNo'=>'asc'));
-        $last = false;
+        $continue = true;
         $originalUrl = clone $url;
         foreach ($rewriteRules as $rewriteRule) {
             try {
-                $url = $rewriteRule->resolve($url, $last);
+                $url = $rewriteRule->resolve($url, $continue);
             } catch (\Exception $e) {
                 \DBG::msg('RewriteRule error: '. $rewriteRule->getRegularExpression());
                 \DBG::msg($e->getMessage());
                 // This is thrown if the regex of the rule is not valid
             }
-            if ($last) {
+            if (!$continue) {
                 break;
             }
         }
@@ -132,7 +132,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // disable ssl peer verification
                 'ssl_verify_host' => false,
                 'ssl_verify_peer' => false,
+                // follow HTTP redirect
                 'follow_redirects' => true,
+                // resend original request to new location
+                'strict_redirects' => true,
             ));
             $response = $request->send();
             http_response_code($response->getStatus());
