@@ -188,14 +188,15 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         $data = array();
         if ($object instanceof \Cx\Model\Base\EntityBase) {
             $em = \Env::get('em');
-            $identifiers = $em->getClassMetadata(get_class($object))->getIdentifierValues($object);
+            $entityClassMetadata = $em->getClassMetadata(get_class($object));
+            $identifiers = $entityClassMetadata->getIdentifierValues($object);
             if (is_array($identifiers)) {
                 $identifiers = implode('/', $identifiers);
             }
             $key = $identifiers;
-            foreach ($em->getClassMetadata(get_class($object))->getColumnNames() as $column) {
-                $field = $em->getClassMetadata(get_class($object))->getFieldName($column);
-                $value = $em->getClassMetadata(get_class($object))->getFieldValue($object, $field);
+            foreach ($entityClassMetadata->getColumnNames() as $column) {
+                $field = $entityClassMetadata->getFieldName($column);
+                $value = $entityClassMetadata->getFieldValue($object, $field);
                 if ($value instanceof \DateTime) {
                     $value = $value->format(ASCMS_DATE_FORMAT_DATETIME);
                 } elseif (is_array($value)) {
