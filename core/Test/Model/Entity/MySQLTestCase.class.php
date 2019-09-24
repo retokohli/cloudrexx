@@ -47,8 +47,16 @@ namespace Cx\Core\Test\Model\Entity;
  * @subpackage  core_test
  */
 class MySQLTestCase extends ContrexxTestCase {
+
+    /**
+     * Reference to the AdoDb database connection
+     * @var \ADONewConnection
+     */
     protected static $database;
 
+    /**
+     * Save as a reference to the database object
+     */
     public static function setUpBeforeClass(): void {
         global $_DBCONFIG, $_CONFIG;
 
@@ -76,10 +84,16 @@ class MySQLTestCase extends ContrexxTestCase {
         self::$database = $db->getAdoDb();
     }
 
+    /**
+     * Start a new transaction before each test to keep the database clean
+     */
     public function setUp(): void {
         self::$database->BeginTrans();
     }
 
+    /**
+     * Discard changes of last test
+     */
     public function tearDown(): void {
         self::$database->RollbackTrans();
     }
