@@ -1903,6 +1903,10 @@ class CalendarEventManager extends CalendarLibrary
         $objEvent,
         $additionalRecurrences = array()
     ) {
+        if (!$objEvent->seriesStatus) {
+            return;
+        }
+
         $this->getSettings();
 
         // create a copy of the event instance which can be used
