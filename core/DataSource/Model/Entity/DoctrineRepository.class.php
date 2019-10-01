@@ -421,8 +421,7 @@ class DoctrineRepository extends DataSource {
                     }
                     if ($data[$name] && !($data[$name] instanceof \DateTime)) {
                         // Throws on invalid input
-                        $datetime = new \DateTime($data[$name]);
-                        $data[$name] = $datetime;
+                        $data[$name] = new \DateTime($data[$name]);
                     }
                     break;
                 case 'array':
