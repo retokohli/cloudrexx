@@ -69,6 +69,8 @@ class MediaDirectoryLibrary
 
     public $arrFrontendLanguages = array();
 
+    protected static $slugs = array();
+
     /**
      * Two-dimensional array of activated frontend locales
      *
@@ -1509,12 +1511,17 @@ EOF;
     /**
      * Slugifies the given string
      * @param $string The string to slugify
+     * @todo ensure only multi-ling
      */
-    protected function slugify(&$string, $key, $titleData = array()) {
-        if (empty($string) && isset($titleData[$key])) {
-            $string = $titleData[$key];
+    protected function slugify($entryId, &$string, $langId, $titleData = array()) {
+        // todo the following option should be taken into account
+        //$this->arrSettings['settingsShowEntriesInAllLang']
+
+        if (empty($string) && isset($titleData[$langId])) {
+            $string = $titleData[$langId];
         }
         $string = $this->cx->getComponent('Model')->slugify($string);
+        $this->enforceUniqueSlug($string, $entryId, $langId);
     }
 
     /**
@@ -1681,5 +1688,69 @@ EOF;
         }
 
         return $sourceLocaleId;
+    }
+
+    protected function enforceUniqueSlug(&$slug, $entryId, $langId) {
+	    // Check for pretty urls usage.
+        // In case it's not enabled, do simply return
+        // the proposed slug.
+        if (!$this->arrSettings['usePrettyUrls']) {
+            return $slug;
+        }
+
+        if (empty(static::$slugs)) {
+            $this->loadAllSlugsFromDb();
+        }
+
+        if (
+            $entryId &&
+            isset(static::$slugs[$langId]) &&
+            isset(static::$slugs[$langId][$entryId])
+        ) {
+            unset(static::$slugs[$langId][$entryId]);
+        }
+
+        $idx = 1;
+        $oriSlug = $slug;
+        while (in_array($slug, static::$slugs[$langId])) {
+            // get next slug
+            $slug = $oriSlug . $idx++;
+        }
+
+        static::$slugs[$langId][$entryId] = $slug;
+    }
+
+    protected function loadAllSlugsFromDb() {
+        static::$slugs = array();
+        $db = $this->cx->getDb()->getAdoDb();
+
+        $query = "SELECT
+                        first_rel_inputfield.`value` AS `slug`,
+                        first_rel_inputfield.`entry_id` AS `entry_id`,
+                        first_rel_inputfield.`lang_id` AS `lang_id`
+                    FROM
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS first_rel_inputfield
+                    INNER JOIN
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield
+                    ON
+                        first_rel_inputfield.`field_id` = inputfield.`id`
+                    WHERE
+                        inputfield.`context_type` = 'slug'
+                    ";
+        $result = $db->Execute($query);
+        if (
+            !$result ||
+            $result->EOF
+        ) {
+            return;
+        }
+
+        while (!$result->EOF) {
+            if (!isset(static::$slugs[$result->fields['lang_id']])) {
+                static::$slugs[$result->fields['lang_id']] = array();
+            }
+            static::$slugs[$result->fields['lang_id']][$result->fields['entry_id']] = $result->fields['slug'];
+            $result->MoveNext();
+        }
     }
 }

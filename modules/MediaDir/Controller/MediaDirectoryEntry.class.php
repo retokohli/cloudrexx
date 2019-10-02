@@ -1543,17 +1543,6 @@ JSCODE;
                 $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
             }
 
-            // slugify slug value
-            if ($arrInputfield['context_type'] == 'slug' && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
-                $slugValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
-                array_walk(
-                    $slugValues,
-                    array($this, 'slugify'),
-                    $titleData
-                );
-                $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] = $slugValues;
-            }
-
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (   empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
                 || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$outputLocaleId]
@@ -1590,6 +1579,14 @@ JSCODE;
                     // attribute is non-i18n
                     if ($arrInputfield['type_multi_lang'] == 0) {
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
+
+                        // slugify slug value
+                        if ($arrInputfield['context_type'] == 'slug') {
+                            // TODO: this does not work as expected
+                            // TODO: remove this case (non-i18n)
+                            $this->slugify(intval($intId), $strInputfieldValue, $intLangId, $titleData);
+                        }
+
                         $objResult = $objDatabase->Execute("
                             INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                                SET `entry_id`='".intval($intId)."',
@@ -1665,6 +1662,11 @@ JSCODE;
                     } else {
                         // regular attribute get parsed
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId], $intLangId);
+                    }
+
+                    // slugify slug value
+                    if ($arrInputfield['context_type'] == 'slug') {
+                        $this->slugify(intval($intId), $strInputfieldValue, $intLangId, $titleData);
                     }
 
                     $objResult = $objDatabase->Execute("
