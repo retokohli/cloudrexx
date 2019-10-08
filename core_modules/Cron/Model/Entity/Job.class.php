@@ -171,8 +171,17 @@ class Job extends \Cx\Model\Base\EntityBase {
                 return false;
             }
             // execute cron job
-            $arguments = explode(' ', $this->command);
-            $command = array_shift($arguments);
+            $params = explode(' ', $this->command);
+            foreach ($params as $key=>$value) {
+                $argParts = explode('=', $value, 2);
+                if (count($argParts) == 2) {
+                    $params[$argParts[0]] = $argParts[1];
+                    unset($params[$key]);
+                }
+            }
+
+            $command = array_shift($params);
+            $arguments = $params;
 
             // ensure command is loaded if permissions are argument-based
             $commands = $this->cx->getCommands($arguments, true);
