@@ -173,7 +173,9 @@ class Job extends \Cx\Model\Base\EntityBase {
             // execute cron job
             $arguments = explode(' ', $this->command);
             $command = array_shift($arguments);
-            $commands = $this->cx->getCommands();
+
+            // ensure command is loaded if permissions are argument-based
+            $commands = $this->cx->getCommands($arguments, true);
             if (!isset($commands[$command])) {
                 throw new JobException('Command "' . $command . '" not found!');
             }
