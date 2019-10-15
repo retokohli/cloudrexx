@@ -90,6 +90,15 @@ class SaferpayJson
     );
 
     /**
+     * PSD-2 is not (yet) applicable in Switzerland. Therefore transactions
+     * from Switzerland to Switzerland do not need the liability check. As
+     * SIX is a Swiss company, if the acquirer is also a Swiss company
+     * liability check can not (yet) be forced.
+     * @var array List of acquirer names
+     */
+    protected static $acquirersWithout3dSecure = array('TWINT');
+
+    /**
      * Perform a request to the Saferpay JSON API
      *
      * @param string $step One of the strings defined as a key in $urls
@@ -213,6 +222,22 @@ class SaferpayJson
             $result['Transaction']['Status'] != 'AUTHORIZED'
         ) {
             return false;
+        }
+
+        // PSD-2 is not (yet) applicable in Switzerland. Therefore transactions
+        // from Switzerland to Switzerland do not need the liability check. As
+        // SIX is a Swiss company, if the acquirer is also a Swiss company
+        // liability check can not (yet) be forced.
+        // This check should be removed once Switzerland accepts PSD-2.
+        if (
+            isset($result['Transaction']['AcquirerName']) &&
+            in_array(
+                $result['Transaction']['AcquirerName'],
+                $this->acquirersWithout3dSecure
+            )
+        ) {
+            static::$transactionId = $result['Transaction']['Id'];
+            return true;
         }
 
         // check 3D secure as proposed by https://saferpay.github.io/sndbx/index.html#3ds
