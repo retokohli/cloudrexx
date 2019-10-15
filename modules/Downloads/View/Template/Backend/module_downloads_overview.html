@@ -38,6 +38,15 @@ function downloadsCategoryDoAction(action)
 /* ]]> */
 </script>
 
+<style>
+    #downloads_category_form span:after {
+        content: ' / ';
+    }
+    #downloads_category_form span:last-of-type:after {
+        content: '';
+    }
+</style>
+
 <table width="100%" class="adminlist">
     <tr>
         <th>{TXT_DOWNLOADS_DOWNLOADS}</th>
