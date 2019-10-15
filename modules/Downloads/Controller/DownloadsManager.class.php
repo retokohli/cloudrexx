@@ -2401,10 +2401,136 @@ class DownloadsManager extends DownloadsLibrary
 
 
         if ($objCategory->getId()) {
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY', sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'], '&bdquo;'.htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET).'&ldquo;'));
+            $parentNames = $this->getParentCategoryNamesByChild($objCategory);
+
+            $categories = array(
+                'root' => array(),
+                'middle' => array(),
+                'previous' => array(),
+                'current' => array(),
+            );
+
+            foreach($parentNames as $position => $parentName) {
+                if ($position == 0) {
+                    // Position 0 is the "current category"
+                    // Shorten the name after 60 chars
+                    $categories['current']['long'] = $parentName;
+                    $categories['current']['short'] = substr(
+                        $parentName, 0, 60
+                    );
+
+                } else if ($position == 1) {
+                    // Position 1 is the "previous category"
+                    // Shorten the name after 30 chars
+                    $categories['previous']['long'] = $parentName;
+                    $categories['previous']['short'] = substr(
+                        $parentName, 0, 30
+                    );
+
+                } else if ($position == count($parentNames) - 1) {
+                    // The last position is the "root category"
+                    // Shorten the name after 30 chars
+                    $categories['root']['long'] = $parentName;
+                    $categories['root']['short'] = substr(
+                        $parentName, 0, 30
+                    );
+                } else {
+                    // Add the remaining categories to an array
+                    $categories['middle'][] = $parentName;
+                }
+
+            }
+
+            // Flip the array to get the grandparents first
+            $categories['middle'] = array_reverse($categories['middle']);
+
+            $content =
+                sprintf(
+                    $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'],
+                '&bdquo;'.
+                    $this->getCategoryElement($categories['root']) .
+                    $this->getCategoryElement($categories['middle']) .
+                    $this->getCategoryElement($categories['previous']) .
+                    $this->getCategoryElement($categories['current'])
+                     . '&ldquo;'
+                );
+
+            $this->objTemplate->setVariable(
+                'TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY',
+                $content
+            );
         }
     }
 
+    /**
+     * Get a span tag with the category name. If the parameter contains a long
+     * and a short category name, the long name will be added as title
+     * attribute. The short name is used as content for the span tag.
+     *
+     * If the parameter only contains category names, the category names are
+     * listed one below the other in the title attribute. The content of the
+     * span tag consists of three dots.
+     *
+     * @param array $category with long and short category name or only names
+     * @return string a span tag or an empty string
+     */
+    protected function getCategoryElement(array $category) : string
+    {
+        if (empty($category)) {
+            return '';
+        }
+
+        $title = '';
+        $text = '...';
+
+        if (!empty($category['long']) && !empty($category['short'])) {
+            $title = $category['long'];
+            $text = $category['short'];
+
+            if ($category['short'] !== $category['long']) {
+                $text .= '...';
+            }
+
+        } else {
+            foreach ($category as $middle) {
+                $title .= '...' .$middle . "\n";
+            }
+        }
+
+        return '<span title="'.$title.'">' . $text
+            . '</span>';
+    }
+
+    /**
+     * Get the name of the child category and all names of the parent categories
+     *
+     * @param \Cx\Modules\Downloads\Controller\Category $child child category
+     * @param array $names previous category names for recursion
+     * @return array array with all names
+     */
+    protected function getParentCategoryNamesByChild(
+        \Cx\Modules\Downloads\Controller\Category $child,
+        array $names = array()
+    ) : array {
+        if (empty($child->getParentId())) {
+            $names[] = $child->getName();
+            return $names;
+        }
+
+        $parent = \Cx\Modules\Downloads\Controller\Category::getCategory(
+            $child->getParentId()
+        );
+
+        if (empty($parent)) {
+            return $names;
+        }
+
+        $names[] = $child->getName();
+        return $this->getParentCategoryNamesByChild(
+            $parent,
+            $names
+        );
+    }
 
     private function parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset, $searchTerm)
     {
