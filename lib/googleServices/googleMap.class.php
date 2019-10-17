@@ -46,11 +46,6 @@ class googleMap
 {
     private $apiKey;
 
-    /**
-     * @var bool if the google map js is already loaded
-     */
-    protected static $jsLoaded = false;
-
     private $mapModus = 'overview';
     private $mapDimensions;
     private $mapZoom = 1;
@@ -281,10 +276,9 @@ EOF;
 
         $this->loadMapMarkers();
         $map = 'map_'.$this->mapIndex;
-        $jsScriptTag = $this->getScriptTagToLoadGoogleMaps();
 
         $layer .= <<<EOF
-$jsScriptTag
+<script src="https://maps.googleapis.com/maps/api/js?key=$this->apiKey&sensor=false&v=3"></script>
 <script>
 //<![CDATA[
 var $map;
@@ -400,18 +394,4 @@ EOF;
         return $layer;
     }
 
-    /**
-     * Get the script tag to load the google map js or an empty string. If the
-     * script is already loaded, return an empty string
-     *
-     * @return string script tag or empty string
-     */
-    protected function getScriptTagToLoadGoogleMaps() {
-        if (static::$jsLoaded) {
-            return '<script src="https://maps.googleapis.com/maps/api/js?key='
-                .$this->apiKey.'&sensor=false&v=3"></script>';
-        }
-        static::$jsLoaded = true;
-        return '';
-    }
 }
