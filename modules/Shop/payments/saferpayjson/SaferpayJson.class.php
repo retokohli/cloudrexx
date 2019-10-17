@@ -90,13 +90,33 @@ class SaferpayJson
     );
 
     /**
-     * PSD-2 is not (yet) applicable in Switzerland. Therefore transactions
-     * from Switzerland to Switzerland do not need the liability check. As
-     * SIX is a Swiss company, if the acquirer is also a Swiss company
-     * liability check can not (yet) be forced.
+     * For all payment providers that SIX redirects to (i.e. does not handle
+     * internally) we do not need to check PSD-2 compliance as the payment
+     * provider is responsible for this in this case.
+     * Also if a payment provider is only available for citizens of countries
+     * outside the PSD-2 zone we can ignore PSD-2 as this is an exception to
+     * it.
      * @var array List of acquirer names
      */
-    protected static $acquirersWithout3dSecure = array('TWINT');
+    protected static $acquirersWithout3dSecure = array(
+        'Alipay',
+        'BillPay Direct Debit',
+        'BillPay Purchase on Receipt',
+        'Bonus Card',
+        'ePrzelewy',
+        'eps',
+        'giropay',
+        'iDEAL',
+        'JCB',
+        'MyOne',
+        'paydirekt',
+        'PayPal',
+        'PostFinance Card',
+        'PostFinance eFinance',
+        'SEPA Direct Debit',
+        'SOFORT',
+        'TWINT',
+    );
 
     /**
      * Perform a request to the Saferpay JSON API
@@ -224,11 +244,12 @@ class SaferpayJson
             return false;
         }
 
-        // PSD-2 is not (yet) applicable in Switzerland. Therefore transactions
-        // from Switzerland to Switzerland do not need the liability check. As
-        // SIX is a Swiss company, if the acquirer is also a Swiss company
-        // liability check can not (yet) be forced.
-        // This check should be removed once Switzerland accepts PSD-2.
+        // For all payment providers that SIX redirects to (i.e. does not handle
+        // internally) we do not need to check PSD-2 compliance as the payment
+        // provider is responsible for this in this case.
+        // Also if a payment provider is only available for citizens of countries
+        // outside the PSD-2 zone we can ignore PSD-2 as this is an exception to
+        // it.
         if (
             isset($result['Transaction']['AcquirerName']) &&
             in_array(
