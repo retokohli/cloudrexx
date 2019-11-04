@@ -201,8 +201,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         if (count($_POST)) {
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             // as Data fills global placeholders we need to drop all the cache
-            $cx->getComponent('Cache')->deleteAllFiles('cxPages');
-            $cx->getComponent('Cache')->clearSsiCache();
+            $cx->getComponent('Cache')->clearCache();
         }
 
         $objTemplate->setVariable(array(
