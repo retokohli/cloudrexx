@@ -1281,19 +1281,6 @@ CODE;
                 unset($subFiles['datainfo']);
 
                 $name = $info['name'];
-                switch (true) {
-                    case $name == ltrim($this->cx->getCoreModuleFolderName() , '/'):
-                        $name = ltrim($this->cx->getCoreModuleFolderName() , '/');
-                        break;
-                    case $name == ltrim($this->cx->getModuleFolderName(), '/'):
-                        $name = ltrim($this->cx->getModuleFolderName(), '/');
-                        break;
-                    case $name == ltrim($this->cx->getCoreFolderName(), '/'):
-                        $name = ltrim($this->cx->getCoreFolderName(), '/');
-                        break;
-                    default:
-                        break;
-                }
 
                 $result[$name] = $this->formatFileList($subFiles);
             }
