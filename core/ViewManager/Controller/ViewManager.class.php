@@ -1280,9 +1280,7 @@ CODE;
                 $subFiles = $fileInfo;
                 unset($subFiles['datainfo']);
 
-                $name = $info['name'];
-
-                $result[$name] = $this->formatFileList($subFiles);
+                $result[$info['name']] = $this->formatFileList($subFiles);
             }
         }
 
