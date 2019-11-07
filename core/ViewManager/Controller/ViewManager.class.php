@@ -1283,13 +1283,13 @@ CODE;
                 $name = $info['name'];
                 switch (true) {
                     case $name == ltrim($this->cx->getCoreModuleFolderName() , '/'):
-                        $name = 'core_module';
+                        $name = ltrim($this->cx->getCoreModuleFolderName() , '/');
                         break;
                     case $name == ltrim($this->cx->getModuleFolderName(), '/'):
-                        $name = 'module';
+                        $name = ltrim($this->cx->getModuleFolderName(), '/');
                         break;
                     case $name == ltrim($this->cx->getCoreFolderName(), '/'):
-                        $name = 'core';
+                        $name = ltrim($this->cx->getCoreFolderName(), '/');
                         break;
                     default:
                         break;
