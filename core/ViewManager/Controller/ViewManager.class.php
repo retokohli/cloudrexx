@@ -1251,11 +1251,14 @@ CODE;
     /**
      * Get the themes files using viewmanager filesystem
      *
+     * This pretents that the folders "modules" and "core_modules" are named
+     * "module" and "core_module" unless $real is set to true.
+     * @param boolean $real (optional) If set to true, filesystem names are used
      * @return  array
      */
-    function getThemesFiles(\Cx\Core\View\Model\Entity\Theme $theme) {
+    function getThemesFiles(\Cx\Core\View\Model\Entity\Theme $theme, $real = false) {
         $filesList     = $this->fileSystem->getFileList($theme->getFoldername());
-        $formatedFiles = $this->formatFileList($filesList);
+        $formatedFiles = $this->formatFileList($filesList, $real);
         $this->sortFilesFolders($formatedFiles);
 
         return $formatedFiles;
