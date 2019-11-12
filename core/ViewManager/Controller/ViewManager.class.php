@@ -1210,7 +1210,7 @@ CODE;
 
         $themeFolder = $theme->getFoldername();
         $archive     = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
-        $themeFiles  = $this->getThemesFiles($theme);
+        $themeFiles  = $this->getThemesFiles($theme, true);
 
         \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
         $this->createZipFolder($archive, $themeFiles, '/' . $themeFolder);
