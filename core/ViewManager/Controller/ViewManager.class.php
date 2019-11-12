@@ -1249,12 +1249,13 @@ CODE;
     }
 
     /**
-     * Get the themes files using viewmanager filesystem
+     * Get the theme's files using viewmanager filesystem
      *
      * This pretents that the folders "modules" and "core_modules" are named
      * "module" and "core_module" unless $real is set to true.
+     * @param \Cx\Core\View\Model\Entity\Theme $theme Theme to fetch files for
      * @param boolean $real (optional) If set to true, filesystem names are used
-     * @return  array
+     * @return array Simple list of files. Folder names are indexes containing an array in the same format.
      */
     function getThemesFiles(\Cx\Core\View\Model\Entity\Theme $theme, $real = false) {
         $filesList     = $this->fileSystem->getFileList($theme->getFoldername());
@@ -1269,10 +1270,9 @@ CODE;
      *
      * This pretents that the folders "modules" and "core_modules" are named
      * "module" and "core_module" unless $real is set to true.
-     * @param array $filesList
-     *
+     * @param array $filesList List of files as returned by FileSystem::getFileList()
      * @param boolean $real (optional) If set to true, filesystem names are used
-     * @return array
+     * @return array Simple list of files. Folder names are indexes containing an array in the same format.
      */
     function formatFileList($filesList, $real = false)
     {
