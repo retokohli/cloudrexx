@@ -1264,11 +1264,14 @@ CODE;
     /**
      * Format the Filesystem files and folders to viewManger format
      *
+     * This pretents that the folders "modules" and "core_modules" are named
+     * "module" and "core_module" unless $real is set to true.
      * @param array $filesList
      *
+     * @param boolean $real (optional) If set to true, filesystem names are used
      * @return array
      */
-    function formatFileList($filesList)
+    function formatFileList($filesList, $real = false)
     {
         $result = array();
 
@@ -1280,7 +1283,11 @@ CODE;
                 $subFiles = $fileInfo;
                 unset($subFiles['datainfo']);
 
-                $result[$info['name']] = $this->formatFileList($subFiles);
+                $name = $info['name'];
+                if (!$real) {
+                    $name = str_replace('modules', 'module', $info['name']);
+                }
+                $result[$name] = $this->formatFileList($subFiles, $real);
             }
         }
 
