@@ -613,7 +613,8 @@ CREATE TABLE `contrexx_log_entry` (
   UNIQUE KEY `log_version_lookup_idx` (`version`,`object_id`,`object_class`),
   KEY `log_class_lookup_idx` (`object_class`),
   KEY `log_date_lookup_idx` (`logged_at`),
-  KEY `log_user_lookup_idx` (`username`)
+  KEY `log_user_lookup_idx` (`username`),
+  INDEX `log_id_class_lookup_idx` ( `object_id`, `object_class`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_block_blocks` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
