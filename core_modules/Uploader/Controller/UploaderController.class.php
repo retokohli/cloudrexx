@@ -95,30 +95,38 @@ class UploaderController {
     );
 
     /**
-     * Retrieve the error code
+     * Retrieve or sanitize the error code
      *
+     * @param int $code (optional) Code to check
      * @return int Error code
      */
-    static function getErrorCode() {
-        if (!self::$_error) {
+    public static function getErrorCode($code = null) {
+        if ($code === null) {
+            $code = static::$_error;
+        }
+        if (!$code) {
             return null;
         }
 
-        if (!isset(self::$_errors[self::$_error])) {
-            return PLUPLOAD_UNKNOWN_ERR;
+        if (!isset(static::$_errors[$code])) {
+            return static::PLUPLOAD_UNKNOWN_ERR;
         }
 
-        return self::$_error;
+        return $code;
     }
 
     /**
      * Retrieve the error message
      *
-     * @return string Error message
+     * @param int $code (optional) Code to get message for
+     * @return string Error message or empty string
      */
-    static function getErrorMessage() {
-        if ($code = self::getErrorCode()) {
-            return self::$_errors[$code];
+    public static function getErrorMessage($code = null) {
+        if ($code === null) {
+            $code = static::getErrorCode();
+        }
+        if ($code) {
+            return static::$_errors[$code];
         }
         return '';
     }
