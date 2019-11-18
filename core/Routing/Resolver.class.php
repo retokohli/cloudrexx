@@ -292,7 +292,7 @@ class Resolver {
                 $_REQUEST['cmd']
             )
         ) {
-            $command = contrexx_addslashes($_REQUEST['cmd']);
+            $command = $_REQUEST['cmd'];
         }
         $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 
