@@ -180,17 +180,20 @@ class ComponentController extends
             $thumbnailsTemplate->parse('thumbnails');
         }
         \ContrexxJavascript::getInstance()->setVariable(
-            'thumbnails_template', $thumbnailsTemplate->get(),
+            array(
+                'thumbnails_template' => $thumbnailsTemplate->get(),
+                'chunk_size' => min(
+                    floor(
+                        (\FWSystem::getMaxUploadFileSize() - 1000000) / 1000000
+                    ),
+                    20
+                ) . 'mb',
+                'languages' => \FWLanguage::getActiveFrontendLanguages(),
+                'language' => \FWLanguage::getLanguageCodeById(
+                    \FWLanguage::getDefaultLangId()
+                ),
+            ),
             'mediabrowser'
-        );
-        \ContrexxJavascript::getInstance()->setVariable(
-            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize() - 1000000) / 1000000), 20) . 'mb', 'mediabrowser'
-        );
-        \ContrexxJavascript::getInstance()->setVariable(
-            'languages', \FWLanguage::getActiveFrontendLanguages(), 'mediabrowser'
-        );
-        \ContrexxJavascript::getInstance()->setVariable(
-            'language', \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()), 'mediabrowser'
         );
         \JS::activate('mediabrowser');
         // Define the module
