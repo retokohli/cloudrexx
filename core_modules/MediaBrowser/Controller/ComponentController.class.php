@@ -179,6 +179,10 @@ class ComponentController extends
             );
             $thumbnailsTemplate->parse('thumbnails');
         }
+        $uploadFileSizeLimit = \Cx\Core\Setting\Controller\Setting::getValue(
+            'uploadFileSizeLimit',
+            'Config'
+        );
         \ContrexxJavascript::getInstance()->setVariable(
             array(
                 'thumbnails_template' => $thumbnailsTemplate->get(),
@@ -192,6 +196,7 @@ class ComponentController extends
                 'language' => \FWLanguage::getLanguageCodeById(
                     \FWLanguage::getDefaultLangId()
                 ),
+                'max_file_size' => $uploadFileSizeLimit,
             ),
             'mediabrowser'
         );
