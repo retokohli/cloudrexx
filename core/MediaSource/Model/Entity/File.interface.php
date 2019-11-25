@@ -33,13 +33,56 @@
 
 namespace Cx\Core\MediaSource\Model\Entity;
 
-
+/**
+ * Base interface for files
+ * @todo: This should be an abstract class as it should define the constructor's params
+ */
 interface File {
+
+    /**
+     * Returns the FileSystem for this file
+     *
+     * @return FileSystem This file's FileSystem
+     */
     public function getFileSystem();
+
+    /**
+     * Returns the path (without filename) for this file
+     *
+     * @return string Path without filename
+     */
     public function getPath();
+
+    /**
+     * Returns the filename (without path and extension) for this file
+     *
+     * @return string Filename without path and extension
+     */
     public function getName();
+
+    /**
+     * Returns the filename (without path including extension) for this file
+     *
+     * @return string Filename without path including extension
+     */
     public function getFullName();
+
+    /**
+     * Returns this file's extension
+     *
+     * @return string File extension
+     */
     public function getExtension();
+
+    /**
+     * Returns the MIME type of this file
+     *
+     * @return string MIME type
+     */
     public function getMimeType();
+
+    /**
+     * Returns the full file path (path and filename including extension)
+     */
     public function __toString();
 }
