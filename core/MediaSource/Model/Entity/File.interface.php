@@ -26,16 +26,27 @@
  */
 
 /**
+ * Base class for files (excluding folders)
+ *
  * @copyright   Cloudrexx AG
  * @author Robin Glauser <robin.glauser@comvation.com>
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
+ * @subpackage  core_mediasource
  */
 
 namespace Cx\Core\MediaSource\Model\Entity;
 
 /**
- * Base interface for files
- * @todo: This should be an abstract class as it should define the constructor's params
+ * Base class for files (exclusing folders)
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_mediasource
  */
 interface File {
 

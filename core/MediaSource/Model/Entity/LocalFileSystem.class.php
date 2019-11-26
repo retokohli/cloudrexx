@@ -65,7 +65,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
     }
 
     /**
-     * @todo    Option $recursive does not work. It always acts as recursive is set to TRUE
+     * @todo The param $readonly is non-standard
      */
     public function getFileList($directory, $recursive = true, $readonly = false) {
         if (isset($this->fileListCache[$directory][$recursive][$readonly])) {
@@ -141,6 +141,8 @@ class LocalFileSystem extends EntityBase implements FileSystem
 
             $size = \FWSystem::getLiteralSizeFormat($file->getSize());
             $fileInfos = array(
+                // This is a no-op: $file->getPath() is relative to this FS
+                // therefore there's no need to cut the website path
                 'filepath' => mb_strcut(
                     $file->getPath() . '/' . $file->getFilename(),
                     mb_strlen($this->cx->getWebsitePath())
@@ -277,6 +279,9 @@ class LocalFileSystem extends EntityBase implements FileSystem
         return $thumbnails;
     }
 
+    /**
+     * @todo check whether $file is part of this FS
+     */
     public function removeFile(File $file) {
         global $_ARRAYLANG;
         $filename = $file->getFullName();
@@ -341,6 +346,9 @@ class LocalFileSystem extends EntityBase implements FileSystem
         );
     }
 
+    /**
+     * @todo: Allow to move outside of FS
+     */
     public function moveFile(
         File $file, $destination
     ) {
@@ -441,6 +449,9 @@ class LocalFileSystem extends EntityBase implements FileSystem
         // TODO: Implement getLink() method.
     }
 
+    /**
+     * @todo Sanitize $directory
+     */
     public function createDirectory(
         $path, $directory
     ) {
@@ -508,6 +519,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
     /**
      * Set root path of the filesystem
      *
+     * @todo This shouldn't be possible, drop this method
      * @param string $rootPath
      */
     public function setRootPath($rootPath)
