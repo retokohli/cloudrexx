@@ -2448,12 +2448,12 @@ class DownloadsManager extends DownloadsLibrary
             $content =
                 sprintf(
                     $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'],
-                '&bdquo;'.
+                    '&bdquo;'.
                     $this->getCategoryElement($categories['root']) .
                     $this->getCategoryElement($categories['middle']) .
                     $this->getCategoryElement($categories['previous']) .
-                    $this->getCategoryElement($categories['current'])
-                     . '&ldquo;'
+                    $this->getCategoryElement($categories['current']) .
+                    '&ldquo;'
                 );
 
             $this->objTemplate->setVariable(
