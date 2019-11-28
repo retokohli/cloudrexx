@@ -2401,7 +2401,8 @@ class DownloadsManager extends DownloadsLibrary
 
 
         if ($objCategory->getId()) {
-            $parentNames = $this->getParentCategoryNamesByChild($objCategory);
+            $parentNames = array();
+            $this->getParentCategoryNamesByChild($objCategory, $parentNames);
 
             $categories = array(
                 'root' => array(),
@@ -2506,15 +2507,14 @@ class DownloadsManager extends DownloadsLibrary
      *
      * @param \Cx\Modules\Downloads\Controller\Category $child child category
      * @param array $names previous category names for recursion
-     * @return array array with all names
      */
     protected function getParentCategoryNamesByChild(
         \Cx\Modules\Downloads\Controller\Category $child,
-        array $names = array()
-    ) : array {
+        array &$names
+    ) {
         if (empty($child->getParentId())) {
             $names[] = $child->getName();
-            return $names;
+            return;
         }
 
         $parent = \Cx\Modules\Downloads\Controller\Category::getCategory(
@@ -2522,11 +2522,11 @@ class DownloadsManager extends DownloadsLibrary
         );
 
         if (empty($parent)) {
-            return $names;
+            return;
         }
 
         $names[] = $child->getName();
-        return $this->getParentCategoryNamesByChild(
+        $this->getParentCategoryNamesByChild(
             $parent,
             $names
         );
