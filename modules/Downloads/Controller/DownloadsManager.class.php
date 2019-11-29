@@ -2606,13 +2606,43 @@ class DownloadsManager extends DownloadsLibrary
                 || $objDownload->getOwnerId() == $objFWUser->objUser->getId()
             ) {
                 $this->objTemplate->setVariable(array(
-                    'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG[
-                        'TXT_DOWNLOADS_DELETE'
-                    ],
                     'TXT_DOWNLOADS_UNLINK'                  => $_ARRAYLANG['TXT_DOWNLOADS_UNLINK'],
                     'DOWNLOADS_DOWNLOAD_NAME_JS'            => htmlspecialchars($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 ));
 
+                // parse unlink icon
+                $this->objTemplate->parse('downloads_download_function_unlink_link');
+                $this->objTemplate->hideBlock('downloads_download_function_no_unlink_link');
+            } else {
+                // hide delete icon
+                $this->objTemplate->touchBlock('downloads_download_function_no_unlink_link');
+                $this->objTemplate->hideBlock('downloads_download_function_unlink_link');
+            }
+
+            // parse delete button
+            if (// managers are allowed to delete the download
+                \Permission::checkAccess(143, 'static', true)
+                // the owner has the permission to delete it by himself
+                || ($objFWUser->objUser->login() && $objDownload->getOwnerId() == $objFWUser->objUser->getId())
+                || $objCategory->getId() && (
+                    // the category isn't protected => everyone is allowed to delete downloads
+                    !$objCategory->getManageFilesAccessId()
+                    // the category is protected => only those who have the sufficent permissions are allowed to delete downloads
+                    && \Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                    // the owner of the category is allowed to download its downloads
+                    && $objCategory->getModifyAccessByOwner() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+                )
+            ) {
+                $this->objTemplate->setVariable(
+                    array(
+                        'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE'],
+                        'DOWNLOADS_DOWNLOAD_NAME_JS_DELETE' => htmlspecialchars(
+                            $objDownload->getName(),
+                            ENT_QUOTES,
+                            CONTREXX_CHARSET
+                        ),
+                    )
+                );
                 \ContrexxJavascript::getInstance()->setVariable(
                     'DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT',
                     preg_replace(
@@ -2627,15 +2657,10 @@ class DownloadsManager extends DownloadsLibrary
 
                 // parse delete icon
                 $this->objTemplate->parse('downloads_download_function_delete_link');
-                // parse unlink icon
-                $this->objTemplate->parse('downloads_download_function_unlink_link');
-                $this->objTemplate->hideBlock('downloads_download_function_no_unlink_link');
             } else {
-                // hide delete icon
-                $this->objTemplate->touchBlock('downloads_download_function_no_unlink_link');
-                $this->objTemplate->hideBlock('downloads_download_function_unlink_link');
+                // parse delete icon
+                $this->objTemplate->hideBlock('downloads_download_function_delete_link');
             }
-
 
             $description = $objDownload->getDescription();
             if (strlen($description) > 100) {
