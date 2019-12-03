@@ -113,10 +113,9 @@ a:active {
 
 #metanavigation>ul li {
     float: left;
-    width: 100%;
-    clear: both;
     list-style: none;
     position: relative;
+    margin-left: 20px;
 }
 
 #metanavigation>ul a {
