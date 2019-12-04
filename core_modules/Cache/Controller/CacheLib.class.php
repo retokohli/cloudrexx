@@ -291,6 +291,12 @@ class CacheLib
                     $locale
                 );
             },
+            'url_encode' => function($args) {
+                if (empty($args[0])) {
+                    return '';
+                }
+                return urlencode($args[0]);
+            },
         );
     }
 
