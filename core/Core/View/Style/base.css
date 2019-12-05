@@ -143,6 +143,10 @@ a:active {
     display: block;
 }
 
+#metanavigation>ul>li>ul>li {
+    margin-left: 0;
+}
+
 #metanavigation>ul>li>ul a {
     padding: 3px 10px 3px 10px;
 }
