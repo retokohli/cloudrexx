@@ -67,6 +67,14 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     protected $options;
 
     /**
+     * Specifies whether this DataSource supports versioning
+     * Standard Value is false
+     *
+     * @var boolean $isVersionable
+     */
+    protected $isVersionable = false;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     protected $dataAccesses;
@@ -127,6 +135,15 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
      */
     public function setOptions($options) {
         $this->options = $options;
+    }
+
+    /**
+     * Returns if DataSource is specified to support versioning
+     *
+     * @return boolean $isVersionable
+     */
+    public function getVersionable() {
+        return $this->isVersionable;
     }
 
     /**
