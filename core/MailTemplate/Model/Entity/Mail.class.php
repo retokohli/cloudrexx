@@ -96,11 +96,12 @@ class Mail extends \PHPMailer
      *
      * It would be nicer to do this in mailPassthru(), but since this method is
      * private we cannot overwrite it.
+     * @todo This could lead to false-positives
      * @{inheritDoc}
      */
     protected function mailSend($header, $body)
     {
-        if (strpos(ini_get('sendmail_path'), 'sendmail') !== 0) {
+        if (strpos(ini_get('sendmail_path'), 'sendmail') === false) {
             $this->UseSendmailOptions = false;
         }
         return parent::mailSend($header, $body);
