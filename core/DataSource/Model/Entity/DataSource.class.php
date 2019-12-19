@@ -68,9 +68,8 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
 
     /**
      * Specifies whether this DataSource supports versioning
-     * Standard Value is false
      *
-     * @var boolean $isVersionable
+     * @var boolean $isVersionable set boolean isVersionable, default value is false
      */
     protected $isVersionable = false;
 
@@ -138,10 +137,11 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Returns if DataSource is specified to support versioning
+     * Returns if DataSource supports versioning
      *
-     * @return boolean $isVersionable
+     * @return boolean $isVersionable   if set true, DataSource supports versioning
      */
+
     public function getVersionable() {
         return $this->isVersionable;
     }
