@@ -35,6 +35,8 @@
  * @package cloudrexx
  * @subpackage core_modules_dataaccess
  */
+$_ARRAYLANG['TXT_CORE_DATA_ACCESS'] = 'API-Key';
+
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The endpoint could not be found.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The data-ressource could not be found.';
