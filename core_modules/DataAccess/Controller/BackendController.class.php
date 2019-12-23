@@ -83,7 +83,7 @@ class BackendController
         \ContrexxJavascript::getInstance()->setVariable(
             'TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN',
             $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'],
-            'DataAccess'
+            'DataAccess/lang'
         );
 
         switch ($entityClassName) {
