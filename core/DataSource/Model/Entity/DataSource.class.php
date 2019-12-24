@@ -67,13 +67,6 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     protected $options;
 
     /**
-     * Specifies whether this DataSource supports versioning
-     *
-     * @var boolean $isVersionable set boolean isVersionable, default value is false
-     */
-    protected $isVersionable = false;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection
      */
     protected $dataAccesses;
