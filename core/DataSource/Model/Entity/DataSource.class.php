@@ -130,16 +130,6 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Returns if DataSource supports versioning
-     *
-     * @return boolean $isVersionable   if set true, DataSource supports versioning
-     */
-
-    public function getVersionable() {
-        return $this->isVersionable;
-    }
-
-    /**
      * Get the options
      *
      * @return array $options
@@ -164,6 +154,25 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
         }
         return $optionLevel;
     }
+
+    /**
+     * Returns if DataSource supports versioning
+     * To ensure that DataAccess can check if DataSource supports versioning
+     *
+     * @return boolean $isVersionable       if set true, DataSource supports versioning
+     */
+    public function getVersionable() {
+        return $this->getType() == 'doctrineRepository' &&
+            is_a($this->getIdentifier(), 'Gedmo\Loggable\Loggable', true);
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * Method is defined in the DoctrineRepository.class.php because
+     * it needs Doctrine.
+     */
+    abstract public function getCurrentVersion($entity);
 
     /**
      * Add dataAccesses
