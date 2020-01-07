@@ -538,14 +538,9 @@ class DoctrineRepository extends DataSource
      * If DataSource is Doctrine and versionable, the Versionnumber can never be less than 1.
      */
     public function getCurrentVersion(array $elementId) : int {
-
-//        $objectClass = $this->getIdentifier();
+        
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $em->getRepository($this->getIdentifier());
-
-//        if (!$repo) {
-//            throw new \Exception('Repository not found!');
-//        }
 
         $currentVersion = $repo->findOneBy(array('objectId' => $elementId), array('version' => 'desc'));
 
