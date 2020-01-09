@@ -36,8 +36,6 @@
 
 namespace Cx\Core\DataSource\Model\Entity;
 
-use Gedmo\Mapping\Annotation\Loggable;
-
 /**
  * DoctrineRepository
  *
@@ -47,8 +45,7 @@ use Gedmo\Mapping\Annotation\Loggable;
  * @subpackage  core_datasource
  */
 
-class DoctrineRepository extends DataSource
-{
+class DoctrineRepository extends DataSource {
 
     /**
      * List of operations supported by this DataSource
@@ -60,8 +57,7 @@ class DoctrineRepository extends DataSource
      * Returns a list of field names this DataSource consists of
      * @return array List of field names
      */
-    public function listFields()
-    {
+    public function listFields() {
         $em = $this->cx->getDb()->getEntityManager();
         return $em->getClassMetadata($this->getIdentifier())->getFieldNames();
     }
@@ -69,8 +65,7 @@ class DoctrineRepository extends DataSource
     /**
      * Perform initializations
      */
-    protected function init()
-    {
+    protected function init() {
         if (!defined('FRONTEND_LANG_ID')) {
             // make sure translatable is properly initialized
             // maybe this should be part of Cx or in a postInit hook
@@ -83,8 +78,7 @@ class DoctrineRepository extends DataSource
     /**
      * @inheritdoc
      */
-    public function getIdentifierFieldNames()
-    {
+    public function getIdentifierFieldNames() {
         $em = $this->cx->getDb()->getEntityManager();
         $metaData = $em->getClassMetadata($this->getIdentifier());
         return $metaData->getIdentifierFieldNames();
@@ -97,16 +91,16 @@ class DoctrineRepository extends DataSource
      * So if this is called without any arguments, all entries of this
      * DataSource are returned.
      * If no entry is found, an empty array is returned.
+     * @todo test relations with composite key
+     * @todo test n:n relations
      * @param array $elementId (optional) field=>value-type condition array identifying an entry
      * @param array $filter (optional) field=>value-type condition array, only supports = for now
      * @param array $order (optional) field=>order-type array, order is either "ASC" or "DESC"
      * @param int $limit (optional) If set, no more than $limit results are returned
      * @param int $offset (optional) Entry to start with
      * @param array $fieldList (optional) Limits the result to the values for the fields in this list
-     * @return array Two dimensional array (/table) of results (array($row=>array($fieldName=>$value)))
      * @throws \Exception If doctrine repository for this DataSource could not be found
-     * @todo test relations with composite key
-     * @todo test n:n relations
+     * @return array Two dimensional array (/table) of results (array($row=>array($fieldName=>$value)))
      */
     public function get(
         $elementId = array(),
@@ -115,8 +109,7 @@ class DoctrineRepository extends DataSource
         $limit = 0,
         $offset = 0,
         $fieldList = array()
-    )
-    {
+    ) {
         $this->init();
         $em = $this->cx->getDb()->getEntityManager();
 
@@ -124,7 +117,7 @@ class DoctrineRepository extends DataSource
 
         // Add filters
         foreach ($filter as $field => $filterExpr) {
-            foreach ($filterExpr as $operation => $value) {
+            foreach ($filterExpr as $operation=>$value) {
                 if (!$this->supportsOperation($operation)) {
                     throw new \InvalidArgumentException(
                         'Operation "' . $operation . '" is not supported'
@@ -142,7 +135,7 @@ class DoctrineRepository extends DataSource
 
         // Add id to filter (after other filters to prevent override)
         if (isset($elementId) && count($elementId)) {
-            foreach ($elementId as $field => $id) {
+            foreach ($elementId as $field=>$id) {
                 if (empty($id)) {
                     continue;
                 }
@@ -151,7 +144,7 @@ class DoctrineRepository extends DataSource
         }
 
         // $order
-        foreach ($order as $field => $ascdesc) {
+        foreach ($order as $field=>$ascdesc) {
             if (
                 !in_array($field, $fieldList) ||
                 !in_array($ascdesc, array('ASC', 'DESC'))
@@ -168,7 +161,7 @@ class DoctrineRepository extends DataSource
                 'forcedRecursions' => array(),
                 'skippedRecursions' => array(),
             );
-            foreach ($configValues as $config => &$configValue) {
+            foreach ($configValues as $config=>&$configValue) {
                 $configValue = $this->getOption($config);
                 if (!is_array($configValue)) {
                     $configValue = array();
@@ -186,7 +179,7 @@ class DoctrineRepository extends DataSource
         $qb->select('x')->from($this->getIdentifier(), 'x');
         // joins
         $i = 1;
-        foreach ($configuredRecursions as $property => $class) {
+        foreach ($configuredRecursions as $property=>$class) {
             $mappedProperty = str_replace(
                 array_keys($mappingTable),
                 array_values($mappingTable),
@@ -202,15 +195,15 @@ class DoctrineRepository extends DataSource
 
         // $filter
         $i = 1;
-        foreach ($criteria as $field => $filterExpr) {
-            foreach ($filterExpr as $operation => $value) {
+        foreach ($criteria as $field=>$filterExpr) {
+            foreach ($filterExpr as $operation=>$value) {
                 $qb->andWhere($qb->expr()->$operation('x.' . $field, '?' . $i));
                 $qb->setParameter($i, $value);
                 $i++;
             }
         }
         // $order, $limit, $offset
-        foreach ($order as $field => $ascdesc) {
+        foreach ($order as $field=>$ascdesc) {
             $qb->orderBy('x.' . $field, $ascdesc);
         }
         // $limit, $offset
@@ -237,7 +230,7 @@ class DoctrineRepository extends DataSource
         );
         if (count($fieldList)) {
             $dataFlipped = $dataSet->flip()->toArray();
-            foreach ($dataFlipped as $key => $value) {
+            foreach ($dataFlipped as $key=>$value) {
                 if (!in_array($key, $fieldList)) {
                     unset($dataFlipped[$key]);
                 }
@@ -262,8 +255,7 @@ class DoctrineRepository extends DataSource
      * @param string? $prefix Prefix for keys in $output
      * @param array? $exclusionList List of fully qualified class names to ignore
      */
-    protected function resolveRecursedRelations($forcedRecursions, $skippedRecursions, $entityClass = '', $output = array(), $prefix = 'x.', $exclusionList = array())
-    {
+    protected function resolveRecursedRelations($forcedRecursions, $skippedRecursions, $entityClass = '', $output = array(), $prefix = 'x.', $exclusionList = array()) {
         if (empty($entityClass)) {
             $entityClass = $this->getIdentifier();
         }
@@ -310,11 +302,10 @@ class DoctrineRepository extends DataSource
     /**
      * Adds a new entry to this DataSource
      * @param array $data Field=>value-type array. Not all fields may be required.
-     * @return string ID of the new entry
      * @throws \Exception If something did not go as planned
+     * @return string ID of the new entry
      */
-    public function add($data)
-    {
+    public function add($data) {
         $this->init();
         $em = $this->cx->getDb()->getEntityManager();
         $entityClass = $this->getIdentifier();
@@ -327,12 +318,11 @@ class DoctrineRepository extends DataSource
         $em->flush();
         return $this->getEntityIndexData($entity);
     }
-
+    
     /**
      * @todo: This method should be elsewhere
      */
-    protected function getEntityIndexData($entity)
-    {
+    protected function getEntityIndexData($entity) {
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassName = get_class($entity);
         $entityMetaData = $em->getClassMetadata($entityClassName);
@@ -349,8 +339,7 @@ class DoctrineRepository extends DataSource
      * @param array $data Field=>value-type array. Not all fields are required.
      * @throws \Exception If something did not go as planned
      */
-    public function update($elementId, $data)
-    {
+    public function update($elementId, $data) {
         $this->init();
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $this->getRepository();
@@ -372,8 +361,7 @@ class DoctrineRepository extends DataSource
      * @param array $elementId field=>value-type condition array identifying an entry
      * @throws \Exception If something did not go as planned
      */
-    public function remove($elementId)
-    {
+    public function remove($elementId) {
         $this->init();
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $this->getRepository();
@@ -392,8 +380,7 @@ class DoctrineRepository extends DataSource
      * Returns the repository for this DataSource
      * @return \Doctrine\ORM\EntityRepository Repository for this DataSource
      */
-    protected function getRepository()
-    {
+    protected function getRepository() {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $em->getRepository($this->getIdentifier());
 
@@ -406,18 +393,17 @@ class DoctrineRepository extends DataSource
 
     /**
      * Sets data for an entity
+     * @todo Check relations
      * @param \Cx\Model\Base\EntityBase $entity Entity to set data
      * @param array $data Field=>$value-type array
-     * @todo Check relations
      */
-    protected function setEntityData($entity, $data)
-    {
+    protected function setEntityData($entity, $data) {
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassMetadata = $em->getClassMetadata(get_class($entity));
         $primaryKeyNames = $entityClassMetadata->getIdentifierFieldNames(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
 
-        foreach ($entityColumnNames as $column) {
+        foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
             if (/*in_array($name, $primaryKeyNames) ||*/ !isset($data[$name])) {
                 continue;
@@ -446,11 +432,11 @@ class DoctrineRepository extends DataSource
                     break;
             }
 
-            $fieldSetMethodName = 'set' . preg_replace('/_([a-z])/', '\1', ucfirst($name));
+            $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
             // set the value as property of the current object, so it is ready to be stored in the database
             $entity->$fieldSetMethodName($data[$name]);
         }
-
+        
         $associationMappings = $entityClassMetadata->getAssociationMappings();
         $classMethods = get_class_methods($entity);
         foreach ($associationMappings as $field => $associationMapping) {
@@ -468,14 +454,14 @@ class DoctrineRepository extends DataSource
                 $foreignEntityIndexes = explode(',', $data[$field]);
                 $targetRepo = $em->getRepository($associationMapping['targetEntity']);
                 $primaryKeys = $entityClassMetadata->getIdentifierFieldNames();
-                $addMethod = 'add' . preg_replace('/_([a-z])/', '\1', ucfirst($field));
-                $getMethod = 'get' . preg_replace('/_([a-z])/', '\1', ucfirst($field));
+                $addMethod = 'add'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
+                $getMethod = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
                 // foreach distant entity
                 foreach ($foreignEntityIndexes as $foreignEntityIndex) {
                     // prepare data
                     $foreignEntityIds = explode('/', $foreignEntityIndex);
                     $foreignEntityIndexData = array();
-                    foreach ($primaryKeys as $i => $primaryFieldName) {
+                    foreach ($primaryKeys as $i=>$primaryFieldName) {
                         $foreignEntityIndexData[$primaryFieldName] = $foreignEntityIds[$i];
                     }
                     $this->cx->getEvents()->triggerEvent(
@@ -502,7 +488,7 @@ class DoctrineRepository extends DataSource
                 }
             } else if (
                 $entityClassMetadata->isSingleValuedAssociation($field) &&
-                in_array('set' . ucfirst($field), $classMethods)
+                in_array('set'.ucfirst($field), $classMethods)
             ) {
                 $foreignId = $data[$field];
                 if (is_array($foreignId)) {
@@ -515,7 +501,7 @@ class DoctrineRepository extends DataSource
                 if (!$targetEntity) {
                     throw new \Exception('Entity not found (' . $associationMapping['targetEntity'] . ' with ID ' . $foreignId . ')');
                 }
-                $setMethod = 'set' . ucfirst($field);
+                $setMethod = 'set'.ucfirst($field);
                 $entity->$setMethod($targetEntity);
             }
         }
@@ -549,4 +535,3 @@ class DoctrineRepository extends DataSource
 
     }
 }
-
