@@ -158,8 +158,8 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     /**
      * Returns if DataSource supports versioning
      *
-     * To ensure that DataAccess can check if DataSource supports versioning and the
-     * default value is set do false.
+     * This method is to ensure that DataAccess can check if DataSource supports versioning.
+     * The default value is set do false.
      * If the desired DataSource should be versionable, this method can be
      * overwritten to achieve this.
      *
@@ -175,9 +175,9 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
      * You can use this method to get the current version number of a DataSource.
      * If the DataSource is not versionable, the default value is 0.
      * Version number needs to be >= 1 to be versionable, 0 is no valid version number.
-     * Subclasses can overwrite this method, see @isVersionable().
+     * Subclasses can overwrite this method {@see isVersionable()}
      *
-     * @param array $elementId
+     * @param array $elementId  array identifying an entry
      * @return int  see description above
      */
      public function getCurrentVersion(array $elementId) : int {
