@@ -265,9 +265,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
         $this->exceptions += array(
-            // never cache errors
-            'Error', 
-
             // never cache when caching is disabled
             function($cx, $page) {
                 return !$this->boolIsEnabled;
