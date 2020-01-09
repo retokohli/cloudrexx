@@ -507,11 +507,10 @@ class DoctrineRepository extends DataSource {
         }
     }
     /**
-     * Check if DataSource is a doctrineRepository and if Gedmo\Loggable is known, if both
-     * are true, return so.
+     * Check if DataSource is a doctrineRepository and if Gedmo\Loggable is known.
+     * If both are true, return so.
      *
      * @inheritDoc
-     *
      */
     public function isVersionable() : bool {
         return $this->getType() == 'doctrineRepository' &&
@@ -519,19 +518,16 @@ class DoctrineRepository extends DataSource {
     }
 
     /**
-     * @inheritDoc
-     *
      * If DataSource is Doctrine and versionable, the Versionnumber can never be less than 1.
+     *
+     * @inheritDoc
      */
     public function getCurrentVersion(array $elementId) : int {
-        
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $em->getRepository($this->getIdentifier());
 
         $currentVersion = $repo->findOneBy(array('objectId' => $elementId), array('version' => 'desc'));
 
         return $currentVersion ? $currentVersion->getVersion() : 0;
-
-
     }
 }
