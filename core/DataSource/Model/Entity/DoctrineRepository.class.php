@@ -515,7 +515,7 @@ class DoctrineRepository extends DataSource {
     public function isVersionable() : bool {
         return is_a($this->getIdentifier(), 'Gedmo\Loggable\Loggable', true);
     }
-    
+
     /**
      * If DataSource is Doctrine and versionable, the Versionnumber can never be less than 1.
      *
@@ -523,10 +523,16 @@ class DoctrineRepository extends DataSource {
      */
     public function getCurrentVersion(array $elementId) : int {
         $em = $this->cx->getDb()->getEntityManager();
-        $repo = $em->getRepository($this->getIdentifier());
+        $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
 
-        $currentVersion = $repo->findOneBy(array('objectId' => $elementId), array('version' => 'desc'));
+        $entity = $logRepo->findBy(
+            array('objectId' => $elementId,
+                'objectClass' => $this->getIdentifier()),
+            //sort descending for most recent change
+            array('version' => DESC), 1
+        );
 
-        return $currentVersion ? $currentVersion->getVersion() : 0;
+        //since we select one entry, we can get the version number of the first entry in our array
+        return $entity[0]->getVersion();
     }
 }
