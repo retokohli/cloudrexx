@@ -507,16 +507,15 @@ class DoctrineRepository extends DataSource {
         }
     }
     /**
-     * Check if DataSource is a doctrineRepository and if Gedmo\Loggable is known.
-     * If both are true, return so.
+     * Check if the DataSource knows Gedmo\Loggable.
+     * If true, return so.
      *
      * @inheritDoc
      */
     public function isVersionable() : bool {
-        return $this->getType() == 'doctrineRepository' &&
-            is_a($this->getIdentifier(), 'Gedmo\Loggable\Loggable', true);
+        return is_a($this->getIdentifier(), 'Gedmo\Loggable\Loggable', true);
     }
-
+    
     /**
      * If DataSource is Doctrine and versionable, the Versionnumber can never be less than 1.
      *
