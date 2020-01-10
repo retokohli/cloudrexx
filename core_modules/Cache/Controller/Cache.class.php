@@ -310,11 +310,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 },
             ),
             'Market',
-            'Media',
-            'Media1',
-            'Media2',
-            'Media3',
-            'Media4',
             'MediaDir' => array(
                 'latest',
                 'popular',
