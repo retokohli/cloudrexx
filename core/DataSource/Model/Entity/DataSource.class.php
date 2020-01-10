@@ -159,7 +159,7 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
      * Returns if DataSource supports versioning
      *
      * This method is to ensure that DataAccess can check if DataSource supports versioning.
-     * The default value is set do false.
+     * The default value is set to false.
      * If the desired DataSource should be versionable, this method can be
      * overwritten to achieve this.
      *
