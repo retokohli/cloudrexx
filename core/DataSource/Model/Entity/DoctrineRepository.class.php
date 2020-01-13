@@ -517,8 +517,6 @@ class DoctrineRepository extends DataSource {
     }
 
     /**
-     * If DataSource is Doctrine and versionable, the Versionnumber can never be less than 1.
-     *
      * @inheritDoc
      */
     public function getCurrentVersion(array $elementId) : int {
