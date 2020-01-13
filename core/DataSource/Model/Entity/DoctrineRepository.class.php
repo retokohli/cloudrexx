@@ -523,13 +523,17 @@ class DoctrineRepository extends DataSource {
         $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
 
         $entity = $logRepo->findBy(
-            array('objectId' => $elementId,
-                'objectClass' => $this->getIdentifier()),
-            //sort descending for most recent change
-            array('version' => DESC), 1
+            array(
+                'objectId' => $elementId,
+                'objectClass' => $this->getIdentifier(),
+            ),
+            array(
+                'version' => DESC,
+            ),
+            1
         );
 
         //since we select one entry, we can get the version number of the first entry in our array
-        return $entity[0]->getVersion();
+        return current($entity)->getVersion();
     }
 }
