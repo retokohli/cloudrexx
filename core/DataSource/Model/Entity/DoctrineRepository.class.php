@@ -507,8 +507,7 @@ class DoctrineRepository extends DataSource {
         }
     }
     /**
-     * Check if the DataSource knows Gedmo\Loggable.
-     * If true, return so.
+     * Check if the DataSource is Gedmo\Loggable.
      *
      * @inheritDoc
      */
