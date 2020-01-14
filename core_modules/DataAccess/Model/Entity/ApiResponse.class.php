@@ -109,12 +109,14 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
      * @param array $messages (optional) two dimensional array: $messages[<type>][] = <messageText>
      * @param array $data (optional) Set of data
      */
-    public function __construct($status = '', $messages = array(), $data = array()) {
+    public function __construct($status = '', $messages = array(), $data = array(), $metaData = array()) {
         $this->request = $this->cx->getRequest();
         $this->status = $status;
         $this->messages = $messages;
         $this->data = $data;
+        $this->metaData = $metaData;
     }
+
 
     /**
      * Adds a message
@@ -247,7 +249,7 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
             'status' => $this->status,
             'meta' => array_merge(
                 array('request' => $this->request),
-                $this->metaData
+                array('version' => $this->metaData)
             ),
             'messages' => $this->messages,
             'data' => (object) $this->data,
