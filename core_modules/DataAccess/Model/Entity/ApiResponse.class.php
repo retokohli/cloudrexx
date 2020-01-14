@@ -87,6 +87,11 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
     protected $statusCode = 0;
 
     /**
+     * @var array of additional MetaData to API
+     */
+    protected $metaData = array();
+
+    /**
      * @var two dimensional array: $messages[<type>][] = <messageText>
      */
     protected $messages = array();
@@ -129,6 +134,22 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
      */
     public function setData($data) {
         $this->data = $data;
+    }
+
+    /**
+     * Set a array with metadata for the API
+     * @param array $metaData
+     */
+    public function setMetadata(array $metaData) {
+        $this->metaData = $metaData;
+    }
+
+    /**
+     * Get the array with the metadata
+     * @return array with metadata
+     */
+    public function getMetadata(): array {
+        return $this->metaData;
     }
 
     /**
@@ -224,13 +245,15 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
     public function jsonSerialize() {
         return array(
             'status' => $this->status,
-            'meta' => array(
-                'request' => $this->request,
+            'meta' => array_merge(
+                array('request' => $this->request),
+                $this->metaData
             ),
             'messages' => $this->messages,
             'data' => (object) $this->data,
         );
     }
+
 
     /**
      * Sets HTTP status code and writes this object to output buffer
