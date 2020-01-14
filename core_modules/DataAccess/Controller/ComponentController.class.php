@@ -255,6 +255,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             
             $data = array();
+            $metaData = array();
             switch ($method) {
                 // administrative access
                 case 'options':
@@ -290,7 +291,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // should be 404 if element is not set or not found
                     $data = $dataSource->remove($elementId);
                     break;
-                
+
                 // read access
                 case 'head':
                     // return the same headers as 'get', but no body
@@ -300,13 +301,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // should be 200
                     // should be 404 if item not found
                     $data = $dataSource->get($elementId, $filter, $order, $limit, $offset, $dataAccess->getFieldList());
+                    $metaData = $dataSource->getCurrentVersion($elementId);
                     break;
             }
             $response->setStatus(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
             );
             $response->setData($data);
-            
+            $response->setMetadata(array($metaData));
+
             $response->send($outputModule);
         } catch (\Exception $e) {
             $lang = \Env::get('init')->getComponentSpecificLanguageData(
