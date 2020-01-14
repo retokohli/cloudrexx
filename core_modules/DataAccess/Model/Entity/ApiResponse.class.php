@@ -87,7 +87,7 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
     protected $statusCode = 0;
 
     /**
-     * @var array of additional MetaData to API
+     * @var array of additional MetaData to add to API
      */
     protected $metaData = array();
 
