@@ -68,4 +68,22 @@ class LoggableListener extends \Gedmo\Loggable\LoggableListener {
             throw new LoggableListenerException('Event mapper does not support event arg class: '.$class);
         }
     }
+
+    /**
+     * Returns the log entity class for a given entity class
+     *
+     * This does not tell whether an entity is loggable or not.
+     * @param string $entityClassName Entity class name
+     * @return string Log entity class name
+     */
+    public function getLogEntryClassForEntityClass(string $entityClassName): string {
+        return $this->getLogEntryClass(
+            $this->getEventAdapter(
+                \Doctrine\ORM\Event\PreFlushEventArgs(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()
+                )
+            ),
+            $entityClassName
+        );
+    }
 }
