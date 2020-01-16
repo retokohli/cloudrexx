@@ -259,7 +259,9 @@ class Resolver {
 
         if ($this->lang) {
             // used for LinkGenerator
-            define('FRONTEND_LANG_ID', $this->lang);
+            if (!defined('FRONTEND_LANG_ID')) {
+                define('FRONTEND_LANG_ID', $this->lang);
+            }
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getDb()->getTranslationListener()->setTranslatableLocale(
                 \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
@@ -342,8 +344,14 @@ class Resolver {
                 die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
             } else {
                 //page not found, redirect to error page.
-                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
-                exit;
+                // hotfix: resolve to error page
+                // TODO: replace hotfix by proper implementation in CLX-3115
+                global $url;
+                $_GET['id'] = 404;
+                $this->url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $this->lang);
+                $url = $this->url;
+                return $this->resolve();
+                // hotfix: resolve to error page
             }
         }
 
@@ -800,7 +808,14 @@ class Resolver {
 
                 if (empty($this->page)) {
                     \DBG::msg(__METHOD__ . ': target page of internal redirection not found/published');
-                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+                    // hotfix: resolve to error page
+                    // TODO: replace hotfix by proper implementation in CLX-3115
+                    global $url;
+                    $_GET['id'] = 404;
+                    $this->url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $this->lang);
+                    $url = $this->url;
+                    return $this->resolve();
+                    // endhotfix: resolve to error page
                 }
             } else { //external target - redirect via HTTP redirect
                 if (\FWValidator::isUri($target)) {
@@ -993,8 +1008,14 @@ class Resolver {
             } catch (\Exception $e) {
                 \DBG::msg(__METHOD__ . ': '. $e->getMessage());
                 //page not found, redirect to error page.
-                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
-                exit;
+                // hotfix: resolve to error page
+                // TODO: replace hotfix by proper implementation in CLX-3115
+                global $url;
+                $_GET['id'] = 404;
+                $this->url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $this->lang);
+                $url = $this->url;
+                return $this->resolve();
+                // end hotfix: resolve to error page
             }
 
             // due that the fallback is located within a different language
