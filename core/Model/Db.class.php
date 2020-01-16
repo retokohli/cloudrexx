@@ -446,5 +446,14 @@ namespace Cx\Core\Model {
         public function setEntityManager($em) {
             $this->em = $em;
         }
+
+        /**
+         * Returns the LoggableListener in use
+         *
+         * @return \Gedmo\Loggable\LoggableListener Current loggable listener
+         */
+        public function getLoggableListener(): \Gedmo\Loggable\LoggableListener {
+            return $this->loggableListener;
+        }
     }
 }
