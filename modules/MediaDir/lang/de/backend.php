@@ -304,7 +304,6 @@ $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Mit dieser Option kann die Zuordnu
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'] = 'Besucher müssen Einträge für Bestätigung freigeben';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'] = 'Wird diese Einstellung aktiviert, muss der Besucher seinen Eintrag durch auswählen einer Option explizit freigeben zur Prüfung. Ansonsten kann der Eintrag nicht geprüft werden.<br /><br />Es wird empfohlen, diese einstellung bei grösseren Formularen zu aktivieren, damit ein Eintrag nicht in einem Zug erfasst werden muss un somit zwischen gespeichert werden kann.';
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_COUNTRY'] = 'Land';
-$_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_PRODUCT_ATTRIBUTES'] = 'Produktattribute';
 $_ARRAYLANG['TXT_MEDIADIR_ALL_FORMS'] = 'Alle Formular Vorlagen';
 $_ARRAYLANG['TXT_MEDIADIR_FORM'] = 'Formular';
 $_ARRAYLANG['TXT_MARKETPLACE_SETTINGS_IMAGE_FILESIZE'] = 'Dateigrösse für Bilder';

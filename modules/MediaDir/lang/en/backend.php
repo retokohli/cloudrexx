@@ -289,7 +289,6 @@ $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Allows do en- or disable assigning
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'] = 'Authors have to release entries for approval';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'] = 'If set, the user has to explicitly state that his entry is ready for approval. Non-ready entries can\'t be approved.<br /><br />We suggest to activate this for bigger forms to allow saving the form while editing.';
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_COUNTRY'] = 'Country';
-$_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_PRODUCT_ATTRIBUTES'] = 'Product attributes';
 $_ARRAYLANG['TXT_MEDIADIR_ALL_FORMS'] = 'All forms';
 $_ARRAYLANG['TXT_MEDIADIR_FORM'] = 'Form';
 $_ARRAYLANG['TXT_MARKETPLACE_SETTINGS_IMAGE_FILESIZE'] = 'File size for pictures';
