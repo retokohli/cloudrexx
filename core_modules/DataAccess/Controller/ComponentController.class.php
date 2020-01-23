@@ -181,16 +181,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $requestReadonly = in_array($method, array('options', 'head', 'get'));
-
-            if (($dataSource->isVersionable()) &&
-                (isset($arguments['version'])) &&
-                ($requestReadonly == false) &&
-                ($dataSource->getCurrentVersion($elementId) != $arguments['version'])
+            var_dump($arguments['version']);
+            if ($dataSource->isVersionable() &&
+                isset($arguments['version']) &&
+                !$requestReadonly &&
+                $dataSource->getCurrentVersion($elementId) != $arguments['version'] || $arguments['version'] === NULL
             ) {
-                    $response->setStatusCode(409);
-                    throw new \BadMethodCallException('Conflict with version number');
+                $response->setStatusCode(409);
+                throw new \BadMethodCallException('Conflict with version number');
 
-                    $method = '';
+                $method = '';
             }
             
             $order = array();
