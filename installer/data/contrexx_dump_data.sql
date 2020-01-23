@@ -3581,7 +3581,6 @@ INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`,
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (11,'classification',1,0,1,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (12,'link',1,1,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (13,'linkGroup',1,1,0,0,'');
-INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (14,'rss',0,0,0,0,'not yet developed');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (15,'googleMap',1,0,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (17,'fieldGroup',0,0,0,0,'not yet developed');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (18,'label',0,0,0,0,'not yet developed');
