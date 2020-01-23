@@ -150,7 +150,6 @@ $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES'] = "Unterkategorien anzeigen";
 $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES_INFO'] = "Durch Aktivierung dieser Option, werden beim Widget [[MEDIADIR_NAVBAR]] die Unterkategorien dieser Kategorie angezeigt, sofern der URL-Modifikator <strong>cid</strong> auf die ID dieser Kategorie zeigt.";
 $_ARRAYLANG['TXT_MEDIADIR_RECIPIENTS'] = "zusätzliche Empfänger";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_TEXT'] = "Textfeld";
-$_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_LABEL'] = "Text";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_TEXTAREA'] = "Textfeld mehrzeilig";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_DROPDOWN'] = "Auswahlmenu";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RADIO'] = "Auswahlfelder";

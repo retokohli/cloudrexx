@@ -150,7 +150,6 @@ $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES'] = "Show subcategories";
 $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES_INFO'] = "Activate this option to list this category's subcategories in widget [[MEDIADIR_NAVBAR]] if the URL-modificator <strong>cid</strong> is set to the ID of this category.";
 $_ARRAYLANG['TXT_MEDIADIR_RECIPIENTS'] = "Additional Recipients";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_TEXT'] = "Text Field";
-$_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_LABEL'] = "Text";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_TEXTAREA'] = "Multline Text Field";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_DROPDOWN'] = "Selection menu";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RADIO'] = "Selection field";
