@@ -288,7 +288,6 @@ $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL'] = 'Use levels';
 $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Allows do en- or disable assigning of levels to entries';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'] = 'Authors have to release entries for approval';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'] = 'If set, the user has to explicitly state that his entry is ready for approval. Non-ready entries can\'t be approved.<br /><br />We suggest to activate this for bigger forms to allow saving the form while editing.';
-$_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RELATION'] = 'Link to existing entry';
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RELATION_GROUP'] = 'Link to existing entries';
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_ACCOUNTS'] = 'Link to user accounts';
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_COUNTRY'] = 'Country';
