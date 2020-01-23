@@ -314,7 +314,6 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ACTIVE_LANGUAGES'] = 'Im Modul verwendete Spr
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND'] = 'Einträge im Frontend mehrsprachig erfassen';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND_INFO'] = 'Wird diese Option aktiviert, können die Einträge im Frontend mehrsprachig erfasst werden. Ist diese Option deaktiviert, wird ein Eintrag nur in der aktiven Sprache erfasst.';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ENTRIEY_INDIVIDUAL_ORDER'] = "Einträge individuell sortieren";
-$_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_TITLE'] = 'Titel';
 $_ARRAYLANG['TXT_MEDIADIR_PHONE'] = 'Telefon';
 $_ARRAYLANG['TXT_MEDIADIR_FAX'] = 'Fax';
 $_ARRAYLANG['TXT_MEDIADIR_FUNCTION'] = 'Funktion';

@@ -457,16 +457,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     }
 
                     if($strInputfield != null) {
-                        if($arrInputfield['type_name'] == 'title') {
-                            $strStartTitle = '<h2>';
-                            $strEndTitle = '</h2>';
-                        } else {
-                            $strStartTitle = '';
-                            $strEndTitle = '';
-                        }
-
                         $objTpl->setVariable(array(
-                            'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => $strStartTitle.(empty($arrInputfield['name'][$langId]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$langId].$strRequiered).$strEndTitle,
+                            'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => empty($arrInputfield['name'][$langId]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$langId].$strRequiered,
                             $this->moduleLangVar.'_INPUTFIELD_FIELD' => $strInputfield,
                             $this->moduleLangVar.'_INPUTFIELD_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                         ));
