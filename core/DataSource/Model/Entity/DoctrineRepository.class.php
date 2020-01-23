@@ -520,7 +520,12 @@ class DoctrineRepository extends DataSource {
      */
     public function getCurrentVersion(array $elementId) : int {
         $em = $this->cx->getDb()->getEntityManager();
-        $logRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
+
+        $logRepo = $em->getRepository(
+            $this->cx->getDb()->getLoggableListener()->getLogEntryClassForEntityClass(
+                $this->getIdentifier()
+            )
+        );
 
         $entity = $logRepo->findBy(
             array(
