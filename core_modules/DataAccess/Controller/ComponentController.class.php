@@ -181,7 +181,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $requestReadonly = in_array($method, array('options', 'head', 'get'));
-            var_dump($arguments['version']);
             if ($dataSource->isVersionable() &&
                 isset($arguments['version']) &&
                 !$requestReadonly &&
