@@ -1527,10 +1527,8 @@ JSCODE;
             }
 
             // skip meta attributes or ones that are out of scope (frontend/backend)
-            if (   // type = 'add_step'
-                   $arrInputfield['type'] == 16
-                   // type = 'label'
-                || $arrInputfield['type'] == 18
+            if (   // type = 'label'
+                   $arrInputfield['type'] == 18
                    // type = 'title'
                 || $arrInputfield['type'] == 30
                    // show_in is neither FRONTEND or BACKEND ($intShowIn = 2|3) nor FRONTEND AND BACKEND (show_in=1)

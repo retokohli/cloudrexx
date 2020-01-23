@@ -365,7 +365,6 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 2:
                 //modify (add/edit) View
-                $objAddStep = new MediaDirectoryAddStep($this->moduleName);
                 $i = 0;
                 $isFileInputFound = false;
                 $langId = static::getOutputLocale()->getId();
@@ -391,10 +390,6 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                             $objInputfield = safeNew($strInputfieldClass, $this->moduleName);
 
                             switch($strType) {
-                                case 'add_step':
-                                    $objAddStep->addNewStep(empty($arrInputfield['name'][$langId]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$langId]);
-                                    $strInputfield = $objInputfield->getInputfield(1, $arrInputfield, $intEntryId, $objAddStep);
-                                    break;
                                 case 'field_group':
                                     //to do
                                     break;
@@ -469,33 +464,23 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         }
                     }
 
-                    if($arrInputfield['type_name'] == 'add_step' && $objInit->mode != 'backend') {
+                    if($strInputfield != null) {
+                        if($arrInputfield['type_name'] == 'title') {
+                            $strStartTitle = '<h2>';
+                            $strEndTitle = '</h2>';
+                        } else {
+                            $strStartTitle = '';
+                            $strEndTitle = '';
+                        }
+
                         $objTpl->setVariable(array(
-                            $this->moduleLangVar.'_INPUTFIELD_ADDSTEP' => $strInputfield,
+                            'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => $strStartTitle.(empty($arrInputfield['name'][$langId]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$langId].$strRequiered).$strEndTitle,
+                            $this->moduleLangVar.'_INPUTFIELD_FIELD' => $strInputfield,
+                            $this->moduleLangVar.'_INPUTFIELD_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                         ));
 
-                        $objTpl->parse($this->moduleNameLC.'InputfieldAddStep');
-                    } else {
-                        if($strInputfield != null) {
-                            if($arrInputfield['type_name'] == 'title') {
-                                $strStartTitle = '<h2>';
-                                $strEndTitle = '</h2>';
-                            } else {
-                                $strStartTitle = '';
-                                $strEndTitle = '';
-                            }
-
-                            $objTpl->setVariable(array(
-                                'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => $strStartTitle.(empty($arrInputfield['name'][$langId]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$langId].$strRequiered).$strEndTitle,
-                                $this->moduleLangVar.'_INPUTFIELD_FIELD' => $strInputfield,
-                                $this->moduleLangVar.'_INPUTFIELD_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
-                            ));
-
-                            if($arrInputfield['type_name'] != 'add_step') {
-                                $i++;
-                                $objTpl->parse($this->moduleNameLC.'InputfieldList');
-                            }
-                        }
+                        $i++;
+                        $objTpl->parse($this->moduleNameLC.'InputfieldList');
                     }
 
                     if($objInit->mode != 'backend') {
@@ -515,15 +500,6 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_UPLOADER_ID'   => $uploader->getId(),
                         $this->moduleLangVar.'_UPLOADER_CODE' => $uploader->getXHtml(),
-                    ));
-                }
-
-                if(!empty($objAddStep->arrSteps) && $objInit->mode != 'backend') {
-                    $objAddStep->getStepNavigation($objTpl);
-                    $objTpl->parse($this->moduleNameLC.'EntryAddStepNavigation');
-
-                    $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_INPUTFIELD_ADDSTEP_TERMINATOR' => "</div>",
                     ));
                 }
 
@@ -1152,26 +1128,6 @@ function mediadirUploaderCallback(data) {
 
         uploaderInputBox.val(fileName);
         uploaderInputBox.trigger('keyup');
-    }
-}
-function selectAddStep(stepName){
-    if(document.getElementById(stepName).style.display != "block")
-    {
-        document.getElementById(stepName).style.display = "block";
-        strClass = document.getElementById(stepName).className;
-        document.getElementById(strClass+"_"+stepName).className = "active";
-
-        arrTags = document.getElementsByTagName("*");
-        for (i=0;i<arrTags.length;i++)
-            {
-                if(arrTags[i].className == strClass && arrTags[i] != document.getElementById(stepName))
-                {
-                    arrTags[i].style.display = "none";
-                    if (document.getElementById(strClass+"_"+arrTags[i].getAttribute("id"))) {
-                        document.getElementById(strClass+"_"+arrTags[i].getAttribute("id")).className = "";
-                    }
-                }
-            }
     }
 }
 
