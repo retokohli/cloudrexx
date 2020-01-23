@@ -3578,7 +3578,6 @@ INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`,
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (5,'checkbox',1,0,1,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (7,'file',1,1,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (8,'image',1,1,0,0,'');
-INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (9,'gallery',0,0,0,0,'not yet developed');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (10,'podcast',0,0,0,0,'not yet developed');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (11,'classification',1,0,1,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (12,'link',1,1,0,0,'');
@@ -3743,7 +3742,6 @@ INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (11,'settingsConfirmUpdatedEntries','0');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (12,'settingsCountEntries','0');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (13,'settingsThumbSize','300');
-INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (14,'settingsNumGalleryPics','10');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (15,'settingsEncryptFilenames','1');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (16,'settingsAllowAddEntries','1');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (17,'settingsAllowDelEntries','1');
