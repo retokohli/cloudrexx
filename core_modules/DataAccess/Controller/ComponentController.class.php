@@ -315,14 +315,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // should be 404 if item not found
                     $data = $dataSource->get($elementId, $filter, $order, $limit, $offset, $dataAccess->getFieldList());
                     $metaData = $dataSource->getCurrentVersion($elementId);
-                    $data['version'] = $metaData;
                     break;
             }
             $response->setStatus(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
             );
             $response->setData($data);
-            $response->setMetadata(array($metaData));
+            $response->setMetadata(array($metaData, $elementId));
 
             $response->send($outputModule);
         } catch (\Exception $e) {
