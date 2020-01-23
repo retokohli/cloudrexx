@@ -3578,7 +3578,6 @@ INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`,
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (5,'checkbox',1,0,1,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (7,'file',1,1,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (8,'image',1,1,0,0,'');
-INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (10,'podcast',0,0,0,0,'not yet developed');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (11,'classification',1,0,1,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (12,'link',1,1,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (13,'linkGroup',1,1,0,0,'');
