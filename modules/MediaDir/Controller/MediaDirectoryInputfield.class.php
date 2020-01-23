@@ -379,7 +379,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
                     if(!empty($arrInputfield['type'])) {
                         if (   !$isFileInputFound
-                            && in_array($arrInputfield['type_name'], array('image', 'file', 'downloads'))
+                            && in_array($arrInputfield['type_name'], array('image', 'file'))
                         ) {
                             $isFileInputFound = true;
                         }
