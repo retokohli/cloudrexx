@@ -389,30 +389,22 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         try {
                             $objInputfield = safeNew($strInputfieldClass, $this->moduleName);
 
-                            switch($strType) {
-                                case 'field_group':
-                                    //to do
-                                    break;
-                                default:
-                                    if($arrInputfield['show_in'] == 1) {
-                                        $bolGetInputfield = true;
-                                    } else {
-                                        if($objInit->mode == 'backend' && $arrInputfield['show_in'] == 3) {
-                                            $bolGetInputfield = true;
-                                        } else if ($objInit->mode == 'frontend' && $arrInputfield['show_in'] == 2) {
-                                            $bolGetInputfield = true;
-                                        } else {
-                                            $bolGetInputfield = false;
-                                        }
-                                    }
+                            if($arrInputfield['show_in'] == 1) {
+                                $bolGetInputfield = true;
+                            } else {
+                                if($objInit->mode == 'backend' && $arrInputfield['show_in'] == 3) {
+                                    $bolGetInputfield = true;
+                                } else if ($objInit->mode == 'frontend' && $arrInputfield['show_in'] == 2) {
+                                    $bolGetInputfield = true;
+                                } else {
+                                    $bolGetInputfield = false;
+                                }
+                            }
 
-                                    if($bolGetInputfield) {
-                                        $strInputfield = $objInputfield->getInputfield(1, $arrInputfield, $intEntryId);
-                                    } else {
-                                        $strInputfield = null;
-                                    }
-
-                                    break;
+                            if($bolGetInputfield) {
+                                $strInputfield = $objInputfield->getInputfield(1, $arrInputfield, $intEntryId);
+                            } else {
+                                $strInputfield = null;
                             }
 
                             if($strInputfield != null) {
