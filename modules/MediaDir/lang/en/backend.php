@@ -299,7 +299,6 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ACTIVE_LANGUAGES'] = 'Languages used in the m
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND'] = 'Allow creation of multilingual from the frontend';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND_INFO'] = 'If activated, users can translate their entries in the frontend while translating them. If disabled, users write the text in their language only.';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ENTRIEY_INDIVIDUAL_ORDER'] = "Individual entry order";
-$_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_REFERENCES'] = 'References';
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_TITLE'] = 'Title';
 $_ARRAYLANG['TXT_MEDIADIR_PHONE'] = 'Phone';
 $_ARRAYLANG['TXT_MEDIADIR_FAX'] = 'Fax';
