@@ -283,6 +283,12 @@ class Url {
             // We catch this exception for that specific case to make
             // the web-installer work.
             \DBG::msg($e->getMessage());
+        } catch (\Doctrine\ORM\Mapping\MappingException $e) {
+            // In case the domain repository can't be loaded,
+            // doctrine's entity manager will throw an exception.
+            // We catch this exception for that specific case to make
+            // the web-installer work.
+            \DBG::msg($e->getMessage());
         }
         return true;
     }
