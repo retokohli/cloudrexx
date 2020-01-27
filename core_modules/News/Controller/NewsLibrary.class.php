@@ -210,8 +210,11 @@ class NewsLibrary
      *
      * @return string Formated ul/li of categories
      */
-    public function getNewsCategories($template = null, $langId = null, $categoryId = 0)
+    public function getNewsCategories($template = null, $langId = null, $categoryId = 0, $rootCategoryId = 0)
     {
+        if (!empty($rootCategoryId)) {
+             $this->nestedSetRootId = $rootCategoryId;
+        }
         $categoriesLang = $this->getCategoriesData();
         return $this->_buildNewsCategories($template, $this->nestedSetRootId, $categoriesLang, $langId, $categoryId);
     }
