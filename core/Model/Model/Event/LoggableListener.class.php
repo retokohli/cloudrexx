@@ -73,15 +73,23 @@ class LoggableListener extends \Gedmo\Loggable\LoggableListener {
      * Returns the log entity class for a given entity class
      *
      * This does not tell whether an entity is loggable or not.
+     * @todo As metadata needs to be read for this we should cache the result
      * @param string $entityClassName Entity class name
      * @return string Log entity class name
      */
     public function getLogEntryClassForEntityClass(string $entityClassName): string {
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $event = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs(
+            $em->getClassMetadata($entityClassName),
+            $em
+        );
+
+        // Metadata is not always pre-read into cache. Therefore we need to
+        // force a metadata reload for this entity class.
+        $this->loadClassMetadata($event);
         return $this->getLogEntryClass(
             $this->getEventAdapter(
-                \Doctrine\ORM\Event\PreFlushEventArgs(
-                    \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()
-                )
+                $event
             ),
             $entityClassName
         );
