@@ -254,7 +254,8 @@ class Url {
      * therefore unable to perform its task, it will return TRUE as fallback.
      *
      * @todo This does not work correctly if setPath() is called from outside
-     * @return boolean True for internal URL, false otherwise
+     * @return boolean True for internal URL, false otherwise. In case the
+     * domain repository can't be loaded, the method will always return TRUE.
      */
     public function isInternal() {
         try {
