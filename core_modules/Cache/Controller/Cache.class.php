@@ -192,7 +192,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $headers = unserialize(file_get_contents($headerFile));
                 if (is_array($headers)) {
                     foreach ($headers as $name=>$value) {
-                        if ($name == static::HTTP_STATUS_CODE_HEADER) {
+                        if (strtolower($name) == strtolower(static::HTTP_STATUS_CODE_HEADER)) {
                             http_response_code(intval($value));
                             continue;
                         }
@@ -203,7 +203,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                         }
                         // If expire header is set, check if the cache
                         // is still valid
-                        if ($name == 'Expires') {
+                        if (strtolower($name) == 'expires') {
                             $expireDate = new \DateTime($value);
                             if ($expireDate < new \DateTime()) {
                                 // cache is no longer valid
