@@ -189,7 +189,7 @@ class ListingController {
 
     /**
      * Handles a list
-     * @param mixed $entities Entity class name as string or callback function
+     * @param mixed $entities Entity class name as string or callback function (experimental)
      * @param array $crit (optional) Doctrine style criteria array to use
      * @param array $options (Unused)
      */
@@ -344,8 +344,18 @@ class ListingController {
             $order = $order == SORT_DESC ? 'DESC' : 'ASC';
         }
 
+        if ($this->callback) {
+            $callback = $this->callback;
+            $entities = $callback(
+                $this->offset,
+                $this->count,
+                $this->criteria,
+                $this->order
+            )->getResult();
+            $this->dataSize = $this->count;
+
         // YAMLRepository:
-        if ($entityRepository instanceof \Countable) {
+        } else if ($entityRepository instanceof \Countable) {
             if (!empty($this->filter)) {
                 \DBG::msg('YAMLRepository does not support "filter" yet');
             }
@@ -356,15 +366,6 @@ class ListingController {
                 $this->offset
             );
             $this->dataSize = count($entityRepository);
-        } else if ($this->callback) {
-            $callback = $this->callback;
-            $entities = $callback(
-                $this->offset,
-                $this->count,
-                $this->criteria,
-                $this->order
-            )->getResult();
-            $this->dataSize = $this->count;
         } else {
             $qb = $em->createQueryBuilder();
             $metaData = $em->getClassMetadata($this->entityClass);
