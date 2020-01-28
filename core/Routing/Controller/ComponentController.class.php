@@ -85,7 +85,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $url->getPath(),
             $originalUrl->getPath()
         );
-        if ($iterationPoint !== false) {
+        // if $iterationPoint is neither 'false' nor '0', then
+        // this means that $originalUrl->getPath() is found in
+        // $url->getPath() and is a potential infinite loop
+        if ($iterationPoint) {
             $redundancy = substr($url->getPath(), 0, $iterationPoint);
             if (substr_count($url->getPath(), $redundancy) > 2) {
                 \DBG::msg('Potential infinite loop detected');
