@@ -140,6 +140,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $response = $request->send();
             http_response_code($response->getStatus());
             $content = $response->getBody();
+            $headers = array();
             foreach ($response->getHeader() as $key=>$value) {
                 if (in_array($key, array(
                     'content-encoding',
@@ -147,9 +148,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 ))) {
                     continue;
                 }
+                $headers[$key] = $value;
                 \Cx\Core\Csrf\Controller\Csrf::header($key . ':' . $value);
             }
             $continue = false;
+            $this->getComponent('Cache')->writeCacheFileForRequest(
+                null,
+                $headers,
+                $content
+            );
             die($content);
         } catch (\HTTP_Request2_Exception $e) {
             \DBG::dump($e);
