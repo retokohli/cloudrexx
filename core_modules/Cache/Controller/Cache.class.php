@@ -360,7 +360,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function writeCacheFileForRequest($page, $headers, $endcode, $forceUserbased = false) {
         $userbased = $forceUserbased;
-        $pageId = '';
+        $pageId = '0';
         if ($page) {
             $pageId = $page->getId();
             if ($page->isFrontendProtected()) {
