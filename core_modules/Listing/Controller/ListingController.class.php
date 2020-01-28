@@ -337,7 +337,9 @@ class ListingController {
             return $data;
         }
         $em = \Env::get('em');
-        $entityRepository = $em->getRepository($this->entityClass);
+        if (!$this->callback) {
+            $entityRepository = $em->getRepository($this->entityClass);
+        }
         foreach ($this->order as $field=>&$order) {
             $order = $order == SORT_DESC ? 'DESC' : 'ASC';
         }
@@ -354,6 +356,15 @@ class ListingController {
                 $this->offset
             );
             $this->dataSize = count($entityRepository);
+        } else if ($this->callback) {
+            $callback = $this->callback;
+            $entities = $callback(
+                $this->offset,
+                $this->count,
+                $this->criteria,
+                $this->order
+            )->getResult();
+            $this->dataSize = $this->count;
         } else {
             $qb = $em->createQueryBuilder();
             $metaData = $em->getClassMetadata($this->entityClass);
