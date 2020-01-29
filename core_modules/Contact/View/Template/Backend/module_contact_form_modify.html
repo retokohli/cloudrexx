@@ -206,6 +206,7 @@
         $J(copy).find('input').val('');
         $J(copy).find('input[type=hidden]').val('new');
         $J(copy).toggleClass('row1 row2');
+        cx.ui.tooltip($J(copy).find('.tooltip-trigger'));
         $J('#formRecipientContainer').append(copy);
     }
 
@@ -934,9 +935,10 @@
                                 <!-- BEGIN contact_form_recipient_list -->
                                 <tr id="formRecipient_{CONTACT_FORM_RECIPIENT_ID}" class="formRecipient {ROW_CLASS_NAME}">
                                     <td width="5%"><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
-                                    <td>
+                                    <td style="white-space:nowrap;">
                                         <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
                                                value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
+                                        <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}</span>
                                     </td>
                                     <td>
                                         <!-- BEGIN recipient_name -->
