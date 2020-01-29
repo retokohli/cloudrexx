@@ -105,7 +105,7 @@
             recipientName  = $J('input[name="contactFormRecipientName['+i+']['+langId+']"]').val();
 
             newrecipientname = '';
-            if ($J.trim(newrecipientname) == '') {
+            if ($J.trim(recipientName) == '') {
                 if($J.trim($J('input[name="contactFormRecipientName['+i+']['+arrFallBackLang[langId]+']"]').val()) != '') {
                     newrecipientname = $J('input[name="contactFormRecipientName['+i+']['+arrFallBackLang[langId]+']"]').val();
                 } else if($J.trim($J('input[name="contactFormRecipientName['+i+']['+defaultLanguage+']"]').val()) != '') {
