@@ -235,4 +235,5 @@ $_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'] = "Wählen Sie 
 $_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS'] = "Kontaktanfragen speichern";
 $_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSION_DATA_IN_DB'] = "Kontaktanfragen in der Datenbank speichern";
 $_ARRAYLANG['TXT_CONTACT_STORE_SUBMISSIONS_NOTE'] = "Aktivieren Sie diese Option, um die Kontaktanfragen in der Datenbank zu speichern. Wichtig: In den meisten Ländern muss der Website-Besucher zur Speicherung (und allfällige Weiterverarbeitung) von personenbezogenen Daten um Erlaubnis gefragt werden. Bitte prüfen Sie zutreffendes Recht, bevor Sie die Speicherung der Kontaktanfragen aktivieren.";
+$_ARRAYLANG['TXT_CONTACT_RECIPIENT_LIST_SELECTED_INFO'] = 'Das Formular enthält ein Feld vom Typ "%1$s". Die Konfigurationsoption "%2$s" ist daher überflüssig.';
 ?>

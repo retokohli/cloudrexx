@@ -1116,6 +1116,11 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
             'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
             'TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'      => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
+            'TXT_CONTACT_RECIPIENT_LIST_SELECTED_INFO'      => sprintf(
+                $_ARRAYLANG['TXT_CONTACT_RECIPIENT_LIST_SELECTED_INFO'],
+                $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
+                $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES']
+            ),
             'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
             'TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'       => $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'],
             'TXT_CONTACT_FORM_DESC'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DESC'],
