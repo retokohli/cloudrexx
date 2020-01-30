@@ -168,7 +168,8 @@ class googleMap
     protected function loadMapMarkers() {
         $markers = array();
         foreach ($this->mapMarkers as $id => $marker) {
-            if($marker['lon'] >= 0 && $marker['lat'] >= 0) {
+            // latitude and longitude can be positive or negative
+            if($marker['lon'] != 0 && $marker['lat'] != 0) {
                 $markers[$id] = $marker;
             }
         }
