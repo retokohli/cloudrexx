@@ -257,7 +257,8 @@ class ClassLoader {
                     'Cx',
                     'Doctrine',
                     'Gedmo',
-                    'DoctrineExtension',
+                    'DoctrineExtension', // /model/extensions
+                    'DoctrineExtensions', // /lib/doctrine/beberlei/doctrineextensions/src
                     'Symfony',
                 )
             ) ||
@@ -298,6 +299,19 @@ class ClassLoader {
             $suffix = '';
             $parts = array_merge(array('Cx', 'Lib', 'doctrine'), $parts);
             //$parts = array_merge(array('Cx', 'Model', 'entities'), $parts);
+        } else if ($parts[0] == 'DoctrineExtensions') {
+            $suffix = '';
+            $parts = array_merge(
+                array(
+                    'Cx',
+                    'Lib',
+                    'doctrine',
+                    'beberlei',
+                    strtolower(array_shift($parts)),
+                    'src'
+                ),
+                $parts
+            );
         } else if ($parts[0] == 'Doctrine') {
             $suffix = '';
             if ($parts[1] == 'ORM') {
