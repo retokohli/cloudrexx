@@ -249,7 +249,20 @@ class ClassLoader {
         }
         $parts = explode('\\', $name);
         // new classes should be in namespace \Cx\something
-        if (!in_array(current($parts), array('Cx', 'Doctrine', 'Gedmo', 'DoctrineExtension', 'Symfony')) || count($parts) < 2) {
+        // TODO: Use Composer's class autoloading for libraries
+        if (
+            !in_array(
+                current($parts),
+                array(
+                    'Cx',
+                    'Doctrine',
+                    'Gedmo',
+                    'DoctrineExtension',
+                    'Symfony',
+                )
+            ) ||
+            count($parts) < 2
+        ) {
             return false;
         }
         if (substr($name, 0, 8) == 'PHPUnit_') {
