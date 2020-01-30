@@ -1110,7 +1110,6 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             'TXT_CONTACT_ADD_RECIPIENT'                     => $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'],
             'TXT_CONTACT_FORM_VALUES'                       => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
             'TXT_FORM_FIELDS'                               => $_ARRAYLANG['TXT_FORM_FIELDS'],
-            'TXT_FORM_RECIPIENTS'                           => $_ARRAYLANG['TXT_FORM_RECIPIENTS'],
             'TXT_ADVANCED_SETTINGS'                         => $_ARRAYLANG['TXT_ADVANCED_SETTINGS'],
             'TXT_CONTACT_FORM_NOTIFICATION'                 => $_ARRAYLANG['TXT_CONTACT_FORM_NOTIFICATION'],
             'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
