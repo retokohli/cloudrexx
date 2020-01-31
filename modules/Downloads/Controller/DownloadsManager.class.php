@@ -2518,8 +2518,8 @@ class DownloadsManager extends DownloadsLibrary
         \Cx\Modules\Downloads\Controller\Category $child,
         array &$names
     ) {
+        $names[] = $child->getName();
         if (empty($child->getParentId())) {
-            $names[] = $child->getName();
             return;
         }
 
@@ -2531,7 +2531,6 @@ class DownloadsManager extends DownloadsLibrary
             return;
         }
 
-        $names[] = $child->getName();
         $this->getParentCategoryNamesByChild(
             $parent,
             $names
