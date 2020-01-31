@@ -2495,7 +2495,7 @@ class DownloadsManager extends DownloadsLibrary
 
         } else {
             foreach ($category as $middle) {
-                $title .= '...' .$middle . "\n";
+                $title .= $middle . "\n";
             }
         }
 
