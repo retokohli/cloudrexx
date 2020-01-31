@@ -2499,8 +2499,13 @@ class DownloadsManager extends DownloadsLibrary
             }
         }
 
-        return '<span title="'.$title.'">' . $text
-            . '</span>';
+        $span = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
+        $span->addChild(
+            new \Cx\Core\Html\Model\Entity\TextElement($text)
+        );
+        $span->setAttribute('title', $title);
+
+        return $span;
     }
 
     /**
