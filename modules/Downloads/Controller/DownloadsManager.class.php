@@ -2657,9 +2657,11 @@ class DownloadsManager extends DownloadsLibrary
 
                 // parse delete icon
                 $this->objTemplate->parse('downloads_download_function_delete_link');
+                $this->objTemplate->hideBlock('downloads_download_function_no_delete_link');
             } else {
                 // parse delete icon
                 $this->objTemplate->hideBlock('downloads_download_function_delete_link');
+                $this->objTemplate->touchBlock('downloads_download_function_no_delete_link');
             }
 
             $description = $objDownload->getDescription();
