@@ -2412,32 +2412,35 @@ class DownloadsManager extends DownloadsLibrary
             );
 
             foreach($parentNames as $position => $parentName) {
-                if ($position == 0) {
-                    // Position 0 is the "current category"
-                    // Shorten the name after 60 chars
-                    $categories['current']['long'] = $parentName;
-                    $categories['current']['short'] = substr(
-                        $parentName, 0, 60
-                    );
-
-                } else if ($position == 1) {
-                    // Position 1 is the "previous category"
-                    // Shorten the name after 30 chars
-                    $categories['previous']['long'] = $parentName;
-                    $categories['previous']['short'] = substr(
-                        $parentName, 0, 30
-                    );
-
-                } else if ($position == count($parentNames) - 1) {
-                    // The last position is the "root category"
-                    // Shorten the name after 30 chars
-                    $categories['root']['long'] = $parentName;
-                    $categories['root']['short'] = substr(
-                        $parentName, 0, 30
-                    );
-                } else {
-                    // Add the remaining categories to an array
-                    $categories['middle'][] = $parentName;
+                switch($position) {
+                    case 0:
+                        // Position 0 is the "current category"
+                        // Shorten the name after 60 chars
+                        $categories['current']['long'] = $parentName;
+                        $categories['current']['short'] = substr(
+                            $parentName, 0, 60
+                        );
+                        break;
+                    case 1:
+                        // Position 1 is the "previous category"
+                        // Shorten the name after 30 chars
+                        $categories['previous']['long'] = $parentName;
+                        $categories['previous']['short'] = substr(
+                            $parentName, 0, 30
+                        );
+                        break;
+                    case count($parentNames) - 1:
+                        // The last position is the "root category"
+                        // Shorten the name after 30 chars
+                        $categories['root']['long'] = $parentName;
+                        $categories['root']['short'] = substr(
+                            $parentName, 0, 30
+                        );
+                        break;
+                    default:
+                        // Add the remaining categories to an array
+                        $categories['middle'][] = $parentName;
+                        break;
                 }
 
             }
