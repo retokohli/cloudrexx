@@ -1837,8 +1837,9 @@ if [[ "$(pwd -P)" != "$result" || "$DIR" != "$result" ]]; then
     prevPwd="$(pwd -P)"
     cd "$result" || exit
     ./cx "$@"
+    RES=$?
     cd "$prevPwd"
-    exit
+    exit $RES
 fi
 
 ORIG_ARGS=("$@")
