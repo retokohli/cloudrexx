@@ -1048,7 +1048,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             ;;
         exec)
             shift
-            if read -r -t 0; then
+            if [[ -p /dev/stdin ]]; then
                 input=$(cat -)
             fi
             if [[ ${ARGUMENTS["sql"]} ]]; then
