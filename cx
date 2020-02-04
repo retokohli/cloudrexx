@@ -789,7 +789,8 @@ function cmd_env {
                 # This makes only sense in case the db has been loaded yet (which
                 # is not the case when performing an init).
                 # We therefore check if the table contrexx_component does exist
-                dockerexec exec "<db-container>" bash -c "mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} ${CONFIG["db-name"]} -e 'SELECT 1 from \`${CONFIG["db-prefix"]}component\` LIMIT 1' &> /dev/null"
+                mysql_create_tempfile
+                mysql_exec "SELECT 1 from \`${CONFIG["db-prefix"]}component\` LIMIT 1" &> /dev/null
                 if [[ $? == 0 ]]; then
                     phpexec config --force
                 fi
