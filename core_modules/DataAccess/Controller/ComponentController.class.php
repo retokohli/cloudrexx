@@ -301,7 +301,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // should be 200
                     // should be 404 if item not found
                     $data = $dataSource->get($elementId, $filter, $order, $limit, $offset, $dataAccess->getFieldList());
-                    $metaData = $dataSource->getCurrentVersion($elementId);
+                    if ($dataSource->isVersionable()) {
+                        $metaData['version'] = array();
+                        if (!empty($elementId)) {
+                            $metaData['version'] = $dataSource->getCurrentVersion(
+                                $elementId
+                            );
+                        } else {
+                            foreach (array_keys($data) as $key) {
+                                $metaData['version'][$key] = $dataSource->getCurrentVersion(
+                                    explode('/', $key)
+                                );
+                            }
+                        }
+                    }
                     break;
             }
             $response->setStatus(
