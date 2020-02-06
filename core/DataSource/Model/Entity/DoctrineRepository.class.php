@@ -506,13 +506,14 @@ class DoctrineRepository extends DataSource {
             }
         }
     }
+
     /**
      * Check if the DataSource is Gedmo\Loggable.
      *
      * @inheritDoc
      */
     public function isVersionable() : bool {
-        return is_a($this->getIdentifier(), 'Gedmo\Loggable\Loggable', true);
+        return is_a($this->getIdentifier(), '\Gedmo\Loggable\Loggable', true);
     }
 
     public function getCurrentVersion(array $elementId) : int {
@@ -524,18 +525,17 @@ class DoctrineRepository extends DataSource {
             )
         );
 
-        $entity = $logRepo->findBy(
+        $entity = $logRepo->findOneBy(
             array(
                 'objectId' => $elementId,
-                'objectClass' => $this->getIdentifier(),
+                'objectClass' => ltrim($this->getIdentifier(), '/'),
             ),
             array(
                 'version' => DESC,
-            ),
-            1
+            )
         );
 
         //since we select one entry, we can get the version number of the first entry in our array
-        return current($entity)->getVersion();
+        return $entity->getVersion();
     }
 }
