@@ -255,7 +255,6 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
         );
     }
 
-
     /**
      * Sets HTTP status code and writes this object to output buffer
      * @param \Cx\Core_Modules\DataAccess\Controller\OutputController $outputModule Output module to use for parsing
