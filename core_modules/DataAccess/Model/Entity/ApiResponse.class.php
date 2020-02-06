@@ -246,9 +246,9 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
     public function jsonSerialize() {
         return array(
             'status' => $this->status,
-            'meta' => array_merge(
-                array('request' => $this->request),
-                array('version' => $this->metaData)
+            'meta' => array(
+                'request' => $this->request,
+                'version' => $this->metaData,
             ),
             'messages' => $this->messages,
             'data' => (object) $this->data,
