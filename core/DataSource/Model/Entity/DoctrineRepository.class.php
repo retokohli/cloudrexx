@@ -531,7 +531,7 @@ class DoctrineRepository extends DataSource {
         $entity = $logRepo->findBy(
             array(
                 'objectId' => $elementId,
-                'objectClass' => $this->getIdentifier(),
+                'objectClass' => ltrim($this->getIdentifier(), '/'),
             ),
             array(
                 'version' => DESC,
