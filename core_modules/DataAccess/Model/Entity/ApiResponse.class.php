@@ -87,11 +87,6 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
     protected $statusCode = 0;
 
     /**
-     * @var array of additional MetaData to add to API
-     */
-    protected $metaData = array();
-
-    /**
      * @var two dimensional array: $messages[<type>][] = <messageText>
      */
     protected $messages = array();
@@ -109,14 +104,12 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
      * @param array $messages (optional) two dimensional array: $messages[<type>][] = <messageText>
      * @param array $data (optional) Set of data
      */
-    public function __construct($status = '', $messages = array(), $data = array(), $metaData = array()) {
+    public function __construct($status = '', $messages = array(), $data = array()) {
         $this->request = $this->cx->getRequest();
         $this->status = $status;
         $this->messages = $messages;
         $this->data = $data;
-        $this->metaData = $metaData;
     }
-
 
     /**
      * Adds a message
@@ -136,22 +129,6 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
      */
     public function setData($data) {
         $this->data = $data;
-    }
-
-    /**
-     * Set a array with metadata for the API
-     * @param array $metaData
-     */
-    public function setMetadata(array $metaData) {
-        $this->metaData = $metaData;
-    }
-
-    /**
-     * Get the array with the metadata
-     * @return array with metadata
-     */
-    public function getMetadata(): array {
-        return $this->metaData;
     }
 
     /**
@@ -247,15 +224,13 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
     public function jsonSerialize() {
         return array(
             'status' => $this->status,
-            'meta' => array_merge(
-                array('request' => $this->request),
-                array('version' => $this->metaData)
+            'meta' => array(
+                'request' => $this->request,
             ),
             'messages' => $this->messages,
             'data' => (object) $this->data,
         );
     }
-
 
     /**
      * Sets HTTP status code and writes this object to output buffer
