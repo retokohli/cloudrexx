@@ -515,9 +515,6 @@ class DoctrineRepository extends DataSource {
         return is_a($this->getIdentifier(), 'Gedmo\Loggable\Loggable', true);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getCurrentVersion(array $elementId) : int {
         $em = $this->cx->getDb()->getEntityManager();
 
