@@ -308,7 +308,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
             );
             $response->setData($data);
-            $response->setMetadata(array($metaData, $elementId));
+            $response->setMetadata($metaData);
 
             $response->send($outputModule);
         } catch (\Exception $e) {
