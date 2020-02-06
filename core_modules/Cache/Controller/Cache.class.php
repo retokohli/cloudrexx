@@ -289,7 +289,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 'sign',
                 'success',
             ),
-            'Checkout',
             'Crm',
             'Directory',
             'DocSys',
