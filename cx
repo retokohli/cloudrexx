@@ -218,7 +218,6 @@ Available options are:
     --scripts-repo=<repoUrl>        GIT-URL for the scripts repository. Default is https://github.com/Cloudrexx/scripts
     --scripts-branch=<branchName>   GIT branch to check out of the scripts repository. Default is master.
     --skip-database                 Does not initialize database.
-    --no-persist=[<containers>]     Disable persistance of a container. Currently the only value suppored for <containers> is: db
 
 In addition all options of ./cx env config can be used, see ./cx help env config."
                     ;;
