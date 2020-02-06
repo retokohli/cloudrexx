@@ -244,12 +244,10 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
      * @return array Array representation of this object
      */
     public function jsonSerialize() {
+        $this->metaData['request'] = $this->request;
         return array(
             'status' => $this->status,
-            'meta' => array(
-                'request' => $this->request,
-                'version' => $this->metaData,
-            ),
+            'meta' => $this->metaData,
             'messages' => $this->messages,
             'data' => (object) $this->data,
         );
