@@ -154,7 +154,6 @@ class ViewManager
         'forum.html',
         'podcast.html',
         'blog.html',
-        'immo.html',
     );
 
     /**
