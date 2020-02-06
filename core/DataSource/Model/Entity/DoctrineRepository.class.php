@@ -506,6 +506,7 @@ class DoctrineRepository extends DataSource {
             }
         }
     }
+
     /**
      * Check if the DataSource is Gedmo\Loggable.
      *
