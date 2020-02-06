@@ -513,7 +513,7 @@ class DoctrineRepository extends DataSource {
      * @inheritDoc
      */
     public function isVersionable() : bool {
-        return is_a($this->getIdentifier(), 'Gedmo\Loggable\Loggable', true);
+        return is_a($this->getIdentifier(), '\Gedmo\Loggable\Loggable', true);
     }
 
     /**
