@@ -117,7 +117,6 @@ class ApiResponse extends \Cx\Model\Base\EntityBase implements \JsonSerializable
         $this->metaData = $metaData;
     }
 
-
     /**
      * Adds a message
      * @param string $type Message type, one of MESSAGE_TYPE_*
