@@ -338,6 +338,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $response->setMetadata($metaData);
 
             $response->send($outputModule);
+        } catch (\Cx\Core\Error\Model\Entity\ShinyException $e) {
+            $response->setStatus(
+                \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_ERROR
+            );
+            $response->addMessage(
+                \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::MESSAGE_TYPE_ERROR,
+                $e->getMessage()
+            );
+            $response->send($outputModule);
         } catch (\Exception $e) {
             $lang = \Env::get('init')->getComponentSpecificLanguageData(
                 $this->getName(),
