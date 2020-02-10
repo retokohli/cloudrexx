@@ -191,7 +191,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 )
             ) {
                 $response->setStatusCode(409);
-                throw new \Cx\Core\Error\Model\Entity\ShinyException('Conflict');
+                throw new \Cx\Core\Error\Model\Entity\ShinyException(
+                    'The current version of this object is newer than the ' .
+                        'version number you supplied or no version number ' .
+                        'was supplied. Please (re-)fetch first.'
+                );
             }
             
             $order = array();
