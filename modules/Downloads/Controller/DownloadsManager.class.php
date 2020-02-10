@@ -2624,14 +2624,6 @@ class DownloadsManager extends DownloadsLibrary
                 \Permission::checkAccess(143, 'static', true)
                 // the owner has the permission to delete it by himself
                 || ($objDownload->getOwnerId() == $objFWUser->objUser->getId())
-                || $objCategory->getId() && (
-                    // the category isn't protected => everyone is allowed to delete downloads
-                    !$objCategory->getManageFilesAccessId()
-                    // the category is protected => only those who have the sufficent permissions are allowed to delete downloads
-                    || \Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
-                    // the owner of the category is allowed to download its downloads
-                    || $objCategory->getModifyAccessByOwner() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
-                )
             ) {
                 $this->objTemplate->setVariable(
                     array(
