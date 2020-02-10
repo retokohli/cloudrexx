@@ -191,7 +191,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 )
             ) {
                 $response->setStatusCode(409);
-                throw new \BadMethodCallException('Conflict');
+                throw new \Cx\Core\Error\Model\Entity\ShinyException('Conflict');
             }
             
             $order = array();
@@ -253,7 +253,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
             if (!$dataAccess) {
                 $response->setStatusCode(403);
-                throw new \BadMethodCallException('Access denied');
+                throw new \Cx\Core\Error\Model\Entity\ShinyException('Access denied');
             }
             
             if (
@@ -261,7 +261,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 !in_array($arguments[0], $dataAccess->getAllowedOutputMethods())
             ) {
                 $response->setStatusCode(403);
-                throw new \BadMethodCallException('Access denied');
+                throw new \Cx\Core\Error\Model\Entity\ShinyException('Access denied');
             }
             
             if (count($dataAccess->getAccessCondition())) {
