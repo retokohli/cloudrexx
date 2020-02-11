@@ -291,6 +291,9 @@ class SystemComponentBackendController extends Controller {
         }
 
         $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
+        if (empty($isSubNav) && $currentCmd == 'Splash') {
+            $actTxtKey = 'TXT_CORE_CORE_ACT_SPLASH';
+        }
         $actTitle  = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
         $navigation->setVariable(array(
             'HREF' => 'index.php?cmd=' . $this->getName() . $act,
