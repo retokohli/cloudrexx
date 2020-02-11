@@ -27,7 +27,7 @@ function addGenerateButton() {
 
     // Show btn
     const btnText = cx.variables.get('TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN', 'DataAccess/lang');
-    let btn = '<button id="generate-api-key">' + btnText + '</button>';
+    let btn = ' <button id="generate-api-key">' + btnText + '</button>';
     inputField.after(btn);
 
     // Generate API-Key on click.
