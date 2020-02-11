@@ -67,8 +67,8 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $entity->setReadPermission($permissionRead);
         $entity->setWritePermission($permissionWrite);
 
-        parent::$em->persist($permissionRead);
-        parent::$em->persist($permissionWrite);
+        static::$em->persist($permissionRead);
+        static::$em->persist($permissionWrite);
 
         return $entity;
     }
@@ -90,9 +90,9 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $entity->setDataAccess($dataAccesEntity);
         $entity->setReadOnly(true);
 
-        parent::$em->persist($entity);
-        parent::$em->persist($apiKeyEntity);
-        parent::$em->persist($dataAccesEntity);
+        static::$em->persist($entity);
+        static::$em->persist($apiKeyEntity);
+        static::$em->persist($dataAccesEntity);
 
         return $entity;
     }
@@ -104,7 +104,7 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function getDataSource()
     {
-        $dataSource = parent::$em->getRepository(
+        $dataSource = static::$em->getRepository(
             'Cx\Core\DataSource\Model\Entity\DataSource'
         )->find(1);
 
@@ -120,8 +120,8 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function saveDataAccess($entity)
     {
-        parent::$em->persist($entity);
-        parent::$em->flush();
+        static::$em->persist($entity);
+        static::$em->flush();
     }
 
     /**
@@ -132,7 +132,7 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function findDataAccess($id)
     {
-        $repo = parent::$em->getRepository(
+        $repo = static::$em->getRepository(
             'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
         );
 
@@ -147,7 +147,7 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function findDataAccessByName($name)
     {
-        $repo = parent::$em->getRepository(
+        $repo = static::$em->getRepository(
             'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess'
         );
 
@@ -161,7 +161,7 @@ class DataAccessTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function getJsonController()
     {
-        $componentRepo = parent::$em->getRepository(
+        $componentRepo = static::$em->getRepository(
             'Cx\Core\Core\Model\Entity\SystemComponent'
         );
         $componentContoller = $componentRepo->findOneBy(
