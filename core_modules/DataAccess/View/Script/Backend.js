@@ -21,10 +21,6 @@ function generateId (len) {
 function addGenerateButton() {
     let inputField = cx.jQuery('#form-0-apiKey');
 
-    if (undefined === inputField.val() || inputField.val().length) {
-        return;
-    }
-
     // Show btn
     const btnText = cx.variables.get('TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN', 'DataAccess/lang');
     let btn = ' <button id="generate-api-key">' + btnText + '</button>';
@@ -37,6 +33,16 @@ function addGenerateButton() {
         inputField.val(generateId(20));
         cx.jQuery('#generate-api-key').hide();
     });
+
+    // only show the button if there's no content in the input field
+    inputField.keyup(function(event) {
+        if (undefined === inputField.val() || inputField.val().length) {
+            cx.jQuery('#generate-api-key').hide();
+        } else {
+            cx.jQuery('#generate-api-key').show();
+        }
+    });
+    inputField.trigger("keyup");
 }
 
 function initializeConditions() {
