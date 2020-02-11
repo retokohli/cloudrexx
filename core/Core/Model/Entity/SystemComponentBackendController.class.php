@@ -525,6 +525,7 @@ class SystemComponentBackendController extends Controller {
 
     /**
      * Return true here if you want the first tab to be an entity view
+     * @deprecated Use showSplash() instead
      * @return boolean True if overview should be shown, false otherwise
      */
     protected function showOverviewPage() {
