@@ -70,8 +70,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_OUTPUT_METHODS'] = 'Wie die Daten 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ALLOWED_FIELDS'] = 'Sind keine Attribute ausgewählt, sind alle zugelassen.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_USER_GROUPS'] = 'Sind keine Benutzergruppen ausgewählt, sind alle zugelassen.';
 
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'Die ausgewählten Endpunkte müssen beim Aufruf mit diesem API-Schlüssel verifziert werden.';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'Der API-Schlüssel kann auf die ausgewählten Endpunkte nur lesend zugreifen.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'Der API-Schlüssel gewährt Lese- und Schreibberechtigungen auf diese Endpunkte.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'Der API-Schlüssel gewährt ausschliesslich Leseberechtigungen auf diese Endpunkte.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'] = 'Generiere API-Schlüssel';
 
