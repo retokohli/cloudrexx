@@ -547,7 +547,7 @@ class SystemComponentBackendController extends Controller {
             $this->getNamespace() . '\\Model\\Entity\\' . $entityClassName
         );
         $entity = $repo->findOneBy(array());
-        return (bool) $entity;
+        return !$entity;
     }
 
     /**
