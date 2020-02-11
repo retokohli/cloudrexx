@@ -58,7 +58,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Get json controllers of DataAccess
      * @inheritDoc
      */
     public function getControllersAccessableByJson() {
@@ -66,7 +65,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Register event listeners for DataAccess
      * @inheritDoc
      */
     public function registerEventListeners()
