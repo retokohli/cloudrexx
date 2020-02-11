@@ -35,7 +35,7 @@
  * @package cloudrexx
  * @subpackage core_modules_dataaccess
  */
-$_ARRAYLANG['TXT_CORE_DATA_ACCESS'] = 'API-Schlüssel';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS'] = 'API-Schlüssel';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'Der Enpdunkt konnte nicht gefunden werden.';
