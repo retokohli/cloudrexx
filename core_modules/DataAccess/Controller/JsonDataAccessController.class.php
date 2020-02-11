@@ -145,9 +145,11 @@ class JsonDataAccessController
             ->getControllerClasses();
 
         foreach ($controllerClasses as $controller) {
-            if (strpos($controller, $delimiter)) {
-                $outputMethods[] = strtolower(explode($delimiter, $controller)[0]);
+            $pos = strpos($controller, $delimiter);
+            if ($pos === false) {
+                continue;
             }
+            $outputMethods[] = strtolower(substr($controller, 0, $pos));
         }
 
         return $outputMethods;
