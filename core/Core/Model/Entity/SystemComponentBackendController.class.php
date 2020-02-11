@@ -521,4 +521,15 @@ class SystemComponentBackendController extends Controller {
     protected function showOverviewPage() {
         return true;
     }
+
+    /**
+     * Returns whether to show the splash screen or not. Every module "should"
+     * have an introductionary splash screen. This method can be used to define
+     * conditions on when to show it.
+     * @see hasNoEntityData($entityClassName)
+     * @return bool True if splash is to be shown.
+     */
+    protected function showSplash(): bool {
+        return false;
+    }
 }
