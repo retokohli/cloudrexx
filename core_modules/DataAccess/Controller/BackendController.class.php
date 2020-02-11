@@ -91,6 +91,7 @@ class BackendController
                 $options['functions']['sorting'] = false;
                 $options['fields'] = array(
                     'id' => array(
+                        'showOverview' => false,
                         'table' => array(
                             'attributes' => array(
                                 'class' => 'data-access-id'
@@ -98,7 +99,6 @@ class BackendController
                         )
                     ),
                     'dataAccessApiKeys' => array(
-                        'showOverview' => false,
                         'formfield' => array(
                             'adapter' => 'DataAccess',
                             'method' => 'getDataAccessSearch'
