@@ -533,6 +533,24 @@ class SystemComponentBackendController extends Controller {
     }
 
     /**
+     * Tells whether the given entity class name has no stored entities
+     *
+     * This method is intended for use in showSplash().
+     * $entityClassName will be prepended by
+     * \Cx\<component_type>\<component_name>\Model\Entity\
+     * @param string $entityClassName Entity class name without obvious part
+     * @return bool True if entity has no data, false otherwise
+     */
+    protected function hasNoEntityData($entityClassName): bool {
+        $em = $this->cx->getDb()->getEntityManager();
+        $repo = $em->getRepository(
+            $this->getNamespace() . '\\Model\\Entity\\' . $entityClassName
+        );
+        $entity = $repo->findOneBy(array());
+        return (bool) $entity;
+    }
+
+    /**
      * Returns whether to show the splash screen or not. Every module "should"
      * have an introductionary splash screen. This method can be used to define
      * conditions on when to show it.
