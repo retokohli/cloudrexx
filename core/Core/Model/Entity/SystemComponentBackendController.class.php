@@ -163,6 +163,12 @@ class SystemComponentBackendController extends Controller {
         $navigation->loadTemplateFile('Navigation.html');
 
         $commands = $this->getCommands();
+        if ($this->showSplash()) {
+            $commands = array_merge(
+                array('Splash' => array('permission' => $this->defaultPermission)),
+                $commands
+            );
+        }
         if ($this->showOverviewPage()) {
             $commands = array_merge(
                 array('' => array('permission' => $this->defaultPermission)),
