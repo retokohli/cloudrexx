@@ -414,7 +414,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         $objEntries = $objDatabase->Execute($query);
 
-        $totalRecords =$objDatabase->Execute("SELECT FOUND_ROWS() AS found_rows");
+        $this->recordCount = $objDatabase->Execute(
+            'SELECT FOUND_ROWS() AS found_rows'
+        )->fields['found_rows'];
 
         if ($objEntries !== false) {
             while (!$objEntries->EOF) {
@@ -449,7 +451,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                 $objEntries->MoveNext();
             }
-            $this->recordCount = $totalRecords->fields['found_rows'];
         }
 
         $this->setCurrentFetchedEntryDataObject($this);
