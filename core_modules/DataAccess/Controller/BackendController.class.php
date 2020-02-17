@@ -88,6 +88,7 @@ class BackendController
 
         switch ($entityClassName) {
             case 'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey':
+                $options['functions']['copy'] = true;
                 $options['fields'] = array(
                     'id' => array(
                         'showOverview' => false,
