@@ -45,6 +45,16 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  * @subpackage core_modules_dataaccess
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+
+    /**
+     * @inheritdoc
+     */
+    protected $enduserDocumentationUrl = 'https://www.cloudrexx.info/api';
+
+    /**
+     * @inheritdoc
+     */
+    protected $developerDocumentationUrl = 'https://wiki.cloudrexx.com/RESTful_API';
     
     /**
      * Returns all Controller class names for this component (except this)
