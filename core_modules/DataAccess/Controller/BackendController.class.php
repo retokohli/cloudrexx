@@ -88,7 +88,6 @@ class BackendController
 
         switch ($entityClassName) {
             case 'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey':
-                $options['functions']['sorting'] = false;
                 $options['fields'] = array(
                     'id' => array(
                         'showOverview' => false,
