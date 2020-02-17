@@ -36,6 +36,9 @@
  * @subpackage core_modules_dataaccess
  */
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS'] = 'RESTful API';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS'] = 'RESTful API';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_DESCRIPTION'] = 'Cloudrexx RESTful API allows read and write access to data from third-party systems.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_INTRODUCTION'] = 'The different types of data can be accessed using endpoints. Access is granted using API keys. Each API key can grant read and/or write access to one or more endpoints. In order to begin using the API create an API key.<br /><br /><a href="/cadmin/DataAccess/ApiKey?add=1" class="button">Create API key</a>';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The endpoint could not be found.';

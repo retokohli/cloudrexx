@@ -237,4 +237,12 @@ class BackendController
     {
         return false;
     }
+
+    /**
+     * Shows splash screen if there's no API key
+     * @inheritdoc
+     */
+    protected function showSplash(): bool {
+        return $this->hasNoEntityData('ApiKey');
+    }
 }
