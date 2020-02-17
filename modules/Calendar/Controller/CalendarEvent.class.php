@@ -2364,14 +2364,15 @@ class CalendarEvent extends CalendarLibrary
     }
 
     /**
-     * Loads the location fields from the selected media directory entry
+     * Loads the location or host data from the specified MediaDir entry
      *
-     * @param integer $intMediaDirId  media directory Entry id
-     * @param string  $type           place type
-     *                                availble options are place or host
+     * @param integer $intMediaDirId  ID of the MediaDir entry
+     * @param string  $type           Set to 'place' to load entry as location
+     *                                data. Otherwise set to 'host' to load
+     *                                entry as host data.
      * @return null   it loads the place values based on the media directory Entry id and type
      */
-    function loadPlaceFromMediadir($intMediaDirId = 0, $type = 'place')
+    public function loadPlaceFromMediadir($intMediaDirId = 0, $type = 'place')
     {
         $place         = '';
         $place_street  = '';
