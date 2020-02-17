@@ -255,7 +255,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
     /**
      * Returns a list with IDs of all visible levels that contain published data
      *
-     * Published data is identify as levels having any of the following options
+     * Published data is identified as levels having any of the following options
      * set to activated:
      * - levelShowEntries
      * - levelShowCategories

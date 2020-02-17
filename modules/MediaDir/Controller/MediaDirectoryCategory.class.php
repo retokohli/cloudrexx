@@ -227,7 +227,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
      * Returns a list with IDs of all visible categories that contain published
      * data
      *
-     * Published data is identify as categories having any of the following
+     * Published data is identified as categories having any of the following
      * options set to activated:
      * - categoryShowEntries
      * - categoryShowSubcategories
