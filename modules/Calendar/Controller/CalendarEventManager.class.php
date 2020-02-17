@@ -994,9 +994,14 @@ class CalendarEventManager extends CalendarLibrary
         } elseif (
             // hide location template-block in case no mediadir entry has been
             // selected
-            $this->arrSettings['placeData'] > 1 &&
-            $objEvent->locationType == 2 &&
-            !$objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place')
+            $this->arrSettings['placeData'] > 1 && (
+                // event has not been converted to new location type after
+                // option placeData has been changed
+                $objEvent->locationType == 1 || (
+                    $objEvent->locationType == 2 &&
+                    !$objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place')
+                )
+            )
         ) {
             $objTpl->hideBlock('calendarEventAddress');
         // parse location template-block
@@ -1137,9 +1142,14 @@ class CalendarEventManager extends CalendarLibrary
         } elseif (
             // hide host template-block in case no mediadir entry has been
             // selected
-            $this->arrSettings['placeDataHost'] > 1 &&
-            $objEvent->hostType == 2 &&
-            !$objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host')
+            $this->arrSettings['placeDataHost'] > 1 && (
+                // event has not been converted to new host type after
+                // option placeDataHost has been changed
+                $objEvent->hostType == 1 || (
+                    $objEvent->hostType == 2 &&
+                    !$objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host')
+                )
+            )
         ) {
             $objTpl->hideBlock('calendarEventHost');
         // parse host template-block
