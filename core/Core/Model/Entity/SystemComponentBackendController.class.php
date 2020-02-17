@@ -534,6 +534,33 @@ class SystemComponentBackendController extends Controller {
     }
 
     /**
+     * Tells whether the given entity class name has stored entities
+     *
+     * This method is intended for use in showSplash().
+     * Instead of the fully qualified class name the entity name can be specified
+     * relative to the component's entity namespace. If $entityClassName does
+     * not start with component's entity namespace it is prepended. Therefore
+     * only entities within this component's entity namespace can be checked
+     * with this method.
+     * The component's entity namespace is:
+     * \Cx\<component_type>\<component_name>\Model\Entity\
+     * @param string $entityClassName Fully qualified entity class name or according to description
+     * @return bool True if entity has data, false otherwise
+     */
+    protected function hasEntityData($entityClassName): bool {
+        $namespacePrefix = $this->getNamespace() . '\\Model\\Entity\\';
+        if (strpos($entityClassName, $namespacePrefix) === false) {
+            $entityClassName = $namespacePrefix . $entityClassName;
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $repo = $em->getRepository(
+            $entityClassName
+        );
+        $entity = $repo->findOneBy(array());
+        return (bool) $entity;
+    }
+
+    /**
      * Tells whether the given entity class name has no stored entities
      *
      * This method is intended for use in showSplash().
@@ -548,16 +575,7 @@ class SystemComponentBackendController extends Controller {
      * @return bool True if entity has no data, false otherwise
      */
     protected function hasNoEntityData($entityClassName): bool {
-        $namespacePrefix = $this->getNamespace() . '\\Model\\Entity\\';
-        if (strpos($entityClassName, $namespacePrefix) === false) {
-            $entityClassName = $namespacePrefix . $entityClassName;
-        }
-        $em = $this->cx->getDb()->getEntityManager();
-        $repo = $em->getRepository(
-            $entityClassName
-        );
-        $entity = $repo->findOneBy(array());
-        return !$entity;
+        return !$this->hasEntityData($entityClassName);
     }
 
     /**
