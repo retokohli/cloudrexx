@@ -232,6 +232,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objTemplate->hideBlock($block);
                     continue;
                 }
+
+                // extend filter by additional config from url arguments
                 $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
                 $categoryId = 0;
                 if (isset($requestParams['cid'])) {
@@ -241,6 +243,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (isset($requestParams['lid'])) {
                     $levelId = intval($requestParams['lid']);
                 }
+
+                // extend filter by additional config from functional
+                // placeholders from filter block
                 $config = MediaDirectoryLibrary::fetchMediaDirListConfigFromTemplate(
                     $block,
                     $objTemplate,
@@ -248,7 +253,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $categoryId,
                     $levelId
                 );
+
+                // ensure filter from filter-block has highest precedence
                 $config['filter'][$objectType] = $objectId;
+
+                // finally, fill the specific filter block with its published
+                // entries
                 $objMediadir->parseEntries($objTemplate, $block, $config);
             }
 
