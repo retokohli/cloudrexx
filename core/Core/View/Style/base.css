@@ -1952,6 +1952,7 @@ a.cke_dialog_ui_button_ok:hover {
 #splash-text {
     max-width: 500px;
     float: left;
+    overflow-x: hidden;
 }
 #splash-text h1 {
     float: none;
