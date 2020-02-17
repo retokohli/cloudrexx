@@ -85,6 +85,7 @@ class JsonDataAccessController
             'getDataAccessReadPermissionId' => $this->getDefaultPermissions(),
             'getDataAccessWritePermissionId' => $this->getDefaultPermissions(),
             'getJsonControllerMethods' => $this->getDefaultPermissions(),
+            'getValue' => $this->getDefaultPermissions(),
         );
     }
 
@@ -858,6 +859,22 @@ class JsonDataAccessController
         );
 
         return $this->getSearch($name, $data);
+    }
+
+    /**
+     * Value callback for ApiKey. Empties the field for copy form.
+     *
+     * @param array $args Arguments for valueCallback
+     * @return string Value for ApiKey field
+     */
+    public function getValue($args) {
+        if (!isset($args['response'])) {
+            return $args['fieldvalue'];
+        }
+        if (!$args['response']->getRequest()->hasParam('copy')) {
+            return $args['fieldvalue'];
+        }
+        return '';
     }
 
     /**

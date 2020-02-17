@@ -98,6 +98,12 @@ class BackendController
                             )
                         )
                     ),
+                    'apiKey' => array(
+                        'valueCallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'getValue',
+                        ),
+                    ),
                     'dataAccessApiKeys' => array(
                         'formfield' => array(
                             'adapter' => 'DataAccess',
