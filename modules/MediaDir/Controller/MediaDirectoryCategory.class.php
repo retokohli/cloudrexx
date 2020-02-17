@@ -223,6 +223,32 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         }
     }
 
+    /**
+     * Returns a list with IDs of all visible categories
+     *
+     * @return  array   List of IDs of categories
+     */
+    public static function getIdsWithPublishedData() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+        $result = $db->Execute('
+            SELECT `id`
+            FROM `' . DBPREFIX . 'module_mediadir_categories`
+            WHERE `active` = 1
+        ');
+        if (!$result || $result->EOF) {
+            return array();
+        }
+
+        $ids = array();
+        while (!$result->EOF) {
+            $ids[] = $result->fields['id'];
+            $result->MoveNext();
+        }
+
+        return $ids;
+    }
+
     function listCategories($objTpl, $intView, $intCategoryId=null, $arrParentIds=null, $intEntryId=null, $arrExistingBlocks=null, $intStartLevel=1, $cmd = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;

@@ -252,6 +252,32 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         }
     }
 
+    /**
+     * Returns a list with IDs of all visible levels
+     *
+     * @return  array   List of IDs of levels
+     */
+    public static function getIdsWithPublishedData() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+        $result = $db->Execute('
+            SELECT `id`
+            FROM `' . DBPREFIX . 'module_mediadir_levels`
+            WHERE `active` = 1
+        ');
+        if (!$result || $result->EOF) {
+            return array();
+        }
+
+        $ids = array();
+        while (!$result->EOF) {
+            $ids[] = $result->fields['id'];
+            $result->MoveNext();
+        }
+
+        return $ids;
+    }
+
     function listLevels($objTpl, $intView, $intLevelId=null, $arrParentIds=null, $intEntryId=null, $arrExistingBlocks=null, $strClass=null, $cmd = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
