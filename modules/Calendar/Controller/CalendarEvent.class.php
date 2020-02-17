@@ -2422,46 +2422,48 @@ class CalendarEvent extends CalendarLibrary
         $objInputfields = new \Cx\Modules\MediaDir\Controller\MediaDirectoryInputfield($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'],false,$objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus'], 'MediaDir');
 
         foreach ($objInputfields->arrInputfields as $arrInputfield) {
-            if(!empty($arrInputfield['type'])) {
-                $strType = $arrInputfield['type_name'];
-                $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield".ucfirst($strType);
-                try {
-                    $objInputfield = \Cx\Modules\MediaDir\Controller\safeNew($strInputfieldClass,'MediaDir');
+            if (empty($arrInputfield['type'])) {
+                continue;
+            }
 
-                    if(intval($arrInputfield['type_multi_lang']) == 1) {
-                        $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, $objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
-                    } else {
-                        $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, null);
-                    }
+            $strType = $arrInputfield['type_name'];
+            $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield".ucfirst($strType);
+            try {
+                $objInputfield = \Cx\Modules\MediaDir\Controller\safeNew($strInputfieldClass,'MediaDir');
 
-                    switch ($arrInputfield['context_type']) {
-                        case 'title':
-                            $place = end($arrInputfieldContent);
-                            break;
-                        case 'address':
-                            $place_street = end($arrInputfieldContent);
-                            break;
-                        case 'zip':
-                            $place_zip = end($arrInputfieldContent);
-                            break;
-                        case 'city':
-                            $place_city = end($arrInputfieldContent);
-                            break;
-                        case 'country':
-                            $place_country = end($arrInputfieldContent);
-                            break;
-                        case 'website':
-                            $place_website = end($arrInputfieldContent);
-                            break;
-                        case 'phone':
-                            $place_phone = end($arrInputfieldContent);
-                            break;
-                    }
-
-                } catch (Exception $error) {
-                    \DBG::dump($error->getMessage());
-                    return false;
+                if(intval($arrInputfield['type_multi_lang']) == 1) {
+                    $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, $objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
+                } else {
+                    $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, null);
                 }
+
+                switch ($arrInputfield['context_type']) {
+                    case 'title':
+                        $place = end($arrInputfieldContent);
+                        break;
+                    case 'address':
+                        $place_street = end($arrInputfieldContent);
+                        break;
+                    case 'zip':
+                        $place_zip = end($arrInputfieldContent);
+                        break;
+                    case 'city':
+                        $place_city = end($arrInputfieldContent);
+                        break;
+                    case 'country':
+                        $place_country = end($arrInputfieldContent);
+                        break;
+                    case 'website':
+                        $place_website = end($arrInputfieldContent);
+                        break;
+                    case 'phone':
+                        $place_phone = end($arrInputfieldContent);
+                        break;
+                }
+
+            } catch (Exception $error) {
+                \DBG::dump($error->getMessage());
+                return false;
             }
         }
 
