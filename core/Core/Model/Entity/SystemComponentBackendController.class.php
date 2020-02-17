@@ -537,9 +537,14 @@ class SystemComponentBackendController extends Controller {
      * Tells whether the given entity class name has no stored entities
      *
      * This method is intended for use in showSplash().
-     * $entityClassName will be prepended by the component's entity namespace:
+     * Instead of the fully qualified class name the entity name can be specified
+     * relative to the component's entity namespace. If $entityClassName does
+     * not start with component's entity namespace it is prepended. Therefore
+     * only entities within this component's entity namespace can be checked
+     * with this method.
+     * The component's entity namespace is:
      * \Cx\<component_type>\<component_name>\Model\Entity\
-     * @param string $entityClassName Entity class name without component entity namespace
+     * @param string $entityClassName Fully qualified entity class name or according to description
      * @return bool True if entity has no data, false otherwise
      */
     protected function hasNoEntityData($entityClassName): bool {
