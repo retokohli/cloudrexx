@@ -253,7 +253,12 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
     }
 
     /**
-     * Returns a list with IDs of all visible levels
+     * Returns a list with IDs of all visible levels that contain published data
+     *
+     * Published data is identified as levels having any of the following options
+     * set to activated:
+     * - levelShowEntries
+     * - levelShowCategories
      *
      * @return  array   List of IDs of levels
      */
@@ -264,6 +269,10 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             SELECT `id`
             FROM `' . DBPREFIX . 'module_mediadir_levels`
             WHERE `active` = 1
+            AND (
+                `show_categories` = 1 OR
+                `show_entries` = 1
+            )
         ');
         if (!$result || $result->EOF) {
             return array();

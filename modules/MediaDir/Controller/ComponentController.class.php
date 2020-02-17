@@ -189,7 +189,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // hold information if a specific block has been parsed
             $foundOne = false;
 
-            // fetch IDs of forms and categories
+            // fetch IDs of forms and categories having published data that
+            // could be parsed
             $objects = array(
                 'form' => MediaDirectoryForm::getIdsWithPublishedData(),
                 'category' => MediaDirectoryCategory::getIdsWithPublishedData(),

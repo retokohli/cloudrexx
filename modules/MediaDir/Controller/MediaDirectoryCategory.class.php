@@ -224,7 +224,13 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
     }
 
     /**
-     * Returns a list with IDs of all visible categories
+     * Returns a list with IDs of all visible categories that contain published
+     * data
+     *
+     * Published data is identified as categories having any of the following
+     * options set to activated:
+     * - categoryShowEntries
+     * - categoryShowSubcategories
      *
      * @return  array   List of IDs of categories
      */
@@ -235,6 +241,10 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             SELECT `id`
             FROM `' . DBPREFIX . 'module_mediadir_categories`
             WHERE `active` = 1
+            AND (
+                `show_subcategories` = 1 OR
+                `show_entries` = 1
+            )
         ');
         if (!$result || $result->EOF) {
             return array();
