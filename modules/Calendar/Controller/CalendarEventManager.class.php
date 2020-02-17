@@ -970,8 +970,28 @@ class CalendarEventManager extends CalendarLibrary
             );
         }
 
-        if (($this->arrSettings['placeData'] == 1) && $objEvent->place == '' && $objEvent->place_street == '' && $objEvent->place_zip == '' && $objEvent->place_city == '' && $objEvent->place_country == '' && $objEvent->place_website == '' && $objEvent->place_phone == '') {
+        // hide location template-block in case no location data has been set
+        if (
+            // manual entry
+            (
+                // option set to: manual entry only
+                $this->arrSettings['placeData'] == 1 || (
+                    // option set to: manual entry and mediadir selection
+                    $this->arrSettings['placeData'] == 3 &&
+                    // event has manual entry selected
+                    $objEvent->locationType == 1
+                )
+            ) &&
+            $objEvent->place == '' &&
+            $objEvent->place_street == '' &&
+            $objEvent->place_zip == '' &&
+            $objEvent->place_city == '' &&
+            $objEvent->place_country == '' &&
+            $objEvent->place_website == '' &&
+            $objEvent->place_phone == ''
+        ) {
             $objTpl->hideBlock('calendarEventAddress');
+        // parse location template-block
         } else {
             if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
                 $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
@@ -1086,8 +1106,28 @@ class CalendarEventManager extends CalendarLibrary
             $objTpl->parse('calendarEventAddress');
         }
 
-        if(($this->arrSettings['placeDataHost'] == 1) && $objEvent->org_name == '' && $objEvent->org_street == '' && $objEvent->org_zip == '' && $objEvent->org_city == '' && $objEvent->org_country == '' && $objEvent->org_website == '' && $objEvent->org_phone == '') {
+        // hide host template-block in case no host data has been set
+        if (
+            // manual entry
+            (
+                // option set to: manual entry only
+                $this->arrSettings['placeDataHost'] == 1 || (
+                    // option set to: manual entry and mediadir selection
+                    $this->arrSettings['placeDataHost'] == 3 &&
+                    // event has manual entry selected
+                    $objEvent->hostType == 1
+                )
+            ) &&
+            $objEvent->org_name == '' &&
+            $objEvent->org_street == '' &&
+            $objEvent->org_zip == '' &&
+            $objEvent->org_city == '' &&
+            $objEvent->org_country == '' &&
+            $objEvent->org_website == '' &&
+            $objEvent->org_phone == ''
+        ) {
             $objTpl->hideBlock('calendarEventHost');
+        // parse host template-block
         } else {
             if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
                 $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
