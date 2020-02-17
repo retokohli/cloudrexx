@@ -543,9 +543,13 @@ class SystemComponentBackendController extends Controller {
      * @return bool True if entity has no data, false otherwise
      */
     protected function hasNoEntityData($entityClassName): bool {
+        $namespacePrefix = $this->getNamespace() . '\\Model\\Entity\\';
+        if (strpos($entityClassName, $namespacePrefix) === false) {
+            $entityClassName = $namespacePrefix . $entityClassName;
+        }
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $em->getRepository(
-            $this->getNamespace() . '\\Model\\Entity\\' . $entityClassName
+            $entityClassName
         );
         $entity = $repo->findOneBy(array());
         return !$entity;
