@@ -426,6 +426,37 @@ class SystemComponentBackendController extends Controller {
                         break;
                 }
                 break;
+            case 'Splash':
+                $baseFileName = $this->getDirectory();
+                foreach (array('icon', 'introduction_image') as $imageKey) {
+                    $imageKeyCC = str_replace('_', '', ucwords($imageKey, '_'));
+                    $fileName = $this->getDirectory() . '/View/Media/' . $imageKeyCC . '.png';
+                    if (!file_exists($fileName)) {
+                        $template->hideBlock('component_' . strtolower($imageKey));
+                        continue;
+                    }
+                    $webFileName = $this->getDirectory(false, true) . '/View/Media/' . $imageKeyCC . '.png';
+                    $template->setVariable(
+                        'COMPONENT_' . strtoupper($imageKey) . '_SRC',
+                        $webFileName
+                    );
+                    $template->touchBlock('component_' . strtolower($imageKey));
+                }
+                if (
+                    !empty($this->getEnduserDocumentationUrl()) ||
+                    !empty($this->getDeveloperDocumentationUrl())
+                ) {
+                    $template->touchBlock('component_docs');
+                    $template->setVariable(array(
+                        'COMPONENT_ENDUSER_DOCUMENTATION_URL' =>
+                            $this->getEnduserDocumentationUrl(),
+                        'COMPONENT_DEVELOPER_DOCUMENTATION_URL' =>
+                            $this->getDeveloperDocumentationUrl(),
+                    ));
+                } else {
+                    $template->hideBlock('component_docs');
+                }
+                break;
             case '':
             default:
                 if ($template->blockExists('overview')) {
