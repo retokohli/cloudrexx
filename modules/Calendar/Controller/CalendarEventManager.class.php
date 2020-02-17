@@ -991,10 +991,17 @@ class CalendarEventManager extends CalendarLibrary
             $objEvent->place_phone == ''
         ) {
             $objTpl->hideBlock('calendarEventAddress');
+        } elseif (
+            // hide location template-block in case no mediadir entry has been
+            // selected
+            $this->arrSettings['placeData'] > 1 &&
+            $objEvent->locationType == 2 &&
+            !$objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place')
+        ) {
+            $objTpl->hideBlock('calendarEventAddress');
         // parse location template-block
         } else {
             if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
                 list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
             } else {
                 $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
@@ -1127,10 +1134,17 @@ class CalendarEventManager extends CalendarLibrary
             $objEvent->org_phone == ''
         ) {
             $objTpl->hideBlock('calendarEventHost');
+        } elseif (
+            // hide host template-block in case no mediadir entry has been
+            // selected
+            $this->arrSettings['placeDataHost'] > 1 &&
+            $objEvent->hostType == 2 &&
+            !$objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host')
+        ) {
+            $objTpl->hideBlock('calendarEventHost');
         // parse host template-block
         } else {
             if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
                 list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');
             } else {
                 $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
