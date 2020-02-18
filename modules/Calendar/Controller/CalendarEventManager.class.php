@@ -1563,16 +1563,6 @@ class CalendarEventManager extends CalendarLibrary
             }
             $picThumb = file_exists(\Env::get('cx')->getWebsitePath()."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
 
-            $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
-            $placeLinkSource   = $objEvent->place_link;
-            if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
-                list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
-            }
-
-            $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
-            $placeWebsiteSource= $objEvent->place_website;
-
             $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
             $hostLinkSource   = $objEvent->org_link;
             if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
@@ -1680,6 +1670,16 @@ class CalendarEventManager extends CalendarLibrary
                     $objTpl->touchBlock('event_no_detail_view');
                 }
             }
+
+            $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
+            $placeLinkSource   = $objEvent->place_link;
+            if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
+                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
+                list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
+            }
+
+            $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
+            $placeWebsiteSource= $objEvent->place_website;
 
             $hasPlaceMap = !empty($objEvent->place_map) && file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
             if ($hasPlaceMap) {
