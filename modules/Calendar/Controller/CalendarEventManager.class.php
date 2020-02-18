@@ -1597,6 +1597,7 @@ class CalendarEventManager extends CalendarLibrary
 
             // hide location template-block in case no location data has been set
             if (!$objEvent->loadLocationData()) {
+                $objTpl->hideBlock('event_location');
                 $objTpl->hideBlock('event_location_website');
                 $objTpl->hideBlock('event_location_link');
                 $objTpl->hideBlock('event_location_phone');
@@ -1669,10 +1670,13 @@ class CalendarEventManager extends CalendarLibrary
                         $objTpl->hideBlock('event_location_map');
                     }
                 }
+
+                $objTpl->touchBlock('event_location');
             }
 
             // hide host template-block in case no host data has been set
             if (!$objEvent->loadHostData()) {
+                $objTpl->hideBlock('event_host');
                 $objTpl->hideBlock('event_host_website');
                 $objTpl->hideBlock('event_host_link');
                 $objTpl->hideBlock('event_host_phone');
@@ -1735,6 +1739,8 @@ class CalendarEventManager extends CalendarLibrary
                         $objTpl->touchBlock('event_host_email');
                     }
                 }
+
+                $objTpl->touchBlock('event_host');
             }
 
             if($objInit->mode == 'backend') {
