@@ -1610,7 +1610,6 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
                 $this->moduleLangVar.'_EVENT_PRIORITY'       => $priority,
                 $this->moduleLangVar.'_EVENT_PRIORITY_IMG'   => $priorityImg,
-                $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
                 $this->moduleLangVar.'_EVENT_DESCRIPTION'    => $objEvent->description,
                 $this->moduleLangVar.'_EVENT_SHORT_DESCRIPTION' => $parts[0].$points,
                 $this->moduleLangVar.'_EVENT_LINK'           => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
@@ -1691,6 +1690,7 @@ class CalendarEventManager extends CalendarLibrary
 
             $map_thumb_name = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
             $objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
                 $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->place,
                 $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'       => $objEvent->place_street,
                 $this->moduleLangVar.'_EVENT_LOCATION_ZIP'           => $objEvent->place_zip,
