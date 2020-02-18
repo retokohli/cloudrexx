@@ -1671,60 +1671,69 @@ class CalendarEventManager extends CalendarLibrary
                 }
             }
 
-            $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
-            $hostLinkSource   = $objEvent->org_link;
-            if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
-                list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');
-            }
-
-            $hostWebsite      = $objEvent->org_website != '' ? "<a href='".$objEvent->org_website."' target='_blank' >".$objEvent->org_website."</a>" : "";
-            $hostWebsiteSource= $objEvent->org_website;
-
-            $objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_HOST'              => $objEvent->org_name,
-                $this->moduleLangVar.'_EVENT_HOST_ADDRESS'      => $objEvent->org_street,
-                $this->moduleLangVar.'_EVENT_HOST_ZIP'          => $objEvent->org_zip,
-                $this->moduleLangVar.'_EVENT_HOST_CITY'         => $objEvent->org_city,
-                $this->moduleLangVar.'_EVENT_HOST_COUNTRY'      => $objEvent->org_country,
-                $this->moduleLangVar.'_EVENT_HOST_WEBSITE'      => $hostWebsite,
-                $this->moduleLangVar.'_EVENT_HOST_WEBSITE_SOURCE'=> $hostWebsiteSource,
-                $this->moduleLangVar.'_EVENT_HOST_LINK'         => $hostLink,
-                $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $hostLinkSource,
-                $this->moduleLangVar.'_EVENT_HOST_PHONE'        => $objEvent->org_phone,
-                $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
-                $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->org_email,
-            ));
-
-            if ($objTpl->blockExists('event_host_website')) {
-                if (empty($hostWebsite)) {
-                    $objTpl->hideBlock('event_host_website');
-                } else {
-                    $objTpl->touchBlock('event_host_website');
+            // hide host template-block in case no host data has been set
+            if (!$objEvent->loadHostData()) {
+                $objTpl->hideBlock('event_host_website');
+                $objTpl->hideBlock('event_host_link');
+                $objTpl->hideBlock('event_host_phone');
+                $objTpl->hideBlock('event_host_email');
+            // parse host template-block
+            } else {
+                $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
+                $hostLinkSource   = $objEvent->org_link;
+                if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
+                    $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
+                    list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');
                 }
-            }
 
-            if ($objTpl->blockExists('event_host_link')) {
-                if (empty($hostLink)) {
-                    $objTpl->hideBlock('event_host_link');
-                } else {
-                    $objTpl->touchBlock('event_host_link');
+                $hostWebsite      = $objEvent->org_website != '' ? "<a href='".$objEvent->org_website."' target='_blank' >".$objEvent->org_website."</a>" : "";
+                $hostWebsiteSource= $objEvent->org_website;
+
+                $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_EVENT_HOST'              => $objEvent->org_name,
+                    $this->moduleLangVar.'_EVENT_HOST_ADDRESS'      => $objEvent->org_street,
+                    $this->moduleLangVar.'_EVENT_HOST_ZIP'          => $objEvent->org_zip,
+                    $this->moduleLangVar.'_EVENT_HOST_CITY'         => $objEvent->org_city,
+                    $this->moduleLangVar.'_EVENT_HOST_COUNTRY'      => $objEvent->org_country,
+                    $this->moduleLangVar.'_EVENT_HOST_WEBSITE'      => $hostWebsite,
+                    $this->moduleLangVar.'_EVENT_HOST_WEBSITE_SOURCE'=> $hostWebsiteSource,
+                    $this->moduleLangVar.'_EVENT_HOST_LINK'         => $hostLink,
+                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $hostLinkSource,
+                    $this->moduleLangVar.'_EVENT_HOST_PHONE'        => $objEvent->org_phone,
+                    $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->org_email,
+                ));
+
+                if ($objTpl->blockExists('event_host_website')) {
+                    if (empty($hostWebsite)) {
+                        $objTpl->hideBlock('event_host_website');
+                    } else {
+                        $objTpl->touchBlock('event_host_website');
+                    }
                 }
-            }
 
-            if ($objTpl->blockExists('event_host_phone')) {
-                if (empty($objEvent->org_phone)) {
-                    $objTpl->hideBlock('event_host_phone');
-                } else {
-                    $objTpl->touchBlock('event_host_phone');
+                if ($objTpl->blockExists('event_host_link')) {
+                    if (empty($hostLink)) {
+                        $objTpl->hideBlock('event_host_link');
+                    } else {
+                        $objTpl->touchBlock('event_host_link');
+                    }
                 }
-            }
 
-            if ($objTpl->blockExists('event_host_email')) {
-                if (empty($objEvent->org_email)) {
-                    $objTpl->hideBlock('event_host_email');
-                } else {
-                    $objTpl->touchBlock('event_host_email');
+                if ($objTpl->blockExists('event_host_phone')) {
+                    if (empty($objEvent->org_phone)) {
+                        $objTpl->hideBlock('event_host_phone');
+                    } else {
+                        $objTpl->touchBlock('event_host_phone');
+                    }
+                }
+
+                if ($objTpl->blockExists('event_host_email')) {
+                    if (empty($objEvent->org_email)) {
+                        $objTpl->hideBlock('event_host_email');
+                    } else {
+                        $objTpl->touchBlock('event_host_email');
+                    }
                 }
             }
 
