@@ -55,8 +55,7 @@ class BackendController
     {
         return array(
             'ApiKey',
-            // DataAccess is removed, so this page can't be edited by users
-            //'DataAccess',
+            'DataAccess'
         );
     }
 
@@ -140,8 +139,6 @@ class BackendController
                 );
                 break;
             case 'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess':
-                // return to ensure, the page can't be entered with known link
-                return;
                 $options['functions']['add'] = false;
                 $options['functions']['delete'] = false;
                 $options['functions']['sorting'] = false;
