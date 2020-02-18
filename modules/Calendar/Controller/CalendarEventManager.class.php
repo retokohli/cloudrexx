@@ -1573,15 +1573,15 @@ class CalendarEventManager extends CalendarLibrary
             $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
             $placeWebsiteSource= $objEvent->place_website;
 
-            $hostWebsite      = $objEvent->org_website != '' ? "<a href='".$objEvent->org_website."' target='_blank' >".$objEvent->org_website."</a>" : "";
-            $hostWebsiteSource= $objEvent->org_website;
-
             $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
             $hostLinkSource   = $objEvent->org_link;
             if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
                 $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
                 list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');
             }
+
+            $hostWebsite      = $objEvent->org_website != '' ? "<a href='".$objEvent->org_website."' target='_blank' >".$objEvent->org_website."</a>" : "";
+            $hostWebsiteSource= $objEvent->org_website;
 
             $startDate = $objEvent->startDate;
             $endDate   = $objEvent->endDate;
