@@ -1,9 +1,5 @@
 cx.jQuery(document).ready(function() {
     addGenerateButton();
-    initializeConditions();
-    addEventListenerForConditions();
-    togglePermission();
-    loadJsonMethods();
 
     cx.bind("delete", function (deleteIds) {
         if (!deleteIds.length) {
