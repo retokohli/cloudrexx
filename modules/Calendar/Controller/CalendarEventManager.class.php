@@ -1595,11 +1595,12 @@ class CalendarEventManager extends CalendarLibrary
                 }
             }
 
-            $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
-            $placeLinkSource   = $objEvent->place_link;
             if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
                 $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
                 list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
+            } else {
+                $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
+                $placeLinkSource   = $objEvent->place_link;
             }
 
             $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
