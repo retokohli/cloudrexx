@@ -1563,16 +1563,6 @@ class CalendarEventManager extends CalendarLibrary
             }
             $picThumb = file_exists(\Env::get('cx')->getWebsitePath()."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
 
-            $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
-            $hostLinkSource   = $objEvent->org_link;
-            if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
-                list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');
-            }
-
-            $hostWebsite      = $objEvent->org_website != '' ? "<a href='".$objEvent->org_website."' target='_blank' >".$objEvent->org_website."</a>" : "";
-            $hostWebsiteSource= $objEvent->org_website;
-
             $startDate = $objEvent->startDate;
             $endDate   = $objEvent->endDate;
             if (!$firstEndDate || $endDate < $firstEndDate) {
@@ -1689,6 +1679,17 @@ class CalendarEventManager extends CalendarLibrary
             }
 
             $map_thumb_name = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
+
+            $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
+            $hostLinkSource   = $objEvent->org_link;
+            if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
+                $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
+                list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');
+            }
+
+            $hostWebsite      = $objEvent->org_website != '' ? "<a href='".$objEvent->org_website."' target='_blank' >".$objEvent->org_website."</a>" : "";
+            $hostWebsiteSource= $objEvent->org_website;
+
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
                 $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->place,
