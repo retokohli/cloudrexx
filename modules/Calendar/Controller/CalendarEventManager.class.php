@@ -1088,40 +1088,7 @@ class CalendarEventManager extends CalendarLibrary
         }
 
         // hide host template-block in case no host data has been set
-        if (
-            // manual entry
-            (
-                // option set to: manual entry only
-                $this->arrSettings['placeDataHost'] == 1 || (
-                    // option set to: manual entry and mediadir selection
-                    $this->arrSettings['placeDataHost'] == 3 &&
-                    // event has manual entry selected
-                    $objEvent->hostType == 1
-                )
-            ) &&
-            $objEvent->org_name == '' &&
-            $objEvent->org_street == '' &&
-            $objEvent->org_zip == '' &&
-            $objEvent->org_city == '' &&
-            $objEvent->org_country == '' &&
-            $objEvent->org_website == '' &&
-            $objEvent->org_phone == ''
-        ) {
-            $objTpl->hideBlock('calendarEventHost');
-        } elseif (
-            // hide host template-block in case no mediadir entry has been
-            // selected
-            (
-                $this->arrSettings['placeDataHost'] > 1 &&
-                $objEvent->hostType == 2 &&
-                !$objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host')
-            ) || (
-                // event has not been converted to new host type after
-                // option placeDataHost has been changed
-                $this->arrSettings['placeDataHost'] == 2 &&
-                $objEvent->hostType == 1
-            )
-        ) {
+        if (!$objEvent->loadHostData()) {
             $objTpl->hideBlock('calendarEventHost');
         // parse host template-block
         } else {

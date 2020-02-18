@@ -2968,4 +2968,60 @@ class CalendarEvent extends CalendarLibrary
 
         return true;
     }
+
+    /**
+     * Sets the host related properties based on the configured source mode
+     *
+     * Call this method before pushing any host-data to the view layer.
+     * If the event contains any host-data, then the related properies (
+     * {@see CalendarEvent::org_name} / {@see CalendarEvent::org_street} /
+     * {@see CalendarEvent::org_zip} / {@see CalendarEvent::org_city} /
+     * {@see CalendarEvent::org_country} / {@see CalendarEvent::org_website} /
+     * {@see CalendarEvent::org_phone} / {@see CalendarEvent::org_email})
+     * will be initialized accordingly.
+     *
+     * @return boolean TRUE of the event contains any host-data, otherwise FALSE
+     */
+    public function loadHostData() {
+        // abort in case no host data has been set
+        if (
+            // manual entry
+            (
+                // option set to: manual entry only
+                $this->arrSettings['placeDataHost'] == 1 || (
+                    // option set to: manual entry and mediadir selection
+                    $this->arrSettings['placeDataHost'] == 3 &&
+                    // event has manual entry selected
+                    $this->hostType == 1
+                )
+            ) &&
+            $this->org_name == '' &&
+            $this->org_street == '' &&
+            $this->org_zip == '' &&
+            $this->org_city == '' &&
+            $this->org_country == '' &&
+            $this->org_website == '' &&
+            $this->org_phone == ''
+        ) {
+            return false;
+        }
+
+        if (
+            // abort in case no mediadir entry has been selected
+            (
+                $this->arrSettings['placeDataHost'] > 1 &&
+                $this->hostType == 2 &&
+                !$this->loadPlaceFromMediadir($this->host_mediadir_id, 'host')
+            ) || (
+                // event has not been converted to new host type after
+                // option placeDataHost has been changed
+                $this->arrSettings['placeDataHost'] == 2 &&
+                $this->hostType == 1
+            )
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 }
