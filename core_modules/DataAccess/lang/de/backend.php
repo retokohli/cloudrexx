@@ -37,19 +37,19 @@
  */
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS'] = 'RESTful API';
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS'] = 'RESTful API';
-$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_DESCRIPTION'] = 'Die Cloudrexx RESTful API ermöglich lesenden und schreibenden Zugriff auf Daten für Drittsysteme.';
-$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_INTRODUCTION'] = 'Auf die einzelnen Datentypen kann über Endpunkte zugegriffen werden. Der Zugriff wird über API-Keys gesteuert. Jeder API-Key kann den lesenden und/oder schreibenden Zugriff auf einen oder mehrere Endpunkte erlauben. Um mit der API loszulegen Erstellen Sie einen API-Key.<br /><br /><a href="/cadmin/DataAccess/ApiKey?add=1" class="button">API-Key hinzufügen</a>';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_DESCRIPTION'] = 'Die Cloudrexx RESTful API ermöglich lesenden und schreibenden Zugriff auf Ihre Website-Daten durch Drittsysteme.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_INTRODUCTION'] = 'Auf die einzelnen Datentypen kann über Endpunkte zugegriffen werden. Der Zugriff wird über API-Keys gesteuert. Jeder API-Key kann den lesenden und/oder schreibenden Zugriff auf einen oder mehrere Endpunkte erlauben. Um mit der API loszulegen erstellen Sie einen API-Key.<br /><br /><a href="/cadmin/DataAccess/ApiKey?add=1" class="button">API-Key hinzufügen</a>';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'Der Enpdunkt konnte nicht gefunden werden.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_SOURCE'] = 'Die Daten-Ressource konnte nicht gefunden werden.';
 
-$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API Schlüssel';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API-Schlüssel';
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_DATAACCESS'] = 'Endpunkte';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE'] = 'Bitte wählen';
 
 $_ARRAYLANG['id'] = 'ID';
-$_ARRAYLANG['apiKey'] = 'API Schlüssel';
+$_ARRAYLANG['apiKey'] = 'API-Schlüssel';
 $_ARRAYLANG['dataAccessApiKeys'] = 'Endpunkte';
 $_ARRAYLANG['dataAccessReadOnly'] = 'Endpunkte nur mit Leseberechtigung';
 
@@ -82,4 +82,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_YES'] = 'Ja';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_NO'] = 'Nein';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_API_KEY_ALREADY_EXISTS'] = 'Ein Eintrag mit diesem API-Schlüssel exisitert bereits';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_COULD_NOT_STORE_APIKEY'] = 'Der API Schlüssel konnte nicht gespeichert werden';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_COULD_NOT_STORE_APIKEY'] = 'Der API-Schlüssel konnte nicht gespeichert werden';
