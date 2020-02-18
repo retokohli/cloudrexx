@@ -971,40 +971,7 @@ class CalendarEventManager extends CalendarLibrary
         }
 
         // hide location template-block in case no location data has been set
-        if (
-            // manual entry
-            (
-                // option set to: manual entry only
-                $this->arrSettings['placeData'] == 1 || (
-                    // option set to: manual entry and mediadir selection
-                    $this->arrSettings['placeData'] == 3 &&
-                    // event has manual entry selected
-                    $objEvent->locationType == 1
-                )
-            ) &&
-            $objEvent->place == '' &&
-            $objEvent->place_street == '' &&
-            $objEvent->place_zip == '' &&
-            $objEvent->place_city == '' &&
-            $objEvent->place_country == '' &&
-            $objEvent->place_website == '' &&
-            $objEvent->place_phone == ''
-        ) {
-            $objTpl->hideBlock('calendarEventAddress');
-        } elseif (
-            // hide location template-block in case no mediadir entry has been
-            // selected
-            (
-                $this->arrSettings['placeData'] > 1 &&
-                $objEvent->locationType == 2 &&
-                !$objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place')
-            ) || (
-                // event has not been converted to new location type after
-                // option placeData has been changed
-                $this->arrSettings['placeData'] == 2 &&
-                $objEvent->locationType == 1
-            )
-        ) {
+        if (!$objEvent->loadLocationData()) {
             $objTpl->hideBlock('calendarEventAddress');
         // parse location template-block
         } else {

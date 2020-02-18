@@ -2912,4 +2912,60 @@ class CalendarEvent extends CalendarLibrary
         $this->errorMessage = '';
         return $msg;
     }
+
+    /**
+     * Sets the location related properties based on the configured source mode
+     *
+     * Call this method before pushing any location-data to the view layer.
+     * If the event contains any location-data, then the related properies (
+     * {@see CalendarEvent::place} / {@see CalendarEvent::place_street} /
+     * {@see CalendarEvent::place_zip} / {@see CalendarEvent::place_city} /
+     * {@see CalendarEvent::place_country} / {@see CalendarEvent::place_website}
+     * / {@see CalendarEvent::place_phone} / {@see CalendarEvent::place_map} /
+     * {@see CalendarEvent::google}) will be initialized accordingly.
+     *
+     * @return boolean TRUE of the event contains any host-data, otherwise FALSE
+     */
+    public function loadLocationData() {
+        // abort in case no location data has been set
+        if (
+            // manual entry
+            (
+                // option set to: manual entry only
+                $this->arrSettings['placeData'] == 1 || (
+                    // option set to: manual entry and mediadir selection
+                    $this->arrSettings['placeData'] == 3 &&
+                    // event has manual entry selected
+                    $this->locationType == 1
+                )
+            ) &&
+            $this->place == '' &&
+            $this->place_street == '' &&
+            $this->place_zip == '' &&
+            $this->place_city == '' &&
+            $this->place_country == '' &&
+            $this->place_website == '' &&
+            $this->place_phone == ''
+        ) {
+            return false;
+        }
+
+        if (
+            // abort in case no mediadir entry has been selected
+            (
+                $this->arrSettings['placeData'] > 1 &&
+                $this->locationType == 2 &&
+                !$this->loadPlaceFromMediadir($this->place_mediadir_id, 'place')
+            ) || (
+                // event has not been converted to new location type after
+                // option placeData has been changed
+                $this->arrSettings['placeData'] == 2 &&
+                $this->locationType == 1
+            )
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 }
