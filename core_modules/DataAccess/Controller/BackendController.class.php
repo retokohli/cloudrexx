@@ -55,7 +55,6 @@ class BackendController
     {
         return array(
             'ApiKey',
-            'DataAccess'
         );
     }
 
@@ -135,104 +134,6 @@ class BackendController
                         'tooltip' => $_ARRAYLANG[
                             'TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'
                         ]
-                    ),
-                );
-                break;
-            case 'Cx\Core_Modules\DataAccess\Model\Entity\DataAccess':
-                $options['functions']['add'] = false;
-                $options['functions']['delete'] = false;
-                $options['functions']['sorting'] = false;
-
-                $options['fields'] = array(
-                    'id' => array(
-                        'table' => array(
-                            'attributes' => array(
-                                'class' => 'data-access-id'
-                            )
-                        )
-                    ),
-                    'name' => array(
-                        'formfield' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getReadonlyField'
-                        ),
-                    ),
-                    'fieldList' => array(
-                        'showOverview' => false,
-                        'formfield' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getFieldListSearch'
-                        ),
-                        'storecallback' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'serializeArray'
-                        ),
-                        'tooltip' => $_ARRAYLANG[
-                            'TXT_CORE_MODULE_DATA_ACCESS_INFO_ALLOWED_FIELDS'
-                        ],
-                    ),
-                    'accessCondition' => array(
-                        'showOverview' => false,
-                        'formfield' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getAccessCondition'
-                        ),
-                        'storecallback' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'storeAccessCondition'
-                        ),
-                    ),
-                    'allowedOutputMethods' => array(
-                        'showOverview' => false,
-                        'formfield' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getAllowedOutputMethods'
-                        ),
-                        'storecallback' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'storeAllowedOutputMethods'
-                        ),
-                        'tooltip' => $_ARRAYLANG[
-                            'TXT_CORE_MODULE_DATA_ACCESS_INFO_OUTPUT_METHODS'
-                        ],
-                    ),
-                    'dataAccessApiKeys' => array(
-                        'showOverview' => false,
-                        'showDetail' => false,
-                    ),
-                    'syncs' => array(
-                        'showOverview' => false,
-                        'showDetail' => false,
-                    ),
-                    'relations' => array(
-                        'showOverview' => false,
-                        'showDetail' => false,
-                    ),
-                    'readPermission' => array(
-                        'showOverview' => false,
-                        'formfield' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getDataAccessPermission'
-                        ),
-                        'storecallback' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getDataAccessReadPermissionId'
-                        ),
-                    ),
-                    'writePermission' => array(
-                        'showOverview' => false,
-                        'formfield' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getDataAccessPermission'
-                        ),
-                        'storecallback' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'getDataAccessWritePermissionId'
-                        ),
-                    ),
-                    'dataSource' => array(
-                        'showOverview' => false,
-                        'showDetail' => false,
                     ),
                 );
                 break;
