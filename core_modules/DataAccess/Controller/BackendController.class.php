@@ -89,6 +89,15 @@ class BackendController
         switch ($entityClassName) {
             case 'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey':
                 $options['functions']['copy'] = true;
+                $options['multiActions']['delete'] = array(
+                    'title' => $_ARRAYLANG['TXT_DELETE'],
+                    'jsEvent' => 'delete:apikey'
+                );
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'TXT_CORE_RECORD_DELETE_CONFIRM',
+                    $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'],
+                    'ViewGenerator/lang'
+                );
                 $options['fields'] = array(
                     'id' => array(
                         'showOverview' => false,

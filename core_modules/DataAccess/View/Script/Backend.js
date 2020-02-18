@@ -4,6 +4,20 @@ cx.jQuery(document).ready(function() {
     addEventListenerForConditions();
     togglePermission();
     loadJsonMethods();
+
+    cx.bind("delete", function (deleteIds) {
+        if (!deleteIds.length) {
+            return;
+        }
+        if (confirm(
+            cx.variables.get("TXT_CORE_RECORD_DELETE_CONFIRM", "ViewGenerator/lang")
+        )) {
+            window.location.replace(
+                "?csrf=" + cx.variables.get("csrf", "contrexx") + "&deleteids="
+                + encodeURI(deleteIds) + "&vg_increment_number=0"
+            );
+        }
+    }, "apikey");
 });
 
 // This and the next method are copied from https://stackoverflow.com/a/27747377
