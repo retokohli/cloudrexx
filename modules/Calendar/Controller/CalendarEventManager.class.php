@@ -1595,71 +1595,79 @@ class CalendarEventManager extends CalendarLibrary
                 }
             }
 
-            if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
-                list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
+            // hide location template-block in case no location data has been set
+            if (!$objEvent->loadLocationData()) {
+                $objTpl->hideBlock('event_location_website');
+                $objTpl->hideBlock('event_location_link');
+                $objTpl->hideBlock('event_location_phone');
+                $objTpl->hideBlock('event_location_map');
+            // parse location template-block
             } else {
-                $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
-                $placeLinkSource   = $objEvent->place_link;
-            }
-
-            $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
-            $placeWebsiteSource= $objEvent->place_website;
-
-            $hasPlaceMap = !empty($objEvent->place_map) && file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
-            if ($hasPlaceMap) {
-                $arrInfo   = getimagesize(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
-                $picWidth  = $arrInfo[0]+20;
-                $picHeight = $arrInfo[1]+20;
-            }
-            $map_thumb_name = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
-
-            $objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
-                $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->place,
-                $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'       => $objEvent->place_street,
-                $this->moduleLangVar.'_EVENT_LOCATION_ZIP'           => $objEvent->place_zip,
-                $this->moduleLangVar.'_EVENT_LOCATION_CITY'          => $objEvent->place_city,
-                $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'       => $objEvent->place_country,
-                $this->moduleLangVar.'_EVENT_LOCATION_WEBSITE'       => $placeWebsite,
-                $this->moduleLangVar.'_EVENT_LOCATION_WEBSITE_SOURCE'=> $placeWebsiteSource,
-                $this->moduleLangVar.'_EVENT_LOCATION_LINK'          => $placeLink,
-                $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'   => $placeLinkSource,
-                $this->moduleLangVar.'_EVENT_LOCATION_PHONE'         => $objEvent->place_phone,
-                $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'      => $hasPlaceMap ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
-                $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL' => $hasPlaceMap ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
-                $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'    => $hasPlaceMap ? $objEvent->place_map : '',
-            ));
-
-            if ($objTpl->blockExists('event_location_website')) {
-                if (empty($placeWebsite)) {
-                    $objTpl->hideBlock('event_location_website');
+                if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
+                    list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');
                 } else {
-                    $objTpl->touchBlock('event_location_website');
+                    $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
+                    $placeLinkSource   = $objEvent->place_link;
                 }
-            }
 
-            if ($objTpl->blockExists('event_location_link')) {
-                if (empty($placeLink)) {
-                    $objTpl->hideBlock('event_location_link');
-                } else {
-                    $objTpl->touchBlock('event_location_link');
-                }
-            }
+                $placeWebsite      = $objEvent->place_website != '' ? "<a href='".$objEvent->place_website."' target='_blank' >".$objEvent->place_website."</a>" : "";
+                $placeWebsiteSource= $objEvent->place_website;
 
-            if ($objTpl->blockExists('event_location_phone')) {
-                if (empty($objEvent->place_phone)) {
-                    $objTpl->hideBlock('event_location_phone');
-                } else {
-                    $objTpl->touchBlock('event_location_phone');
-                }
-            }
-
-            if ($objTpl->blockExists('event_location_map')) {
+                $hasPlaceMap = !empty($objEvent->place_map) && file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
                 if ($hasPlaceMap) {
-                    $objTpl->touchBlock('event_location_map');
-                } else {
-                    $objTpl->hideBlock('event_location_map');
+                    $arrInfo   = getimagesize(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
+                    $picWidth  = $arrInfo[0]+20;
+                    $picHeight = $arrInfo[1]+20;
+                }
+                $map_thumb_name = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
+
+                $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'       => $objEvent->place_street,
+                    $this->moduleLangVar.'_EVENT_LOCATION_ZIP'           => $objEvent->place_zip,
+                    $this->moduleLangVar.'_EVENT_LOCATION_CITY'          => $objEvent->place_city,
+                    $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'       => $objEvent->place_country,
+                    $this->moduleLangVar.'_EVENT_LOCATION_WEBSITE'       => $placeWebsite,
+                    $this->moduleLangVar.'_EVENT_LOCATION_WEBSITE_SOURCE'=> $placeWebsiteSource,
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'          => $placeLink,
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'   => $placeLinkSource,
+                    $this->moduleLangVar.'_EVENT_LOCATION_PHONE'         => $objEvent->place_phone,
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'      => $hasPlaceMap ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL' => $hasPlaceMap ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'    => $hasPlaceMap ? $objEvent->place_map : '',
+                ));
+
+                if ($objTpl->blockExists('event_location_website')) {
+                    if (empty($placeWebsite)) {
+                        $objTpl->hideBlock('event_location_website');
+                    } else {
+                        $objTpl->touchBlock('event_location_website');
+                    }
+                }
+
+                if ($objTpl->blockExists('event_location_link')) {
+                    if (empty($placeLink)) {
+                        $objTpl->hideBlock('event_location_link');
+                    } else {
+                        $objTpl->touchBlock('event_location_link');
+                    }
+                }
+
+                if ($objTpl->blockExists('event_location_phone')) {
+                    if (empty($objEvent->place_phone)) {
+                        $objTpl->hideBlock('event_location_phone');
+                    } else {
+                        $objTpl->touchBlock('event_location_phone');
+                    }
+                }
+
+                if ($objTpl->blockExists('event_location_map')) {
+                    if ($hasPlaceMap) {
+                        $objTpl->touchBlock('event_location_map');
+                    } else {
+                        $objTpl->hideBlock('event_location_map');
+                    }
                 }
             }
 
