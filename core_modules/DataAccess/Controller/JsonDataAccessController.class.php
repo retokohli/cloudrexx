@@ -71,21 +71,19 @@ class JsonDataAccessController
     public function getAccessableMethods()
     {
         return array(
-            'serializeArray' => $this->getDefaultPermissions(),
-            'getReadonlyField' => $this->getDefaultPermissions(),
-            'storeSelectedDataAccess' => $this->getDefaultPermissions(),
-            'getDataAccessReadOnlySearch' => $this->getDefaultPermissions(),
-            'getDataAccessSearch' => $this->getDefaultPermissions(),
-            'getFieldListSearch' => $this->getDefaultPermissions(),
-            'getAccessCondition' => $this->getDefaultPermissions(),
-            'storeAccessCondition' => $this->getDefaultPermissions(),
-            'getAllowedOutputMethods' => $this->getDefaultPermissions(),
-            'storeAllowedOutputMethods' => $this->getDefaultPermissions(),
-            'getDataAccessPermission' => $this->getDefaultPermissions(),
-            'getDataAccessReadPermissionId' => $this->getDefaultPermissions(),
-            'getDataAccessWritePermissionId' => $this->getDefaultPermissions(),
-            'getJsonControllerMethods' => $this->getDefaultPermissions(),
-            'getValue' => $this->getDefaultPermissions(),
+            'storeSelectedDataAccess',
+            'getDataAccessReadOnlySearch',
+            'getDataAccessSearch',
+            'getFieldListSearch',
+            'getAccessCondition',
+            'storeAccessCondition',
+            'getAllowedOutputMethods',
+            'storeAllowedOutputMethods',
+            'getDataAccessPermission',
+            'getDataAccessReadPermissionId',
+            'getDataAccessWritePermissionId',
+            'getJsonControllerMethods',
+            'getValue',
         );
     }
 
