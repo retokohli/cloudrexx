@@ -688,6 +688,7 @@ class User extends User_Profile
                     return true;
                 } else {
                     $objDatabase->failTrans();
+                    $objDatabase->completeTrans();
                     $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'], $this->username);
                 }
             } else {
@@ -1184,6 +1185,7 @@ class User extends User_Profile
      * </pre>
      * @param   integer $limit The maximal number of Users to load from the database. If not set, all matched users will be loaded.
      * @param   integer $offset The optional parameter $offset can be used to specify the number of found records to skip in the result set.
+     *                          <i>Note that this parameter only works if the limit is set!</i>
      * @return  User
      */
     public function getUsers(
@@ -1709,7 +1711,7 @@ class User extends User_Profile
             return;
         }
 
-        $this->restore_key = md5($this->email.$this->regdate.time());
+        $this->restore_key = md5($this->email . random_bytes(20));
         $this->restore_key_time = time() + 3600;
     }
 
@@ -3388,5 +3390,14 @@ class User extends User_Profile
         }
 
         throw new UserException('Failed to generate a new password hash');
+    }
+
+    /**
+     * Clears the cache
+     *
+     * Only use this when loading lots of users (export)!
+     */
+    public function clearCache() {
+        $this->arrCachedUsers = array();
     }
 }
