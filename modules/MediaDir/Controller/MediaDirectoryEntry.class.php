@@ -1597,14 +1597,6 @@ JSCODE;
                     // settingsActiveLanguages) we will persist the same data
                     if ($arrInputfield['type_multi_lang'] == 0) {
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
-
-                        // slugify slug value
-                        if ($arrInputfield['context_type'] == 'slug') {
-                            // TODO: this does not work as expected
-                            // TODO: remove this case (non-i18n)
-                            $this->slugify(intval($intId), $strInputfieldValue, $intLangId, $titleData);
-                        }
-
                         $objResult = $objDatabase->Execute("
                             INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                                SET `entry_id`='".intval($intId)."',
