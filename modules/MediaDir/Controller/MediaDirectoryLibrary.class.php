@@ -1716,7 +1716,7 @@ EOF;
         // In case it's not enabled, do simply return
         // the proposed slug.
         if (!$this->arrSettings['usePrettyUrls']) {
-            return $slug;
+            return;
         }
 
         if (empty(static::$slugs)) {
