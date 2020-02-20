@@ -9,12 +9,12 @@ namespace OpenApi\Annotations;
 /**
  * @Annotation
  */
-class Patch extends Operation
+class Trace extends Operation
 {
     /**
      * @inheritdoc
      */
-    public $method = 'patch';
+    public $method = 'trace';
 
     /**
      * @inheritdoc

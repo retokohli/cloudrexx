@@ -8,27 +8,21 @@ namespace OpenApi\Annotations;
 
 /**
  * @Annotation
+ * Shorthand for a xml response.
+ *
+ * Use as an Schema inside a Response and the MediaType "application/xml" will be generated.
  */
-class Property extends Schema
+class XmlContent extends Schema
 {
     /**
-     * The key into Schema->properties array.
-     *
-     * @var string
+     * @var object
      */
-    public $property = UNDEFINED;
+    public $examples = UNDEFINED;
 
     /**
      * @inheritdoc
      */
-    public static $_parents = [
-        AdditionalProperties::class,
-        Schema::class,
-        JsonContent::class,
-        XmlContent::class,
-        Property::class,
-        Items::class,
-    ];
+    public static $_parents = [];
 
     /**
      * @inheritdoc

@@ -9,25 +9,17 @@ namespace OpenApi\Annotations;
 /**
  * @Annotation
  */
-class Property extends Schema
+class AdditionalProperties extends Schema
 {
-    /**
-     * The key into Schema->properties array.
-     *
-     * @var string
-     */
-    public $property = UNDEFINED;
-
     /**
      * @inheritdoc
      */
     public static $_parents = [
-        AdditionalProperties::class,
         Schema::class,
-        JsonContent::class,
-        XmlContent::class,
         Property::class,
         Items::class,
+        JsonContent::class,
+        XmlContent::class
     ];
 
     /**
@@ -39,6 +31,5 @@ class Property extends Schema
         Property::class => ['properties', 'property'],
         ExternalDocumentation::class => 'externalDocs',
         Xml::class => 'xml',
-        AdditionalProperties::class => 'additionalProperties'
     ];
 }

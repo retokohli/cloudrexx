@@ -438,8 +438,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             false // file not too old
         ) {
             $this->cx->getClassLoader()->loadFile($this->cx->getCodeBaseLibraryPath() . '/Swagger/src/functions.php');
-            $swagger = \Swagger\scan(array($this->cx->getWebsitePath()), ['exclude' => array('lib/')]);
-            $swagger->saveAs($filename);
+            $openapi = \OpenApi\scan(array($this->cx->getWebsitePath()), ['exclude' => array('lib/')]);
+            $objFile = new \Cx\Lib\FileSystem\File($filename);
+            $objFile->write($openapi->toJson());
         }
         // echo file contents:
         try {
