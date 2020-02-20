@@ -1530,8 +1530,16 @@ EOF;
     }
 
     /**
-     * Slugifies the given string
-     * @param $string The string to slugify
+     * Slugifies the given string and ensures its uniqueness
+     *
+     * @param   int $entryId    The ID of the associated entry
+     * @param   string  $string The string to slugify
+     * @param   int $langId     The ID of the locale the string $string
+     *                          comes from.
+     * @param   array   $titleData  Array of strings to be used in case
+     *                              $string is an empty string.
+     *                              The array uses the IDs of available locales
+     *                              as keys for each string.
      */
     protected function slugify($entryId, &$string, $langId, $titleData = array()) {
         if (empty($string) && isset($titleData[$langId])) {
@@ -1707,6 +1715,20 @@ EOF;
         return $sourceLocaleId;
     }
 
+    /**
+     * Enforce uniqueness of a slug
+     *
+     * The supplied $slug will be made unqiue within the sopce of a locale
+     * (identified by the locale's ID through argument $slugLangId).
+     * This is achieved by adding a trailing (unique) integer to the slug
+     * in case its not yet unique.
+     * In case the option settingsShowEntriesInAllLang is set, then the slug
+     * will be made unique over all locales.
+     *
+     * @param  string  $slug    The slug to make unique.
+     * @param  int     $entryId The associated entry of the slug.
+     * @param  int     $slugLangId  The ID of the locale the slug is from.
+     */
     protected function enforceUniqueSlug(&$slug, $entryId, $slugLangId) {
 	    // Check for pretty urls usage.
         // In case it's not enabled, do simply return
@@ -1797,6 +1819,7 @@ EOF;
             }
         }
 
+        // enforce uniqueness on slug
         $idx = 1;
         $oriSlug = $slug;
         while (
@@ -1825,6 +1848,12 @@ EOF;
         static::$slugs[$slugLangId][$entryId] = $slug;
     }
 
+    /**
+     * Fetch all slugs from the database
+     *
+     * Those will be used to ensure uniqueness within slugs
+     * (@see MediaDirectoryLibrary::enforceUniqueSlug()).
+     */
     protected function loadAllSlugsFromDb() {
         static::$slugs = array();
         $db = $this->cx->getDb()->getAdoDb();
