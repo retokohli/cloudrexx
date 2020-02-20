@@ -1719,6 +1719,12 @@ EOF;
             return;
         }
 
+        // $entryId must always be set. If its not set (which should never
+        // happen), then something unexpected happened.
+        if (!$entryId) {
+            throw new \Exception('$entryId is invalid in ' . __METHOD__);
+        }
+
         if (empty(static::$slugs)) {
             $this->loadAllSlugsFromDb();
         }
