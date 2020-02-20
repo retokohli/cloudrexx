@@ -52,6 +52,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const MIN_KEY_LENGTH = 32;
 
     /**
+     * @var int Access ID assigned to this component
+     */
+    const MAIN_ACCESS_ID = 205;
+
+    /**
      * @var string Message for exceptions forwarded to API
      */
     const ERROR_MESSAGE = 'Exception of type "%s" with message "%s"';
