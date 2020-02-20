@@ -460,10 +460,9 @@ class ViewGenerator {
      * submitted over post
      *
      * @param $name       string                    name of field
+     * @param $entity     \Cx\Model\Base\EntityBase object of the class to be saved
      * @param $entityData array                     data for entity
-     * @param $entity     \Cx\Model\Base\EntityBase object of the class to be
-     *                                              saved
-     * @throws ViewGeneratorException
+     * @return mixed Return value of the callback
      */
     protected function callPostCallback($name, $entity, $entityData = array())
     {
