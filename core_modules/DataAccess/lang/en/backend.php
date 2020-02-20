@@ -37,19 +37,19 @@
  */
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS'] = 'RESTful API';
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS'] = 'RESTful API';
-$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_DESCRIPTION'] = 'Cloudrexx RESTful API allows read and write access to data from third-party systems.';
-$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_INTRODUCTION'] = 'The different types of data can be accessed using endpoints. Access is granted using API keys. Each API key can grant read and/or write access to one or more endpoints. In order to begin using the API create an API key.<br /><br /><a href="/cadmin/DataAccess/ApiKey?add=1" class="button">Create API key</a>';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_DESCRIPTION'] = 'The Cloudrexx RESTful API provides read and write access to your website data to third-party systems.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_INTRODUCTION'] = 'The available data (which depends on the feature set of your website) can be accessed using API endpoints. Access is granted using API keys. Each API key can grant read and/or write access to one or more endpoints. Start now by creating your first API key.<br /><br /><a href="/cadmin/DataAccess/ApiKey?add=1" class="button">Create API key</a>';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR'] = 'Exception of type "%s" with message "%s"';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The endpoint could not be found.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The data-ressource could not be found.';
 
-$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API Key';
+$_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API key';
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_DATAACCESS'] = 'Endpoints';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_PLEASE_CHOOSE'] = 'Please choose';
 
 $_ARRAYLANG['id'] = 'ID';
-$_ARRAYLANG['apiKey'] = 'API Key';
+$_ARRAYLANG['apiKey'] = 'API key';
 $_ARRAYLANG['dataAccessApiKeys'] = 'Endpoints';
 $_ARRAYLANG['dataAccessReadOnly'] = 'Endpoints with read-only permission only';
 
