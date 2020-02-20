@@ -47,6 +47,11 @@ namespace Cx\Core_Modules\DataAccess\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
+     * @var int Minimum length for API keys
+     */
+    const MIN_KEY_LENGTH = 32;
+
+    /**
      * @inheritdoc
      */
     protected $enduserDocumentationUrl = 'https://www.cloudrexx.info/api';
@@ -223,6 +228,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $apiKey = null;
             if (isset($arguments['apikey'])) {
                 $apiKey = $arguments['apikey'];
+            }
+            // force api key length
+            if (strlen($apiKey) < static::MIN_KEY_LENGTH) {
+                $response->setStatusCode(403);
+                throw new \Cx\Core\Error\Model\Entity\ShinyException('Access denied');
             }
 
             $requestReadonly = in_array($method, array('options', 'head', 'get'));
