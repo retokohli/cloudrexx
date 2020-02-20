@@ -42,6 +42,7 @@ function addGenerateButton() {
 
         inputField.val(generateId(20));
         cx.jQuery('#generate-api-key').hide();
+        inputField.trigger("keyup");
     });
 
     // only show the button if there's no content in the input field
