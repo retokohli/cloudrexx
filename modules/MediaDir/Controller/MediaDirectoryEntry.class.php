@@ -1558,8 +1558,14 @@ JSCODE;
             }
 
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
-            if (   empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
-                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$outputLocaleId]
+            if (
+                (
+                    empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]) ||
+                    $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$outputLocaleId]
+                ) &&
+                // except for fields that are used as 'slug' can't be cleared,
+                // as a entry must have a slug
+                $arrInputfield['context_type'] != 'slug'
             ) {
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id='".intval($arrInputfield['id'])."'");
                 if (!$objResult) {
