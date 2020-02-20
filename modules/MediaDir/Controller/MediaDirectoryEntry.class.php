@@ -1576,10 +1576,6 @@ JSCODE;
                 }
             }
 
-            if (($arrInputfield['context_type'] == 'title' || empty($titleData)) && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
-                $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
-            }
-
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (
                 (
@@ -1609,6 +1605,14 @@ JSCODE;
                 $error = true;
 
                 continue;
+            }
+
+            // remember value of inputfield having context 'title'
+            if (
+                $arrInputfield['context_type'] == 'title' &&
+                isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
+            ) {
+                $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
             }
 
             // delete attribute's data of languages that are no longer in use
