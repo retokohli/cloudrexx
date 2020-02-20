@@ -1532,12 +1532,8 @@ EOF;
     /**
      * Slugifies the given string
      * @param $string The string to slugify
-     * @todo ensure only multi-ling
      */
     protected function slugify($entryId, &$string, $langId, $titleData = array()) {
-        // todo the following option should be taken into account
-        //$this->arrSettings['settingsShowEntriesInAllLang']
-
         if (empty($string) && isset($titleData[$langId])) {
             $string = $titleData[$langId];
         }
@@ -1711,7 +1707,7 @@ EOF;
         return $sourceLocaleId;
     }
 
-    protected function enforceUniqueSlug(&$slug, $entryId, $langId) {
+    protected function enforceUniqueSlug(&$slug, $entryId, $slugLangId) {
 	    // Check for pretty urls usage.
         // In case it's not enabled, do simply return
         // the proposed slug.
@@ -1729,22 +1725,104 @@ EOF;
             $this->loadAllSlugsFromDb();
         }
 
+        // in case all entries are getting displayed in every locale,
+        // then we have to enforce uniqueness within slugs over all
+        // locales. This is achieved by grouping all slugs by ID 0.
+        // Otherwise (option settingsShowEntriesInAllLang not set) we'll
+        // group the slugs by their locale
+        if ($this->arrSettings['settingsShowEntriesInAllLang']) {
+            $langId = 0;
+        } else {
+            $langId = $slugLangId;
+        }
+
+        // check if the entry owns a slug for the specified locale already.
+        // if so, do remove it from the existing slug list to prevent
+        // collision as duplicate
         if (
-            $entryId &&
-            isset(static::$slugs[$langId]) &&
-            isset(static::$slugs[$langId][$entryId])
+            isset(static::$slugs[$slugLangId]) &&
+            isset(static::$slugs[$slugLangId][$entryId])
         ) {
-            unset(static::$slugs[$langId][$entryId]);
+            // Remove existing slug from the list of all slugs.
+            // Note: we're intentionally looking up the index of the existing
+            // slug to only drop it once from the list of all slugs. This will
+            // ensure that in case (of a bug) an existing slug already exists
+            // twice, it will be fixed (-> made unique) that way.
+            // Otherwise, if we would use array_diff() to filter out the
+            // existing slug, we would not detect any existing duplicates.
+            $idx = array_search(
+                static::$slugs[$slugLangId][$entryId],
+                static::$slugs[$langId][0]
+            );
+            if ($idx !== false) {
+                unset(static::$slugs[$langId][0][$idx]);
+            }
+
+            // reset associated slug on entry
+            unset(static::$slugs[$slugLangId][$entryId]);
+        }
+
+        // In case slugs must be unique over all locales (if option
+        // settingsShowEntriesInAllLang is set), then we must check if the
+        // slug to be set is already in use in any other locale by the
+        // associated entry. If so, we have to unset those from the list of
+        // all slugs to make it possible for an entry to use the same slug in
+        // multiple locales even if option settingsShowEntriesInAllLang is set.
+        if ($this->arrSettings['settingsShowEntriesInAllLang']) {
+            $localeIds = array_keys(static::$slugs);
+            foreach ($localeIds as $localeId) {
+                // skip locale of slug as we did check this already above
+                if ($localeId == $slugLangId) {
+                    continue;
+                }
+
+                // check if the same slug is being used for any other locale,
+                // if so, do remove it from the list of all locales to.
+                if (
+                    isset(static::$slugs[$localeId][$entryId]) &&
+                    static::$slugs[$localeId][$entryId] == $slug
+                ) {
+                    $idx = array_search(
+                        $slug,
+                        static::$slugs[$langId][0]
+                    );
+                    if ($idx !== false) {
+                        unset(static::$slugs[$langId][0][$idx]);
+                    }
+                }
+
+                // note: we're intentionally not unsetting the slug from the
+                // entry's slug list (static::$slugs[$localeId][$entryId]) as
+                // this would break the uniqueness
+            }
         }
 
         $idx = 1;
         $oriSlug = $slug;
-        while (in_array($slug, static::$slugs[$langId])) {
+        while (
+            isset(static::$slugs[$langId][0]) &&
+            in_array($slug, static::$slugs[$langId][0])
+        ) {
             // get next slug
             $slug = $oriSlug . $idx++;
         }
 
-        static::$slugs[$langId][$entryId] = $slug;
+        // Add slug to the list of all slugs of all entries (optinally grouped
+        // by locale if option settingsShowEntriesInAllLang is not set).
+        // This is done by putting all slugs of all entries in index 0.
+        if (!isset(static::$slugs[$langId])) {
+            static::$slugs[$langId] = array(
+                0 => array(),
+            );
+        }
+        static::$slugs[$langId][0][] = $slug;
+
+        // remember all slugs (grouped by locale) identified by the ID of
+        // its associated entry
+        if (!isset(static::$slugs[$slugLangId])) {
+            static::$slugs[$slugLangId] = array();
+        }
+        static::$slugs[$slugLangId][$entryId] = $slug;
     }
 
     protected function loadAllSlugsFromDb() {
@@ -1773,6 +1851,27 @@ EOF;
         }
 
         while (!$result->EOF) {
+            // in case all entries are getting displayed in every locale,
+            // then we have to enforce uniqueness within slugs over all
+            // locales. This is achieved by grouping all slugs by ID 0.
+            if ($this->arrSettings['settingsShowEntriesInAllLang']) {
+                $langId = 0;
+            } else {
+                $langId = $result->fields['lang_id'];
+            }
+
+            // Create a list of all slugs of all entries (optinally grouped by
+            // locale if option settingsShowEntriesInAllLang is not set).
+            // This is doen by putting all all slugs of all entries in index 0.
+            if (!isset(static::$slugs[$langId])) {
+                static::$slugs[$langId] = array(
+                    0 => array(),
+                );
+            }
+            static::$slugs[$langId][0][] = $result->fields['slug'];
+
+            // remember all slugs (grouped by locale) identified by the ID of
+            // its associated entry
             if (!isset(static::$slugs[$result->fields['lang_id']])) {
                 static::$slugs[$result->fields['lang_id']] = array();
             }
