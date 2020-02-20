@@ -26,7 +26,7 @@
  */
 
 /**
- * This is the english language file for backend mode.
+ * This is the german language file for backend mode.
  * This file is included by Cloudrexx and all entries are set as placeholder
  * values for backend ACT template by SystemComponentBackendController
  *
