@@ -108,7 +108,11 @@ class BackendController
                             'attributes' => array(
                                 'class' => 'data-access-id'
                             )
-                        )
+                        ),
+                        'postCallback' => array(
+                            'adapter' => 'DataAccess',
+                            'method' => 'storeSelectedDataAccess',
+                        ),
                     ),
                     'apiKey' => array(
                         'valueCallback' => array(
@@ -121,10 +125,6 @@ class BackendController
                         'formfield' => array(
                             'adapter' => 'DataAccess',
                             'method' => 'getDataAccessSearch'
-                        ),
-                        'storecallback' => array(
-                            'adapter' => 'DataAccess',
-                            'method' => 'storeSelectedDataAccess'
                         ),
                         'tooltip' => $_ARRAYLANG[
                             'TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'

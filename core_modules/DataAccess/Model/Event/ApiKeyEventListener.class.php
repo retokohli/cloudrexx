@@ -46,56 +46,6 @@ namespace Cx\Core_Modules\DataAccess\Model\Event;
  */
 class ApiKeyEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener
 {
-    /**
-     * To be able to store the selected DataAccess entities when we create a
-     * new ApiKey, the ApiKey entity must be persisted to the last.
-     *
-     * @global array $_ARRAYLANG containing the language variables
-     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args contains the
-     *                                                     persisted entity.
-     * @throws \Cx\Core\Error\Model\Entity\ShinyException  if the json request
-     *                                                     fails.
-     * @throws \Exception if a param does not exist.
-     */
-    public function postPersist(\Doctrine\ORM\Event\LifecycleEventArgs $args)
-    {
-        global $_ARRAYLANG;
-
-        $dataAccessApiKeys = array();
-        if ($this->cx->getRequest()->hasParam('dataAccessApiKeys', false)) {
-            $dataAccessApiKeys = $this->cx->getRequest()->getParam(
-                'dataAccessApiKeys', false
-            );
-        }
-
-        $dataAccessReadOnly = array();
-        if ($this->cx->getRequest()->hasParam('dataAccessReadOnly', false)) {
-            $dataAccessReadOnly = $this->cx->getRequest()->getParam(
-                'dataAccessReadOnly', false
-            );
-        }
-
-        $json = new \Cx\Core\Json\JsonData();
-        $jsonResult = $json->data(
-            'DataAccess',
-            'storeSelectedDataAccess',
-            array(
-                'postedValue' => $args->getEntity(),
-                'entity' => array(
-                    'dataAccessApiKeys' => $dataAccessApiKeys,
-                    'dataAccessReadOnly'  => $dataAccessReadOnly,
-                )
-            )
-        );
-
-        if ($jsonResult['status'] != 'success') {
-            throw new \Cx\Core\Error\Model\Entity\ShinyException(
-                $_ARRAYLANG[
-                    'TXT_CORE_MODULE_DATA_ACCESS_COULD_NOT_STORE_APIKEY'
-                ]
-            );
-        }
-    }
 
     /**
      * Prevent duplicate API keys from being stored

@@ -271,35 +271,38 @@ class JsonDataAccessController
      */
     public function storeSelectedDataAccess($args)
     {
+        // $postedValue, $fieldName, $entity
         // Check if params are valid.
         if (
-            empty($args['postedValue']) ||
-            empty($args['postedValue']->getId())
+            empty($args['entity']) ||
+            empty($args['entity']->getId())
         ) {
             return;
         }
-        $id = $args['postedValue']->getId();
+        $id = $args['entity']->getId();
 
-        $allDataAccess = array();
-        if (!empty($args['entity']['dataAccessApiKeys'])) {
-            $allDataAccess = $args['entity']['dataAccessApiKeys'];
+        $dataAccessApiKeys = array();
+        if ($this->cx->getRequest()->hasParam('dataAccessApiKeys', false)) {
+            $dataAccessApiKeys = $this->cx->getRequest()->getParam(
+                'dataAccessApiKeys', false
+            );
         }
-
-        $allDataAccessReadOnly = array();
-        if (!empty($args['entity']['dataAccessReadOnly'])) {
-            $allDataAccessReadOnly = $args['entity']['dataAccessReadOnly'];
+        $dataAccessReadOnly = array();
+        if ($this->cx->getRequest()->hasParam('dataAccessReadOnly', false)) {
+            $dataAccessReadOnly = $this->cx->getRequest()->getParam(
+                'dataAccessReadOnly', false
+            );
         }
-
 
         $em = $this->cx->getDb()->getEntityManager();
         $repoApiKey = $em->getRepository(
             'Cx\Core_Modules\DataAccess\Model\Entity\ApiKey'
         );
 
-        foreach ($allDataAccess as $dataAccessId) {
+        foreach ($dataAccessApiKeys as $dataAccessId) {
             $repoApiKey->addNewDataAccessApiKey($id, $dataAccessId);
         }
-        foreach ($allDataAccessReadOnly as $dataAccessReadOnlyId) {
+        foreach ($dataAccessReadOnly as $dataAccessReadOnlyId) {
             $repoApiKey->addNewDataAccessApiKey(
                 $id,
                 $dataAccessReadOnlyId,
@@ -307,7 +310,7 @@ class JsonDataAccessController
             );
         }
 
-        $dataAccessIds = array_merge($allDataAccess, $allDataAccessReadOnly);
+        $dataAccessIds = array_merge($dataAccessApiKeys, $dataAccessReadOnly);
 
         $repoApiKey->removeOldDataAccessApiKeys($id, $dataAccessIds);
     }
