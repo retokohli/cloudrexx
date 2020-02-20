@@ -143,10 +143,13 @@ namespace Cx\Core\Model {
          * @return  \Cx\Core\Model\Db   Instance based on existing database connection
          */
         public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser,
-                                                      \PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em
+                                                      \PDO $pdo, \ADODB_pdo $adoDb, \Cx\Core\Model\Controller\EntityManager $em
         ) {
             // Bind database connection
-            $db = new static($dbConnection, $dbUser);
+
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cacheDriver = $cx->getComponent('Cache')->getCacheDriver();
+            $db = new static($dbInfo, $dbUser, $cacheDriver);
             $db->setPdoConnection($pdo);
             $db->setAdoDb($adoDb);
             $db->setEntityManager($em);
@@ -186,9 +189,10 @@ namespace Cx\Core\Model {
                     // We will have to manually do it by executing the SET NAMES query when connection to the database.
                     \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$dbCharSet,
                     \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = \'' . $offsetString . '\'',
+                    \PDO::MYSQL_ATTR_MULTI_STATEMENTS => false,
                 )
             );
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+            $this->pdo->setAttribute(\PDO::ATTR_STATEMENT_CLASS, array('Doctrine\DBAL\Driver\PDOStatement', array()));
 
             // disable ONLY_FULL_GROUP_BY, STRICT_TRANS_TABLES mode
             // this is a temporary fix to ensure MySQL 5.7 compatability
@@ -198,7 +202,19 @@ namespace Cx\Core\Model {
             $sqlModes = array_filter(
                 $sqlModes,
                 function($e) {
-                    if (in_array(trim($e), array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES'))) {
+                    if (
+                        in_array(
+                            trim($e),
+                            array(
+                                'ONLY_FULL_GROUP_BY',
+                                'STRICT_TRANS_TABLES',
+                                'STRICT_ALL_TABLES',
+                                'TRADITIONAL',
+                                'NO_ZERO_DATE',
+                                'NO_ZERO_IN_DATE',
+                            )
+                        )
+                    ) {
                         return false;
                     }
                     return true;
@@ -281,7 +297,7 @@ namespace Cx\Core\Model {
             }
 
             $drivers = $this->em->getConfiguration()->getMetadataDriverImpl()->getDrivers();
-            $drivers['Cx']->addPaths($paths);
+            $drivers['Cx']->getLocator()->addPaths($paths);
         }
 
         /**
@@ -295,7 +311,7 @@ namespace Cx\Core\Model {
 
             $config = new \Doctrine\ORM\Configuration();
 
-            //$config->setResultCacheImpl($this->cacheDriver);
+            $config->setResultCacheImpl($this->cacheDriver);
             $config->setMetadataCacheImpl($this->cacheDriver);
             $config->setQueryCacheImpl($this->cacheDriver);
 
@@ -303,12 +319,12 @@ namespace Cx\Core\Model {
             $config->setProxyNamespace('Cx\Model\Proxies');
 
             /**
-             * This should be set to true if workbench is present and active.
-             * Just checking for workbench.config is not really a good solution.
-             * Since ConfigurationFactory used by EM caches auto generation
-             * config value, there's no possibility to set this later.
+             * We set this to false as we only generate proxies by hand.
+             * Use one of the following commands to do so:
+             * ./cx workbench database update
+             * ./cx workbench doctrine orm:generate-proxies
              */
-            $config->setAutoGenerateProxyClasses(file_exists(ASCMS_DOCUMENT_ROOT.'/workbench.config'));
+            $config->setAutoGenerateProxyClasses(false);
 
             $connectionOptions = array(
                 'pdo'       => $this->getPdoConnection(),
@@ -339,12 +355,8 @@ namespace Cx\Core\Model {
             $sluggableDriverImpl = $config->newDefaultAnnotationDriver(
                 $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Sluggable'
             );
-            $chainDriverImpl->addDriver($sluggableDriverImpl,
-                'Gedmo\Sluggable');
             $sluggableListener = new \Gedmo\Sluggable\SluggableListener();
-            // you should set the used annotation reader to listener,
-            // to avoid creating new one for mapping drivers
-            //$sluggableListener->setAnnotationReader($cachedAnnotationReader);
+            $sluggableListener->setAnnotationReader($sluggableDriverImpl);
             $evm->addEventSubscriber($sluggableListener);
 
             $timestampableDriverImpl = $config->newDefaultAnnotationDriver(
@@ -358,28 +370,21 @@ namespace Cx\Core\Model {
 
             // Note that LANG_ID and other language constants/variables
             // have not been set yet!
-            // $langCode = \FWLanguage::getLanguageCodeById(LANG_ID);
-            // \DBG::log("LANG_ID ".LANG_ID.", language code: $langCode");
-            // -> LOG: LANG_ID LANG_ID, language code:
             $translatableDriverImpl = $config->newDefaultAnnotationDriver(
                 $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Translatable/Entity'
             );
-            $chainDriverImpl->addDriver($translatableDriverImpl,
-                'Gedmo\Translatable');
-            // RK: Note:
-            // This might have been renamed in newer versions:
-            //$translationListener = new \Gedmo\Translatable\TranslatableListener();
-            // In this Doctrine version, it is present as:
-            $this->translationListener = new \Gedmo\Translatable\TranslationListener();
-            // current translation locale should be set from session
-            // or hook later into the listener,
-            // but *before the entity manager is flushed*
-// TODO: Set default locale from the default language?
-            //$this->translationListener->setDefaultLocale('de_ch');
-            // Set the current locale (e.g. from the active language)
-            // wherever that's required.
-            //$translationListener->setTranslatableLocale('de_ch');
-            //$translationListener->setAnnotationReader($cachedAnnotationReader);
+            $this->translationListener = new \Gedmo\Translatable\TranslatableListener();
+            $this->translationListener->setAnnotationReader($translatableDriverImpl);
+
+            // Current language for backend mode is set in
+            // \Cx\Core\LanguageManager\Controller\ComponentController::postResolve()
+            // Current language for frontend mode is set in
+            // \Cx\Core\Routing\Resolver::resolve()
+            // Current language for command mode is set in
+            // \Cx\Core\Core\Controller\Cx::loadContrexx()
+
+            // We don't want automatic fallbacks as we want to control them.
+            $this->translationListener->setTranslationFallback(false);
             $evm->addEventSubscriber($this->translationListener);
 
             // RK: Note:
@@ -393,6 +398,26 @@ namespace Cx\Core\Model {
             $evm->addEventSubscriber($treeListener);
             $config->setMetadataDriverImpl($chainDriverImpl);
 
+            // Doctrine Extensions
+            $extensionList = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load(
+                $cx->getCodeBaseLibraryPath() .
+                    '/doctrine/beberlei/doctrineextensions/config/mysql.yml'
+            );
+            $extensionList = $extensionList->toArray();
+            $extensionList = $extensionList['orm']['dql'];
+            foreach ($extensionList as $extensionType=>$extensions) {
+                // $extensionType contains a string like 'numeric_functions'
+                $addMethod = 'addCustom' . ucfirst(
+                    current(explode('_', $extensionType))
+                ) . 'Function';
+                foreach ($extensions as $extensionName=>$extensionClass) {
+                    $config->$addMethod(
+                        $extensionName,
+                        new $extensionClass($extensionName)
+                    );
+                }
+            }
+
             //table prefix
             $prefixListener = new \DoctrineExtension\TablePrefixListener($this->db->getTablePrefix());
             $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener);
@@ -403,9 +428,21 @@ namespace Cx\Core\Model {
 
             //resolve enum, set errors
             $conn = $em->getConnection();
-            $conn->setCharset($this->db->getCharset());
-            $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-            $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
+            foreach (array('enum', 'timestamp') as $type) {
+                \Doctrine\DBAL\Types\Type::addType(
+                    $type,
+                    'Cx\Core\Model\Model\Entity\\' . ucfirst($type) . 'Type'
+                );
+                $conn->getDatabasePlatform()->registerDoctrineTypeMapping(
+                    $type,
+                    $type
+                );
+            }
+            $conn->getDatabasePlatform()->registerDoctrineTypeMapping(
+                'set',
+                'string'
+            );
+            \Cx\Core\Model\Controller\YamlDriver::registerKnownEnumTypes($conn);
 
             $this->em = $em;
             return $this->em;
@@ -428,6 +465,15 @@ namespace Cx\Core\Model {
          */
         public function setEntityManager($em) {
             $this->em = $em;
+        }
+
+        /**
+         * Returns the LoggableListener in use
+         *
+         * @return \Gedmo\Loggable\LoggableListener Current loggable listener
+         */
+        public function getLoggableListener(): \Gedmo\Loggable\LoggableListener {
+            return $this->loggableListener;
         }
     }
 }

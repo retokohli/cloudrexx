@@ -64,7 +64,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      */
     public function getAccessableMethods()
     {
-        if (!\Permission::checkAccess(47, 'static', true)) {
+        if (!\Permission::checkAccess(\Cx\Core\ViewManager\Controller\ViewManager::TEMPLATE_EDITOR_ACCESS_ID, 'static', true)) {
             return array();
         }
         return array(

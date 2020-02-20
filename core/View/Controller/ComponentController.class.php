@@ -28,6 +28,7 @@
 /**
  * This is the main Controller for View
  * @copyright   Cloudrexx AG
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_view
@@ -39,6 +40,7 @@ namespace Cx\Core\View\Controller;
 /**
  * This is the main Controller for View
  * @copyright   Cloudrexx AG
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_view
@@ -53,7 +55,82 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array();
+        return array('EsiWidget');
+    }
+
+    /**
+     * Returns a list of JsonAdapter class names
+     *
+     * The array values might be a class name without namespace. In that case
+     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
+     * If the array value starts with a backslash, no namespace is added.
+     *
+     * Avoid calculation of anything, just return an array!
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('EsiWidgetController');
+    }
+
+    /**
+     * Do something after system initialization
+     *
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx) {
+        $widgetController = $this->getComponent('Widget');
+        $widgetNames = array(
+            'STANDARD_URL',
+            'MOBILE_URL',
+            'PRINT_URL',
+            'PDF_URL',
+            'APP_URL',
+        );
+        foreach ($widgetNames as $widgetName) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                $widgetName,
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_PLACEHOLDER,
+                '',
+                '',
+                array(
+                    'ref' => '$(HTTP_REFERER)',
+                )
+            );
+            $widget->setEsiVariable(0);
+            $widgetController->registerWidget(
+                $widget
+            );
+        }
+    }
+
+    /**
+     * @{inheritdoc}
+     */
+    public function registerEvents() {
+        $evm = $this->cx->getEvents();
+        $evm->addEvent($this->getName() . '.Sigma:loadContent');
+        $evm->addEvent($this->getName() . '.Sigma:setVariable');
+    }
+
+    /**
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners() {
+        $evm = $this->cx->getEvents();
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core\View\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
     /**
@@ -183,7 +260,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
         $em = $this->cx->getDb()->getEntityManager();
-        $themeRepo = $em->getRepository('Cx\Core\View\Model\Entity\Theme');
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $defaultTheme = $themeRepo->getDefaultTheme(
             $channel,
             $page->getLang()
@@ -216,5 +293,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return $fileInCurrentTheme;
             }
         }
+    }
+
+    /**
+     * Returns HTML-Code to show an "experimental" flag
+     *
+     * @param string $tooltip (optional) Tooltip to show when hovering over the flag
+     */
+    public function flagExperimental($tooltip = '') {
+        $template = new \Cx\Core\Html\Sigma(
+            $this->getDirectory() . '/View/Template/Backend'
+        );
+        $template->loadTemplateFile('Experimental.html');
+        if (empty($tooltip)) {
+            $template->hideBlock('with-tooltip');
+            $template->touchBlock('without-tooltip');
+        } else {
+            $template->setVariable('TOOLTIP', $tooltip);
+            $template->touchBlock('with-tooltip');
+            $template->hideBlock('without-tooltip');
+        }
+        return $template->get();
     }
 }

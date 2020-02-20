@@ -164,8 +164,7 @@ class JsonPage implements JsonAdapter {
             // load the draft revision if one is available and we're not loading historic data:
             else if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
                 $this->logRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
-
-                $availableRevisions = $this->logRepo->getLogEntries($page);
+                $availableRevisions = $this->logRepo->getLogEntries($page, true, 2);
                 $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
             }
 
@@ -236,7 +235,6 @@ class JsonPage implements JsonAdapter {
                 $node = $this->nodeRepo->find($nodeId);
                 $page = $node->translatePage(true, \FWLanguage::getLanguageIdByCode($lang));
                 $page->setNodeIdShadowed($node->getId());
-                $page->setEditingStatus('');
 
                 $newPage = true;
                 $reload  = true;
@@ -307,11 +305,6 @@ class JsonPage implements JsonAdapter {
 
             if (!empty($pageArray)) {
                 $page->updateFromArray($validatedPageArray);
-                if ($newPage) {
-                    // Make sure page has an ID
-                    $this->em->persist($page);
-                    $this->em->flush();
-                }
             }
 
             if (!empty($action)) {
@@ -350,6 +343,12 @@ class JsonPage implements JsonAdapter {
 
             $page->setUpdatedAtToNow();
             $page->validate();
+
+            if (!empty($pageArray) && $newPage) {
+                // Make sure page has an ID
+                $this->em->persist($page);
+                $this->em->flush();
+            }
 
             // Permissions are only updated in the editing mode.
             if (!empty($pageArray)) {
@@ -402,7 +401,7 @@ class JsonPage implements JsonAdapter {
                 }
 
                 if ($page->getEditingStatus() != '') {
-                    $logEntries = $this->logRepo->getLogEntries($page, false);
+                    $logEntries = $this->logRepo->getLogEntries($page, false, 1);
                     $this->em->remove($logEntries[0]);
                 }
 
@@ -433,8 +432,7 @@ class JsonPage implements JsonAdapter {
                 // Gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
                 // order to get a clean set of logEntries.
                 $this->em->flush();
-                $logEntries = $this->logRepo->getLogEntries($page, false);
-
+                $logEntries = $this->logRepo->getLogEntries($page, false, 2);
                 // Revert to the published version.
                 $cachedEditingStatus = $page->getEditingStatus();
                 $this->logRepo->revert($page, $logEntries[1]->getVersion());
@@ -474,7 +472,7 @@ class JsonPage implements JsonAdapter {
                 if ($updatingDraft) {
                     $this->em->flush();
 
-                    $logEntries = $this->logRepo->getLogEntries($page);
+                    $logEntries = $this->logRepo->getLogEntries($page, true, 3);
                     $currentLog = $logEntries[1];
                     $currentLogData = $currentLog->getData();
                     $currentLogData['editingStatus'] = $page->getEditingStatus();
@@ -512,9 +510,15 @@ class JsonPage implements JsonAdapter {
                     }
                     if (isset($dataPost['inheritSkin']) && $dataPost['inheritSkin'] == 'on'/*theme*/) {
                         $currentPage->setSkin($page->getSkin());
+                        if (!empty($pageArray['useSkinForAllChannels'])) {
+                            $currentPage->setUseSkinForAllChannels(1);
+                        }
                     }
                     if (isset($dataPost['inheritCustomContent']) && $dataPost['inheritCustomContent'] == 'on'/*customContent*/) {
                         $currentPage->setCustomContent($page->getCustomContent());
+                        if (!empty($pageArray['useCustomContentForAllChannels'])) {
+                            $currentPage->setUseCustomContentForAllChannels(1);
+                        }
                     }
                     if (isset($dataPost['inheritCssName']) && $dataPost['inheritCssName'] == 'on'/*cssName*/) {
                         $currentPage->setCssName($page->getCssName());
@@ -553,8 +557,7 @@ class JsonPage implements JsonAdapter {
 
             // this fixes log version number skipping
             $this->em->clear();
-            $logs = $this->logRepo->getLogEntries($page);
-
+            $logs = $this->logRepo->getLogEntries($page, true, 2);
             $this->em->persist($logs[0]);
 
             if ($updatingDraft) {
@@ -673,6 +676,7 @@ class JsonPage implements JsonAdapter {
         register_shutdown_function(array($this, 'multipleSetShutdown'));
 
         $post = $params['post'];
+        $data = array('post' => array());
         $data['post']['lang']   = $post['lang'];
         $data['post']['action'] = $post['action'];
         $recursive = (isset($params['get']['recursive']) && $params['get']['recursive'] == 'true');
@@ -700,49 +704,49 @@ class JsonPage implements JsonAdapter {
                 case 'activate':
                     if ($page->isActive()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'deactivate':
                     if (!$page->isActive()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'show':
                     if ($page->isVisible()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'hide':
                     if (!$page->isVisible()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'protect':
                     if ($page->isFrontendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'unprotect':
                     if (!$page->isFrontendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'lock':
                     if ($page->isBackendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 case 'unlock':
                     if (!$page->isBackendProtected()) {
                         // we have that already, continue
-                        continue;
+                        continue 2;
                     }
                     break;
                 default:
@@ -896,7 +900,15 @@ class JsonPage implements JsonAdapter {
         return $output;
     }
 
-    public function getHistoryTable($params) {
+    /**
+     * Get the page logs
+     *
+     * @param array $params Arguments passed from JsonData
+     *
+     * @throws \Exception
+     */
+    public function getHistoryTable($params)
+    {
         global $_CORELANG, $_CONFIG;
 
         if (empty($params['get']['page'])) {
@@ -923,31 +935,34 @@ class JsonPage implements JsonAdapter {
         //(III) collect page informations - path, virtual language directory
         $path         = $this->pageRepo->getPath($page);
         $langDir      = \FWLanguage::getLanguageCodeById($page->getLang());
-        $logs         = $this->logRepo->getLogEntries($page);
-
         //(V) add the history entries
         // Paging:
-        $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
-        $numberOfEntries = !empty($params['get']['limit']) ? $params['get']['limit'] : $_CONFIG['corePagingLimit'];
+        $offset          =  0;
+        $numberOfEntries = $_CONFIG['corePagingLimit'];
+        if (!empty($params['get']['pos'])) {
+            $offset = $params['get']['pos'];
+        }
+        if (!empty($params['get']['limit'])) {
+            $numberOfEntries = $params['get']['limit'];
+        }
+        $logs = $this->logRepo->getLogEntries(
+            $page,
+            true,
+            $numberOfEntries,
+            $offset
+        );
+        $logsCount  = $this->logRepo->getLogEntriesCount($page);
         $tableRowId = 1;
-        $i = 0;
-        $first = true;
+        $i          = 0;
+        $first      = true;
         session_write_close();
-        foreach ($logs as $key => $log){
-            // check whether the current index is between the range which should be displayed
-            if ( $i >= ($numberOfEntries + $offset)){
-                break;
-            }
-            if ($i < $offset) {
-                $i++;
-                continue;
-            }
+        foreach ($logs as $log) {
             $version = $log->getVersion();
             $this->logRepo->revert($page, $version);
 
             // is a log of a draft state
             if ($page->isDraft()) {
-                if ($first) {
+                if ($offset == 0 && $first) {
                     // skip first draft log
                     // set flag to false
                     $first = false;
@@ -973,7 +988,14 @@ class JsonPage implements JsonAdapter {
             $i++;
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging(count($logs), $offset, '?cmd=ContentManager&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging(
+            $logsCount,
+            $offset,
+            '?cmd=ContentManager&page=' . $page->getId() . '&tab=history',
+            $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'],
+            true,
+            $numberOfEntries
+        ) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
