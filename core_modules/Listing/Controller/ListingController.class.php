@@ -189,7 +189,7 @@ class ListingController {
 
     /**
      * Handles a list
-     * @param mixed $entities Entity class name as string or callback function
+     * @param mixed $entities Entity class name as string or callback function (experimental)
      * @param array $crit (optional) Doctrine style criteria array to use
      * @param array $options (Unused)
      */
@@ -337,13 +337,25 @@ class ListingController {
             return $data;
         }
         $em = \Env::get('em');
-        $entityRepository = $em->getRepository($this->entityClass);
+        if (!$this->callback) {
+            $entityRepository = $em->getRepository($this->entityClass);
+        }
         foreach ($this->order as $field=>&$order) {
             $order = $order == SORT_DESC ? 'DESC' : 'ASC';
         }
 
+        if ($this->callback) {
+            $callback = $this->callback;
+            $entities = $callback(
+                $this->offset,
+                $this->count,
+                $this->criteria,
+                $this->order
+            )->getResult();
+            $this->dataSize = $this->count;
+
         // YAMLRepository:
-        if ($entityRepository instanceof \Countable) {
+        } else if ($entityRepository instanceof \Countable) {
             if (!empty($this->filter)) {
                 \DBG::msg('YAMLRepository does not support "filter" yet');
             }
@@ -357,7 +369,7 @@ class ListingController {
         } else {
             $qb = $em->createQueryBuilder();
             $metaData = $em->getClassMetadata($this->entityClass);
-            $qb->select('x')->from($this->entityClass, 'x');
+            $qb->select('DISTINCT x')->from($this->entityClass, 'x');
             // filtering: advanced search
             if ($this->filtering) {
                 if (
@@ -468,7 +480,7 @@ class ListingController {
             $identifierFieldNames = $metaData->getIdentifierFieldNames();
             $identifierFieldNames = reset($identifierFieldNames);
             $qb->select(
-                'count(x.' . $identifierFieldNames . ')'
+                'count(DISTINCT x.' . $identifierFieldNames . ')'
             );
             $qb->setFirstResult(null);
             $qb->setMaxResults(null);

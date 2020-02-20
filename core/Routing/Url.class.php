@@ -254,7 +254,8 @@ class Url {
      * therefore unable to perform its task, it will return TRUE as fallback.
      *
      * @todo This does not work correctly if setPath() is called from outside
-     * @return boolean True for internal URL, false otherwise
+     * @return boolean True for internal URL, false otherwise. In case the
+     * domain repository can't be loaded, the method will always return TRUE.
      */
     public function isInternal() {
         try {
@@ -278,6 +279,12 @@ class Url {
                 return false;
             }
         } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            // In case the domain repository can't be loaded,
+            // doctrine's entity manager will throw an exception.
+            // We catch this exception for that specific case to make
+            // the web-installer work.
+            \DBG::msg($e->getMessage());
+        } catch (\Doctrine\ORM\Mapping\MappingException $e) {
             // In case the domain repository can't be loaded,
             // doctrine's entity manager will throw an exception.
             // We catch this exception for that specific case to make
@@ -541,6 +548,13 @@ class Url {
      * @return  string
      */
     public static function array2params($array = array()) {
+        if (
+            !is_array($array) &&
+            !is_object($array)
+        ) {
+            return '';
+        }
+
         if (isset($array['csrf'])) {
             unset($array['csrf']);
         }
@@ -588,7 +602,7 @@ class Url {
         $sp = strtolower($_SERVER['SERVER_PROTOCOL']);
         $protocol = substr($sp, 0, strpos($sp, '/')) . $s;
         $port = ($_SERVER['SERVER_PORT'] == '80') ? '' : (':'.$_SERVER['SERVER_PORT']);
-        return new Url($protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'], true);
+        return new Url($protocol . '://' . $_SERVER['HTTP_HOST'] . $port . $_SERVER['REQUEST_URI'], true);
     }
 
     /**
@@ -731,6 +745,8 @@ class Url {
 
     /**
      * Returns an Url object pointing to the documentRoot of the website
+     * @param   array   $arrParameters (optional) URL arguments for the query
+     *                                 string.
      * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
      * @param string $protocol (optional) The protocol to use
      * @return \Cx\Core\Routing\Url Url object for the documentRoot of the website
@@ -747,12 +763,8 @@ class Url {
         $offset = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $langDir = \FWLanguage::getLanguageCodeById($lang);
         $parameters = '';
-        if (count($arrParameters)) {
-            $arrParams = array();
-            foreach ($arrParameters as $key => $value) {
-                $arrParams[] = $key.'='.$value;
-            }
-            $parameters = '?'.implode('&', $arrParams);
+        if (($parameters = self::array2params($arrParameters)) && (strlen($parameters) > 0)) {
+            $parameters = '?'.$parameters;
         }
 
         return new Url($protocol.'://'.$host.$offset.'/'.$langDir.'/'.$parameters, true);

@@ -539,7 +539,6 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesDownloadsPath;
         protected $websiteImagesCalendarPath;
         protected $websiteImagesPodcastPath;
-        protected $websiteImagesBlogPath;
         protected $websiteImagesDataPath;
         protected $websiteMediaForumUploadPath;
         protected $websiteMediaarchive1Path;
@@ -557,7 +556,6 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesDownloadsWebPath;
         protected $websiteImagesCalendarWebPath;
         protected $websiteImagesPodcastWebPath;
-        protected $websiteImagesBlogWebPath;
         protected $websiteImagesDataWebPath;
         protected $websiteMediaForumUploadWebPath;
         protected $websiteMediaarchive1WebPath;
@@ -851,15 +849,17 @@ namespace Cx\Core\Core\Controller {
                 // remove CSRF token
                 output_reset_rewrite_vars();
                 echo file_get_contents($offlinePath . '/offline.html');
-                \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
-                \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
-                \DBG::dump($e->getTrace());
                 \DBG::msg('GET:');
                 \DBG::dump($_GET);
                 \DBG::msg('POST:');
                 \DBG::dump($_POST);
                 \DBG::msg('COOKIE:');
                 \DBG::dump($_COOKIE);
+                \DBG::msg('SERVER:');
+                \DBG::dump($_SERVER);
+                \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
+                \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
+                \DBG::dump($e->getTrace());
                 die();
             }
         }
@@ -1404,11 +1404,12 @@ namespace Cx\Core\Core\Controller {
             $objDbUser->setPassword($_DBCONFIG['password']);
 
             // Initialize database connection
-            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser, $this->getComponent('Cache')->getCacheDriver());
-            $objDatabase = $this->db->getAdoDb();
+            $db = new \Cx\Core\Model\Db($objDb, $objDbUser, $this->getComponent('Cache')->getCacheDriver());
+            $objDatabase = $db->getAdoDb();
             \Env::set('db', $objDatabase);
 
-            $em = $this->db->getEntityManager();
+            $em = $db->getEntityManager();
+            $this->db = $db;
             $pageGuard = new \PageGuard($this->db->getAdoDb());
             \Env::set('pageguard', $pageGuard);
 
@@ -1595,6 +1596,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCommands($params, true);
 
                     if (!isset($this->commands[$command])) {
+                        http_response_code(400);
                         echo 'Command \'' . $command . '\' does not exist';
                         $command = 'help';
                     }
@@ -2018,12 +2020,11 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          * @global array $_CONFIG
          * @global type $themesPages
-         * @global type $objBanner
          * @global type $_CORELANG
          * @return type
          */
         protected function setPostContentLoadPlaceholders() {
-            global $_CONFIG, $themesPages, $objBanner, $_CORELANG;
+            global $_CONFIG, $themesPages, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $formattedVersion = htmlentities(
@@ -2117,7 +2118,6 @@ namespace Cx\Core\Core\Controller {
                 'ONLINE_USERS'                   => $objCounter ? $objCounter->getOnlineUsers() : '',
                 'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
                 'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
-                'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
@@ -2155,21 +2155,28 @@ namespace Cx\Core\Core\Controller {
                                                             s.parentNode.insertBefore(x, s);
                                                         })(document, "script");
                                                     </script>',
-                'GOOGLE_ANALYTICS'               => '<script>
-                                                        var gaProperty = \'' . $googleAnalyticsId . '\';
-                                                        var disableStr = \'ga-disable-\' + gaProperty; 
-                                                        if (document.cookie.indexOf(disableStr + \'=true\') > -1) { 
-                                                            window[disableStr] = true;
-                                                        } 
-                                                        function gaOptout(successMsg) { 
-                                                            document.cookie = disableStr + \'=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/\'; 
-                                                            window[disableStr] = true; 
-                                                            alert(successMsg);
-                                                        }
-                                                        ' . $googleAnalyticsCode . '
-                                                    </script>
-                                                    <script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
             ));
+
+            // Google Analytics will not be parsed in preview
+            if (!isset($_GET['pagePreview']) && !isset($_GET['preview'])) {
+                $this->template->setVariable(
+                    'GOOGLE_ANALYTICS',
+                    '<script>
+                        var gaProperty = \'' . $googleAnalyticsId . '\';
+                        var disableStr = \'ga-disable-\' + gaProperty;
+                        if (document.cookie.indexOf(disableStr + \'=true\') > -1) {
+                            window[disableStr] = true;
+                        }
+                        function gaOptout(successMsg) {
+                            document.cookie = disableStr + \'=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/\';
+                            window[disableStr] = true;
+                            alert(successMsg);
+                        }
+                        ' . $googleAnalyticsCode . '
+                    </script>
+                    <script async src=\'https://www.google-analytics.com/analytics.js\'></script>'
+                );
+            }
         }
 
         /**
@@ -2341,7 +2348,6 @@ JSCODE;
                     'CX_VERSION'       => $_CONFIG['coreCmsVersion'],
                     'CX_CODE_NAME'     => $_CONFIG['coreCmsCodeName'],
                     'CX_STATUS'        => $_CONFIG['coreCmsStatus'],
-                    'CX_RELEASE_DATE'  => date(ASCMS_DATE_FORMAT_DATE, $_CONFIG['coreCmsReleaseDate']),
                     'CX_NAME'          => $_CONFIG['coreCmsName'],
                 ));
 
@@ -2824,7 +2830,6 @@ JSCODE;
             $this->websiteImagesDownloadsPath   = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Downloads';
             $this->websiteImagesCalendarPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Calendar';
             $this->websiteImagesPodcastPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Podcast';
-            $this->websiteImagesBlogPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmPath         = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Crm';
             $this->websiteImagesDataPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfilePath  = $this->websiteImagesCrmPath . '/profile';
@@ -2849,7 +2854,6 @@ JSCODE;
             $this->websiteImagesDownloadsWebPath= $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Downloads';
             $this->websiteImagesCalendarWebPath = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Calendar';
             $this->websiteImagesPodcastWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Podcast';
-            $this->websiteImagesBlogWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmWebPath      = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Crm';
             $this->websiteImagesDataWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
@@ -3047,22 +3051,6 @@ JSCODE;
         public function getWebsiteImagesAttachWebPath()
         {
             return $this->websiteImagesAttachWebPath;
-        }
-
-        /**
-         * @return string
-         */
-        public function getWebsiteImagesBlogPath()
-        {
-            return $this->websiteImagesBlogPath;
-        }
-
-        /**
-         * @return string
-         */
-        public function getWebsiteImagesBlogWebPath()
-        {
-            return $this->websiteImagesBlogWebPath;
         }
 
         /**
