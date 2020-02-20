@@ -144,7 +144,7 @@ class DBG
         if ($mode !== DBG_NONE) {
             if ($oldMode === DBG_NONE) {
                 self::log('DBG enabled ('.self::getActivatedFlagsAsString().')');
-                self::stack();
+//                self::stack();
             } else {
                 self::log('DBG mode changed ('.self::getActivatedFlagsAsString().')');
             }
@@ -206,7 +206,7 @@ class DBG
         }
         if ($mode === DBG_NONE) {
             self::log('DBG disabled ('.self::getActivatedFlagsAsString().')');
-            self::stack();
+//            self::stack();
         }
         self::__internal__setup();
     }
@@ -814,7 +814,7 @@ class DBG
             // Catch infinite loop produced by var_export()
             if ($errstr == 'var_export does not handle circular references') {
                 self::log('Cancelled script execution to prevent memory overflow caused by var_export()');
-                self::stack();
+//                self::stack();
                 exit;
             }
         }
@@ -1051,7 +1051,7 @@ class DBG
         self::_log('SQL: '.$sql, $status);
 
         if (!$forceOutput && self::$mode & DBG_DB_TRACE) {
-            self::stack();
+//            self::stack();
         }
     }
 

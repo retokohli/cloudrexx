@@ -772,7 +772,7 @@ class FileSystem
                         return false;
                     }
                 } catch (FileSystemException $e) {
-                    \DBG::msg($e->getMessage());
+//                    \DBG::msg($e->getMessage());
                     return false;
                 }
             }
@@ -799,7 +799,7 @@ class FileSystem
             $objFile = new \Cx\Lib\FileSystem\File($source_path);
             $objFile->copy($target_path, $force);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            \DBG::msg($e->getMessage());
+//            \DBG::msg($e->getMessage());
         }
     }
 
@@ -939,7 +939,7 @@ class FileSystem
             $objFile->delete();
             return true;
         } catch (FileSystemException $e) {
-            \DBG::msg($e->getMessage());
+//            \DBG::msg($e->getMessage());
         }
 
         return false;
@@ -1097,7 +1097,7 @@ class FileSystem
             $objFile->touch();
             return true;
         } catch (FileSystemException $e) {
-            \DBG::msg($e->getMessage());
+//            \DBG::msg($e->getMessage());
         }
 
         return false;
@@ -1110,7 +1110,7 @@ class FileSystem
             $objFile->makeWritable();
             return true;
         } catch (FileSystemException $e) {
-            \DBG::msg($e->getMessage());
+//            \DBG::msg($e->getMessage());
         }
 
         return false;

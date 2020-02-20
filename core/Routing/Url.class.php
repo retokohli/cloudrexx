@@ -167,7 +167,7 @@ class Url {
         if (empty($this->domain)) {
             $this->domain = \Env::get('config')['domainUrl'];
         }
-        $this->protocol = $data['scheme'];
+        $this->protocol = $data['scheme'] ?? null;
         if (empty($this->protocol)) {
             $this->protocol = 'http';
         }
@@ -733,7 +733,7 @@ class Url {
 
         // disable virtual language dir if not in Backend
         if (
-            preg_match($systemFolderRegexp, '/' . $url->getPath()) < 1 && 
+            preg_match($systemFolderRegexp, '/' . $url->getPath()) < 1 &&
             $url->getProtocol() != 'file'
         ) {
             $url->setMode('frontend');
@@ -851,7 +851,7 @@ class Url {
         }
         return $url;
     }
-    
+
     /**
      * Returns the URL object for a command mode command accessed via HTTP(s)
      * @param string $command Command mode command name

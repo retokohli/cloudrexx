@@ -139,7 +139,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
         $this->validUserGroups  = $validUserGroups;
         $this->validAccessIds   = $validAccessIds;
         $this->requiresLogin    = $requiresLogin;
-        if (count($this->validUserGroups) || count($this->validAccessIds)) {
+        if ($this->validUserGroups || $this->validAccessIds) {
             $this->requiresLogin = true;
         }
         $this->setVirtual(true);
@@ -407,13 +407,13 @@ class Permission extends \Cx\Model\Base\EntityBase {
 
         //protocol check
         if ($method != 'cli' && !empty($this->allowedProtocols) && !in_array($protocol, $this->allowedProtocols)) {
-            \DBG::msg(__METHOD__ . ': protocol check failed: ' . $protocol);
+//            \DBG::msg(__METHOD__ . ': protocol check failed: ' . $protocol);
             return false;
         }
 
         //access method check
         if (!empty($this->allowedMethods) && !in_array($method, $this->allowedMethods)) {
-            \DBG::msg(__METHOD__ . ': method check failed: ' . $method);
+//            \DBG::msg(__METHOD__ . ': method check failed: ' . $method);
             return false;
         }
 
@@ -428,7 +428,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
                 return false;
             }
         } catch (CallbackException $e) {
-            \DBG::msg('Permission callback failed with message ' . $e->getMessage());
+//            \DBG::msg('Permission callback failed with message ' . $e->getMessage());
             return false;
         }
 

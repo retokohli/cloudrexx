@@ -84,7 +84,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      * @todo: DataSet must be extended, that it can handle objects
      */
     public function __construct($data = array(), callable $converter = null, $options = array()) {
-        if (!count($data)) {
+        if (!$data) {
             return;
         }
         $this->initializeOptions($options);
@@ -628,7 +628,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
             if (!$filterFunction($entry)) {
                 unset($this->data[$key]);
             }
-        } 
+        }
     }
 
     /**

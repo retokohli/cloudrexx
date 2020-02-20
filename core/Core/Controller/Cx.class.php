@@ -584,7 +584,7 @@ namespace Cx\Core\Core\Controller {
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
         protected $mediaSourceManager;
-        
+
         /**
          * @var integer The memory limit. Is set in init
          */
@@ -763,7 +763,7 @@ namespace Cx\Core\Core\Controller {
                  * Loads all active components
                  */
                 $this->loadComponents();
-                
+
                 $this->postComponentLoad();
 
                 /**
@@ -877,7 +877,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Get the start time
-         * 
+         *
          * @return array
          */
         public function getStartTime() {
@@ -1238,7 +1238,7 @@ namespace Cx\Core\Core\Controller {
             }
             return new $componentControllerClass($component, $this);
         }
-        
+
         /**
          * Returns the ComponentController for the given component
          * @deprecated All new classes should have access to $this->getComponent()
@@ -1515,7 +1515,7 @@ namespace Cx\Core\Core\Controller {
             // command mode is different
             if ($this->getMode() == static::MODE_COMMAND) {
                 global $argv;
-                
+
                 // Legacy:
                 if (!defined('MODULE_INDEX')) {
                     define('MODULE_INDEX', '');

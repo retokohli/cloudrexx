@@ -231,7 +231,7 @@ class FileSystemFile implements FileInterface
         $filePerms |= \Cx\Lib\FileSystem\FileSystem::CHMOD_USER_WRITE;
 
         // log file permissions into the humand readable chmod() format
-        \DBG::msg('CHMOD: '.substr(sprintf('%o', $filePerms), -4));
+//        \DBG::msg('CHMOD: '.substr(sprintf('%o', $filePerms), -4));
 
         if (!@chmod($this->filePath, $filePerms)) {
             throw new FileSystemFileException('Unable to set write access to file '.$this->filePath.'!');

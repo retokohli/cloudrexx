@@ -106,13 +106,13 @@ class Request {
 
     /**
      * Get the httpRequest method
-     * 
+     *
      * @param String $method
      */
     public function setHttpRequestMethod($method) {
         $this->httpRequestMethod = $method;
     }
-    
+
     /**
      * Get the resolved url object
      *
