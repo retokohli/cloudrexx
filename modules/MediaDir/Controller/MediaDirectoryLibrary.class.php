@@ -69,6 +69,13 @@ class MediaDirectoryLibrary
 
     public $arrFrontendLanguages = array();
 
+    /**
+     * Contains a list of all existing slugs
+     *
+     * Is being used to ensure uniqueness within slugs.
+     *
+     * @var array
+     */
     protected static $slugs = array();
 
     /**
