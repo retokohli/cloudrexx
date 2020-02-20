@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_DESCRIPTION'] = 'The Cloudrexx RESTful A
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_INTRODUCTION'] = 'The available data (which depends on the feature set of your website) can be accessed using API endpoints. Access is granted using API keys. Each API key can grant read and/or write access to one or more endpoints. Start now by creating your first API key.<br /><br /><a href="/cadmin/DataAccess/ApiKey?add=1" class="button">Create API key</a>';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The endpoint could not be found.';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_ACCESS'] = 'The data-ressource could not be found.';
+$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_ERROR_NO_DATA_SOURCE'] = 'The data-ressource could not be found.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_APIKEY'] = 'API key';
 $_ARRAYLANG['TXT_CORE_MODULE_DATAACCESS_ACT_DATAACCESS'] = 'Endpoints';
@@ -52,33 +52,10 @@ $_ARRAYLANG['apiKey'] = 'API key';
 $_ARRAYLANG['dataAccessApiKeys'] = 'Endpoints';
 $_ARRAYLANG['dataAccessReadOnly'] = 'Endpoints with read-only permission only';
 
-$_ARRAYLANG['name'] = 'Name';
-$_ARRAYLANG['fieldList'] = 'Allowed attributes';
-$_ARRAYLANG['accessCondition'] = 'Conditions';
-$_ARRAYLANG['allowedOutputMethods'] = 'Allowed output methods';
-
-$_ARRAYLANG['protocols'] = 'Allowed Protocols';
-$_ARRAYLANG['methods'] = 'Allowed methods';
-$_ARRAYLANG['userGroups'] = 'User groups';
-$_ARRAYLANG['accessIds'] = 'Access IDs';
-$_ARRAYLANG['callbacks'] = 'Callback methods';
-$_ARRAYLANG['readPermission'] = 'Read permission';
-$_ARRAYLANG['writePermission'] = 'Write permission';
-$_ARRAYLANG['requiresLogin'] = 'Requires login';
-
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_REQUIRES_LOGIN'] = 'If a user is logged in in the admin area or in a protected web page area, this condition is fulfilled.';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ACCESS_IDS'] = 'If no Access IDs are selected, all are allowed.';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_OUTPUT_METHODS'] = 'How the data should be output, Cli offers a tabular output. ';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_ALLOWED_FIELDS'] = 'If no attributes are selected, all are allowed. ';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_USER_GROUPS'] = 'If no user groups are selected, all are allowed.';
-
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT'] = 'The API key grants read and write permissions to these endpoints.';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_INFO_SELECT_READ_ONLY'] = 'The API key grants readonly permissions to these endpoints.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_GENERATE_BTN'] = 'Generate API-Key';
-
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_YES'] = 'Yes';
-$_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_NO'] = 'No';
 
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_API_KEY_ALREADY_EXISTS'] = 'An entry with this API key already exists';
 $_ARRAYLANG['TXT_CORE_MODULE_DATA_ACCESS_COULD_NOT_STORE_APIKEY'] = 'The API key could not be saved';
