@@ -18,6 +18,7 @@ use Swagger\Processors\AugmentParameters;
 use Swagger\Processors\AugmentProperties;
 use Swagger\Processors\BuildPaths;
 use Swagger\Processors\CleanUnmerged;
+use Swagger\Processors\HandleReferences;
 use Swagger\Processors\InheritProperties;
 use Swagger\Processors\MergeIntoSwagger;
 
@@ -51,6 +52,7 @@ class Analysis
 
     /**
      * @param array $annotations
+     * @param null  $context
      */
     public function __construct($annotations = [], $context = null)
     {
@@ -153,12 +155,12 @@ class Analysis
 
     public function getSuperClasses($class)
     {
-        $classDefinition = @$this->classes[$class];
+        $classDefinition = isset($this->classes[$class]) ? $this->classes[$class] : null;
         if (!$classDefinition || empty($classDefinition['extends'])) { // unknown class, or no inheritance?
             return [];
         }
         $extends = $classDefinition['extends'];
-        $extendsDefinition = @$this->classes[$extends];
+        $extendsDefinition = isset($this->classes[$extends]) ? $this->classes[$extends] : null;
         if (!$extendsDefinition) {
             return [];
         }
@@ -288,6 +290,7 @@ class Analysis
             self::$processors = [
                 new MergeIntoSwagger(),
                 new BuildPaths(),
+                new HandleReferences(),
                 new AugmentDefinitions(),
                 new AugmentProperties(),
                 new InheritProperties(),
