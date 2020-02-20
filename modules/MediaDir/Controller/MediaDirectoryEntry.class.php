@@ -1503,6 +1503,7 @@ JSCODE;
 
         $error = false;
         $titleData = array();
+        $titleDataFallback = array();
 
         $outputLocaleId = static::getOutputLocale()->getId();
 
@@ -1594,6 +1595,17 @@ JSCODE;
                 continue;
             }
 
+            // in case we have to process the inputfield (that is being used
+            // as 'slug') as its the last one, but no 'title' field had been
+            // processed, then we'll use the data of the first processed
+            // inputfield as source data for generating a new slug
+            if (
+                $arrInputfield['context_type'] == 'slug' &&
+                empty($titleData)
+            ) {
+                $titleData = $titleDataFallback;
+            }
+
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (
                 (
@@ -1631,6 +1643,16 @@ JSCODE;
                 isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
             ) {
                 $titleData = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+            }
+
+            // remember current value in case there is no inputfield with
+            // context 'title' present or it has not been set
+            if (
+                empty($titleData) &&
+                empty($titleDataFallback) &&
+                isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
+            ) {
+                $titleDataFallback = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
             }
 
             // delete attribute's data of languages that are no longer in use
