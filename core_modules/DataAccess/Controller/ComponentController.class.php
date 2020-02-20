@@ -52,6 +52,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const MIN_KEY_LENGTH = 32;
 
     /**
+     * @var string Message for exceptions forwarded to API
+     */
+    const ERROR_MESSAGE = 'Exception of type "%s" with message "%s"';
+
+    /**
      * @inheritdoc
      */
     protected $enduserDocumentationUrl = 'https://www.cloudrexx.info/api';
@@ -418,7 +423,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $response->addMessage(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::MESSAGE_TYPE_ERROR,
                 sprintf(
-                    $lang['TXT_CORE_MODULE_DATA_ACCESS_ERROR'],
+                    static::ERROR_MESSAGE,
                     get_class($e),
                     $e->getMessage()
                 )
