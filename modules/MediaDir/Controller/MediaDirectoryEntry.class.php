@@ -1543,14 +1543,37 @@ JSCODE;
                 continue;
             }
 
-            // skip attributes that are out of scope (frontend/backend)
+            // skip inputfields that are out of scope (frontend/backend), resp.
+            // that are not allowed to be modified in the corrent mode (frontend
+            // or backend)
             if (
                 // show_in is neither FRONTEND or BACKEND ($intShowIn = 2|3)
                 $arrInputfield['show_in'] != $intShowIn &&
                 // nor FRONTEND AND BACKEND (show_in=1)
                 $arrInputfield['show_in'] != 1
             ) {
-                continue;
+                // Exception for inputfields being used as 'slug'.
+                // Those shall be parsed anyway, but only for new entry
+                // submissions (-> $objUpdateEntry not besing set).
+                // This shall ensure the newly submitted entries have a valid
+                // slug.
+                if (
+                    $arrInputfield['context_type'] != 'slug' ||
+                    isset($objUpdateEntry)
+                ) {
+                    // skip inputfield
+                    continue;
+                }
+
+                // as the entry of the slug inputfield was not permitted (by
+                // option 'show_in') we have to ensure no submitted data gets
+                // actually stored -> therefore we have to unset any submitted
+                // slug data
+                if (
+                    isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
+                ) {
+                    unset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
+                }
             }
 
             if (($arrInputfield['context_type'] == 'title' || empty($titleData)) && isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])) {
