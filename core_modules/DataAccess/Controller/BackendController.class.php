@@ -96,6 +96,11 @@ class BackendController
                     $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'],
                     'ViewGenerator/lang'
                 );
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'minKeyLength',
+                    ComponentController::MIN_KEY_LENGTH,
+                    'DataAccess'
+                );
                 $options['fields'] = array(
                     'id' => array(
                         'showOverview' => false,
@@ -110,6 +115,7 @@ class BackendController
                             'adapter' => 'DataAccess',
                             'method' => 'getValue',
                         ),
+                        'validValues' => '\w{32}',
                     ),
                     'dataAccessApiKeys' => array(
                         'formfield' => array(

@@ -40,7 +40,7 @@ function addGenerateButton() {
     cx.jQuery('#generate-api-key').click(function (event) {
         event.preventDefault();
 
-        inputField.val(generateId(20));
+        inputField.val(generateId(cx.variables.get('minKeyLength', 'DataAccess')));
         cx.jQuery('#generate-api-key').hide();
         inputField.trigger("keyup");
     });
