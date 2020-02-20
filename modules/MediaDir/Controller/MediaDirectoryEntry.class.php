@@ -1506,7 +1506,11 @@ JSCODE;
 
         $outputLocaleId = static::getOutputLocale()->getId();
 
-        foreach ($this->getInputfields() as $arrInputfield) {
+        // fetch all inputfields of assigned form
+        $inputfieldStack = $this->getInputfields($intFormId);
+
+        // process every inputfield
+        while ($arrInputfield = array_shift($inputfieldStack)) {
             // store selected category (field = category)
             if ($arrInputfield['id'] == 1) {
                 $selectedCategories = isset($arrData['selectedCategories']) ? $arrData['selectedCategories'] : array();
@@ -1574,6 +1578,20 @@ JSCODE;
                 ) {
                     unset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
                 }
+            }
+
+            // shift the inputfield (that is being used as 'slug') down to
+            // process it later (after $titleData has been set) in case
+            // $titleData has not yet been set
+            if (
+                $arrInputfield['context_type'] == 'slug' &&
+                empty($titleData) &&
+                // prevent infinite loop
+                empty($arrInputfield['shifted'])
+            ) {
+                $arrInputfield['shifted'] = true;
+                $inputfieldStack[] = $arrInputfield;
+                continue;
             }
 
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
