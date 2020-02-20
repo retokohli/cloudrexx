@@ -481,7 +481,10 @@ class ViewGenerator {
             'entity' => $entity
         );
 
-        $this->callCallbackByInfo($postCallback, $arguments);
+        return static::callCallbackByInfo(
+            $postCallback,
+            $arguments
+        );
     }
 
     /**
