@@ -1808,7 +1808,6 @@ class ViewGenerator {
                     }
                 }
                 if ($storeAgain) {
-                    $em->persist($entity);
                     $em->flush();
                 }
                 $showSuccessMessage = true;
