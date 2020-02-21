@@ -440,8 +440,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->cx->getCodeBaseLibraryPath() . '/OpenApi/src/functions.php'
             );
             $openapi = \OpenApi\scan(
-                array($this->cx->getWebsitePath()),
-                array('exclude' => array('lib/'))
+                array(
+                    $this->cx->getCodeBaseCorePath(),
+                    $this->cx->getCodeBaseCoreModulePath(),
+                    $this->cx->getCodeBaseModulePath(),
+                )
             );
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->write($openapi->toJson());
