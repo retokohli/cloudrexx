@@ -895,7 +895,7 @@ class FormGenerator {
                 return $div;
                 break;
             case 'image':
-                $placeholderPictureUrl = '/modules/Downloads/View/Media/no_picture.gif';
+                $placeholderPictureUrl = '/core/Html/View/Media/NoPicture.gif';
                 \JS::registerCode('
                     function javascript_callback_function(data) {
                         if (data.type != "file") {
