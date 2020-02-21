@@ -99,7 +99,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return 'RESTful data interchange API v1' . "\n" .
                     'Usage: v1 <outputModule> <dataSource> (<elementId>) (apikey=<apiKey>) (<options>)';
             case 'apidoc':
-                $doc = 'Returns Swagger file for current system\'s API';
+                $doc = 'Returns OpenAPI specification file for current system\'s API';
                 if (!$short) {
                     $doc .= "\n" .
                         'Usage: apidoc (regen)' . "\n" .
