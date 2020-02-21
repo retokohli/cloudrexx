@@ -895,6 +895,7 @@ class FormGenerator {
                 return $div;
                 break;
             case 'image':
+                $placeholderPictureUrl = '/modules/Downloads/View/Media/no_picture.gif';
                 \JS::registerCode('
                     function javascript_callback_function(data) {
                         if (data.type != "file") {
@@ -913,7 +914,7 @@ class FormGenerator {
                     jQuery(document).ready(function(){
                         jQuery(\'.deletePreviewImage\').click(function(){
                             cx.jQuery("#'.$title.'").attr(\'value\', \'\');
-                            cx.jQuery(this).prev(\'img\').attr(\'src\', \'/images/Downloads/no_picture.gif\');
+                            cx.jQuery(this).prev(\'img\').attr(\'src\', \'' . $placeholderPictureUrl . '\');
                             cx.jQuery(this).css(\'display\', \'none\');
                             cx.jQuery(this).nextAll(\'input\').first().attr(\'value\', \'\');
                         });
@@ -943,7 +944,7 @@ class FormGenerator {
                 // this image is meant to be a preview of the selected image
                 $previewImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
                 $previewImage->setAttribute('class', 'previewImage');
-                $previewImage->setAttribute('src', ($value != '') ? $value : '/images/Downloads/no_picture.gif');
+                $previewImage->setAttribute('src', ($value != '') ? $value : $placeholderPictureUrl);
 
                 // this image is uesd as delete function for the selected image over javascript
                 $deleteImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
