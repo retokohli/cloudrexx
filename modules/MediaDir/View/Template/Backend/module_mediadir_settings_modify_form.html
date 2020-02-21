@@ -138,6 +138,7 @@ function ExpandMinimizeForm(toggle){
 
 function setContextAbilities() {
     handleKeywordAbility();
+    handleSlugAbility();
 }
 
 function handleKeywordAbility() {
@@ -150,6 +151,14 @@ function handleKeywordAbility() {
      */
     var compatibleTypes = [1, 2, 3, 4, 5];
     handleContextAbility('keyword', compatibleTypes);
+}
+
+function handleSlugAbility() {
+    /* compatible field types for slug:
+    1: text
+     */
+    var compatibleTypes = [1];
+    handleContextAbility('slug', compatibleTypes);
 }
 
 function handleContextAbility(context, compatibleTypes) {
