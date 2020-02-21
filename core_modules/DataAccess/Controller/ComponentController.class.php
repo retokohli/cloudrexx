@@ -79,8 +79,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ),
             'apidoc' => new \Cx\Core_Modules\Access\Model\Entity\Permission(
                 array('cli', 'https'), // allowed protocols
-                array('get', 'cli'), // allowed method
-                false // requires login
+                array('get', 'cli') // allowed method
             ),
         );
     }
