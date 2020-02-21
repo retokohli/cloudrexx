@@ -897,6 +897,9 @@ class FormGenerator {
             case 'image':
                 \JS::registerCode('
                     function javascript_callback_function(data) {
+                        if (data.type != "file") {
+                            return;
+                        }
                         if ( data.data[0].datainfo.extension=="Jpg"
                             || data.data[0].datainfo.extension=="Gif"
                             || data.data[0].datainfo.extension=="Png"
