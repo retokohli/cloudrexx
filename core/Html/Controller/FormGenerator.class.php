@@ -940,22 +940,20 @@ class FormGenerator {
 
                 $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
 
-                if((isset($value) && in_array(pathinfo($value, PATHINFO_EXTENSION), Array('gif', 'jpg', 'png'))) || $title == 'imagePath'){
+                // this image is meant to be a preview of the selected image
+                $previewImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                $previewImage->setAttribute('class', 'previewImage');
+                $previewImage->setAttribute('src', ($value != '') ? $value : '/images/Downloads/no_picture.gif');
 
-                    // this image is meant to be a preview of the selected image
-                    $previewImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
-                    $previewImage->setAttribute('class', 'previewImage');
-                    $previewImage->setAttribute('src', ($value != '') ? $value : '/images/Downloads/no_picture.gif');
+                // this image is uesd as delete function for the selected image over javascript
+                $deleteImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                $deleteImage->setAttribute('class', 'deletePreviewImage');
+                $deleteImage->setAttribute('src', '/core/Core/View/Media/icons/delete.gif');
 
-                    // this image is uesd as delete function for the selected image over javascript
-                    $deleteImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
-                    $deleteImage->setAttribute('class', 'deletePreviewImage');
-                    $deleteImage->setAttribute('src', '/core/Core/View/Media/icons/delete.gif');
+                $div->addChild($previewImage);
+                $div->addChild($deleteImage);
+                $div->addChild(new \Cx\Core\Html\Model\Entity\HtmlElement('br'));
 
-                    $div->addChild($previewImage);
-                    $div->addChild($deleteImage);
-                    $div->addChild(new \Cx\Core\Html\Model\Entity\HtmlElement('br'));
-                }
                 $div->addChild($input);
                 $div->addChild(new \Cx\Core\Html\Model\Entity\TextElement(
                     $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
