@@ -124,7 +124,6 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
                 }*/
 
                 if ($objInit->mode == 'backend') {
-                    //$strInputfield = '<span id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block;"><textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" style="width: 300px; height: 60px;" onfocus="this.select();" />'.$arrValue[0].'</textarea>&nbsp;<a href="javascript:ExpandMinimizeMultiple(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></span>';
                     $strInputfield = '<span id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT_Minimized" style="display: block;">'.new \Cx\Core\Wysiwyg\Wysiwyg($this->moduleNameLC.'Inputfield['.$intId.'][0]', contrexx_raw2xhtml($arrValue[0])).'&nbsp;<a href="javascript:javascript:ExpandMinimizeMultiple(\''.$intId.'\', \'ELEMENT\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></span>';
 
                     $strInputfield .= '<span id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT_Expanded" style="display: none;">';
