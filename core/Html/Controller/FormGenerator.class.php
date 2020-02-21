@@ -950,6 +950,9 @@ class FormGenerator {
                 $deleteImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
                 $deleteImage->setAttribute('class', 'deletePreviewImage');
                 $deleteImage->setAttribute('src', '/core/Core/View/Media/icons/delete.gif');
+                if (!$value) {
+                    $deleteImage->setAttribute('style', 'display: none;');
+                }
 
                 $div->addChild($previewImage);
                 $div->addChild($deleteImage);
