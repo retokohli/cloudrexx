@@ -531,14 +531,6 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
                 \FWUser::getUserLiveSearch();
 
-                if ($intEntryId != 0) {
-                    $intEntryDourationStart = 1;
-                    $intEntryDourationEnd = 2;
-                } else {
-                    $intEntryDourationStart = 1;
-                    $intEntryDourationEnd = 2;
-                }
-
                 //get display duration  data
                 switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
                     case 1:
