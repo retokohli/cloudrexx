@@ -499,6 +499,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $this->cx->getClassLoader()->loadFile(
                 $this->cx->getCodeBaseLibraryPath() . '/OpenApi/src/functions.php'
             );
+
+            $dbgMode = \DBG::getMode();
+            \DBG::activate(DBG_LOG_MEMORY);
             $openapi = \OpenApi\scan(
                 array(
                     $this->cx->getCodeBaseCorePath(),
@@ -506,6 +509,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $this->cx->getCodeBaseModulePath(),
                 )
             );
+            $logs = \DBG::getMemoryLogs();
+            \DBG::deactivate();
+            \DBG::activate($dbgMode);
+            array_shift($logs);
+
+            if (!empty($logs)) {
+                fwrite(STDERR, implode(PHP_EOL, $logs));
+                fwrite(STDERR, PHP_EOL . 'Please fix these errors' . PHP_EOL);
+                die();
+            }
+
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->write($openapi->toJson());
         }
