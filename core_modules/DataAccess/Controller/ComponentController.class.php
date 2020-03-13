@@ -500,6 +500,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->cx->getCodeBaseLibraryPath() . '/OpenApi/src/functions.php'
             );
 
+            define(
+                'SWAGGER_API_HOST',
+                \Cx\Core\Routing\Url::fromApi('v1', array())->toString()
+            );
             $dbgMode = \DBG::getMode();
             \DBG::activate(DBG_LOG_MEMORY);
             $openapi = \OpenApi\scan(
