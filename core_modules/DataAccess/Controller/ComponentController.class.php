@@ -521,7 +521,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objFile->write($openapi->toJson());
+            $objFile->write($openapi->toJson() . PHP_EOL);
         }
         // echo file contents:
         try {
