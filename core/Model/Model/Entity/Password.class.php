@@ -85,17 +85,14 @@ class Password {
      */
     protected static function checkPasswordValidity(string $plaintextPassword): void
     {
-        global $_CONFIG, $_CORELANG;
+        global $_CORELANG;
 
         if (strlen($plaintextPassword) < 6) {
             throw new \Cx\Core\Error\Model\Entity\ShinyException(
                 $_CORELANG['TXT_ACCESS_INVALID_PASSWORD']
             );
         }
-        if (
-            isset($_CONFIG['passwordComplexity']) &&
-            $_CONFIG['passwordComplexity'] == 'on'
-        ) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('passwordComplexity') == 'on') {
             // Password must contain the following characters: upper, lower
             // case and numbers
             if (
