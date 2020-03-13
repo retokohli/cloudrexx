@@ -513,6 +513,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $this->cx->getCodeBaseModulePath(),
                 )
             );
+            $apidoc = $openapi->toJson();
             $logs = \DBG::getMemoryLogs();
             \DBG::deactivate();
             \DBG::activate($dbgMode);
@@ -525,7 +526,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objFile->write($openapi->toJson() . PHP_EOL);
+            $objFile->write($apidoc . PHP_EOL);
         }
         // echo file contents:
         try {
