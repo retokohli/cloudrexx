@@ -47,6 +47,11 @@ namespace Cx\Core\Model\Model\Entity;
 class Password {
 
     /**
+     * @var int Hash algorithm accepted by password_hash()
+     */
+    const HASH_ALGORITHM = \PASSWORD_BCRYPT;
+
+    /**
      * @var string This password's hash
      */
     protected $hashedPassword;
@@ -116,7 +121,7 @@ class Password {
     protected static function hashPassword(string $plaintextPassword): string
     {
         static::checkPasswordValidity($plaintextPassword);
-        $hash = password_hash($plaintextPassword, \PASSWORD_BCRYPT);
+        $hash = password_hash($plaintextPassword, static::HASH_ALGORITHM);
         if ($hash !== false) {
             return $hash;
         }
