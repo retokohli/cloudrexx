@@ -145,15 +145,37 @@ class Password {
             preg_match('/^[a-f0-9]{32}$/i', $this->hashedPassword) &&
             md5($plaintextPassword) == $this->hashedPassword
         ) {
+            $this->updatePasswordHash($plaintextPassword);
             return true;
         }
 
         // verify password
         if (password_verify($plaintextPassword, $this->hashedPassword)) {
+            $this->updatePasswordHash($plaintextPassword);
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * This updates the password in case is was hashed using the wrong algorithm
+     *
+     * This method assumes, that the $plaintextPassword and $hashedPassword
+     * are checked to match each other.
+     * @param string $plaintextPassword A password in plain text
+     */
+    protected function updatePasswordHash(string $plaintextPassword): void {
+        if (
+            // verify that password is not hashed by legacy algorithm (md5)
+            !preg_match('/^[a-f0-9]{32}$/i', $this->hashedPassword) &&
+            // and that the password has been hashed by using the prefered
+            // hash algorithm
+            !password_needs_rehash($this->hashedPassword, static::HASH_ALGORITHM)
+        ) {
+            return;
+        }
+        $this->hashedPassword = $this->hashPassword($plaintextPassword);
     }
 
     /**
