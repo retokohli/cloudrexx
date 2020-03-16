@@ -204,9 +204,9 @@ class Changeset extends \Cx\Model\Base\EntityBase
             ));
             
             $foreignDataAccess = $foreignDataSource->getDataAccesses()->first();
-            $foreignSync = $syncRepo->findBy(array(
+            $foreignSync = current($syncRepo->findBy(array(
                 'dataAccess' => $foreignDataAccess,
-            ))->first();
+            )));
             $foreignSync->setVirtual(true); // does not seem to work anymore!
             $foreignSync->setTempActive(true); // that's why we introduced "tempActive"
             
