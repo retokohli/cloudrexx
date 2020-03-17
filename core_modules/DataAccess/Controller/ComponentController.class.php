@@ -97,7 +97,7 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *     ),
  *     @OA\Response(
  *         response=200,
- *         ref="#/components/responses/default"
+ *         ref="#/components/responses/multiple_success"
  *     )
  * )
  * # see issue https://github.com/OAI/OpenAPI-Specification/issues/892#issuecomment-281449239
@@ -116,7 +116,7 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *     ),
  *     @OA\Response(
  *         response=200,
- *         ref="#/components/responses/default"
+ *         ref="#/components/responses/single_success"
  *     )
  * )
  * @OA\Components(
@@ -148,8 +148,8 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *         )
  *     ),
  *     @OA\Response(
- *         response="default",
- *         description="Successful query",
+ *         response="single_success",
+ *         description="Successful query to an URL that returns a single entity",
  *         content={
  *             @OA\MediaType(
  *                 mediaType="application/json",
@@ -162,11 +162,20 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *                     @OA\Property(
  *                         property="meta",
  *                         type="object",
- *                         description="Meta info about this request"
+ *                         description="Meta info about this request",
+ *                         @OA\Property(
+ *                             property="version",
+ *                             type="object",
+ *                             description="Current version number of returned element. Only present if endpoint supports versioned entities. Key is the entity's ID.",
+ *                             additionalProperties={
+ *                                 "type": "string"
+ *                             }
+ *                         )
  *                     ),
  *                     @OA\Property(
  *                         property="messages",
  *                         type="object",
+ *                         description="Lists of messages grouped by type",
  *                         @OA\Property(
  *                             property="success",
  *                             type="array",
@@ -190,22 +199,115 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *                                 "type": "string"
  *                             },
  *                             description="List of messages of type 'info'"
- *                         ),
- *                         description="Lists of messages grouped by type"
+ *                         )
  *                     ),
  *                     @OA\Property(
  *                         property="data",
  *                         type="object",
- *                         description="TWB"
+ *                         description="All fields of this entity, including relations as specified by the endpoint.",
  *                     ),
  *                     example={
- *                         "status": "error",
+ *                         "status": "success",
  *                         "meta": {
- *                             "request": {}
+ *                             "request": {},
+ *                             "version": {
+ *                                 "de/1": 7
+ *                             }
  *                         },
  *                         "messages": {
  *                         },
- *                         "data": {}
+ *                         "data": {
+ *                             "locale": "de",
+ *                             "ref": 1,
+ *                             "name": "Lorem ipsum"
+ *                         }
+ *                     }
+ *                 )
+ *             )
+ *         }
+ *     ),
+ *     @OA\Response(
+ *         response="multiple_success",
+ *         description="Successful query to an URL that returns a list of entities",
+ *         content={
+ *             @OA\MediaType(
+ *                 mediaType="application/json",
+ *                 @OA\Schema(
+ *                     @OA\Property(
+ *                         property="status",
+ *                         type="string",
+ *                         description="success or error"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="meta",
+ *                         type="object",
+ *                         description="Meta info about this request",
+ *                         @OA\Property(
+ *                             property="version",
+ *                             type="object",
+ *                             description="Current version number of returned elements. Only present if endpoint supports versioned entities. Key is the entity's ID.",
+ *                             additionalProperties={
+ *                                 "type": "string"
+ *                             }
+ *                         )
+ *                     ),
+ *                     @OA\Property(
+ *                         property="messages",
+ *                         type="object",
+ *                         description="Lists of messages grouped by type",
+ *                         @OA\Property(
+ *                             property="success",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'success'"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="error",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'error'"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="info",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'info'"
+ *                         )
+ *                     ),
+ *                     @OA\Property(
+ *                         property="data",
+ *                         type="object",
+ *                         description="All fields of all matching entities, including relations as specified by the endpoint. Grouped and indexed by the entity'd ID.",
+ *                     ),
+ *                     example={
+ *                         "status": "success",
+ *                         "meta": {
+ *                             "request": {},
+ *                             "version": {
+ *                                 "de/1": 7,
+ *                                 "de/2": 3
+ *                             }
+ *                         },
+ *                         "messages": {
+ *                         },
+ *                         "data": {
+ *                             "de/1": {
+ *                                 "locale": "de",
+ *                                 "ref": 1,
+ *                                 "name": "Lorem ipsum"
+ *                             },
+ *                             "de/2": {
+ *                                 "locale": "de",
+ *                                 "ref": 2,
+ *                                 "name": "Dolor sit amet"
+ *                             }
+ *                         }
  *                     }
  *                 )
  *             )
