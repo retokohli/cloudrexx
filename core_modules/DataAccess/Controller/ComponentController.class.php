@@ -98,6 +98,10 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *     @OA\Response(
  *         response=200,
  *         ref="#/components/responses/multiple_success"
+ *     ),
+ *     @OA\Response(
+ *         response="4XX",
+ *         ref="#/components/responses/error"
  *     )
  * )
  * # see issue https://github.com/OAI/OpenAPI-Specification/issues/892#issuecomment-281449239
@@ -117,6 +121,10 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *     @OA\Response(
  *         response=200,
  *         ref="#/components/responses/single_success"
+ *     ),
+ *     @OA\Response(
+ *         response="4XX",
+ *         ref="#/components/responses/error"
  *     )
  * )
  * @OA\Components(
@@ -308,6 +316,73 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *                                 "name": "Dolor sit amet"
  *                             }
  *                         }
+ *                     }
+ *                 )
+ *             )
+ *         }
+ *     ),
+ *     @OA\Response(
+ *         response="error",
+ *         description="Query can not be satisfied.",
+ *         content={
+ *             @OA\MediaType(
+ *                 mediaType="application/json",
+ *                 @OA\Schema(
+ *                     @OA\Property(
+ *                         property="status",
+ *                         type="string",
+ *                         description="error"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="meta",
+ *                         type="object",
+ *                         description="Meta info about this request",
+ *                     ),
+ *                     @OA\Property(
+ *                         property="messages",
+ *                         type="object",
+ *                         description="Lists of messages grouped by type",
+ *                         @OA\Property(
+ *                             property="success",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'success'"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="error",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'error'"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="info",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'info'"
+ *                         )
+ *                     ),
+ *                     @OA\Property(
+ *                         property="data",
+ *                         type="object",
+ *                         description="Empty object",
+ *                     ),
+ *                     example={
+ *                         "status": "error",
+ *                         "meta": {
+ *                             "request": {}
+ *                         },
+ *                         "messages": {
+ *                             "error": {
+ *                                 "Access denied"
+ *                             }
+ *                         },
+ *                         "data": {}
  *                     }
  *                 )
  *             )
