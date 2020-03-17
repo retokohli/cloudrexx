@@ -45,7 +45,7 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *     description="The Cloudrexx RESTful API allows access to ...",
  *     @OA\Contact(
  *         name="Cloudrexx API Support",
- *         url="http://www.cloudrexx.com/support",
+ *         url="https://www.cloudrexx.com/support",
  *         email="info@cloudrexx.com"
  *     ),
  *     @OA\License(name="CLOUDREXX")
