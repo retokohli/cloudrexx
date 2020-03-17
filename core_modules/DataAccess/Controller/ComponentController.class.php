@@ -166,9 +166,32 @@ namespace Cx\Core_Modules\DataAccess\Controller;
  *                     ),
  *                     @OA\Property(
  *                         property="messages",
- *                         type="array",
- *                         items={},
- *                         description="TWB"
+ *                         type="object",
+ *                         @OA\Property(
+ *                             property="success",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'success'"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="error",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'error'"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="info",
+ *                             type="array",
+ *                             items={
+ *                                 "type": "string"
+ *                             },
+ *                             description="List of messages of type 'info'"
+ *                         ),
+ *                         description="Lists of messages grouped by type"
  *                     ),
  *                     @OA\Property(
  *                         property="data",
