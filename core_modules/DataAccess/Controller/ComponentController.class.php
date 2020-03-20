@@ -900,6 +900,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (
                 $dataSource->isVersionable() &&
                 !$requestReadonly &&
+                $method != 'post' && // new entries are allowed without version
                 (
                     !isset($arguments['version']) ||
                     $dataSource->getCurrentVersion($elementId) != $arguments['version']
