@@ -245,6 +245,7 @@ class ListingController {
         }
         $this->criteria = $crit;
         $this->filter = $filter;
+        $this->options = $options;
 
         // todo: allow multiple listing controllers per page request
         $this->args = contrexx_input2raw($_GET);
@@ -488,7 +489,11 @@ class ListingController {
         }
 
         // return calculated data
-        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
+        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
+            $entities,
+            null,
+            $this->options
+        );
 
         // Add custom fields
         foreach ($this->customFields as $customField) {
