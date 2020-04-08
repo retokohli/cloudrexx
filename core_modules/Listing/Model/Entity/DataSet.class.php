@@ -100,6 +100,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      * @param array $options Options to set
      */
     protected function initializeOptions($options) {
+        // this prevents usages in preInit from using options
         if (!defined('ASCMS_DATE_FORMAT_DATETIME')) {
             $this->options = $options;
             return;
