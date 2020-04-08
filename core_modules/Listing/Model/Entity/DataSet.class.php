@@ -111,6 +111,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
             'dateFormatTimestamp' => ASCMS_DATE_FORMAT_DATETIME,
             'dateFormatDate' => ASCMS_DATE_FORMAT_DATE,
             'dateFormatTime' => ASCMS_DATE_FORMAT_TIME,
+            'translationFallback' => false,
         );
         foreach ($defaults as $optionName=>$defaultValue) {
             if (!isset($options[$optionName])) {
@@ -219,10 +220,38 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 $identifiers = implode('/', $identifiers);
             }
             $key = $identifiers;
+            if ($this->options['translationFallback']) {
+                $currentLocaleId = \Env::get('init')->userFrontendLangId;
+                $defaultLocaleId = \Env::get('init')->defaultFrontendLangId;
+                if ($currentLocaleId == $defaultLocaleId) {
+                    $this->options['translationFallback'] = false;
+                } else {
+                    $currentLocale = \FWLanguage::getLanguageCodeById($currentLocaleId);
+                    $defaultLocale = \FWLanguage::getLanguageCodeById($defaultLocaleId);
+                }
+            }
             foreach ($entityClassMetadata->getColumnNames() as $column) {
                 $field = $entityClassMetadata->getFieldName($column);
                 $value = $entityClassMetadata->getFieldValue($object, $field);
                 $fieldDefinition = $entityClassMetadata->getFieldMapping($field);
+                if ($this->options['translationFallback']) {
+                    $translationListener = $this->cx->getDb()->getTranslationListener();
+                    $config = $translationListener->getConfiguration(
+                        $this->cx->getDb()->getEntityManager(),
+                        get_class($object)
+                    );
+                    if (in_array($field, $config['fields']) && empty($value)) {
+                        $translationListener->setTranslatableLocale(
+                            $defaultLocale
+                        );
+                        $em->refresh($object);
+                        $value = $entityClassMetadata->getFieldValue($object, $field);
+                        $translationListener->setTranslatableLocale(
+                            $currentLocale
+                        );
+                        $em->refresh($object);
+                    }
+                }
                 if ($value instanceof \DateTime) {
                     // Unknown types fall through!
                     if (isset($this->options['dateFormat' . ucfirst($fieldDefinition['type'])])) {
