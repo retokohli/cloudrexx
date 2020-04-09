@@ -234,6 +234,16 @@ cx.ready(function() {
             }
         );
     });
+
+    // make multi action checkboxes behave as they should:
+    cx.jQuery(".multi-action-checkbox").change(function() {
+        var boxCount = cx.jQuery(".multi-action-checkbox").length;
+        var tickedBoxCount = cx.jQuery(".multi-action-checkbox:checked").length;
+        cx.jQuery(".multi-action-checkbox-all").prop("checked", boxCount == tickedBoxCount);
+    });
+    cx.jQuery(".multi-action-checkbox-all").change(function() {
+        cx.jQuery(".multi-action-checkbox").prop("checked", cx.jQuery(this).prop("checked"));
+    });
 });
 
 function initializeTabClickEvent(formId) {
