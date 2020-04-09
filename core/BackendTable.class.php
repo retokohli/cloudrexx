@@ -157,6 +157,13 @@ class BackendTable extends HTML_Table {
                     $this->setCellContents($row, $col, '<input class="multi-action-checkbox" name="select-' . $rowname . '" value="' . $rowname . '" type="checkbox" />', 'TD', '0', false);
                     $col++;
                 }
+                if (
+                    isset($options['functions']['sortBy']) &&
+                    isset($options['functions']['sortBy']['field'])
+                ) {
+                    $this->setCellContents($row, $col, '<i class="drag-drop-handle"><img src="/core/ContentManager/View/Media/Move.png" /></i>', 'TD', '0', false);
+                    $col++;
+                }
                 foreach ($rows as $header=>$data) {
 
                     if (!empty($sortingKey) && $header === $sortingKey) {

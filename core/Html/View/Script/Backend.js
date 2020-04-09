@@ -107,6 +107,7 @@ cx.ready(function() {
 
     jQuery('table.sortable tbody').sortable({
         axis: "y",
+        handle: ".drag-drop-handle",
         items: "> tr.row1,> tr.row2 ",
         start: function (event, ui) {
             jQuery(ui.item).data('pIndex', ui.item.index());
