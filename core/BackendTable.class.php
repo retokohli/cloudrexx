@@ -151,7 +151,7 @@ class BackendTable extends HTML_Table {
                 $headerRowIdx++;
             }
             if (isset($options['multiActions'])) {
-                $this->setCellContents($headerRowIdx, 0, '<input class="multi-action-checkbox-all" type="checkbox" />', 'TD', '0', false);
+                $this->setCellContents($headerRowIdx, 0, '<input class="multi-action-checkbox-all" type="checkbox" />', $headerRowType, '0', false);
             }
 
             foreach ($attrs as $rowname=>$rows) {
