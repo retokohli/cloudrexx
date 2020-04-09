@@ -144,6 +144,11 @@ class BackendTable extends HTML_Table {
 
             $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, $this->viewGenerator, true);
 
+            $headerRow = 0;
+            if ($this->hasMasterTableHeader) {
+                $headerRow++;
+            }
+
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -207,11 +212,11 @@ class BackendTable extends HTML_Table {
                             }
                             $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&' . $sortParamName . '=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
+                        $el = 'th';
                         if ($this->hasMasterTableHeader) {
-                            $this->setCellContents(1, $col, $header, 'td', 0);
-                        } else {
-                            $this->setCellContents(0, $col, $header, 'th', 0);
+                            $el = 'td';
                         }
+                        $this->setCellContents($headerRow, $col, $header, $el, 0);
                     }
                     if (
                         isset($options['fields']) &&
@@ -353,11 +358,11 @@ class BackendTable extends HTML_Table {
                         if (isset($_ARRAYLANG['TXT_FUNCTIONS'])) {
                             $header = $_ARRAYLANG['TXT_FUNCTIONS'];
                         }
+                        $el = 'th';
                         if ($this->hasMasterTableHeader) {
-                            $this->setCellContents(1, $col, $header, 'td', 0, true);
-                        } else {
-                            $this->setCellContents(0, $col, $header, 'th', 0, true);
+                            $el = 'td';
                         }
+                        $this->setCellContents($headerRow, $col, $header, $el, 0, true);
                     }
 
                     $this->updateColAttributes($col, array('style' => 'text-align:right;'));
@@ -370,7 +375,7 @@ class BackendTable extends HTML_Table {
                 $row++;
             }
             // adjust colspan of master-table-header-row
-            $this->altRowAttributes(1 + $this->hasMasterTableHeader, array('class' => 'row1'), array('class' => 'row2'), true);
+            $this->altRowAttributes($headerRow, array('class' => 'row1'), array('class' => 'row2'), true);
             if ($this->hasMasterTableHeader) {
                 // now that the number of displayed columns is known:
                 $headerColspan = $col;
@@ -454,7 +459,7 @@ class BackendTable extends HTML_Table {
             }
             // adds custom attributes to row
             if (isset($options['rowAttributes'])) {
-                $row = 1 + $this->hasMasterTableHeader;
+                $row = $headerRow;
                 $callback = $options['rowAttributes'];
                 foreach ($attrs as $rowname=>$rows) {
                     $originalAttributes = $this->getRowAttributes($row);
