@@ -208,21 +208,23 @@ class BackendTable extends HTML_Table {
                             $options['functions']['sorting'] &&
                             $sorting !== false
                         ) {
-                            $order = '';
+                            $order = 'ASC';
                             $img = '&uarr;&darr;';
-                            $sortParamName = !empty($sortBy) ? $entity . 'Order' : 'order';
-                            if (isset($_GET[$sortParamName])) {
-                                $supOrder = explode('/', $_GET[$sortParamName]);
-                                if (current($supOrder) == $origHeader) {
-                                    $order = '/DESC';
+                            $orderParam = \Cx\Core\Html\Controller\ViewGenerator::getParam(
+                                $this->viewGenerator->getViewId(),
+                                $_GET['order']
+                            );
+                            if (count($orderParam) && isset($orderParam[$origHeader])) {
+                                $img = '&uarr;';
+                                if ($orderParam[$origHeader] == 'ASC') {
+                                    $order = 'DESC';
                                     $img = '&darr;';
-                                    if (count($supOrder) > 1 && $supOrder[1] == 'DESC') {
-                                        $order = '';
-                                        $img = '&uarr;';
                                     }
                                 }
-                            }
-                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&' . $sortParamName . '=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
+                            $orderUrl = $this->viewGenerator->getSortUrl(
+                                array($origHeader => $order)
+                            );
+                            $header = '<a href="' . $orderUrl . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
                         $this->setCellContents($headerRowIdx, $col, $header, $headerRowCellType, 0);
                     }

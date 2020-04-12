@@ -47,18 +47,9 @@ namespace Cx\Core_Modules\Listing\Controller;
 class SortingController {
 
     public function handle($params, $config) {
-        $paramName = !empty($params['entity']) ? $params['entity'] . 'Order' : 'Order';
-        if (!isset($config[$paramName])) {
-            return $params;
-        }
-        $order = explode('/', $config[$paramName]);
-        $sortField = current($order);
-        $sortOrder = SORT_ASC;
-        if (count($order) > 1) {
-            if ($order[1] == 'DESC') {
-                $sortOrder = SORT_DESC;
-            }
-        }
+        $order = $config['order'];
+        $sortField = current(array_keys($order));
+        $sortOrder = current($order) == 'ASC' ? SORT_ASC: SORT_DESC;
         $params['order'] = array($sortField => $sortOrder);
         return $params;
     }

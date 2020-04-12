@@ -785,18 +785,15 @@ class ViewGenerator {
 
         //If 'sorting' is applied and sorting field is not equal to
         //'sortBy' => 'field' then disable the row sorting.
-        $orderParamName = $entityName . 'Order';
-        if (    isset($_GET[$orderParamName])
-            &&  stripos($_GET[$orderParamName], $sortField) === false
-        ) {
+        $orderParam = $this->getVgParam($_GET['order']);
+        if (!isset($orderParam[$sortField])) {
             return;
         }
 
         //Get the current sorting order
-        $order     = isset($_GET[$orderParamName]) ? explode('/', $_GET[$orderParamName]) : '';
         $sortOrder = ($sortBy['field'][$sortField] == SORT_ASC) ? 'ASC' : 'DESC';
-        if ($order) {
-            $sortOrder = !empty($order[1]) ? $order[1] : 'ASC';
+        if (count($orderParam)) {
+            $sortOrder = $orderParam;
         }
 
         //Get the paging position value
@@ -2330,7 +2327,7 @@ class ViewGenerator {
     /**
      * Get the Url to sort entries in a VG instance
      * @param int $vgId ID of the VG for the parameter
-     * @param array $sort field=>SORT_ASC|SORT_DESC type array
+     * @param array $sort field=>ASC|DESC type array
      * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
      * @return \Cx\Core\Routing\Url URL with sort arguments
      */
