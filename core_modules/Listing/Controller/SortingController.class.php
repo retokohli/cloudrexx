@@ -48,9 +48,11 @@ class SortingController {
 
     public function handle($params, $config) {
         $order = $config['order'];
-        $sortField = current(array_keys($order));
-        $sortOrder = current($order) == 'ASC' ? SORT_ASC: SORT_DESC;
-        $params['order'] = array($sortField => $sortOrder);
+        if (count($order)) {
+            $sortField = current(array_keys($order));
+            $sortOrder = current($order) == 'ASC' ? SORT_ASC: SORT_DESC;
+            $params['order'] = array($sortField => $sortOrder);
+        }
         return $params;
     }
 }
