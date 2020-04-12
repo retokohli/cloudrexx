@@ -468,6 +468,12 @@ class ListingController {
                 }
             }
             foreach ($this->order as $field=>&$order) {
+                // TODO: Since we don't know how related data is presented we
+                //       cannot sort by it here. Find a solution for sorting
+                //       by relation fields.
+                if (isset($metaData->associationMappings[$field])) {
+                    continue;
+                }
                 $qb->orderBy('x.' . $field, $order);
             }
             $qb->setFirstResult($this->offset ? $this->offset : null);
