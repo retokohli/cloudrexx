@@ -153,6 +153,24 @@ class BackendTable extends HTML_Table {
             if (isset($options['multiActions'])) {
                 $this->setCellContents($headerRowIdx, 0, '<input class="multi-action-checkbox-all" type="checkbox" />', $headerRowType, '0', false);
             }
+            if (
+                isset($options['functions']['sortBy']) &&
+                isset($options['functions']['sortBy']['field'])
+            ) {
+                $orderFieldName = current(array_keys($options['functions']['sortBy']['field']));
+                $orderParam = \Cx\Core\Html\Controller\ViewGenerator::getParam(
+                    $this->viewGenerator->getViewId(),
+                    $_GET['order']
+                );
+                $dragDropEnabled = (
+                    count($orderParam) == 1 &&
+                    current(array_keys($orderParam)) == $orderFieldName
+                );
+                $orderUrl = $this->viewGenerator->getSortUrl(
+                    array($orderFieldName => 'ASC')
+                );
+                $this->setCellContents($headerRowIdx, 1, '<a class="drag-drop-header" href="' . $orderUrl . '">&darr;</a>', $headerRowType, '0', false);
+            }
 
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
@@ -166,7 +184,11 @@ class BackendTable extends HTML_Table {
                     isset($options['functions']['sortBy']) &&
                     isset($options['functions']['sortBy']['field'])
                 ) {
-                    $this->setCellContents($row, $col, '<i class="drag-drop-handle"><img src="/core/ContentManager/View/Media/Move.png" /></i>', 'TD', '0', false);
+                    $dragDropHandle = '';
+                    if ($dragDropEnabled) {
+                        $dragDropHandle = '<i class="drag-drop-handle"><img src="/core/ContentManager/View/Media/Move.png" /></i>';
+                    }
+                    $this->setCellContents($row, $col, $dragDropHandle, 'TD', '0', false);
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
