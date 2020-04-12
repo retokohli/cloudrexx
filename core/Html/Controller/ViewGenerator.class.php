@@ -2235,7 +2235,15 @@ class ViewGenerator {
         $params = $url->getParamArray();
         $pre = '';
         if (isset($params[$name])) {
-            $pre = $params[$name];
+            $paramParts = explode('},{', substr($params[$name], 1, -1));
+            foreach ($paramParts as $idx=>$part) {
+                if (explode(',', $part)[0] == $vgId) {
+                    unset($paramParts[$idx]);
+                }
+            }
+            if (count($paramParts)) {
+                $pre = '{' . implode('},{', $paramParts) . '}';
+            }
         }
         if (!empty($pre)) {
             $pre .= ',';
