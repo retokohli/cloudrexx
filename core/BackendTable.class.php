@@ -219,8 +219,8 @@ class BackendTable extends HTML_Table {
                                 if ($orderParam[$origHeader] == 'ASC') {
                                     $order = 'DESC';
                                     $img = '&darr;';
-                                    }
                                 }
+                            }
                             $orderUrl = $this->viewGenerator->getSortUrl(
                                 array($origHeader => $order)
                             );
