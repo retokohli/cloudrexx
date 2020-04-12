@@ -268,7 +268,10 @@ class ViewGenerator {
             $entityClassName
         );
         try {
-            $this->object = $this->listingController->getData();
+            $this->object = $this->listingController->getData(array(
+                'order' => $this->getVgParam($_GET['order']),
+                'pos' => $this->getVgParam($_GET['pos']),
+            ));
         } catch (\Doctrine\ORM\Query\QueryException $e) {
             $this->object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
             throw $e;
@@ -1192,7 +1195,10 @@ class ViewGenerator {
                 $renderObject,
                 $renderObject->getDataType()
             );
-            $renderObject = $this->listingController->getData();
+            $renderObject = $this->listingController->getData(array(
+                'order' => $this->getVgParam($_GET['order']),
+                'pos' => $this->getVgParam($_GET['pos']),
+            ));
             if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
                 $entityClassWithNS = $this->object->getDataType();
             } else {

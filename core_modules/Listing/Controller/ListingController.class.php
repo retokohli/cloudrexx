@@ -245,17 +245,15 @@ class ListingController {
         }
         $this->criteria = $crit;
         $this->filter = $filter;
-
-        // todo: allow multiple listing controllers per page request
-        $this->args = contrexx_input2raw($_GET);
     }
 
     /**
      * Loads the data of an object
+     * @param array $args Pass parsed GET params here
      * @param bool $forceRegen (optional) If set to true, cached data is dropped
-     * @returm Cx\Core_Modules\Listing\Model\DataSet Parsed data
+     * @return Cx\Core_Modules\Listing\Model\DataSet Parsed data
      */
-    public function getData($forceRegen = false) {
+    public function getData($args, $forceRegen = false) {
         if ($this->data && !$forceRegen) {
             return $this->data;
         }
@@ -268,7 +266,7 @@ class ListingController {
             'entity'    => $this->entityName,
         );
         foreach ($this->handlers as $handler) {
-            $params = $handler->handle($params, $this->args);
+            $params = $handler->handle($params, $args);
         }
         $this->offset   = $params['offset'];
         $this->count    = $params['count'];
