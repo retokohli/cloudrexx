@@ -1513,6 +1513,9 @@ function set_config_array {
         FILE_CONTENTS=${FILE_CONTENTS//"<persistdb>"/""}
         FILE_CONTENTS=${FILE_CONTENTS//"</persistdb>"/""}
     fi
+    # drop any non-parsed blocks & placeholders
+    FILE_CONTENTS=$(regex_replace_all "$FILE_CONTENTS" "(()<[a-z0-9_-]+>[^<]*</[a-z0-9_-]+>())" "")
+    FILE_CONTENTS=$(regex_replace_all "$FILE_CONTENTS" "(()<[a-z0-9_-]+>())" "")
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
     
