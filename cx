@@ -1820,6 +1820,10 @@ do
     path="$(realpath -s "$path"/..)"
 done
 if ! $found; then
+    if is_wrapper; then
+        shift
+    fi
+
     # command is init
     if [[ "$1" == "env" ]] && [[ "$2" == "init" ]]; then
         # download cx and call init
