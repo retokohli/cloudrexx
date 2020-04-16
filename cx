@@ -72,9 +72,9 @@ if [[ "${BASH_VERSION:0:1}" -lt 4 || "$@" == "env shell --wrapper" ]]; then
         fi
 
         # install copy of global cx in temp
-        TEMPCX=`basename $0`
-        TMPFILE=`mktemp -q /tmp/${TEMPCX}.XXXXXX`
-        TMPNAME=`basename $TMPFILE`
+        TEMPCX=$(basename $0)
+        TMPFILE=$(mktemp -q /tmp/${TEMPCX}.XXXXXX)
+        TMPNAME=$(basename $TMPFILE)
         if [ $? -ne 0 ]; then
             echo "$0: Can't create temp file, exiting..."
             exit 1
