@@ -63,7 +63,7 @@ if [[ "${BASH_VERSION:0:1}" -lt 4 || "$@" == "env shell --wrapper" ]]; then
     GLOBAL_CX_MOUNT=""
 
     # check if we're using the global cx (instead of a local one)
-    PATH_OF_CALLING_CX="`dirname $(realpath $0)`"
+    PATH_OF_CALLING_CX="$(dirname $(realpath $0))"
     if [[ "$PATH_OF_CALLING_CX" != "$(pwd)" ]]; then
         # we're using the global cx
         if [[ ! $NATIVE_DOCKER ]]; then
