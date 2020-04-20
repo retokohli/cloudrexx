@@ -205,6 +205,6 @@ jQuery(function(){
 
     jQuery('.help').click(function(){
         jQuery('.sidebar .options').scrollTop(0);
-        cx.ui.intro.show('TemplateEditor', true);
+        cx.ui.intro.show('TemplateEditor');
     });
 });
