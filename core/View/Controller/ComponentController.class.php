@@ -360,6 +360,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Each step is an array with the indexes "element" and "intro". "element"
      * contains a CSS selector for the element to highlight and "intro" the
      * text to display. $steps is a simple list of such arrays.
+     * Please note that more than 32 steps per group are not supported and may
+     * lead to unexpected behavior.
      * @param array $steps List of steps as described above
      * @param string $group Optional name to group steps by
      */
