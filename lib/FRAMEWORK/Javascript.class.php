@@ -479,7 +479,10 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         'intro.js' => array(
             'jsfiles' => array(
                 'lib/javascript/intro/intro.min.js',
-            )
+            ),
+            'cssfiles' => array(
+                'lib/javascript/intro/intro.css',
+            ),
         ),
         'schedule-publish-tooltip' => array(
             'jsfiles' => array(
