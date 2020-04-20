@@ -391,15 +391,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * {@inheritDoc}
      */
     public function preFinalize() {
-        global $_CORELANG;
+        global $_ARRAYLANG;
 
         if (!count($this->introSteps)) {
             return;
         }
+        $_ARRAYLANG += \Env::get('init')->getComponentSpecificLanguageData('View', false);
         \ContrexxJavascript::getInstance()->setVariable(array(
-            'TXT_CORE_INTRO_NEXT' => $_CORELANG['TXT_CORE_INTRO_NEXT'],
-            'TXT_CORE_INTRO_BACK' => $_CORELANG['TXT_CORE_INTRO_BACK'],
-            'TXT_CORE_INTRO_STOP' => $_CORELANG['TXT_CORE_INTRO_STOP'],
+            'TXT_CORE_VIEW_INTRO_NEXT' => $_ARRAYLANG['TXT_CORE_VIEW_INTRO_NEXT'],
+            'TXT_CORE_VIEW_INTRO_BACK' => $_ARRAYLANG['TXT_CORE_VIEW_INTRO_BACK'],
+            'TXT_CORE_VIEW_INTRO_STOP' => $_ARRAYLANG['TXT_CORE_VIEW_INTRO_STOP'],
         ), 'Core/lang');
 
         // activate intro.js
