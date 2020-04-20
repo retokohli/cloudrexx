@@ -131,10 +131,6 @@ class ComponentController extends SystemComponentController
      */
     public function postContentLoad() {
         global $_ARRAYLANG;
-        $_ARRAYLANG += \Env::get('init')->getComponentSpecificLanguageData(
-            'TemplateEditor',
-            false
-        );
 
         $this->getComponent('View')->addIntroSteps(
             array(
