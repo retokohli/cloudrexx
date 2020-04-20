@@ -49,6 +49,23 @@ namespace Cx\Core\View\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
+     * List of steps, grouped by a groupname
+     *
+     * array(
+     *     '<groupName>' => array(
+     *         array(
+     *             "element" => '<cssSelector>',
+     *             "intro" => '<introText>',
+     *         ),
+     *         ...
+     *     ),
+     *     ...
+     * );
+     * @var array
+     */
+    protected $introSteps = array();
+
+    /**
      * Returns all Controller class names for this component (except this)
      *
      * Be sure to return all your controller classes if you add your own
@@ -333,6 +350,48 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'cx'
                 ),
             )
+        );
+    }
+
+    /**
+     * Adds steps to show as intro.
+     *
+     * Each step is an array with the indexes "element" and "intro". "element"
+     * contains a CSS selector for the element to highlight and "intro" the
+     * text to display. $steps is a simple list of such arrays.
+     * @param array $steps List of steps as described above
+     * @param string $group Optional name to group steps by
+     */
+    public function addIntroSteps(array $steps, string $group = '') {
+        if (!isset($this->introSteps[$group])) {
+            $this->introSteps[$group] = array();
+        }
+        $this->introSteps[$group] += $steps;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function preFinalize() {
+        global $_CORELANG;
+
+        if (!count($this->introSteps)) {
+            return;
+        }
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'TXT_CORE_INTRO_NEXT' => $_CORELANG['TXT_CORE_INTRO_NEXT'],
+            'TXT_CORE_INTRO_BACK' => $_CORELANG['TXT_CORE_INTRO_BACK'],
+            'TXT_CORE_INTRO_STOP' => $_CORELANG['TXT_CORE_INTRO_STOP'],
+        ), 'Core/lang');
+
+        // activate intro.js
+        \JS::activate('intro.js');
+
+        // set steps
+        \ContrexxJavascript::getInstance()->setVariable(
+            'steps',
+            $this->introSteps,
+            'View/intro'
         );
     }
 }
