@@ -363,6 +363,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $group Optional name to group steps by
      */
     public function addIntroSteps(array $steps, string $group = '') {
+        if (empty($group)) {
+            $page = $this->cx->getPage();
+            $component = $page->getModule();
+            $section = $page->getCmd();
+
+            // workaround as for backend $page has no correct module/cmd set
+            global $cmd, $act;
+            if (empty($component) && !empty($cmd)) {
+                $component = $cmd;
+                $section = $act;
+            }
+
+            $group = $component;
+            if (!empty($section)) {
+                $group .= '-' . $section;
+            }
+        }
         if (!isset($this->introSteps[$group])) {
             $this->introSteps[$group] = array();
         }
