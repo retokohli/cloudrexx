@@ -729,6 +729,7 @@ class BackendTable extends HTML_Table {
      * @return string HTML
      */
     protected function getOverallFunctionsCode($functions, $renderObject) {
+        $overallFunctionsCode = '';
         if (
             isset($functions['export']) &&
             is_array($functions['export']) &&
@@ -766,9 +767,9 @@ class BackendTable extends HTML_Table {
                 'export',
                 array('type' => $renderObject->getDataType())
             );
-            return (string) $exportFunc;
+            $overallFunctionsCode .= (string) $exportFunc;
         }
-        return '';
+        return $overallFunctionsCode;
     }
 
     /**
