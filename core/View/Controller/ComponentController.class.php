@@ -371,13 +371,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $component = $page->getModule();
             $section = $page->getCmd();
 
-            // workaround as for backend $page has no correct module/cmd set
-            global $cmd, $act;
-            if (empty($component) && !empty($cmd)) {
-                $component = $cmd;
-                $section = $act;
-            }
-
             $group = $component;
             if (!empty($section)) {
                 $group .= '-' . $section;
