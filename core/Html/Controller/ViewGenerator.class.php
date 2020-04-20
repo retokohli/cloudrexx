@@ -1212,6 +1212,9 @@ class ViewGenerator {
                 $template->touchBlock('no-entries');
                 return $template->get();
             }
+            if (empty($this->options['header'])) {
+                $this->options['header'] = $_ARRAYLANG['TXT_CORE_HTML_ENTRIES'];
+            }
             $this->getListingController(
                 $renderObject,
                 $renderObject->getDataType()
