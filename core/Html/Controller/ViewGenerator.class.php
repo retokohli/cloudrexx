@@ -1005,19 +1005,7 @@ class ViewGenerator {
             if(!empty($this->options['order']['overview'])) {
                 $renderObject->sortColumns($this->options['order']['overview']);
             }
-            $addBtn = '';
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            if (!empty($this->options['functions']['add'])) {
-                $actionUrl->setParam('add', 1);
-                //remove the parameter 'vg_increment_number' from actionUrl
-                //if the baseUrl contains the parameter 'vg_increment_number'
-                $params = $actionUrl->getParamArray();
-                if (isset($params['vg_increment_number'])) {
-                    \Html::stripUriParam($actionUrl, 'vg_increment_number');
-                }
-                $addBtn = '<br /><br /><input type="button" name="addEntity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />';
-            }
-            $template->setVariable('ADD_BUTTON', $addBtn);
 
             $searching = (
                 isset($this->options['functions']['searching']) &&
