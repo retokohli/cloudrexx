@@ -347,7 +347,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'lib/javascript/intro/intro.css',
                 ),
                 'dependencies' => array(
-                    'cx'
+                    'cx',
+                    'js-cookie',
                 ),
             )
         );
