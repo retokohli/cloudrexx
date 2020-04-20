@@ -917,12 +917,30 @@ class ViewGenerator {
 
         // this case is used to generate the add entry form, where we can create an new entry
         if (
+            // only ever show this if "add" is active
+            !empty($this->options['functions']['add']) &&
             (
-                !empty($_GET['add']) &&
-                !empty($this->options['functions']['add'])
-            ) ||
-            !count($this->object) ||
-            !count(current($this->object))
+                // show it if add is "forced" / clicked
+                !empty($_GET['add']) ||
+                // also show this if there are no entries
+                (
+                    (
+                        !count($this->object) ||
+                        !count(current($this->object))
+                    ) &&
+                    // do not show this if we do have entries, but no matching ones
+                    (
+                        empty($this->options['functions']['searching']) ||
+                        !isset($_GET['term']) ||
+                        !count($this->getVgParam($_GET['term']))
+                    ) &&
+                    (
+                        empty($this->options['functions']['filtering']) ||
+                        !isset($_GET['search']) ||
+                        !count($this->getVgParam($_GET['search']))
+                    )
+                )
+            )
         ) {
             $isSingle = true;
             return $this->renderFormForEntry(null);
@@ -1188,6 +1206,11 @@ class ViewGenerator {
                     ));
                     $template->parse('letter');
                 }
+            }
+            // show "no entries" if add is unavailable
+            if (!count($renderObject) || !count(current($renderObject))) {
+                $template->touchBlock('no-entries');
+                return $template->get();
             }
             $this->getListingController(
                 $renderObject,
