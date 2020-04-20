@@ -916,8 +916,14 @@ class ViewGenerator {
         \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
 
         // this case is used to generate the add entry form, where we can create an new entry
-        if (!empty($_GET['add'])
-            && !empty($this->options['functions']['add'])) {
+        if (
+            (
+                !empty($_GET['add']) &&
+                !empty($this->options['functions']['add'])
+            ) ||
+            !count($this->object) ||
+            !count(current($this->object))
+        ) {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
@@ -1182,11 +1188,6 @@ class ViewGenerator {
                     ));
                     $template->parse('letter');
                 }
-            }
-            if (!count($renderObject) || !count(current($renderObject))) {
-                // make this configurable
-                $template->touchBlock('no-entries');
-                return $template->get();
             }
             $this->getListingController(
                 $renderObject,
