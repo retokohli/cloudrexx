@@ -476,14 +476,6 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
 }'
         ),
-        'intro.js' => array(
-            'jsfiles' => array(
-                'lib/javascript/intro/intro.min.js',
-            ),
-            'cssfiles' => array(
-                'lib/javascript/intro/intro.css',
-            ),
-        ),
         'schedule-publish-tooltip' => array(
             'jsfiles' => array(
                 'core/Core/View/Script/ScheduledPublishing.js',

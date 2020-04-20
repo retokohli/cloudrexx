@@ -315,4 +315,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         return $template->get();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        \JS::registerJsLibrary(
+            'intro.js',
+            array(
+                'jsfiles' => array(
+                    'lib/javascript/intro/intro.min.js',
+                ),
+                'cssfiles' => array(
+                    'lib/javascript/intro/intro.css',
+                ),
+                'dependencies' => array(
+                    'cx'
+                ),
+            )
+        );
+    }
 }
