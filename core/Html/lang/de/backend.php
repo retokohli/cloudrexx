@@ -20,3 +20,5 @@ $_ARRAYLANG['TXT_CORE_HTML_STATUS_NO_ENTITY_FOUND_ERROR'] = 'Kein Eintrag zum ak
 $_ARRAYLANG['TXT_CORE_HTML_PLEASE_CHOOSE'] = 'Bitte wählen...';
 $_ARRAYLANG['TXT_CORE_HTML_CANT_UPDATE_STATUS'] = 'Status konnte nicht aktualisiert werden.';
 $_ARRAYLANG['TXT_CORE_HTML_EXPORT'] = 'Mit aktuellem Filter zu CSV exportieren';
+$_ARRAYLANG['TXT_CORE_HTML_NEW_BUTTON_MOVED'] = 'Der Button zum Erstellen neuer Einträge befindet sich neu hier!';
+$_ARRAYLANG['TXT_CORE_HTML_ENTRIES'] = 'Einträge';
