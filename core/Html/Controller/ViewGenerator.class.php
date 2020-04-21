@@ -1307,9 +1307,23 @@ class ViewGenerator {
 
             $this->options['functions']['vg_increment_number'] = $this->viewId;
             $backendTable = new \BackendTable($renderObject, $this->options, $entityClassWithNS, $this);
+
+            $pagingControl = '';
+            if ($this->options['functions']['paging']) {
+                global $_CONFIG;
+
+                $pos = (int) $this->getVgParam($_GET['pos']);
+
+                $pagingControl = $this->getPagingControl(
+                    $_CONFIG['corePagingLimit'],
+                    $this->listingController->getDataSize(),
+                    $pos
+                );
+            }
+
             $template->setVariable(array(
                 'TABLE' => $backendTable,
-                'PAGING' => $this->listingController,
+                'PAGING' => $pagingControl,
             ));
 
             return $template->get();
@@ -2476,5 +2490,109 @@ class ViewGenerator {
             throw new ViewGeneratorException('Given argument is not a valid callback');
         }
         return $data;
+    }
+
+    /**
+     * assumes paging is enabled
+     * This renders the template for paging control element
+     * @todo templating!
+     */
+    protected function getPagingControl($pageLength, $dataLength, $offset) {
+        $html = '';
+        if ($dataLength <= $pageLength) {
+            return $html;
+        }
+        $numberOfPages = ceil($dataLength / $pageLength);
+        $activePageNumber = ceil(($offset + 1) / $pageLength);
+
+        /*echo 'Number of entries: ' . count($this->entityClass->toArray()) . '<br />';
+        echo 'Entries per page: ' . $pageLength . '<br />';
+        echo 'Number of pages: ' . $numberOfPages . '<br />';
+        echo 'Active page: ' . $activePageNumber . '<br />';*/
+
+
+        $paramName = !empty($this->entityName) ? $this->entityName . 'Pos' : 'pos';
+        if ($offset) {
+            // render goto start
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
+            $url->setParam($paramName, 0);
+            $html .= '<a href="' . $url . '">&lt;&lt;</a> ';
+
+            // render goto previous
+            $pagePos = ($activePageNumber - 2) * $pageLength;
+            if ($pagePos < 0) {
+                $pagePos = 0;
+            }
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
+            $url->setParam($paramName, $pagePos);
+            $html .= '<a href="' . $url . '">&lt;</a> ';
+        } else {
+            $html .= '&lt;&lt;&nbsp;&lt;&nbsp;';
+        }
+
+        $noOfPagesBeforeActive = $activePageNumber - 1;
+        $noOfPagesAfterActive = $numberOfPages - $activePageNumber;
+        $beforeSkipDone = false;
+        $afterSkipDone = false;
+        for ($pageNumber = 1; $pageNumber <= $numberOfPages; $pageNumber++) {
+            if (
+                $pageNumber < $activePageNumber &&
+                $noOfPagesBeforeActive >= 5 &&
+                $pageNumber > 1 &&
+                $pageNumber < $activePageNumber - 1
+            ) {
+                if (!$beforeSkipDone) {
+                    $beforeSkipDone = true;
+                    $html .= ' ... ';
+                }
+                continue;
+            } else if (
+                $pageNumber > $activePageNumber &&
+                $noOfPagesAfterActive >= 5 &&
+                $pageNumber > $activePageNumber + 1 &&
+                $pageNumber < $numberOfPages
+            ) {
+                if (!$afterSkipDone) {
+                    $afterSkipDone = true;
+                    $html .= ' ... ';
+                }
+                continue;
+            } else if ($pageNumber == $activePageNumber) {
+                // render page without link
+                $html .= $pageNumber . ' ';
+                continue;
+            }
+            // render page with link
+            $pagePos = ($pageNumber - 1) * $pageLength;
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
+            $url->setParam($paramName, $pagePos);
+            $html .= '<a href="' . $url . '">' . $pageNumber . '</a> ';
+        }
+
+        if ($offset + $pageLength < $dataLength) {
+            // render goto next
+            $pagePos = ($activePageNumber - 0) * $pageLength;
+            if ($pagePos < 0) {
+                $pagePos = 0;
+            }
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
+            $url->setParam($paramName, $pagePos);
+            $html .= '<a href="' . $url . '">&gt;</a> ';
+
+            // render goto last page
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
+            $url->setParam($paramName, ($numberOfPages - 1) * $pageLength);
+            $html .= '<a href="' . $url . '">&gt;&gt;</a>';
+        } else {
+            $html .= '&gt;&nbsp;&gt;&gt;';
+        }
+        if ($offset + $pageLength > $dataLength) {
+            $to =  $dataLength;
+        } else {
+            $to  = $offset + $pageLength;
+        }
+        // entry x-y out of n
+        $html .= '&nbsp;Einträge ' . ($offset+1). ' - ' . $to . ' von ' . $dataLength;
+        return $html;
     }
 }
