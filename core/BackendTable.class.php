@@ -164,6 +164,9 @@ class BackendTable extends HTML_Table {
                     $this->viewGenerator->getViewId(),
                     $_GET['order']
                 );
+                if (empty($orderParam)) {
+                    $orderParam = $options['functions']['sortBy']['field'];
+                }
                 $dragDropEnabled = (
                     count($orderParam) == 1 &&
                     current(array_keys($orderParam)) == $orderFieldName
