@@ -2223,6 +2223,16 @@ class ViewGenerator {
     }
 
     /**
+     * Get the Url to a paging position in the  entries in this VG instance
+     * @param int $pos Position offset number
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with sort arguments
+     */
+    public function getPagingUrl($pos, $url = null) {
+        return static::getVgPagingUrl($this->viewId, $pos, $url);
+    }
+
+    /**
      * Gets the Url object used to build Urls for this VG
      * @return \Cx\Core\Routing\Url Url object used to build Urls for this VG
      */
@@ -2455,6 +2465,21 @@ class ViewGenerator {
     }
 
     /**
+     * Get the Url to a paging position in the  entries in this VG instance
+     * @param int $vgId ID of the VG for the parameter
+     * @param int $pos Position offset number
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with sort arguments
+     */
+    public static function getVgPagingUrl($vgId, $pos, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        static::appendVgParam($url, $vgId, 'pos', $pos);
+        return $url;
+    }
+
+    /**
      * Calls the given callback with the given arguments
      *
      * If the callback is a JsonAdapter, $info must have the indexes "adapter"
@@ -2514,8 +2539,7 @@ class ViewGenerator {
         $paramName = !empty($this->entityName) ? $this->entityName . 'Pos' : 'pos';
         if ($offset) {
             // render goto start
-            $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam($paramName, 0);
+            $url = $this->getPagingUrl(0);
             $html .= '<a href="' . $url . '">&lt;&lt;</a> ';
 
             // render goto previous
@@ -2523,8 +2547,7 @@ class ViewGenerator {
             if ($pagePos < 0) {
                 $pagePos = 0;
             }
-            $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam($paramName, $pagePos);
+            $url = $this->getPagingUrl($pagePos);
             $html .= '<a href="' . $url . '">&lt;</a> ';
         } else {
             $html .= '&lt;&lt;&nbsp;&lt;&nbsp;';
@@ -2564,8 +2587,7 @@ class ViewGenerator {
             }
             // render page with link
             $pagePos = ($pageNumber - 1) * $pageLength;
-            $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam($paramName, $pagePos);
+            $url = $this->getPagingUrl($pagePos);
             $html .= '<a href="' . $url . '">' . $pageNumber . '</a> ';
         }
 
@@ -2575,13 +2597,11 @@ class ViewGenerator {
             if ($pagePos < 0) {
                 $pagePos = 0;
             }
-            $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam($paramName, $pagePos);
+            $url = $this->getPagingUrl($pagePos);
             $html .= '<a href="' . $url . '">&gt;</a> ';
 
             // render goto last page
-            $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam($paramName, ($numberOfPages - 1) * $pageLength);
+            $url = $this->getPagingUrl(($numberOfPages - 1) * $pageLength);
             $html .= '<a href="' . $url . '">&gt;&gt;</a>';
         } else {
             $html .= '&gt;&nbsp;&gt;&gt;';
