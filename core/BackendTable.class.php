@@ -780,7 +780,7 @@ class BackendTable extends HTML_Table {
             $renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
         ) {
             $_CORELANG = \Env::get('init')->getComponentSpecificLanguageData(
-                'core',
+                'Core',
                 false
             );
             $addFunc = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
