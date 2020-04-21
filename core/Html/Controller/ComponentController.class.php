@@ -82,12 +82,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_ARRAYLANG;
         $_ARRAYLANG += \Env::get('init')->getComponentSpecificLanguageData('Html', false);
 
-        $this->getComponent('View')->addIntroSteps(array(
+        $this->getComponent('View')->addIntroSteps(
             array(
-                'element' => '.vg-add img',
-                'intro' => $_ARRAYLANG['TXT_CORE_HTML_NEW_BUTTON_MOVED'],
-            )
-        ));
+                array(
+                    'element' => '.vg-add img',
+                    'intro' => $_ARRAYLANG['TXT_CORE_HTML_NEW_BUTTON_MOVED'],
+                )
+            ),
+            'vg-intro'
+        );
     }
 
     /**
