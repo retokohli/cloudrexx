@@ -2182,6 +2182,25 @@ class ViewGenerator {
     }
 
     /**
+     * Get the Url to add an entry of a VG instance
+     * @param int $vgId ViewGenerator id
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with copy arguments
+     */
+    public static function getVgAddUrl($vgId, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        static::appendVgParam(
+            $url,
+            $vgId,
+            'add',
+            1
+        );
+        return $url;
+    }
+
+    /**
      * Get the Url to copy an entry of a VG instance
      * @param int $vgId ViewGenerator id
      * @param int|string|array|object $entryOrId Entity or entity key
