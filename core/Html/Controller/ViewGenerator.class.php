@@ -736,7 +736,61 @@ class ViewGenerator {
      * @param string $entityNameSpace entity namespace
      */
     protected function initializeSorting($entityNameSpace) {
+        $this->initializeColumnSorting();
         $this->initializeDragNDropSorting($entityNameSpace);
+    }
+
+    /**
+     * Initializes values for "sort by column" function
+     */
+    protected function initializeColumnSorting() {
+        // Only do something if user can sort by column
+        if (
+            !isset($this->options['functions']['sorting']) ||
+            !$this->options['functions']['sorting']
+        ) {
+            return;
+        }
+
+        // get sort order set by user
+        $userOrder = array();
+        if (isset($_GET['order'])) {
+            $userOrder = $this->getVgParam($_GET['order']);
+        }
+
+        // if none: set it to default sorting
+        if (!count($userOrder)) {
+            // if drag'n'drop sort is active use its order field as a base
+            if (
+                isset($this->options['functions']['sortBy']) &&
+                isset($this->options['functions']['sortBy']['field']) &&
+                count($this->options['functions']['sortBy']['field'])
+            ) {
+                $userOrder = $this->options['functions']['sortBy']['field'];
+            }
+            // if a default sort order is set it has precedence over drag'n'drop
+            if (isset($this->options['functions']['order'])) {
+                $userOrder = array_map(
+                    function($order) {
+                        if (is_string($order)) {
+                            return $order;
+                        }
+                        return ($order == SORT_DESC ? 'DESC' : 'ASC');
+                    },
+                    $this->options['functions']['order']
+                );
+            }
+            // cleanup param format
+            $this->options['functions']['order'] = array_map(
+                function($order) {
+                    if (is_int($order)) {
+                        return $order;
+                    }
+                    return ($order == 'DESC' ? SORT_DESC : SORT_ASC);
+                },
+                $userOrder
+            );
+        }
     }
 
     /**
