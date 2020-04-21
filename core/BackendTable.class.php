@@ -144,6 +144,7 @@ class BackendTable extends HTML_Table {
 
             $formGenerator = new \Cx\Core\Html\Controller\FormGenerator($attrs, '', $entityClass, '', $options, 0, null, $this->viewGenerator, true);
 
+            $col = 0;
             $headerRowIdx = 0;
             $headerRowCellType = 'th';
             if ($this->hasMasterTableHeader) {
@@ -151,7 +152,8 @@ class BackendTable extends HTML_Table {
                 $headerRowIdx++;
             }
             if (isset($options['multiActions'])) {
-                $this->setCellContents($headerRowIdx, 0, '<input class="multi-action-checkbox-all" type="checkbox" />', $headerRowType, '0', false);
+                $this->setCellContents($headerRowIdx, $col, '<input class="multi-action-checkbox-all" type="checkbox" />', $headerRowType, '0', false);
+                $col++;
             }
             if (
                 isset($options['functions']['sortBy']) &&
@@ -169,7 +171,8 @@ class BackendTable extends HTML_Table {
                 $orderUrl = $this->viewGenerator->getSortUrl(
                     array($orderFieldName => 'ASC')
                 );
-                $this->setCellContents($headerRowIdx, 1, '<a class="drag-drop-header" href="' . $orderUrl . '">&darr;</a>', $headerRowType, '0', false);
+                $this->setCellContents($headerRowIdx, $col, '<a class="drag-drop-header" href="' . $orderUrl . '">&darr;</a>', $headerRowType, '0', false);
+                $col++;
             }
 
             foreach ($attrs as $rowname=>$rows) {
