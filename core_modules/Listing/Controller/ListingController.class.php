@@ -200,9 +200,6 @@ class ListingController {
         if (isset($options['order'])) {
             $this->order  = $options['order'];
         }
-        if (isset($options['sortBy']['field'])) {
-            $this->order  = $options['sortBy']['field'];
-        }
         if (isset($options['sortBy']['entity'])) {
             $this->entityName = $options['sortBy']['entity'];
         }

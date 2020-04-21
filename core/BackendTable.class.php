@@ -165,7 +165,7 @@ class BackendTable extends HTML_Table {
                     $_GET['order']
                 );
                 if (empty($orderParam)) {
-                    $orderParam = $options['functions']['sortBy']['field'];
+                    $orderParam = $options['functions']['order'];
                 }
                 $dragDropEnabled = (
                     count($orderParam) == 1 &&
