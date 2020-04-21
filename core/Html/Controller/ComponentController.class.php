@@ -89,7 +89,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'intro' => $_ARRAYLANG['TXT_CORE_HTML_NEW_BUTTON_MOVED'],
                 )
             ),
-            'vg-intro'
+            'Html/vg-intro'
         );
     }
 
