@@ -248,6 +248,9 @@ class BackendTable extends HTML_Table {
                             ) {
                                 $orderParam = array_map(
                                     function($order) {
+                                        if (is_string($order)) {
+                                            return $order;
+                                        }
                                         return ($order == SORT_DESC ? 'DESC' : 'ASC');
                                     },
                                     $options['functions']['order']
