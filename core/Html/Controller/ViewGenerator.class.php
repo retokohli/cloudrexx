@@ -744,7 +744,8 @@ class ViewGenerator {
      * Initializes values for "sort by column" function
      */
     protected function initializeColumnSorting() {
-        // Only do something if user can sort by column
+        // Only do something if user can sort by column.
+        // We do not force a session here.
         if (
             !isset($this->options['functions']['sorting']) ||
             !$this->options['functions']['sorting']
@@ -758,7 +759,15 @@ class ViewGenerator {
             $userOrder = $this->getVgParam($_GET['order']);
         }
 
-        // if none: set it to default sorting
+        // prepare session index
+        $tpl = '';
+        if (isset($_GET['tpl'])) {
+            $tpl = '/' . contrexx_input2raw($_GET['tpl']);
+        }
+        $sessionIdx = 'vg/order/' . $this->cx->getPage()->getModule() .
+            '/' . $this->cx->getPage()->getCmd() . $tpl . '/' . $this->getViewId();
+
+        // if none: set it to default sorting and override by session (if any)
         if (!count($userOrder)) {
             // if drag'n'drop sort is active use its order field as a base
             if (
@@ -780,6 +789,13 @@ class ViewGenerator {
                     $this->options['functions']['order']
                 );
             }
+            // if none was set session takes precedence
+            if (
+                $this->cx->getComponent('Session')->isInitialized() &&
+                $_SESSION->recursiveOffsetExists($sessionIdx)
+            ) {
+                $userOrder = $_SESSION->recursiveOffsetGet($sessionIdx)->toArray();
+            }
             // cleanup param format
             $this->options['functions']['order'] = array_map(
                 function($order) {
@@ -790,6 +806,11 @@ class ViewGenerator {
                 },
                 $userOrder
             );
+        }
+
+        if ($this->cx->getComponent('Session')->isInitialized()) {
+            // save it to session
+            $_SESSION->recursiveOffsetSet($userOrder, $sessionIdx);
         }
     }
 
