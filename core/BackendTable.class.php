@@ -787,7 +787,7 @@ class BackendTable extends HTML_Table {
             $addIcon = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
             $addIcon->setAttribute('src', '/core/Html/View/Media/Add.png');
             $addFunc->addChild($addIcon);
-            $vgId = $options['functions']['vg_increment_number'];
+            $vgId = $functions['vg_increment_number'];
             $addFunc->setAttributes(array(
                 'href' => (string) \Cx\Core\Html\Controller\ViewGenerator::getVgAddUrl(
                     $vgId
