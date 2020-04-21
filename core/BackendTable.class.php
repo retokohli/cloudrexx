@@ -242,6 +242,17 @@ class BackendTable extends HTML_Table {
                                 $this->viewGenerator->getViewId(),
                                 $_GET['order']
                             );
+                            if (
+                                !count($orderParam) &&
+                                count($options['functions']['order'])
+                            ) {
+                                $orderParam = array_map(
+                                    function($order) {
+                                        return ($order == SORT_DESC ? 'DESC' : 'ASC');
+                                    },
+                                    $options['functions']['order']
+                                );
+                            }
                             if (count($orderParam) && isset($orderParam[$origHeader])) {
                                 $img = '&uarr;';
                                 if ($orderParam[$origHeader] == 'ASC') {
