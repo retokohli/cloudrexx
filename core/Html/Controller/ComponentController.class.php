@@ -85,7 +85,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->getComponent('View')->addIntroSteps(
             array(
                 array(
-                    'element' => '.vg-add img',
+                    'element' => '.adminlist .vg-add:first-child img',
                     'intro' => $_ARRAYLANG['TXT_CORE_HTML_NEW_BUTTON_MOVED'],
                 )
             ),
