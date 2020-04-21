@@ -304,7 +304,7 @@ class ViewGenerator {
         $this->initializeStatusOption($entityWithNS);
 
         //initialize the row sorting functionality
-        $this->getSortingOption($entityWithNS);
+        $this->initializeSorting($entityWithNS);
     }
 
     /**
@@ -731,13 +731,20 @@ class ViewGenerator {
     }
 
     /**
-     * Initialize the row sorting functionality
+     * Initializes sort options
      *
      * @param string $entityNameSpace entity namespace
-     *
-     * @return boolean
      */
-    protected function getSortingOption($entityNameSpace)
+    protected function initializeSorting($entityNameSpace) {
+        $this->initializeDragNDropSorting($entityNameSpace);
+    }
+
+    /**
+     * Initialize the manual (/drag'n'drop) sorting functionality
+     *
+     * @param string $entityNameSpace entity namespace
+     */
+    protected function initializeDragNDropSorting($entityNameSpace)
     {
         //If the entity namespace is empty or an array then disable the row sorting
         if (empty($entityNameSpace) && $entityNameSpace === 'array') {
