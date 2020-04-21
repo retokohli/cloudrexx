@@ -913,6 +913,10 @@ class ViewGenerator {
     public function render(&$isSingle = false) {
         global $_ARRAYLANG, $_CORELANG;
 
+        // $_ARRAYLANG contains the lang of another module since this is called
+        // from a different module. Therefore we need to load $_ARRAYLANG ourself.
+        $_ARRAYLANG += \Env::get('init')->getComponentSpecificLanguageData('Html', false);
+
         \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
 
         // this case is used to generate the add entry form, where we can create an new entry
