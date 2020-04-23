@@ -1313,7 +1313,10 @@ class ViewGenerator {
                 $pos = (int) $this->getVgParam($_GET['pos']);
 
                 $pagingControl = $this->getPagingControl(
-                    \Cx\Core\Setting\Controller\Setting::getValue('corePagingLimit'),
+                    \Cx\Core\Setting\Controller\Setting::getValue(
+                        'corePagingLimit',
+                        'Config'
+                    ),
                     $this->listingController->getDataSize(),
                     $pos
                 );
