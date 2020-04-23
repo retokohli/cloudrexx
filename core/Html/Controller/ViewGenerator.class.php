@@ -2533,8 +2533,6 @@ class ViewGenerator {
         echo 'Number of pages: ' . $numberOfPages . '<br />';
         echo 'Active page: ' . $activePageNumber . '<br />';*/
 
-
-        $paramName = !empty($this->entityName) ? $this->entityName . 'Pos' : 'pos';
         if ($offset) {
             // render goto start
             $url = $this->getPagingUrl(0);
