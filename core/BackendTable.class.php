@@ -171,10 +171,18 @@ class BackendTable extends HTML_Table {
                     count($orderParam) == 1 &&
                     current(array_keys($orderParam)) == $orderFieldName
                 );
+                $orderFieldOrder = 'ASC';
+                if ($options['functions']['sortBy']['field'][$orderFieldName] == SORT_DESC) {
+                   $orderFieldOrder = 'DESC';
+                }
                 $orderUrl = $this->viewGenerator->getSortUrl(
-                    array($orderFieldName => 'ASC')
+                    array($orderFieldName => $orderFieldOrder)
                 );
-                $this->setCellContents($headerRowIdx, $col, '<a class="drag-drop-header" href="' . $orderUrl . '">&darr;</a>', $headerRowType, '0', false);
+                $img = '&uarr;';
+                if ($orderFieldOrder == 'ASC') {
+                    $img = '&darr;';
+                }
+                $this->setCellContents($headerRowIdx, $col, '<a class="drag-drop-header" href="' . $orderUrl . '">' . $img . '</a>', $headerRowType, '0', false);
                 $col++;
             }
 
