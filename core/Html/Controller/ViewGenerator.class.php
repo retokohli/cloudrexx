@@ -854,7 +854,7 @@ class ViewGenerator {
         //Get the current sorting order
         $sortOrder = ($sortBy['field'][$sortField] == SORT_ASC) ? 'ASC' : 'DESC';
         if (count($orderParam)) {
-            $sortOrder = $orderParam;
+            $sortOrder = current($orderParam);
         }
 
         //Get the paging position value
