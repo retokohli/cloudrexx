@@ -96,6 +96,22 @@ class EntityBase {
     protected $virtual = false;
 
     /**
+     * List of fields that should be available in the string representation
+     *
+     * @see getStringRepresentationFields()
+     * @var array List of field names
+     */
+    protected $stringRepresentationFields = array();
+
+    /**
+     * Sprintf format for the string representation
+     *
+     * @see getStringRepresentationFormat()
+     * @var string Sprintf format string
+     */
+    protected $stringRepresentationFormat = '';
+
+    /**
      * Counts the nesting level of __call()
      * @var int
      */
@@ -216,6 +232,24 @@ class EntityBase {
     }
 
     /**
+     * Returns a list of fields available in the string representation
+     *
+     * @return array List of field names
+     */
+    protected function getStringRepresentationFields() {
+        return $this->stringRepresentationFields;
+    }
+
+    /**
+     * Returns the sprintf() format for the string representation
+     *
+     * @return string sprintf() format string
+     */
+    protected function getStringRepresentationFormat() {
+        return $this->stringRepresentationFormat;
+    }
+
+    /**
      * Returns the value of a translatable field using fallback mechanisms
      *
      * If the field is not translatable its value is returned anyway.
@@ -285,6 +319,26 @@ class EntityBase {
      * @return string Identifying value for this entity
      */
     public function __toString() {
-        return $this->getKeyAsString();
+        if ($this->getStringRepresentationFormat() == '') {
+            return $this->getKeyAsString();
+        }
+        if (!count($this->getStringRepresentationFields())) {
+            $stringRepresentation = sprintf($this->getStringRepresentationFields());
+            if ($stringRepresentation == '') {
+                return $this->getKeyAsString();
+            }
+        }
+        $fieldValues = array();
+        foreach ($this->getStringRepresentationFields() as $fieldName) {
+            $fieldValues[] = $this->getTranslatedFieldValue($fieldName);
+        }
+        $stringRepresentation = vsprintf(
+            $this->getStringRepresentationFormat(),
+            $fieldValues
+        );
+        if ($stringRepresentation == '') {
+            return $this->getKeyAsString();
+        }
+        return $stringRepresentation;
     }
 }
