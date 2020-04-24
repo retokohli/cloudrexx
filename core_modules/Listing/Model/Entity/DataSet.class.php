@@ -230,6 +230,16 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 if (!$this->options['suppressFallback']) {
                     $value = $object->getTranslatedFieldValue($field);
                 }
+                if ($value instanceof \DateTime) {
+                    // Unknown types fall through!
+                    if (isset($this->options['dateFormat' . ucfirst($fieldDefinition['type'])])) {
+                        $value = $value->format(
+                            $this->options['dateFormat' . ucfirst($fieldDefinition['type'])]
+                        );
+                    }
+                } elseif (is_array($value)) {
+                    $value = serialize($value);
+                }
                 $data[$field] = $value;
             }
             $associationMappings = $em->getClassMetadata(get_class($object))->getAssociationMappings();
