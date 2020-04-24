@@ -221,37 +221,6 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
             }
             $key = $identifiers;
 
-            // for translatable fields do automatic fallback
-            if (!$this->options['suppressFallback']) {
-                $translationListener = $this->cx->getDb()->getTranslationListener();
-                $config = $translationListener->getConfiguration(
-                    $this->cx->getDb()->getEntityManager(),
-                    get_class($object)
-                );
-                $currentLocaleId = \Env::get('init')->userFrontendLangId;
-                $defaultLocaleId = \Env::get('init')->defaultFrontendLangId;
-                $currentLocaleCode = \FWLanguage::getLanguageCodeById($currentLocaleId);
-                $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-                $locales = $localeRepo->findAll();
-
-                // create an array with all locale codes except current language
-                // with default language (if different) as first entry
-                $localeCodes = array();
-                foreach ($locales as $locale) {
-                    if (
-                        $locale->getId() == $defaultLocaleId ||
-                        $locale->getId() == $currentLocaleId
-                    ) {
-                        continue;
-                    }
-                    $localeCodes[] = $locale->getShortForm();
-                }
-                // if current locale is different from default, add default
-                if (\Env::get('init')->defaultFrontendLangId != $currentLocaleId) {
-                    array_unshift($localeCodes, \FWLanguage::getLanguageCodeById($defaultLocaleId));
-                }
-            }
-
             foreach ($entityClassMetadata->getColumnNames() as $column) {
                 $field = $entityClassMetadata->getFieldName($column);
                 $value = $entityClassMetadata->getFieldValue($object, $field);
@@ -259,25 +228,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
 
                 // automatic fallback
                 if (!$this->options['suppressFallback']) {
-                    // todo: measure time and if necessary optimize for lots of translatable fields
-                    if (in_array($field, $config['fields']) && empty($value)) {
-                        foreach ($localeCodes as $localeCode) {
-                            // try default locale first, then all other locales
-                            $translationListener->setTranslatableLocale(
-                                $localeCode
-                            );
-                            $em->refresh($object);
-                            $value = $entityClassMetadata->getFieldValue($object, $field);
-                            if (!empty($value)) {
-                                break;
-                            }
-                        }
-                        // reset entity to normal locale
-                        $translationListener->setTranslatableLocale(
-                            $currentLocaleCode
-                        );
-                        $em->refresh($object);
-                    }
+                    $value = $object->getTranslatedFieldValue($field);
                 }
                 $data[$field] = $value;
             }

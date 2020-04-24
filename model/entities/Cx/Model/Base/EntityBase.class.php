@@ -216,6 +216,68 @@ class EntityBase {
     }
 
     /**
+     * Returns the value of a translatable field using fallback mechanisms
+     *
+     * If the field is not translatable its value is returned anyway.
+     * Tries to return the value in the following locales (if non-empty):
+     * - Current locale
+     * - Default locale
+     * - All other locales
+     * @param string $fieldName Name of a translatable field
+     */
+    public function getTranslatedFieldValue($fieldName) {
+        $translationListener = $this->cx->getDb()->getTranslationListener();
+        $em = $this->cx->getDb()->getEntityManager();
+        $config = $translationListener->getConfiguration(
+            $em,
+            get_class($this)
+        );
+        $currentLocaleId = \Env::get('init')->userFrontendLangId;
+        $defaultLocaleId = \Env::get('init')->defaultFrontendLangId;
+        $currentLocaleCode = \FWLanguage::getLanguageCodeById($currentLocaleId);
+        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        $locales = $localeRepo->findAll();
+
+        // create an array with all locale codes except current language
+        // with default language (if different) as first entry
+        $localeCodes = array();
+        foreach ($locales as $locale) {
+            if (
+                $locale->getId() == $defaultLocaleId ||
+                $locale->getId() == $currentLocaleId
+            ) {
+                continue;
+            }
+            $localeCodes[] = $locale->getShortForm();
+        }
+        // if current locale is different from default, add default
+        if (\Env::get('init')->defaultFrontendLangId != $currentLocaleId) {
+            array_unshift($localeCodes, \FWLanguage::getLanguageCodeById($defaultLocaleId));
+        }
+        $entityClassMetadata = $em->getClassMetadata(get_class($this));
+        if (!in_array($fieldName, $config['fields'])) {
+            return $entityClassMetadata->getFieldValue($this, $fieldName);
+        }
+        foreach ($localeCodes as $localeCode) {
+            // try default locale first, then all other locales
+            $translationListener->setTranslatableLocale(
+                $localeCode
+            );
+            $em->refresh($this);
+            $value = $entityClassMetadata->getFieldValue($this, $fieldName);
+            if (!empty($value)) {
+                break;
+            }
+        }
+        // reset entity to normal locale
+        $translationListener->setTranslatableLocale(
+            $currentLocaleCode
+        );
+        $em->refresh($this);
+        return $value;
+    }
+
+    /**
      * Returns this entity's identifying value
      *
      * By default this returns the same as getKeyAsString(), but this method
