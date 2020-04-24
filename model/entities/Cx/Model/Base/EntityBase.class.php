@@ -251,7 +251,7 @@ class EntityBase {
             $localeCodes[] = $locale->getShortForm();
         }
         // if current locale is different from default, add default
-        if (\Env::get('init')->defaultFrontendLangId != $currentLocaleId) {
+        if ($defaultLocaleId != $currentLocaleId) {
             array_unshift($localeCodes, \FWLanguage::getLanguageCodeById($defaultLocaleId));
         }
         $entityClassMetadata = $em->getClassMetadata(get_class($this));
