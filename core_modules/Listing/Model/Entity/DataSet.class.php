@@ -111,7 +111,6 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
             'dateFormatTimestamp' => ASCMS_DATE_FORMAT_DATETIME,
             'dateFormatDate' => ASCMS_DATE_FORMAT_DATE,
             'dateFormatTime' => ASCMS_DATE_FORMAT_TIME,
-            'translationFallback' => false,
         );
         foreach ($defaults as $optionName=>$defaultValue) {
             if (!isset($options[$optionName])) {
@@ -220,47 +219,60 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
                 $identifiers = implode('/', $identifiers);
             }
             $key = $identifiers;
-            if ($this->options['translationFallback']) {
-                $currentLocaleId = \Env::get('init')->userFrontendLangId;
-                $defaultLocaleId = \Env::get('init')->defaultFrontendLangId;
-                if ($currentLocaleId == $defaultLocaleId) {
-                    $this->options['translationFallback'] = false;
-                } else {
-                    $currentLocale = \FWLanguage::getLanguageCodeById($currentLocaleId);
-                    $defaultLocale = \FWLanguage::getLanguageCodeById($defaultLocaleId);
+
+            // for translatable fields do automatic fallback
+            $translationListener = $this->cx->getDb()->getTranslationListener();
+            $config = $translationListener->getConfiguration(
+                $this->cx->getDb()->getEntityManager(),
+                get_class($object)
+            );
+            $currentLocaleId = \Env::get('init')->userFrontendLangId;
+            $defaultLocaleId = \Env::get('init')->defaultFrontendLangId;
+            $currentLocaleCode = \FWLanguage::getLanguageCodeById($currentLocaleId);
+            $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+            $locales = $localeRepo->findAll();
+
+            // create an array with all locale codes except current language
+            // with default language (if different) as first entry
+            $localeCodes = array();
+            foreach ($locales as $locale) {
+                if (
+                    $locale->getId() == $defaultLocaleId ||
+                    $locale->getId() == $currentLocaleId
+                ) {
+                    continue;
                 }
+                $localeCodes[] = $locale->getShortForm();
             }
+            // if current locale is different from default, add default
+            if (\Env::get('init')->defaultFrontendLangId != $currentLocaleId) {
+                array_unshift($localeCodes, \FWLanguage::getLanguageCodeById($defaultLocaleId));
+            }
+
             foreach ($entityClassMetadata->getColumnNames() as $column) {
                 $field = $entityClassMetadata->getFieldName($column);
                 $value = $entityClassMetadata->getFieldValue($object, $field);
                 $fieldDefinition = $entityClassMetadata->getFieldMapping($field);
-                if ($this->options['translationFallback']) {
-                    $translationListener = $this->cx->getDb()->getTranslationListener();
-                    $config = $translationListener->getConfiguration(
-                        $this->cx->getDb()->getEntityManager(),
-                        get_class($object)
-                    );
-                    if (in_array($field, $config['fields']) && empty($value)) {
+
+                // automatic fallback
+                // todo: measure time and if necessary optimize for lots of translatable fields
+                if (in_array($field, $config['fields']) && empty($value)) {
+                    foreach ($localeCodes as $localeCode) {
+                        // try default locale first, then all other locales
                         $translationListener->setTranslatableLocale(
-                            $defaultLocale
+                            $localeCode
                         );
                         $em->refresh($object);
                         $value = $entityClassMetadata->getFieldValue($object, $field);
-                        $translationListener->setTranslatableLocale(
-                            $currentLocale
-                        );
-                        $em->refresh($object);
+                        if (!empty($value)) {
+                            break;
+                        }
                     }
-                }
-                if ($value instanceof \DateTime) {
-                    // Unknown types fall through!
-                    if (isset($this->options['dateFormat' . ucfirst($fieldDefinition['type'])])) {
-                        $value = $value->format(
-                            $this->options['dateFormat' . ucfirst($fieldDefinition['type'])]
-                        );
-                    }
-                } elseif (is_array($value)) {
-                    $value = serialize($value);
+                    // reset entity to normal locale
+                    $translationListener->setTranslatableLocale(
+                        $currentLocaleCode
+                    );
+                    $em->refresh($object);
                 }
                 $data[$field] = $value;
             }
