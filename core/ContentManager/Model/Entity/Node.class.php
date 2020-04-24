@@ -333,9 +333,9 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Set parent
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Node $parent
+     * @param Null|\Cx\Core\ContentManager\Model\Entity\Node $parent
      */
-    public function setParent(\Cx\Core\ContentManager\Model\Entity\Node $parent)
+    public function setParent(?\Cx\Core\ContentManager\Model\Entity\Node $parent)
     {
         $this->parent = $parent;
     }
