@@ -323,7 +323,7 @@ class EntityBase {
             return $this->getKeyAsString();
         }
         if (!count($this->getStringRepresentationFields())) {
-            $stringRepresentation = sprintf($this->getStringRepresentationFields());
+            $stringRepresentation = sprintf($this->getStringRepresentationFormat());
             if ($stringRepresentation == '') {
                 return $this->getKeyAsString();
             }
