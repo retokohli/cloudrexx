@@ -327,26 +327,32 @@ class EntityBase {
             return $entityClassMetadata->getFieldValue($this, $fieldName);
         }
 
-        $currentLocaleId = \Env::get('init')->userFrontendLangId;
-        $currentLocaleCode = \FWLanguage::getLanguageCodeById($currentLocaleId);
+        // load all translations of field
+        $translationRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Translation');
+        $translations = $translationRepo->findBy(array(
+            'objectClass' => get_class($this),
+            'field' => $fieldName,
+            'foreignKey' => \Gedmo\Tool\Wrapper\AbstractWrapper::wrap($this, $em)->getIdentifier(),
+        ));
+
+        if (count($translations) == 1) {
+            return current($translations)->getContent();
+        }
+
+        $indexedTranslations = array();
+        foreach ($translations as $translation) {
+            $indexedTranslations[$translation->getLocale()] = $translation->getContent();
+        }
+
         $localeCodes = $this->getFallbackLocaleCodes();
         foreach ($localeCodes as $localeCode) {
-            // try default locale first, then all other locales
-            $translationListener->setTranslatableLocale(
-                $localeCode
-            );
-            $em->refresh($this);
-            $value = $entityClassMetadata->getFieldValue($this, $fieldName);
-            if (!empty($value)) {
-                break;
+            if (isset($indexedTranslations[$localeCode])) {
+                return $indexedTranslations[$localeCode];
             }
         }
-        // reset entity to normal locale
-        $translationListener->setTranslatableLocale(
-            $currentLocaleCode
-        );
-        $em->refresh($this);
-        return $value;
+
+        // giving up, no translation found
+        return '';
     }
 
     /**
