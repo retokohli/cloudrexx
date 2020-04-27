@@ -324,7 +324,7 @@ class EntityBase {
 
         // field is not translatable
         if (!in_array($fieldName, $config['fields'])) {
-            return $entityClassMetadata->getFieldValue($this, $fieldName);
+            return '';
         }
 
         // load all translations of field
