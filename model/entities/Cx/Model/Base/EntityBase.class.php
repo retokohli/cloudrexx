@@ -118,7 +118,7 @@ class EntityBase {
     protected static $nestingCount = 0;
 
     /**
-     * List of locale codes ordered by translation fallback order per instance
+     * List of locale codes ordered by translation fallback order per Cx instance
      *
      * @see getFallbackLocaleCodes()
      * @var array Array in the form: array(<instanceId> => array(<localeCode>, ...))
