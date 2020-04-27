@@ -335,6 +335,8 @@ class EntityBase {
             'foreignKey' => \Gedmo\Tool\Wrapper\AbstractWrapper::wrap($this, $em)->getIdentifier(),
         ));
 
+        // if there's but one translation we don't need to calculate which
+        // one is the right one
         if (count($translations) == 1) {
             return current($translations)->getContent();
         }
