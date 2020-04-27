@@ -295,6 +295,11 @@ class EntityBase {
                 \FWLanguage::getLanguageCodeById($defaultLocaleId)
             );
         }
+        // add the current locale as first entry
+        array_unshift(
+            static::$localeCodes[$this->cx->getId()],
+            \FWLanguage::getLanguageCodeById($currentLocaleId)
+        );
         return static::$localeCodes[$this->cx->getId()];
     }
 
