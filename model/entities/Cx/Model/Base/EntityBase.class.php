@@ -310,11 +310,23 @@ class EntityBase {
     public function getTranslatedFieldValue($fieldName) {
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassMetadata = $em->getClassMetadata(get_class($this));
+
+        // field has non-empty value in current locale
+        if ($entityClassMetadata->getFieldValue($this, $fieldName) != '') {
+            return $entityClassMetadata->getFieldValue($this, $fieldName);
+        }
+
         $translationListener = $this->cx->getDb()->getTranslationListener();
         $config = $translationListener->getConfiguration(
             $em,
             get_class($this)
         );
+
+        // field is not translatable
+        if (!in_array($fieldName, $config['fields'])) {
+            return $entityClassMetadata->getFieldValue($this, $fieldName);
+        }
+
         $currentLocaleId = \Env::get('init')->userFrontendLangId;
         $currentLocaleCode = \FWLanguage::getLanguageCodeById($currentLocaleId);
         $localeCodes = $this->getFallbackLocaleCodes();
