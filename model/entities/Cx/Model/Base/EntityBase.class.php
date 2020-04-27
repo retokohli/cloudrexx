@@ -118,6 +118,14 @@ class EntityBase {
     protected static $nestingCount = 0;
 
     /**
+     * List of locale codes ordered by translation fallback order per instance
+     *
+     * @see getFallbackLocaleCodes()
+     * @var array Array in the form: array(<instanceId> => array(<localeCode>, ...))
+     */
+    protected static $localeCodes = array();
+
+    /**
      * This is an ugly solution to allow $this->cx to be available in all entity classes
      * Since the entity's constructor is not called when an entity is loaded from DB this
      * cannot be assigned there.
@@ -247,6 +255,46 @@ class EntityBase {
      */
     protected function getStringRepresentationFormat() {
         return $this->stringRepresentationFormat;
+    }
+
+    /**
+     * Returns a list of all locale codes ordered by fallback order
+     *
+     * - First entry is the current locale
+     * - Second entry is the default locale (if different from current, it's omitted otherwise)
+     * - Then all other locales follow (in no particular order)
+     * @return array List of locale codes
+     */
+    protected function getFallbackLocaleCodes() {
+        if (isset(static::$localeCodes[$this->cx->getId()])) {
+            return static::$localeCodes[$this->cx->getId()];
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $currentLocaleId = \Env::get('init')->userFrontendLangId;
+        $defaultLocaleId = \Env::get('init')->defaultFrontendLangId;
+        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        $locales = $localeRepo->findAll();
+
+        // create an array with all locale codes except current language
+        // with default language (if different) as first entry
+        static::$localeCodes[$this->cx->getId()] = array();
+        foreach ($locales as $locale) {
+            if (
+                $locale->getId() == $defaultLocaleId ||
+                $locale->getId() == $currentLocaleId
+            ) {
+                continue;
+            }
+            static::$localeCodes[$this->cx->getId()][] = $locale->getShortForm();
+        }
+        // if current locale is different from default, add default
+        if ($defaultLocaleId != $currentLocaleId) {
+            array_unshift(
+                static::$localeCodes[$this->cx->getId()],
+                \FWLanguage::getLanguageCodeById($defaultLocaleId)
+            );
+        }
+        return static::$localeCodes[$this->cx->getId()];
     }
 
     /**
