@@ -308,38 +308,16 @@ class EntityBase {
      * @param string $fieldName Name of a translatable field
      */
     public function getTranslatedFieldValue($fieldName) {
-        $translationListener = $this->cx->getDb()->getTranslationListener();
         $em = $this->cx->getDb()->getEntityManager();
+        $entityClassMetadata = $em->getClassMetadata(get_class($this));
+        $translationListener = $this->cx->getDb()->getTranslationListener();
         $config = $translationListener->getConfiguration(
             $em,
             get_class($this)
         );
         $currentLocaleId = \Env::get('init')->userFrontendLangId;
-        $defaultLocaleId = \Env::get('init')->defaultFrontendLangId;
         $currentLocaleCode = \FWLanguage::getLanguageCodeById($currentLocaleId);
-        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-        $locales = $localeRepo->findAll();
-
-        // create an array with all locale codes except current language
-        // with default language (if different) as first entry
-        $localeCodes = array();
-        foreach ($locales as $locale) {
-            if (
-                $locale->getId() == $defaultLocaleId ||
-                $locale->getId() == $currentLocaleId
-            ) {
-                continue;
-            }
-            $localeCodes[] = $locale->getShortForm();
-        }
-        // if current locale is different from default, add default
-        if ($defaultLocaleId != $currentLocaleId) {
-            array_unshift($localeCodes, \FWLanguage::getLanguageCodeById($defaultLocaleId));
-        }
-        $entityClassMetadata = $em->getClassMetadata(get_class($this));
-        if (!in_array($fieldName, $config['fields'])) {
-            return $entityClassMetadata->getFieldValue($this, $fieldName);
-        }
+        $localeCodes = $this->getFallbackLocaleCodes();
         foreach ($localeCodes as $localeCode) {
             // try default locale first, then all other locales
             $translationListener->setTranslatableLocale(
