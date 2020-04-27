@@ -263,6 +263,7 @@ class EntityBase {
      * - First entry is the current locale
      * - Second entry is the default locale (if different from current, it's omitted otherwise)
      * - Then all other locales follow (in no particular order)
+     * @todo Order the array by the fallback order (same as in ContentManager)
      * @return array List of locale codes
      */
     protected function getFallbackLocaleCodes() {
