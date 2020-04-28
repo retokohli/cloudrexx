@@ -129,7 +129,7 @@ class ComponentController extends SystemComponentController
     /**
      * {@inheritDoc}
      */
-    public function postContentLoad() {
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_ARRAYLANG;
 
         $this->getComponent('View')->addIntroSteps(
