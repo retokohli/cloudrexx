@@ -470,6 +470,7 @@ class ListingController {
                 //       cannot sort by it here. Find a solution for sorting
                 //       by relation fields.
                 if (isset($metaData->associationMappings[$field])) {
+                    \DBG::msg('Cannot sort by association "' . $field . '"');
                     continue;
                 }
                 $qb->orderBy('x.' . $field, $order);
