@@ -132,6 +132,13 @@ class ComponentController extends SystemComponentController
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_ARRAYLANG;
 
+        if ($this->cx->getMode() != Cx::MODE_BACKEND) {
+            return;
+        }
+        if ($page->getModule() != $this->getName()) {
+            return;
+        }
+
         $this->getComponent('View')->addIntroSteps(
             array(
                 array(
