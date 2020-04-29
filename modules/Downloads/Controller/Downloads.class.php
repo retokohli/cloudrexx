@@ -333,7 +333,11 @@ class Downloads extends DownloadsLibrary
                     $objCategory,
                     array('downloads_subcategory_list', 'downloads_subcategory'),
                     null,
-                    'SUB'
+                    'SUB',
+                    null,
+                    null,
+                    null,
+                    'SUBCATEGORY_'
                 );
 
                 // parse downloads of selected category
@@ -382,7 +386,8 @@ class Downloads extends DownloadsLibrary
                 null,
                 'downloads_overview_row',
                 array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'),
-                $this->arrConfig['overview_max_subcats']
+                $this->arrConfig['overview_max_subcats'],
+                'SUBCATEGORY_'
             );
 
             if (!empty($this->searchKeyword)) {
@@ -1012,12 +1017,12 @@ JS_CODE;
                         null,
                         null,
                         null,
-                        'OVERVIEW_'
+                        'OVERVIEW_SUBCATEGORY_'
                     );
                 }
                 $this->parseDownloads(
                     $objSubcategory,
-                    $subPrefix . 'SUBCATEGORY_'
+                    $subPrefix
                 );
 
                 // parse category
