@@ -333,6 +333,9 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Set parent
      *
+     * This intentionally does not allow to set parent to NULL. Making an
+     * existing node a root node is not supported. To create a new root node
+     * simply create a new entity as the default value for $this->parent is NULL.
      * @param \Cx\Core\ContentManager\Model\Entity\Node $parent
      */
     public function setParent(\Cx\Core\ContentManager\Model\Entity\Node $parent)
@@ -560,5 +563,30 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
         foreach ($unserialized[6] as $pageId) {
             $this->pages[] = $pageId;
         }
+    }
+
+    /**
+     * Check if this node is a child (direct or indirect) of node $parent
+     *
+     * @param   Node    $parent Node to check if its the parent of this
+     *                          instance of
+     * @return  boolean Whether this instance is a child of $parent. Whereas
+     *                  $parent is not required to be a direct parent of this
+     *                  instance.
+     */
+    public function isChildOf($parent) {
+        if (
+            // if $this is located within the boundaries
+            // of $parent, then $this is a child of $parent
+            $parent->getLft() < $this->getLft() &&
+            $parent->getRgt() > $this->getRgt() &&
+            // this check is just for the case when the tree
+            // is broken
+            $parent->getLvl() < $this->getLvl()
+        ) {
+            return true;
+        }
+
+        return false;
     }
 }
