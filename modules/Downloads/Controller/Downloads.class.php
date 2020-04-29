@@ -329,7 +329,12 @@ class Downloads extends DownloadsLibrary
                 $this->parseCategory($objCategory);
 
                 // parse subcategories
-                $this->parseCategories($objCategory, array('downloads_subcategory_list', 'downloads_subcategory'), null, 'SUB');
+                $this->parseCategories(
+                    $objCategory,
+                    array('downloads_subcategory_list', 'downloads_subcategory'),
+                    null,
+                    'SUB'
+                );
 
                 // parse downloads of selected category
                 $this->parseDownloads($objCategory);
@@ -370,7 +375,15 @@ class Downloads extends DownloadsLibrary
             }
         } else {
             /* CATEGORY OVERVIEW PAGE */
-            $this->parseCategories($objCategory, array('downloads_overview', 'downloads_overview_category'), null, null, 'downloads_overview_row', array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $this->arrConfig['overview_max_subcats']);
+            $this->parseCategories(
+                $objCategory,
+                array('downloads_overview', 'downloads_overview_category'),
+                null,
+                null,
+                'downloads_overview_row',
+                array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'),
+                $this->arrConfig['overview_max_subcats']
+            );
 
             if (!empty($this->searchKeyword)) {
                 $this->parseDownloads($objCategory);
