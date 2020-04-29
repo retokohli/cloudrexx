@@ -272,9 +272,6 @@ class DoctrineRepository extends DataSource {
         $metaData = $em->getClassMetadata($entityClass);
         // foreach relation
         foreach ($metaData->associationMappings as $relationField => $associationMapping) {
-            if (in_array($associationMapping['targetEntity'], $exclusionList)) {
-                continue;
-            }
             // if is "to 1" or n:n or is forced by config
             if (
                 (
