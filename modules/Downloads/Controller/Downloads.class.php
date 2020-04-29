@@ -387,7 +387,7 @@ class Downloads extends DownloadsLibrary
                 'downloads_overview_row',
                 array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'),
                 $this->arrConfig['overview_max_subcats'],
-                'SUBCATEGORY_'
+                'OVERVIEW_CATEGORY_'
             );
 
             if (!empty($this->searchKeyword)) {
