@@ -79,10 +79,10 @@ class File implements FileInterface
         try {
             $fsFile = new FileSystemFile($this->file);
             $fileOwnerUserId = $fsFile->getFileOwner();
-            \DBG::msg('File (FileSystem): '.$this->file.' is owned by '.$fileOwnerUserId);
+//            \DBG::msg('File (FileSystem): '.$this->file.' is owned by '.$fileOwnerUserId);
         } catch (FileSystemFileException $e) {
-            \DBG::msg('FileSystemFile: '.$e->getMessage());
-            \DBG::msg('File: CAUTION: '.$this->file.' is owned by an unknown user!');
+//            \DBG::msg('FileSystemFile: '.$e->getMessage());
+//            \DBG::msg('File: CAUTION: '.$this->file.' is owned by an unknown user!');
             return false;
         }
 
@@ -92,12 +92,12 @@ class File implements FileInterface
         } else {
             $phpUserId = getmyuid();
         }
-        \DBG::msg('File (PHP): Script user is '.$phpUserId);
+//        \DBG::msg('File (PHP): Script user is '.$phpUserId);
 
         // check if the file we're going to work with is owned by the PHP user
         if ($fileOwnerUserId == $phpUserId) {
             $this->accessMode = self::PHP_ACCESS;
-            \DBG::msg('File: Using FileSystem access');
+//            \DBG::msg('File: Using FileSystem access');
             return true;
         }
 
@@ -107,7 +107,7 @@ class File implements FileInterface
         if (function_exists('posix_getpwnam')) {
             $ftpUserInfo = posix_getpwnam($ftpUsername);
             $ftpUserId = $ftpUserInfo['uid'];
-            \DBG::msg('File (FTP): '.$this->file.' is owned by '.$ftpUserId);
+//            \DBG::msg('File (FTP): '.$this->file.' is owned by '.$ftpUserId);
         } else {
             $ftpUserId = null;
         }
@@ -115,12 +115,12 @@ class File implements FileInterface
         // check if the file we're going to work with is owned by the FTP user
         if ($fileOwnerUserId == $ftpUserId) {
             $this->accessMode = self::FTP_ACCESS;
-            \DBG::msg('File: Using FTP access');
+//            \DBG::msg('File: Using FTP access');
             return true;
         }
 
         // the file to work on is neither owned by the PHP user nor the FTP user
-        \DBG::msg('File: CAUTION: '.$this->file.' is owned by an unknown user!');
+//        \DBG::msg('File: CAUTION: '.$this->file.' is owned by an unknown user!');
         $this->accessMode = self::UNKNOWN_ACCESS;
         return false;
     }
@@ -158,7 +158,7 @@ class File implements FileInterface
                 $fsFile->write($data);
                 return true;
             } catch (FileSystemFileException $e) {
-                \DBG::msg('FileSystemFile: '.$e->getMessage());
+//                \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
         }
 
@@ -171,7 +171,7 @@ class File implements FileInterface
                 $ftpFile->write($data);
                 return true;
             } catch (FTPFileException $e) {
-                \DBG::msg('FTPFile: '.$e->getMessage());
+//                \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
@@ -189,7 +189,7 @@ class File implements FileInterface
                 $fsFile->append($data);
                 return true;
             } catch (FileSystemFileException $e) {
-                \DBG::msg('FileSystemFile: '.$e->getMessage());
+//                \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
         }
 
@@ -202,7 +202,7 @@ class File implements FileInterface
                 $ftpFile->append($data);
                 return true;
             } catch (FTPFileException $e) {
-                \DBG::msg('FTPFile: '.$e->getMessage());
+//                \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
@@ -227,7 +227,7 @@ class File implements FileInterface
                 $fsFile->touch();
                 return true;
             } catch (FileSystemFileException $e) {
-                \DBG::msg('FileSystemFile: '.$e->getMessage());
+//                \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
         }
 
@@ -240,7 +240,7 @@ class File implements FileInterface
                 $ftpFile->touch();
                 return true;
             } catch (FTPFileException $e) {
-                \DBG::msg('FTPFile: '.$e->getMessage());
+//                \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
@@ -276,7 +276,7 @@ class File implements FileInterface
                 $fsFile->copy($dst);
                 return true;
             } catch (FileSystemFileException $e) {
-                \DBG::msg('FileSystemFile: '.$e->getMessage());
+//                \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
         }
 
@@ -289,7 +289,7 @@ class File implements FileInterface
                 $ftpFile->copy($dst);
                 return true;
             } catch (FTPFileException $e) {
-                \DBG::msg('FTPFile: '.$e->getMessage());
+//                \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
@@ -330,7 +330,7 @@ class File implements FileInterface
                 $fsFile->move($dst);
                 return true;
             } catch (FileSystemFileException $e) {
-                \DBG::msg('FileSystemFile: '.$e->getMessage());
+//                \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
         }
 
@@ -343,7 +343,7 @@ class File implements FileInterface
                 $ftpFile->move($dst);
                 return true;
             } catch (FTPFileException $e) {
-                \DBG::msg('FTPFile: '.$e->getMessage());
+//                \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
@@ -367,7 +367,7 @@ class File implements FileInterface
                 $fsFile->makeWritable();
                 return true;
             } catch (FileSystemFileException $e) {
-                \DBG::msg('FileSystemFile: '.$e->getMessage());
+//                \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
         }
 
@@ -380,7 +380,7 @@ class File implements FileInterface
                 $ftpFile->makeWritable();
                 return true;
             } catch (FTPFileException $e) {
-                \DBG::msg('FTPFile: '.$e->getMessage());
+//                \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
@@ -405,7 +405,7 @@ class File implements FileInterface
                 $objFile = new FileSystemFile($this->file);
                 $objFile->delete();
             } catch (FileSystemFileException $e) {
-                \DBG::msg('FileSystemFile: '.$e->getMessage());
+//                \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
         }
 
@@ -417,7 +417,7 @@ class File implements FileInterface
                 $objFile = new FTPFile($this->file);
                 $objFile->delete();
             } catch (FTPFileException $e) {
-                \DBG::msg('FTPFile: '.$e->getMessage());
+//                \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 

@@ -53,7 +53,7 @@ class LocalFile implements File
         if (strpos($file, '/') === 0) {
             $this->file = $file;
         } else {
-            \DBG::msg(__METHOD__.": $file without leading slash supplied!");
+//            \DBG::msg(__METHOD__.": $file without leading slash supplied!");
             $this->file = '/' . $file;
         }
         $this->fileSystem = $fileSystem;

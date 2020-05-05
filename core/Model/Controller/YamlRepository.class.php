@@ -168,7 +168,7 @@ class YamlRepository implements \Countable {
         $this->entityUniqueKeys = $meta['unique_keys'];
 
         if (!$entities) {
-            \DBG::msg("YamlRepository: Empty repository $this->repositoryPath loaded.");
+//            \DBG::msg("YamlRepository: Empty repository $this->repositoryPath loaded.");
             return;
         }
 

@@ -226,14 +226,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     /**
      * Sanitize the array $filter by ensuring that is only contains
      * valid keys specified by $allowedFilterKeys.
-     * 
+     *
      * @param   array   $filter Nested array containing profile attribute
      *                          filter conditions.
      * @param   array   $allowedFilterKeys  Array consisting of keys that
      *                                      are allowed to be used as filter
      *                                      keys.
      */
-    protected function sanitizeProfileFilter(&$filter, $allowedFilterKeys) { 
+    protected function sanitizeProfileFilter(&$filter, $allowedFilterKeys) {
         // verify that the requested filter is valid
         foreach ($filter as $attribute => &$argument) {
             // verify $attribute
@@ -257,7 +257,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
     /**
      * Identifies all valid filter keys (of the current request) to be used
-     * for filtering the users. 
+     * for filtering the users.
      * Valid filter arguments can be specified in the application
      * template in the form of template placeholders. I.e. add the
      * following placeholder to allow filtering by firstname:
@@ -911,7 +911,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                             $oldValue = '';
                         }
                     }
-                    
+
                     $objAttributeValue = $objAttribute->getById($newValue);
                     if ($objAttributeValue->getId()) {
                         $newValue = $objAttributeValue->getName();
@@ -919,7 +919,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $newValue = '';
                     }
                     break;
-                    
+
                 default:
                     break;
             }
@@ -1141,7 +1141,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
             $objUser->objAttribute->next();
         }
-        
+
         return $arrUserDetails;
     }
 
