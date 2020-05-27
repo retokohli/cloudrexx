@@ -53,7 +53,8 @@ class ViewManagerEventListener extends DefaultEventListener
     {
         global $_ARRAYLANG;
         $mediaType = new MediaSource(
-            'themes', $_ARRAYLANG['TXT_THEME_THEMES'],
+            'themes',
+            $_ARRAYLANG['TXT_THEME_THEMES'] ?? 'TXT_THEME_THEMES',
             array(
                 $this->cx->getWebsiteThemesPath(),
                 $this->cx->getWebsiteThemesWebPath(),

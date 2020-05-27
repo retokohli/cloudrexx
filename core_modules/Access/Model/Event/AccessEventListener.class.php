@@ -62,7 +62,7 @@ class AccessEventListener extends DefaultEventListener
         global $_ARRAYLANG;
         $mediaType = new MediaSource(
             'access',
-            $_ARRAYLANG['TXT_USER_ADMINISTRATION'],
+            $_ARRAYLANG['TXT_USER_ADMINISTRATION'] ?? 'TXT_USER_ADMINISTRATION',
             array(
                 $this->cx->getWebsiteImagesAccessPath(),
                 $this->cx->getWebsiteImagesAccessWebPath(),

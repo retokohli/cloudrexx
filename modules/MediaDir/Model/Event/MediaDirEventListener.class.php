@@ -72,10 +72,12 @@ class MediaDirEventListener extends DefaultEventListener
     ) {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaDir');
-        $mediaType = new MediaSource('mediadir',$_ARRAYLANG['TXT_FILEBROWSER_MEDIADIR'], array(
-            $this->cx->getWebsiteImagesMediaDirPath(),
-            $this->cx->getWebsiteImagesMediaDirWebPath(),
-        ),array(153));
+        $mediaType = new MediaSource('mediadir',
+            $_ARRAYLANG['TXT_FILEBROWSER_MEDIADIR'] ?? 'TXT_FILEBROWSER_MEDIADIR',
+            array(
+                $this->cx->getWebsiteImagesMediaDirPath(),
+                $this->cx->getWebsiteImagesMediaDirWebPath(),
+            ),array(153));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
