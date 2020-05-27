@@ -167,10 +167,7 @@ class Url {
         if (empty($this->domain)) {
             $this->domain = \Env::get('config')['domainUrl'];
         }
-        $this->protocol = $data['scheme'] ?? null;
-        if (empty($this->protocol)) {
-            $this->protocol = 'http';
-        }
+        $this->protocol = $data['scheme'] ?? 'http';
         if ($this->protocol == 'file') {
             // we don't want virtual language dir in file URLs
             $this->setMode('backend');
